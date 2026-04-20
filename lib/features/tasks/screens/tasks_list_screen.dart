@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/tasks_provider.dart';
 import '../../../models/task.dart';
 import '../../../shared/widgets/task_card.dart';
 import '../../../shared/widgets/empty_state.dart';
 
-class TasksListScreen extends StatefulWidget {
+class TasksListScreen extends ConsumerStatefulWidget {
   const TasksListScreen({super.key});
 
   @override
-  State<TasksListScreen> createState() => _TasksListScreenState();
+  ConsumerState<TasksListScreen> createState() => _TasksListScreenState();
 }
 
-class _TasksListScreenState extends State<TasksListScreen>
+class _TasksListScreenState extends ConsumerState<TasksListScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final Set<TaskPriority> _priorityFilters = {};
-  List<TaskModel> _tasks = TaskModel.mockList;
 
   @override
   void initState() {
@@ -31,22 +32,22 @@ class _TasksListScreenState extends State<TasksListScreen>
     super.dispose();
   }
 
-  List<TaskModel> get _filteredTasks {
-    var tasks = _tasks;
+  List<TaskModel> _applyFilters(List<TaskModel> all) {
+    var tasks = all.where((t) => !t.completed).toList();
     switch (_tabController.index) {
-      case 1:
+      case 1: // Hoy
         tasks = tasks.where((t) {
           if (t.dueDate == null) return false;
-          return t.dueDate!.difference(DateTime.now()).inHours < 24 &&
-              t.dueDate!.isAfter(DateTime.now());
+          final diff = t.dueDate!.difference(DateTime.now());
+          return diff.inHours < 24 && t.dueDate!.isAfter(DateTime.now());
         }).toList();
-      case 2:
+      case 2: // Esta semana
         tasks = tasks.where((t) {
           if (t.dueDate == null) return false;
           final diff = t.dueDate!.difference(DateTime.now());
           return diff.inDays < 7 && diff.inDays >= 0;
         }).toList();
-      case 3:
+      case 3: // Vencidas
         tasks = tasks.where((t) => t.isOverdue).toList();
     }
     if (_priorityFilters.isNotEmpty) {
@@ -57,96 +58,139 @@ class _TasksListScreenState extends State<TasksListScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Mis Tareas'),
-        actions: [
-          IconButton(
-            icon: Icon(
-              _priorityFilters.isEmpty
-                  ? Icons.filter_list_rounded
-                  : Icons.filter_list_off_rounded,
-              color: _priorityFilters.isEmpty
-                  ? AppColors.textPrimary
-                  : AppColors.primary,
-            ),
-            onPressed: _showFilters,
+    final tasksAsync = ref.watch(tasksNotifierProvider);
+
+    return tasksAsync.when(
+      loading: () => const _TasksLoadingSkeleton(),
+      error: (err, _) => Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.cloud_off_rounded,
+                  size: 48, color: AppColors.textDisabled),
+              const SizedBox(height: 12),
+              Text('No se pudieron cargar las tareas',
+                  style: GoogleFonts.inter(color: AppColors.textSecondary)),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () =>
+                    ref.read(tasksNotifierProvider.notifier).refresh(),
+                child: const Text('Reintentar'),
+              ),
+            ],
           ),
-          IconButton(
-            icon: const Icon(Icons.search_rounded),
-            onPressed: () => context.push('/search'),
-          ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          onTap: (_) => setState(() {}),
-          isScrollable: true,
-          tabAlignment: TabAlignment.start,
-          tabs: [
-            _TabBadge(label: 'Todas', count: _tasks.length),
-            _TabBadge(
-              label: 'Hoy',
-              count: _tasks
-                  .where((t) =>
-                      t.dueDate != null &&
-                      t.dueDate!.difference(DateTime.now()).inHours < 24 &&
-                      t.dueDate!.isAfter(DateTime.now()))
-                  .length,
-              badgeColor: AppColors.primary,
-            ),
-            const Tab(text: 'Esta semana'),
-            _TabBadge(
-              label: 'Vencidas',
-              count: _tasks.where((t) => t.isOverdue).length,
-              badgeColor: AppColors.error,
-            ),
-          ],
         ),
       ),
-      body: Column(
-        children: [
-          if (_priorityFilters.isNotEmpty) _ActiveFiltersBar(
-            filters: _priorityFilters,
-            onClear: () => setState(() => _priorityFilters.clear()),
+      data: (allTasks) {
+        final filtered = _applyFilters(allTasks);
+        final todayCount = allTasks.where((t) =>
+          !t.completed &&
+          t.dueDate != null &&
+          t.dueDate!.difference(DateTime.now()).inHours < 24 &&
+          t.dueDate!.isAfter(DateTime.now())).length;
+        final overdueCount =
+            allTasks.where((t) => t.isOverdue).length;
+
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          appBar: AppBar(
+            title: const Text('Mis Tareas'),
+            actions: [
+              IconButton(
+                icon: Icon(
+                  _priorityFilters.isEmpty
+                      ? Icons.filter_list_rounded
+                      : Icons.filter_list_off_rounded,
+                  color: _priorityFilters.isEmpty
+                      ? AppColors.textPrimary
+                      : AppColors.primary,
+                ),
+                onPressed: _showFilters,
+              ),
+              IconButton(
+                icon: const Icon(Icons.search_rounded),
+                onPressed: () => context.push('/search'),
+              ),
+            ],
+            bottom: TabBar(
+              controller: _tabController,
+              onTap: (_) => setState(() {}),
+              isScrollable: true,
+              tabAlignment: TabAlignment.start,
+              tabs: [
+                _TabBadge(
+                    label: 'Todas',
+                    count: allTasks.where((t) => !t.completed).length),
+                _TabBadge(
+                  label: 'Hoy',
+                  count: todayCount,
+                  badgeColor: AppColors.primary,
+                ),
+                const Tab(text: 'Esta semana'),
+                _TabBadge(
+                  label: 'Vencidas',
+                  count: overdueCount,
+                  badgeColor: AppColors.error,
+                ),
+              ],
+            ),
           ),
-          Expanded(
-            child: _filteredTasks.isEmpty
-                ? EmptyState(
-                    icon: Icons.check_circle_outline_rounded,
-                    title: _tabController.index == 3
-                        ? '¡Sin tareas vencidas!'
-                        : 'Sin tareas pendientes',
-                    subtitle: _tabController.index == 3
-                        ? 'Excelente, estás al día.'
-                        : '¿Agregamos algo nuevo?',
-                    actionLabel: 'Nueva tarea',
-                    onAction: () => context.push('/tasks/create'),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.only(top: 8, bottom: 80),
-                    itemCount: _filteredTasks.length,
-                    itemBuilder: (_, i) {
-                      final task = _filteredTasks[i];
-                      return TaskCard(
-                        task: task,
-                        onTap: () => context.push('/tasks/${task.id}'),
-                        onComplete: () => setState(() {
-                          _tasks.indexWhere((t) => t.id == task.id);
-                        }),
-                        onDelete: () => setState(() {
-                          _tasks.removeWhere((t) => t.id == task.id);
-                        }),
-                      );
-                    },
+          body: RefreshIndicator(
+            color: AppColors.primary,
+            onRefresh: () =>
+                ref.read(tasksNotifierProvider.notifier).refresh(),
+            child: Column(
+              children: [
+                if (_priorityFilters.isNotEmpty)
+                  _ActiveFiltersBar(
+                    filters: _priorityFilters,
+                    onClear: () =>
+                        setState(() => _priorityFilters.clear()),
                   ),
+                Expanded(
+                  child: filtered.isEmpty
+                      ? EmptyState(
+                          icon: Icons.check_circle_outline_rounded,
+                          title: _tabController.index == 3
+                              ? '¡Sin tareas vencidas!'
+                              : 'Sin tareas pendientes',
+                          subtitle: _tabController.index == 3
+                              ? 'Excelente, estás al día.'
+                              : '¿Agregamos algo nuevo?',
+                          actionLabel: 'Nueva tarea',
+                          onAction: () => context.push('/tasks/create'),
+                        )
+                      : ListView.builder(
+                          padding:
+                              const EdgeInsets.only(top: 8, bottom: 80),
+                          itemCount: filtered.length,
+                          itemBuilder: (_, i) {
+                            final task = filtered[i];
+                            return TaskCard(
+                              task: task,
+                              onTap: () =>
+                                  context.push('/tasks/${task.id}'),
+                              onComplete: () => ref
+                                  .read(tasksNotifierProvider.notifier)
+                                  .complete(task.id),
+                              onDelete: () => ref
+                                  .read(tasksNotifierProvider.notifier)
+                                  .delete(task.id),
+                            );
+                          },
+                        ),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/tasks/create'),
-        child: const Icon(Icons.add_rounded),
-      ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => context.push('/tasks/create'),
+            child: const Icon(Icons.add_rounded),
+          ),
+        );
+      },
     );
   }
 
@@ -164,6 +208,32 @@ class _TasksListScreenState extends State<TasksListScreen>
             ..clear()
             ..addAll(filters));
         },
+      ),
+    );
+  }
+}
+
+// ── Loading skeleton ──────────────────────────────────────────────────────────
+
+class _TasksLoadingSkeleton extends StatelessWidget {
+  const _TasksLoadingSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(title: const Text('Mis Tareas')),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: 6,
+        itemBuilder: (_, __) => Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          height: 80,
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       ),
     );
   }
