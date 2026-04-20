@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/supabase_service.dart';
 import '../services/api_client.dart';
+import '../services/fcm_service.dart';
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
@@ -166,6 +167,8 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
 
   /// Sign out and clear local state.
   Future<void> signOut() async {
+    // Unregister FCM token so this device stops receiving push notifications.
+    await FcmService.deleteToken();
     await SupabaseService.auth.signOut();
     state = const AsyncData(AuthState.unauthenticated());
   }
