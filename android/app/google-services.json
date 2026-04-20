@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "250122353409",
+    "project_id": "captus-2c79a",
+    "storage_bucket": "captus-2c79a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:250122353409:android:25f48df6905e8211bf3900",
+        "android_client_info": {
+          "package_name": "com.example.captus_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQh855-ypTW0o37Nqi_pl-2dRgVRR2ACA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
