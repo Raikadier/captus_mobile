@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/auth_provider.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
+  String? _errorMessage;
   int _selectedRole = 0;
 
   @override
@@ -30,6 +34,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final role = _selectedRole == 0 ? 'student' : 'teacher';
+    final error = await ref.read(authProvider.notifier).signUp(
+          name: _nameCtrl.text.trim(),
+          email: _emailCtrl.text.trim(),
+          password: _passwordCtrl.text,
+          role: role,
+        );
+
+    if (!mounted) return;
+    if (error != null) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = error;
+      });
+      return;
+    }
+
+    // Continue to academic profile step.
     context.push('/register/profile');
   }
 
@@ -138,10 +165,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ? null
                       : 'Las contraseñas no coinciden',
                 ),
+                if (_errorMessage != null) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withAlpha(25),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.error.withAlpha(76)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.error_outline_rounded,
+                            color: AppColors.error, size: 16),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(_errorMessage!,
+                              style: GoogleFonts.inter(
+                                  fontSize: 12, color: AppColors.error)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 32),
                 ElevatedButton(
-                  onPressed: _register,
-                  child: const Text('Continuar'),
+                  onPressed: _isLoading ? null : _register,
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.black),
+                        )
+                      : const Text('Continuar'),
                 ),
                 const SizedBox(height: 24),
               ],

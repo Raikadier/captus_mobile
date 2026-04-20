@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../providers/auth_provider.dart';
 import '../../features/auth/screens/splash_screen.dart';
 import '../../features/auth/screens/onboarding_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
@@ -43,269 +45,307 @@ import '../../features/profile/screens/settings_security_screen.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
-final appRouter = GoRouter(
-  navigatorKey: _rootNavigatorKey,
-  initialLocation: '/splash',
-  debugLogDiagnostics: true,
-  routes: [
-    // ── Auth ─────────────────────────────────────────────────────────────
-    GoRoute(
-      path: '/splash',
-      name: 'splash',
-      builder: (_, __) => const SplashScreen(),
-    ),
-    GoRoute(
-      path: '/onboarding',
-      name: 'onboarding',
-      builder: (_, __) => const OnboardingScreen(),
-    ),
-    GoRoute(
-      path: '/login',
-      name: 'login',
-      builder: (_, __) => const LoginScreen(),
-    ),
-    GoRoute(
-      path: '/register',
-      name: 'register',
-      builder: (_, __) => const RegisterScreen(),
-    ),
-    GoRoute(
-      path: '/register/profile',
-      name: 'register_academic_profile',
-      builder: (_, __) => const RegisterAcademicProfileScreen(),
-    ),
-    GoRoute(
-      path: '/register/notifications',
-      name: 'register_notifications',
-      builder: (_, __) => const RegisterNotificationsScreen(),
-    ),
-    GoRoute(
-      path: '/forgot-password',
-      name: 'forgot_password',
-      builder: (_, __) => const ForgotPasswordScreen(),
-    ),
+/// Routes that are accessible without authentication.
+const _publicRoutes = {'/splash', '/onboarding', '/login', '/register',
+    '/register/profile', '/register/notifications', '/forgot-password'};
 
-    // ── Main shell with bottom nav ────────────────────────────────────────
-    ShellRoute(
-      navigatorKey: _shellNavigatorKey,
-      builder: (context, state, child) => MainShell(child: child),
-      routes: [
-        GoRoute(
-          path: '/home',
-          name: 'home_dashboard',
-          builder: (_, __) => const HomeDashboardScreen(),
+/// Creates the GoRouter with a Riverpod [ref] so the [redirect] callback
+/// can read the live [authProvider] state.
+GoRouter createRouter(Ref ref) {
+  return GoRouter(
+    navigatorKey: _rootNavigatorKey,
+    initialLocation: '/splash',
+    debugLogDiagnostics: true,
+
+    // ── Auth redirect guard ──────────────────────────────────────────────────
+    redirect: (context, state) {
+      final authAsync = ref.read(authProvider);
+
+      // While the auth state is loading, stay on splash.
+      if (authAsync.isLoading) return '/splash';
+
+      final authState = authAsync.valueOrNull;
+      final isAuthenticated = authState?.isAuthenticated ?? false;
+      final isPublic = _publicRoutes.contains(state.matchedLocation);
+
+      // Not authenticated and trying to access a protected route → login.
+      if (!isAuthenticated && !isPublic) return '/login';
+
+      // Authenticated and trying to access a public/auth route → dashboard.
+      if (isAuthenticated && isPublic && state.matchedLocation != '/splash') {
+        final role = authState?.role ?? 'student';
+        return role == 'teacher' ? '/home/teacher' : '/home';
+      }
+
+      return null; // No redirect needed.
+    },
+
+    // Refresh the router whenever auth state changes.
+    refreshListenable: _AuthChangeNotifier(ref),
+
+    routes: [
+      // ── Auth ───────────────────────────────────────────────────────────────
+      GoRoute(
+        path: '/splash',
+        name: 'splash',
+        builder: (_, __) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        name: 'onboarding',
+        builder: (_, __) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        name: 'login',
+        builder: (_, __) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/register',
+        name: 'register',
+        builder: (_, __) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/register/profile',
+        name: 'register_academic_profile',
+        builder: (_, __) => const RegisterAcademicProfileScreen(),
+      ),
+      GoRoute(
+        path: '/register/notifications',
+        name: 'register_notifications',
+        builder: (_, __) => const RegisterNotificationsScreen(),
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        name: 'forgot_password',
+        builder: (_, __) => const ForgotPasswordScreen(),
+      ),
+
+      // ── Main shell with bottom nav ─────────────────────────────────────────
+      ShellRoute(
+        navigatorKey: _shellNavigatorKey,
+        builder: (context, state, child) => MainShell(child: child),
+        routes: [
+          GoRoute(
+            path: '/home',
+            name: 'home_dashboard',
+            builder: (_, __) => const HomeDashboardScreen(),
+          ),
+          GoRoute(
+            path: '/home/teacher',
+            name: 'home_dashboard_teacher',
+            builder: (_, __) => const HomeDashboardTeacherScreen(),
+          ),
+          GoRoute(
+            path: '/tasks',
+            name: 'tasks_list',
+            builder: (_, __) => const TasksListScreen(),
+          ),
+          GoRoute(
+            path: '/calendar',
+            name: 'calendar',
+            builder: (_, __) => const CalendarScreen(),
+          ),
+          GoRoute(
+            path: '/ai',
+            name: 'ai_assistant',
+            builder: (_, __) => const AiChatScreen(),
+          ),
+          GoRoute(
+            path: '/groups',
+            name: 'groups_list',
+            builder: (_, __) => const GroupsListScreen(),
+          ),
+        ],
+      ),
+
+      // ── Tasks ──────────────────────────────────────────────────────────────
+      GoRoute(
+        path: '/tasks/:id',
+        name: 'task_detail',
+        builder: (_, state) =>
+            TaskDetailScreen(taskId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/tasks/create',
+        name: 'task_create',
+        builder: (_, state) => TaskCreateScreen(
+          courseId: state.uri.queryParameters['courseId'],
         ),
-        GoRoute(
-          path: '/home/teacher',
-          name: 'home_dashboard_teacher',
-          builder: (_, __) => const HomeDashboardTeacherScreen(),
+      ),
+      GoRoute(
+        path: '/tasks/:id/edit',
+        name: 'task_edit',
+        builder: (_, state) => TaskCreateScreen(
+          taskId: state.pathParameters['id'],
+          courseId: state.uri.queryParameters['courseId'],
         ),
-        GoRoute(
-          path: '/tasks',
-          name: 'tasks_list',
-          builder: (_, __) => const TasksListScreen(),
+      ),
+      GoRoute(
+        path: '/search',
+        name: 'global_search',
+        builder: (_, __) => const GlobalSearchScreen(),
+      ),
+
+      // ── Calendar ───────────────────────────────────────────────────────────
+      GoRoute(
+        path: '/calendar/agenda',
+        name: 'calendar_agenda',
+        builder: (_, __) => const CalendarAgendaScreen(),
+      ),
+      GoRoute(
+        path: '/calendar/event/create',
+        name: 'calendar_event_create',
+        builder: (_, state) => CalendarEventCreateScreen(
+          date: state.uri.queryParameters['date'],
         ),
-        GoRoute(
-          path: '/calendar',
-          name: 'calendar',
-          builder: (_, __) => const CalendarScreen(),
+      ),
+      GoRoute(
+        path: '/calendar/event/:id/edit',
+        name: 'calendar_event_edit',
+        builder: (_, state) => CalendarEventCreateScreen(
+          eventId: state.pathParameters['id'],
         ),
-        GoRoute(
-          path: '/ai',
-          name: 'ai_assistant',
-          builder: (_, __) => const AiChatScreen(),
+      ),
+
+      // ── AI ─────────────────────────────────────────────────────────────────
+      GoRoute(
+        path: '/ai/history',
+        name: 'ai_chat_history',
+        builder: (_, __) => const AiChatHistoryScreen(),
+      ),
+      GoRoute(
+        path: '/ai/settings',
+        name: 'ai_settings',
+        builder: (_, __) => const AiSettingsScreen(),
+      ),
+
+      // ── Courses ────────────────────────────────────────────────────────────
+      GoRoute(
+        path: '/courses',
+        name: 'courses_list',
+        builder: (_, __) => const CoursesListScreen(),
+      ),
+      GoRoute(
+        path: '/courses/:id',
+        name: 'course_detail_student',
+        builder: (_, state) =>
+            CourseDetailStudentScreen(courseId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/courses/:courseId/activity/:activityId',
+        name: 'activity_detail_student',
+        builder: (_, state) => ActivityDetailStudentScreen(
+          courseId: state.pathParameters['courseId']!,
+          activityId: state.pathParameters['activityId']!,
         ),
-        GoRoute(
-          path: '/groups',
-          name: 'groups_list',
-          builder: (_, __) => const GroupsListScreen(),
+      ),
+      GoRoute(
+        path: '/teacher/courses',
+        name: 'courses_list_teacher',
+        builder: (_, __) => const CoursesListTeacherScreen(),
+      ),
+      GoRoute(
+        path: '/teacher/courses/:id',
+        name: 'course_detail_teacher',
+        builder: (_, state) =>
+            CourseDetailTeacherScreen(courseId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/teacher/courses/:courseId/activity/create',
+        name: 'activity_create',
+        builder: (_, state) =>
+            ActivityCreateScreen(courseId: state.pathParameters['courseId']!),
+      ),
+      GoRoute(
+        path: '/teacher/courses/:courseId/activity/:activityId/edit',
+        name: 'activity_edit',
+        builder: (_, state) => ActivityCreateScreen(
+          courseId: state.pathParameters['courseId']!,
+          activityId: state.pathParameters['activityId'],
         ),
-      ],
-    ),
+      ),
 
-    // ── Tasks (outside shell for full-screen) ────────────────────────────
-    GoRoute(
-      path: '/tasks/:id',
-      name: 'task_detail',
-      builder: (_, state) => TaskDetailScreen(
-        taskId: state.pathParameters['id']!,
+      // ── Groups ─────────────────────────────────────────────────────────────
+      GoRoute(
+        path: '/groups/:id',
+        name: 'group_detail',
+        builder: (_, state) =>
+            GroupDetailScreen(groupId: state.pathParameters['id']!),
       ),
-    ),
-    GoRoute(
-      path: '/tasks/create',
-      name: 'task_create',
-      builder: (_, state) => TaskCreateScreen(
-        courseId: state.uri.queryParameters['courseId'],
+      GoRoute(
+        path: '/groups/:id/settings',
+        name: 'group_settings',
+        builder: (_, state) =>
+            GroupSettingsScreen(groupId: state.pathParameters['id']!),
       ),
-    ),
-    GoRoute(
-      path: '/tasks/:id/edit',
-      name: 'task_edit',
-      builder: (_, state) => TaskCreateScreen(
-        taskId: state.pathParameters['id'],
-        courseId: state.uri.queryParameters['courseId'],
-      ),
-    ),
-    GoRoute(
-      path: '/search',
-      name: 'global_search',
-      builder: (_, __) => const GlobalSearchScreen(),
-    ),
 
-    // ── Calendar ─────────────────────────────────────────────────────────
-    GoRoute(
-      path: '/calendar/agenda',
-      name: 'calendar_agenda',
-      builder: (_, __) => const CalendarAgendaScreen(),
-    ),
-    GoRoute(
-      path: '/calendar/event/create',
-      name: 'calendar_event_create',
-      builder: (_, state) => CalendarEventCreateScreen(
-        date: state.uri.queryParameters['date'],
+      // ── Notifications ──────────────────────────────────────────────────────
+      GoRoute(
+        path: '/notifications',
+        name: 'notifications',
+        builder: (_, __) => const NotificationsScreen(),
       ),
-    ),
-    GoRoute(
-      path: '/calendar/event/:id/edit',
-      name: 'calendar_event_edit',
-      builder: (_, state) => CalendarEventCreateScreen(
-        eventId: state.pathParameters['id'],
+      GoRoute(
+        path: '/notifications/settings',
+        name: 'notifications_settings',
+        builder: (_, __) => const NotificationsSettingsScreen(),
       ),
-    ),
 
-    // ── AI ───────────────────────────────────────────────────────────────
-    GoRoute(
-      path: '/ai/history',
-      name: 'ai_chat_history',
-      builder: (_, __) => const AiChatHistoryScreen(),
-    ),
-    GoRoute(
-      path: '/ai/settings',
-      name: 'ai_settings',
-      builder: (_, __) => const AiSettingsScreen(),
-    ),
+      // ── Statistics ─────────────────────────────────────────────────────────
+      GoRoute(
+        path: '/statistics',
+        name: 'statistics',
+        builder: (_, __) => const StatisticsScreen(),
+      ),
+      GoRoute(
+        path: '/statistics/achievements',
+        name: 'achievements',
+        builder: (_, __) => const AchievementsScreen(),
+      ),
+      GoRoute(
+        path: '/teacher/statistics',
+        name: 'statistics_teacher',
+        builder: (_, __) => const StatisticsTeacherScreen(),
+      ),
+      GoRoute(
+        path: '/teacher/student/:id',
+        name: 'student_profile_view',
+        builder: (_, state) =>
+            StudentProfileViewScreen(studentId: state.pathParameters['id']!),
+      ),
 
-    // ── Courses ──────────────────────────────────────────────────────────
-    GoRoute(
-      path: '/courses',
-      name: 'courses_list',
-      builder: (_, __) => const CoursesListScreen(),
-    ),
-    GoRoute(
-      path: '/courses/:id',
-      name: 'course_detail_student',
-      builder: (_, state) => CourseDetailStudentScreen(
-        courseId: state.pathParameters['id']!,
+      // ── Profile ────────────────────────────────────────────────────────────
+      GoRoute(
+        path: '/profile',
+        name: 'profile',
+        builder: (_, __) => const ProfileScreen(),
       ),
-    ),
-    GoRoute(
-      path: '/courses/:courseId/activity/:activityId',
-      name: 'activity_detail_student',
-      builder: (_, state) => ActivityDetailStudentScreen(
-        courseId: state.pathParameters['courseId']!,
-        activityId: state.pathParameters['activityId']!,
+      GoRoute(
+        path: '/profile/edit',
+        name: 'profile_edit',
+        builder: (_, __) => const ProfileEditScreen(),
       ),
-    ),
-    GoRoute(
-      path: '/teacher/courses',
-      name: 'courses_list_teacher',
-      builder: (_, __) => const CoursesListTeacherScreen(),
-    ),
-    GoRoute(
-      path: '/teacher/courses/:id',
-      name: 'course_detail_teacher',
-      builder: (_, state) => CourseDetailTeacherScreen(
-        courseId: state.pathParameters['id']!,
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (_, __) => const SettingsScreen(),
       ),
-    ),
-    GoRoute(
-      path: '/teacher/courses/:courseId/activity/create',
-      name: 'activity_create',
-      builder: (_, state) => ActivityCreateScreen(
-        courseId: state.pathParameters['courseId']!,
+      GoRoute(
+        path: '/settings/security',
+        name: 'settings_security',
+        builder: (_, __) => const SettingsSecurityScreen(),
       ),
-    ),
-    GoRoute(
-      path: '/teacher/courses/:courseId/activity/:activityId/edit',
-      name: 'activity_edit',
-      builder: (_, state) => ActivityCreateScreen(
-        courseId: state.pathParameters['courseId']!,
-        activityId: state.pathParameters['activityId'],
-      ),
-    ),
+    ],
+  );
+}
 
-    // ── Groups ───────────────────────────────────────────────────────────
-    GoRoute(
-      path: '/groups/:id',
-      name: 'group_detail',
-      builder: (_, state) => GroupDetailScreen(
-        groupId: state.pathParameters['id']!,
-      ),
-    ),
-    GoRoute(
-      path: '/groups/:id/settings',
-      name: 'group_settings',
-      builder: (_, state) => GroupSettingsScreen(
-        groupId: state.pathParameters['id']!,
-      ),
-    ),
+// ── Auth change notifier ──────────────────────────────────────────────────────
 
-    // ── Notifications ────────────────────────────────────────────────────
-    GoRoute(
-      path: '/notifications',
-      name: 'notifications',
-      builder: (_, __) => const NotificationsScreen(),
-    ),
-    GoRoute(
-      path: '/notifications/settings',
-      name: 'notifications_settings',
-      builder: (_, __) => const NotificationsSettingsScreen(),
-    ),
-
-    // ── Statistics ───────────────────────────────────────────────────────
-    GoRoute(
-      path: '/statistics',
-      name: 'statistics',
-      builder: (_, __) => const StatisticsScreen(),
-    ),
-    GoRoute(
-      path: '/statistics/achievements',
-      name: 'achievements',
-      builder: (_, __) => const AchievementsScreen(),
-    ),
-    GoRoute(
-      path: '/teacher/statistics',
-      name: 'statistics_teacher',
-      builder: (_, __) => const StatisticsTeacherScreen(),
-    ),
-    GoRoute(
-      path: '/teacher/student/:id',
-      name: 'student_profile_view',
-      builder: (_, state) => StudentProfileViewScreen(
-        studentId: state.pathParameters['id']!,
-      ),
-    ),
-
-    // ── Profile ──────────────────────────────────────────────────────────
-    GoRoute(
-      path: '/profile',
-      name: 'profile',
-      builder: (_, __) => const ProfileScreen(),
-    ),
-    GoRoute(
-      path: '/profile/edit',
-      name: 'profile_edit',
-      builder: (_, __) => const ProfileEditScreen(),
-    ),
-    GoRoute(
-      path: '/settings',
-      name: 'settings',
-      builder: (_, __) => const SettingsScreen(),
-    ),
-    GoRoute(
-      path: '/settings/security',
-      name: 'settings_security',
-      builder: (_, __) => const SettingsSecurityScreen(),
-    ),
-  ],
-);
+/// Bridges Riverpod → GoRouter: notifies the router to re-evaluate [redirect]
+/// every time [authProvider] emits a new value.
+class _AuthChangeNotifier extends ChangeNotifier {
+  _AuthChangeNotifier(Ref ref) {
+    ref.listen(authProvider, (_, __) => notifyListeners());
+  }
+}
