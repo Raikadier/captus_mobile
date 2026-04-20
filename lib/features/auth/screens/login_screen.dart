@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/auth_provider.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -26,11 +29,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 1));
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final error = await ref.read(authProvider.notifier).signIn(
+          email: _emailCtrl.text.trim(),
+          password: _passwordCtrl.text,
+        );
+
     if (!mounted) return;
-    setState(() => _isLoading = false);
-    context.go('/home');
+    if (error != null) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = error;
+      });
+    }
+    // On success the router's redirect reacts to authProvider — no go() needed.
   }
 
   @override
@@ -79,27 +95,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 48),
-                Text(
-                  'Iniciar sesión',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
+                Text('Iniciar sesión',
+                    style: Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 6),
-                Text(
-                  'Usa tu correo institucional',
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
+                Text('Usa tu correo institucional',
+                    style: GoogleFonts.inter(
+                        fontSize: 14, color: AppColors.textSecondary)),
                 const SizedBox(height: 32),
-
-                // Role selector (Estudiante / Docente)
                 _RoleSelector(),
                 const SizedBox(height: 24),
-
                 TextFormField(
                   controller: _emailCtrl,
                   keyboardType: TextInputType.emailAddress,
+                  autocorrect: false,
                   decoration: const InputDecoration(
                     labelText: 'Correo institucional',
                     prefixIcon: Icon(Icons.email_outlined),
@@ -120,14 +128,42 @@ class _LoginScreenState extends State<LoginScreen> {
                       icon: Icon(_obscurePassword
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined),
-                      onPressed: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
+                      onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword),
                     ),
                   ),
                   validator: (v) => v != null && v.length >= 6
                       ? null
                       : 'Mínimo 6 caracteres',
                 ),
+
+                // ── Error banner ───────────────────────────────────────────
+                if (_errorMessage != null) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withAlpha(25),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                          color: AppColors.error.withAlpha(76)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.error_outline_rounded,
+                            color: AppColors.error, size: 16),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(_errorMessage!,
+                              style: GoogleFonts.inter(
+                                  fontSize: 12, color: AppColors.error)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
                 const SizedBox(height: 12),
                 Align(
                   alignment: Alignment.centerRight,
@@ -153,7 +189,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     const Expanded(child: Divider()),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 16),
                       child: Text('o',
                           style: GoogleFonts.inter(
                               color: AppColors.textSecondary)),
@@ -163,21 +200,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 24),
                 OutlinedButton.icon(
-                  onPressed: () {},
-                  icon: const Text('G', style: TextStyle(fontWeight: FontWeight.bold)),
+                  onPressed: () {
+                    // TODO Phase 1.1 — Google SSO
+                    // SupabaseService.auth.signInWithOAuth(OAuthProvider.google)
+                  },
+                  icon: const Text('G',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   label: const Text('Continuar con Google'),
                 ),
                 const SizedBox(height: 32),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Flexible(
-                      child: Text(
-                        '¿No tienes cuenta? ',
-                        style: GoogleFonts.inter(color: AppColors.textSecondary),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+                    Text('¿No tienes cuenta? ',
+                        style: GoogleFonts.inter(
+                            color: AppColors.textSecondary)),
                     TextButton(
                       onPressed: () => context.go('/register'),
                       child: const Text('Crear cuenta'),
@@ -193,6 +230,8 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+// ── Role selector ─────────────────────────────────────────────────────────────
 
 class _RoleSelector extends StatefulWidget {
   @override
@@ -255,21 +294,21 @@ class _RoleTab extends StatelessWidget {
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(icon,
                   size: 16,
-                  color: isSelected ? Colors.black : AppColors.textSecondary),
+                  color: isSelected
+                      ? Colors.black
+                      : AppColors.textSecondary),
               const SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  label,
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: isSelected ? Colors.black : AppColors.textSecondary,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+              Text(
+                label,
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected
+                      ? Colors.black
+                      : AppColors.textSecondary,
                 ),
               ),
             ],

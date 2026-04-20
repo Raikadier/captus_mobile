@@ -28,10 +28,14 @@ dependencies:
   # Calendar
   table_calendar: ^3.1.2
 
-  # Firebase
+  # Firebase (solo core para FCM en Phase 3 — auth via Supabase)
   firebase_core: ^4.7.0
-  firebase_auth: ^6.4.0
-  cloud_firestore: ^6.3.0
+
+  # Auth & API
+  supabase_flutter: ^2.8.4
+  dio: ^5.7.0
+  flutter_secure_storage: ^9.2.2
+  flutter_dotenv: ^5.2.1
 
   # Utils
   intl: ^0.20.2
@@ -52,3 +56,4 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/animations/
+    - .env
