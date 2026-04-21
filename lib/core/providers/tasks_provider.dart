@@ -9,10 +9,13 @@ class TasksService {
   TasksService(this._api);
 
   Future<List<TaskModel>> fetchAll() async {
-    final res = await _api.get<Map<String, dynamic>>('/tasks');
-    final data = res.data;
-    if (data == null || data['success'] != true) return [];
-    final list = (data['data'] as List?) ?? [];
+    final res = await _api.get<dynamic>('/tasks');
+    final body = res.data;
+    if (body == null) return [];
+    final map = body is Map<String, dynamic> ? body : <String, dynamic>{};
+    if (map['success'] != true) return [];
+    final list = map['data'];
+    if (list is! List) return [];
     return list
         .whereType<Map<String, dynamic>>()
         .map(TaskModel.fromJson)
@@ -20,14 +23,14 @@ class TasksService {
   }
 
   Future<TaskModel> fetchById(int id) async {
-    final res = await _api.get<Map<String, dynamic>>('/tasks/$id');
-    final data = res.data!;
+    final res = await _api.get<dynamic>('/tasks/$id');
+    final data = (res.data as Map<String, dynamic>?) ?? {};
     return TaskModel.fromJson(data['data'] as Map<String, dynamic>);
   }
 
   Future<TaskModel> create(Map<String, dynamic> payload) async {
-    final res = await _api.post<Map<String, dynamic>>('/tasks', data: payload);
-    final data = res.data!;
+    final res = await _api.post<dynamic>('/tasks', data: payload);
+    final data = (res.data as Map<String, dynamic>?) ?? {};
     return TaskModel.fromJson(data['data'] as Map<String, dynamic>);
   }
 

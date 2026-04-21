@@ -86,11 +86,13 @@ class AiChatNotifier extends Notifier<AiChatState> {
         },
       );
 
-      final body = res.data!;
+      final body = res.data is Map<String, dynamic> ? res.data as Map<String, dynamic> : <String, dynamic>{};
       final reply = (body['result'] as String?) ?? 'Sin respuesta.';
       final convId = body['conversationId']?.toString();
       final action = body['actionPerformed'] as String?;
-      final toolData = body['data'] as Map<String, dynamic>?;
+      final rawData = body['data'];
+      final toolData =
+          rawData is Map<String, dynamic> ? rawData : null;
 
       final botMsg = ChatMessage(
         text: reply,

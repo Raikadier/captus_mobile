@@ -25,9 +25,8 @@ class AuthState {
         user = null,
         errorMessage = null;
 
-  const AuthState.authenticated(User user)
+  const AuthState.authenticated(this.user)
       : status = AuthStatus.authenticated,
-        user = user,
         errorMessage = null;
 
   const AuthState.unauthenticated([String? error])
@@ -219,10 +218,10 @@ final authProvider = AsyncNotifierProvider<AuthNotifier, AuthState>(
 
 /// Convenience provider — just the current [User] or null.
 final currentUserProvider = Provider<User?>((ref) {
-  return ref.watch(authProvider).valueOrNull?.user;
+  return ref.watch(authProvider).asData?.value.user;
 });
 
 /// Convenience provider — just the role string ('student' | 'teacher').
 final userRoleProvider = Provider<String>((ref) {
-  return ref.watch(authProvider).valueOrNull?.role ?? 'student';
+  return ref.watch(authProvider).asData?.value.role ?? 'student';
 });
