@@ -1,36 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/ai_chat_provider.dart';
 
-class _ChatMessage {
-  final String text;
-  final bool isUser;
-  final DateTime time;
-
-  const _ChatMessage({required this.text, required this.isUser, required this.time});
-}
-
-class AiChatScreen extends StatefulWidget {
+class AiChatScreen extends ConsumerStatefulWidget {
   const AiChatScreen({super.key});
 
   @override
-  State<AiChatScreen> createState() => _AiChatScreenState();
+  ConsumerState<AiChatScreen> createState() => _AiChatScreenState();
 }
 
-class _AiChatScreenState extends State<AiChatScreen> {
+class _AiChatScreenState extends ConsumerState<AiChatScreen> {
   final _inputCtrl = TextEditingController();
   final _scrollCtrl = ScrollController();
-  bool _isTyping = false;
-
-  final List<_ChatMessage> _messages = [
-    _ChatMessage(
-      text:
-          '¡Hola, David! Soy Captus IA. Tengo acceso a tus tareas y calendario. ¿En qué te puedo ayudar hoy?',
-      isUser: false,
-      time: DateTime.now().subtract(const Duration(minutes: 2)),
-    ),
-  ];
 
   final List<String> _suggestions = [
     '¿Cómo voy esta semana?',
@@ -49,41 +33,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
   Future<void> _sendMessage(String text) async {
     if (text.trim().isEmpty) return;
     _inputCtrl.clear();
-    setState(() {
-      _messages.add(_ChatMessage(text: text, isUser: true, time: DateTime.now()));
-      _isTyping = true;
-    });
     _scrollToBottom();
-
-    await Future.delayed(const Duration(milliseconds: 1500));
-    if (!mounted) return;
-
-    setState(() {
-      _isTyping = false;
-      _messages.add(_ChatMessage(
-        text: _getMockResponse(text),
-        isUser: false,
-        time: DateTime.now(),
-      ));
-    });
+    await ref.read(aiChatProvider.notifier).send(text);
     _scrollToBottom();
-  }
-
-  String _getMockResponse(String query) {
-    if (query.toLowerCase().contains('semana')) {
-      return 'Esta semana tienes **3 entregas importantes**:\n\n'
-          '• Estructuras de Datos — hoy a las 11 PM 🔴\n'
-          '• Cálculo II — jueves\n'
-          '• Informe Software I — viernes\n\n'
-          '¿Quieres que te ayude a planificar tu tiempo?';
-    }
-    if (query.toLowerCase().contains('tarea')) {
-      return 'Claro, dime el título de la tarea y cuándo vence. '
-          'Por ejemplo: "Entregar ensayo de historia el viernes a las 11pm"';
-    }
-    return 'Entendido. Basándome en tu calendario y tareas actuales, '
-        'te recomiendo empezar por la entrega de Estructuras de Datos — '
-        'vence hoy y aún tienes subtareas pendientes. ¿Necesitas ayuda con eso?';
   }
 
   void _scrollToBottom() {
@@ -100,6 +52,13 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final chatState = ref.watch(aiChatProvider);
+    final messages = chatState.messages;
+    final isLoading = chatState.isLoading;
+
+    // Auto-scroll when new messages arrive
+    ref.listen(aiChatProvider, (_, __) => _scrollToBottom());
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -126,15 +85,19 @@ class _AiChatScreenState extends State<AiChatScreen> {
                     Container(
                       width: 6,
                       height: 6,
-                      decoration: const BoxDecoration(
-                        color: AppColors.primary,
+                      decoration: BoxDecoration(
+                        color: isLoading ? AppColors.warning : AppColors.primary,
                         shape: BoxShape.circle,
                       ),
                     ),
                     const SizedBox(width: 4),
-                    Text('En línea',
-                        style: GoogleFonts.inter(
-                            fontSize: 11, color: AppColors.primary)),
+                    Text(
+                      isLoading ? 'Escribiendo...' : 'En línea',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color: isLoading ? AppColors.warning : AppColors.primary,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -154,43 +117,45 @@ class _AiChatScreenState extends State<AiChatScreen> {
       ),
       body: Column(
         children: [
+          // Message list
           Expanded(
             child: ListView.builder(
               controller: _scrollCtrl,
               padding: const EdgeInsets.all(16),
-              itemCount: _messages.length + (_isTyping ? 1 : 0),
+              itemCount: messages.length + (isLoading ? 1 : 0),
               itemBuilder: (_, i) {
-                if (i == _messages.length && _isTyping) {
-                  return _TypingIndicator();
+                if (i == messages.length && isLoading) {
+                  return const _TypingIndicator();
                 }
-                return _MessageBubble(message: _messages[i]);
+                return _MessageBubble(message: messages[i]);
               },
             ),
           ),
 
-          // Suggestion chips
-          SizedBox(
-            height: 40,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _suggestions.length,
-              itemBuilder: (_, i) => Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: ActionChip(
-                  label: Text(_suggestions[i]),
-                  onPressed: () => _sendMessage(_suggestions[i]),
-                  backgroundColor: AppColors.surface2,
-                  side: const BorderSide(color: AppColors.primary, width: 0.5),
-                  labelStyle: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: AppColors.primary,
+          // Suggestion chips (only when not loading and few messages)
+          if (messages.length <= 3)
+            SizedBox(
+              height: 40,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: _suggestions.length,
+                itemBuilder: (_, i) => Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ActionChip(
+                    label: Text(_suggestions[i]),
+                    onPressed: isLoading ? null : () => _sendMessage(_suggestions[i]),
+                    backgroundColor: AppColors.surface2,
+                    side: const BorderSide(color: AppColors.primary, width: 0.5),
+                    labelStyle: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: AppColors.primary,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 8),
+          if (messages.length <= 3) const SizedBox(height: 8),
 
           // Input bar
           Container(
@@ -206,8 +171,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
                     child: TextField(
                       controller: _inputCtrl,
                       style: GoogleFonts.inter(fontSize: 14),
+                      enabled: !isLoading,
                       decoration: InputDecoration(
-                        hintText: 'Escríbele a Captus...',
+                        hintText: isLoading
+                            ? 'Captus está respondiendo...'
+                            : 'Escríbele a Captus...',
                         hintStyle: GoogleFonts.inter(
                             fontSize: 14, color: AppColors.textDisabled),
                         filled: true,
@@ -232,16 +200,27 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   ),
                   const SizedBox(width: 8),
                   GestureDetector(
-                    onTap: () => _sendMessage(_inputCtrl.text),
-                    child: Container(
+                    onTap: isLoading ? null : () => _sendMessage(_inputCtrl.text),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
                       width: 40,
                       height: 40,
-                      decoration: const BoxDecoration(
-                        color: AppColors.primary,
+                      decoration: BoxDecoration(
+                        color: isLoading
+                            ? AppColors.surface2
+                            : AppColors.primary,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.send_rounded,
-                          size: 18, color: Colors.black),
+                      child: isLoading
+                          ? const Padding(
+                              padding: EdgeInsets.all(10),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.primary,
+                              ),
+                            )
+                          : const Icon(Icons.send_rounded,
+                              size: 18, color: Colors.black),
                     ),
                   ),
                 ],
@@ -255,14 +234,13 @@ class _AiChatScreenState extends State<AiChatScreen> {
 }
 
 class _MessageBubble extends StatelessWidget {
-  final _ChatMessage message;
+  final ChatMessage message;
   const _MessageBubble({required this.message});
 
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment:
-          message.isUser ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -286,9 +264,12 @@ class _MessageBubble extends StatelessWidget {
             ),
             child: Container(
               margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: message.isUser ? AppColors.primaryDark : AppColors.surface,
+                color: message.isUser
+                    ? AppColors.primaryDark
+                    : AppColors.surface,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(18),
                   topRight: const Radius.circular(18),
@@ -301,15 +282,41 @@ class _MessageBubble extends StatelessWidget {
                 ),
                 border: message.isUser
                     ? null
-                    : Border.all(color: AppColors.primary.withAlpha(51), width: 1),
+                    : Border.all(
+                        color: AppColors.primary.withAlpha(51), width: 1),
               ),
-              child: Text(
-                message.text,
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  color: AppColors.textPrimary,
-                  height: 1.5,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    message.text,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: AppColors.textPrimary,
+                      height: 1.5,
+                    ),
+                  ),
+                  // Show action tag if the bot performed an action
+                  if (message.actionPerformed != null) ...[
+                    const SizedBox(height: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withAlpha(30),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        '✓ ${message.actionPerformed}',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
           ),
@@ -320,6 +327,8 @@ class _MessageBubble extends StatelessWidget {
 }
 
 class _TypingIndicator extends StatelessWidget {
+  const _TypingIndicator();
+
   @override
   Widget build(BuildContext context) {
     return Align(

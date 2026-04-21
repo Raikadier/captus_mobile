@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/auth_provider.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnim;
@@ -34,11 +37,27 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _navigate() async {
-    await Future.delayed(const Duration(seconds: 2));
+    // Show splash for at least 1.8 s while auth state loads.
+    await Future.delayed(const Duration(milliseconds: 1800));
     if (!mounted) return;
-    // TODO: check SharedPreferences for session token
-    // For now always go to onboarding
-    context.go('/onboarding');
+
+    final authAsync = ref.read(authProvider);
+
+    // Still loading → the router redirect will handle it; just wait.
+    if (authAsync.isLoading) return;
+
+    final authState = authAsync.asData?.value;
+    if (authState?.isAuthenticated ?? false) {
+      // Authenticated → go to the right dashboard based on role.
+      final role = authState!.role;
+      context.go(role == 'teacher' ? '/home/teacher' : '/home');
+    } else {
+      // Check if first-time user → onboarding, otherwise login.
+      final prefs = await SharedPreferences.getInstance();
+      final seenOnboarding = prefs.getBool('seen_onboarding') ?? false;
+      if (!mounted) return;
+      context.go(seenOnboarding ? '/login' : '/onboarding');
+    }
   }
 
   @override
@@ -61,7 +80,6 @@ class _SplashScreenState extends State<SplashScreen>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Cactus icon (using emoji as placeholder until SVG asset added)
                   Container(
                     width: 100,
                     height: 100,

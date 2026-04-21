@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../../models/user.dart';
 import '../../../shared/widgets/streak_badge.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final user = UserModel.mock;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = UserModel.mock; // TODO: replace with real user from authProvider
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -226,7 +228,7 @@ class ProfileScreen extends StatelessWidget {
                     icon: Icons.logout_rounded,
                     label: 'Cerrar sesión',
                     color: AppColors.error,
-                    onTap: () => _confirmLogout(context),
+                    onTap: () => _confirmLogout(context, ref),
                     isLast: true,
                   ),
                 ]),
@@ -240,7 +242,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _confirmLogout(BuildContext context) {
+  void _confirmLogout(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -256,10 +258,10 @@ class ProfileScreen extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              context.go('/login');
+              ref.read(authProvider.notifier).signOut();
+              // Router redirect handles navigation to /login automatically.
             },
-            child: Text('Salir',
-                style: TextStyle(color: AppColors.error)),
+            child: Text('Salir', style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
