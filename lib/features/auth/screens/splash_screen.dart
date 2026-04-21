@@ -46,7 +46,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // Still loading → the router redirect will handle it; just wait.
     if (authAsync.isLoading) return;
 
-    final authState = authAsync.valueOrNull;
+    final authState = authAsync.asData?.value;
     if (authState?.isAuthenticated ?? false) {
       // Authenticated → go to the right dashboard based on role.
       final role = authState!.role;

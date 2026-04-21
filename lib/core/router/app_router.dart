@@ -51,7 +51,7 @@ const _publicRoutes = {'/splash', '/onboarding', '/login', '/register',
 
 /// Creates the GoRouter with a Riverpod [ref] so the [redirect] callback
 /// can read the live [authProvider] state.
-GoRouter createRouter(Ref ref) {
+GoRouter createRouter(WidgetRef ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/splash',
@@ -64,7 +64,7 @@ GoRouter createRouter(Ref ref) {
       // While the auth state is loading, stay on splash.
       if (authAsync.isLoading) return '/splash';
 
-      final authState = authAsync.valueOrNull;
+      final authState = authAsync.asData?.value;
       final isAuthenticated = authState?.isAuthenticated ?? false;
       final isPublic = _publicRoutes.contains(state.matchedLocation);
 
@@ -345,7 +345,7 @@ GoRouter createRouter(Ref ref) {
 /// Bridges Riverpod → GoRouter: notifies the router to re-evaluate [redirect]
 /// every time [authProvider] emits a new value.
 class _AuthChangeNotifier extends ChangeNotifier {
-  _AuthChangeNotifier(Ref ref) {
+  _AuthChangeNotifier(WidgetRef ref) {
     ref.listen(authProvider, (_, __) => notifyListeners());
   }
 }

@@ -17,7 +17,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 /// and incoming message routing.
 abstract class FcmService {
   static final _messaging = FirebaseMessaging.instance;
-  static final _apiClient = ApiClient();
+  static final _apiClient = ApiClient.instance;
 
   /// Call once after [Firebase.initializeApp] — wires up everything.
   static Future<void> initialize() async {

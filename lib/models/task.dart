@@ -160,4 +160,8 @@ class TaskModel {
         createdAt: createdAt,
         completed: completed ?? this.completed,
       );
+
+  /// Temporary stub — screens that still reference mockList compile without
+  /// errors while they are being migrated to provider-based data fetching.
+  static List<TaskModel> get mockList => const [];
 }
