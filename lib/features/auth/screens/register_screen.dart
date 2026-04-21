@@ -23,6 +23,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   String? _errorMessage;
   int _selectedRole = 0;
 
+  static const _taglines = [
+    'Tu academia, tu ritmo',
+    'Aprende sin límites',
+    'Cada tarea cuenta',
+    ' building your future',
+    'Organiza tu éxito',
+    ' focus on learning',
+    'Tu tiempo es valioso',
+  ];
+
+  String _getRandomTagline() {
+    final index = DateTime.now().microsecond % _taglines.length;
+    return _taglines[index];
+  }
+
   @override
   void dispose() {
     _nameCtrl.dispose();
@@ -56,8 +71,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
-    // Continue to academic profile step.
-    context.push('/register/profile');
+    // Go to login so user can sign in with new account
+    context.go('/login');
   }
 
   @override
@@ -80,14 +95,47 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 8),
-                _StepIndicator(currentStep: 1),
-                const SizedBox(height: 28),
-                Text('Cuéntanos sobre ti',
-                    style: Theme.of(context).textTheme.headlineMedium),
-                const SizedBox(height: 6),
-                Text('Paso 1 de 3',
-                    style: GoogleFonts.inter(
-                        fontSize: 13, color: AppColors.textSecondary)),
+                Center(
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryDark,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withAlpha(76),
+                              blurRadius: 20,
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Text('🌵', style: TextStyle(fontSize: 32)),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Captus',
+                        style: GoogleFonts.inter(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _getRandomTagline(),
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 28),
 
                 // Role selector
@@ -149,9 +197,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           setState(() => _obscurePassword = !_obscurePassword),
                     ),
                   ),
-                  validator: (v) => v != null && v.length >= 6
-                      ? null
-                      : 'Mínimo 6 caracteres',
+                  validator: (v) =>
+                      v != null && v.length >= 6 ? null : 'Mínimo 6 caracteres',
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -207,30 +254,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _StepIndicator extends StatelessWidget {
-  final int currentStep;
-  const _StepIndicator({required this.currentStep});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: List.generate(3, (i) {
-        final isActive = i + 1 <= currentStep;
-        return Expanded(
-          child: Container(
-            height: 4,
-            margin: EdgeInsets.only(right: i < 2 ? 4 : 0),
-            decoration: BoxDecoration(
-              color: isActive ? AppColors.primary : AppColors.surface2,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-        );
-      }),
     );
   }
 }

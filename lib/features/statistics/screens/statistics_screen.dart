@@ -42,12 +42,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   onTap: () => setState(() => _periodIndex = e.key),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 150),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.primary
-                          : Colors.transparent,
+                      color:
+                          isSelected ? AppColors.primary : Colors.transparent,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(
@@ -55,7 +54,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: isSelected ? Colors.black : AppColors.textSecondary,
+                        color:
+                            isSelected ? Colors.black : AppColors.textSecondary,
                       ),
                     ),
                   ),
@@ -69,7 +69,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           // Streak hero
-          StreakBadge(days: user.streakDays, size: StreakSize.hero),
+          StreakBadge(days: 0, size: StreakSize.hero),
           const SizedBox(height: 8),
           Center(
             child: Text(
@@ -172,26 +172,27 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 onPressed: () => context.push('/statistics/achievements'),
                 style: TextButton.styleFrom(
                     padding: EdgeInsets.zero, minimumSize: Size.zero),
-                child: const Text('Ver todos',
-                    style: TextStyle(fontSize: 12)),
+                child: const Text('Ver todos', style: TextStyle(fontSize: 12)),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Row(
-            children: ['🏆', '🔥', '📚', '⚡'].map((e) => Container(
-              margin: const EdgeInsets.only(right: 12),
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: AppColors.warning.withAlpha(25),
-                shape: BoxShape.circle,
-                border: Border.all(
-                    color: AppColors.warning.withAlpha(76)),
-              ),
-              child: Center(
-                  child: Text(e, style: const TextStyle(fontSize: 26))),
-            )).toList(),
+            children: ['🏆', '🔥', '📚', '⚡']
+                .map((e) => Container(
+                      margin: const EdgeInsets.only(right: 12),
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: AppColors.warning.withAlpha(25),
+                        shape: BoxShape.circle,
+                        border:
+                            Border.all(color: AppColors.warning.withAlpha(76)),
+                      ),
+                      child: Center(
+                          child: Text(e, style: const TextStyle(fontSize: 26))),
+                    ))
+                .toList(),
           ),
           const SizedBox(height: 32),
         ],
@@ -228,8 +229,8 @@ class _MetricCard extends StatelessWidget {
         children: [
           Text(
             label,
-            style: GoogleFonts.inter(
-                fontSize: 11, color: AppColors.textSecondary),
+            style:
+                GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary),
             maxLines: 2,
           ),
           Row(
@@ -246,8 +247,8 @@ class _MetricCard extends StatelessWidget {
               const Spacer(),
               if (trend != '=')
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 6, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: (trendPositive ? AppColors.primary : AppColors.error)
                         .withAlpha(25),
@@ -258,9 +259,8 @@ class _MetricCard extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: trendPositive
-                          ? AppColors.primary
-                          : AppColors.error,
+                      color:
+                          trendPositive ? AppColors.primary : AppColors.error,
                     ),
                   ),
                 ),
@@ -312,12 +312,9 @@ class _WeekBarChart extends StatelessWidget {
                     _days[i],
                     style: GoogleFonts.inter(
                       fontSize: 10,
-                      color: isToday
-                          ? AppColors.primary
-                          : AppColors.textSecondary,
-                      fontWeight: isToday
-                          ? FontWeight.bold
-                          : FontWeight.normal,
+                      color:
+                          isToday ? AppColors.primary : AppColors.textSecondary,
+                      fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
                 ],
@@ -355,12 +352,13 @@ class _SubjectDistribution extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                    width: 10, height: 10,
-                    decoration: BoxDecoration(
-                        color: color, shape: BoxShape.circle)),
+                    width: 10,
+                    height: 10,
+                    decoration:
+                        BoxDecoration(color: color, shape: BoxShape.circle)),
                 const SizedBox(width: 8),
-                Expanded(child: Text(s.$1,
-                    style: GoogleFonts.inter(fontSize: 12))),
+                Expanded(
+                    child: Text(s.$1, style: GoogleFonts.inter(fontSize: 12))),
                 SizedBox(
                   width: 120,
                   child: LinearProgressIndicator(

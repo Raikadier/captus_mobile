@@ -1,65 +1,57 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/api_client.dart';
+import '../services/local_storage_service.dart';
 import '../../models/task.dart';
 
-// ── Service ───────────────────────────────────────────────────────────────────
-
 class TasksService {
-  final ApiClient _api;
-  TasksService(this._api);
-
   Future<List<TaskModel>> fetchAll() async {
-    final res = await _api.get<dynamic>('/tasks');
-    final body = res.data;
-    if (body == null) return [];
-    final map = body is Map<String, dynamic> ? body : <String, dynamic>{};
-    if (map['success'] != true) return [];
-    final list = map['data'];
-    if (list is! List) return [];
-    return list
-        .whereType<Map<String, dynamic>>()
-        .map(TaskModel.fromJson)
-        .toList();
-  }
-
-  Future<TaskModel> fetchById(int id) async {
-    final res = await _api.get<dynamic>('/tasks/$id');
-    final data = (res.data as Map<String, dynamic>?) ?? {};
-    return TaskModel.fromJson(data['data'] as Map<String, dynamic>);
+    final tasks = LocalStorageService.tasks;
+    return tasks.map((t) => TaskModel.fromJson(t)).toList();
   }
 
   Future<TaskModel> create(Map<String, dynamic> payload) async {
-    final res = await _api.post<dynamic>('/tasks', data: payload);
-    final data = (res.data as Map<String, dynamic>?) ?? {};
-    return TaskModel.fromJson(data['data'] as Map<String, dynamic>);
+    final task = TaskModel.fromJson(payload);
+    await LocalStorageService.addTask(payload);
+    return task;
   }
 
   Future<void> complete(String taskId) async {
-    await _api.put<void>('/tasks/$taskId/complete');
+    final tasks = LocalStorageService.tasks;
+    final index = tasks.indexWhere((t) => t['id'] == taskId);
+    if (index != -1) {
+      tasks[index]['completed'] = true;
+      await LocalStorageService.setList(LocalStorageService.tasksKey, tasks);
+    }
   }
 
   Future<void> delete(String taskId) async {
-    await _api.delete<void>('/tasks/$taskId');
+    await LocalStorageService.deleteTask(taskId);
+  }
+
+  Future<TaskModel?> updateTask(
+      String taskId, Map<String, dynamic> updates) async {
+    final tasks = LocalStorageService.tasks;
+    final index = tasks.indexWhere((t) => t['id'] == taskId);
+    if (index != -1) {
+      tasks[index] = {...tasks[index], ...updates};
+      await LocalStorageService.setList(LocalStorageService.tasksKey, tasks);
+      return TaskModel.fromJson(tasks[index]);
+    }
+    return null;
   }
 }
 
-// ── Providers ─────────────────────────────────────────────────────────────────
-
 final tasksServiceProvider = Provider<TasksService>(
-  (ref) => TasksService(ApiClient.instance),
+  (ref) => TasksService(),
 );
 
-/// Loads all tasks for the authenticated user.
 final tasksProvider = FutureProvider.autoDispose<List<TaskModel>>((ref) {
   return ref.read(tasksServiceProvider).fetchAll();
 });
 
-/// Pending tasks only (excludes completed, sorted by due date)
-final pendingTasksProvider = Provider.autoDispose<AsyncValue<List<TaskModel>>>((ref) {
+final pendingTasksProvider =
+    Provider.autoDispose<AsyncValue<List<TaskModel>>>((ref) {
   return ref.watch(tasksProvider).whenData(
-        (tasks) => tasks
-            .where((t) => !t.completed)
-            .toList()
+        (tasks) => tasks.where((t) => !t.completed).toList()
           ..sort((a, b) {
             if (a.dueDate == null && b.dueDate == null) return 0;
             if (a.dueDate == null) return 1;
@@ -69,14 +61,12 @@ final pendingTasksProvider = Provider.autoDispose<AsyncValue<List<TaskModel>>>((
       );
 });
 
-/// Overdue tasks (for dashboard alert section)
-final overdueTasksProvider = Provider.autoDispose<AsyncValue<List<TaskModel>>>((ref) {
+final overdueTasksProvider =
+    Provider.autoDispose<AsyncValue<List<TaskModel>>>((ref) {
   return ref.watch(tasksProvider).whenData(
         (tasks) => tasks.where((t) => t.isOverdue).toList(),
       );
 });
-
-// ── Notifier (optimistic updates) ────────────────────────────────────────────
 
 class TasksNotifier extends AsyncNotifier<List<TaskModel>> {
   @override
@@ -86,11 +76,11 @@ class TasksNotifier extends AsyncNotifier<List<TaskModel>> {
 
   Future<void> refresh() async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() => ref.read(tasksServiceProvider).fetchAll());
+    state =
+        await AsyncValue.guard(() => ref.read(tasksServiceProvider).fetchAll());
   }
 
   Future<void> complete(String taskId) async {
-    // Optimistic update
     state = state.whenData(
       (tasks) => tasks.map((t) {
         if (t.id == taskId) {
@@ -102,14 +92,12 @@ class TasksNotifier extends AsyncNotifier<List<TaskModel>> {
     try {
       await ref.read(tasksServiceProvider).complete(taskId);
     } catch (_) {
-      // Revert on failure
       await refresh();
       rethrow;
     }
   }
 
   Future<void> delete(String taskId) async {
-    // Optimistic update
     state = state.whenData(
       (tasks) => tasks.where((t) => t.id != taskId).toList(),
     );

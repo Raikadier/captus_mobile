@@ -97,11 +97,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 48),
                 Text('Iniciar sesión',
                     style: Theme.of(context).textTheme.headlineMedium),
-                const SizedBox(height: 6),
-                Text('Usa tu correo institucional',
-                    style: GoogleFonts.inter(
-                        fontSize: 14, color: AppColors.textSecondary)),
-                const SizedBox(height: 32),
+                const SizedBox(height: 24),
                 _RoleSelector(),
                 const SizedBox(height: 24),
                 TextFormField(
@@ -128,13 +124,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       icon: Icon(_obscurePassword
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined),
-                      onPressed: () => setState(
-                          () => _obscurePassword = !_obscurePassword),
+                      onPressed: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
                     ),
                   ),
-                  validator: (v) => v != null && v.length >= 6
-                      ? null
-                      : 'Mínimo 6 caracteres',
+                  validator: (v) =>
+                      v != null && v.length >= 6 ? null : 'Mínimo 6 caracteres',
                 ),
 
                 // ── Error banner ───────────────────────────────────────────
@@ -146,8 +141,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.error.withAlpha(25),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                          color: AppColors.error.withAlpha(76)),
+                      border: Border.all(color: AppColors.error.withAlpha(76)),
                     ),
                     child: Row(
                       children: [
@@ -189,8 +183,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   children: [
                     const Expanded(child: Divider()),
                     Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text('o',
                           style: GoogleFonts.inter(
                               color: AppColors.textSecondary)),
@@ -213,8 +206,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text('¿No tienes cuenta? ',
-                        style: GoogleFonts.inter(
-                            color: AppColors.textSecondary)),
+                        style:
+                            GoogleFonts.inter(color: AppColors.textSecondary)),
                     TextButton(
                       onPressed: () => context.go('/register'),
                       child: const Text('Crear cuenta'),
@@ -297,18 +290,14 @@ class _RoleTab extends StatelessWidget {
             children: [
               Icon(icon,
                   size: 16,
-                  color: isSelected
-                      ? Colors.black
-                      : AppColors.textSecondary),
+                  color: isSelected ? Colors.black : AppColors.textSecondary),
               const SizedBox(width: 6),
               Text(
                 label,
                 style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: isSelected
-                      ? Colors.black
-                      : AppColors.textSecondary,
+                  color: isSelected ? Colors.black : AppColors.textSecondary,
                 ),
               ),
             ],

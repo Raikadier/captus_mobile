@@ -12,7 +12,8 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = UserModel.mock; // TODO: replace with real user from authProvider
+    final user =
+        UserModel.mock; // TODO: replace with real user from authProvider
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -65,8 +66,8 @@ class ProfileScreen extends ConsumerWidget {
                           decoration: BoxDecoration(
                             color: AppColors.primary,
                             shape: BoxShape.circle,
-                            border: Border.all(
-                                color: AppColors.surface, width: 2),
+                            border:
+                                Border.all(color: AppColors.surface, width: 2),
                           ),
                           child: const Icon(Icons.camera_alt_rounded,
                               size: 14, color: Colors.black),
@@ -91,7 +92,7 @@ class ProfileScreen extends ConsumerWidget {
                       fontSize: 13, color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: 16),
-                StreakBadge(days: user.streakDays, size: StreakSize.mini),
+                StreakBadge(days: 0, size: StreakSize.mini),
               ],
             ),
           ),
@@ -118,12 +119,12 @@ class ProfileScreen extends ConsumerWidget {
                   _InfoRow(
                     icon: Icons.school_rounded,
                     label: 'Universidad',
-                    value: user.university,
+                    value: user.university ?? '',
                   ),
                   _InfoRow(
                     icon: Icons.laptop_rounded,
                     label: 'Carrera',
-                    value: user.career,
+                    value: user.career ?? '',
                   ),
                   _InfoRow(
                     icon: Icons.layers_rounded,
@@ -157,7 +158,7 @@ class ProfileScreen extends ConsumerWidget {
                     _StatTile(
                         icon: Icons.local_fire_department_rounded,
                         label: 'Racha',
-                        value: '${user.streakDays}d',
+                        value: '0d',
                         color: AppColors.warning),
                     const SizedBox(width: 8),
                     _StatTile(

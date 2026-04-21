@@ -1,17 +1,85 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../services/supabase_service.dart';
-import '../services/api_client.dart';
-import '../services/fcm_service.dart';
-
-// ── State ─────────────────────────────────────────────────────────────────────
+import '../services/local_storage_service.dart';
+import '../services/sample_data.dart';
+import '../../models/statistics.dart';
 
 enum AuthStatus { loading, authenticated, unauthenticated }
 
+class LocalUser {
+  final String id;
+  final String email;
+  final String name;
+  final String role;
+  final String? university;
+  final String? career;
+  final int? semester;
+  final String? bio;
+  final String? avatarUrl;
+
+  const LocalUser({
+    required this.id,
+    required this.email,
+    required this.name,
+    required this.role,
+    this.university,
+    this.career,
+    this.semester,
+    this.bio,
+    this.avatarUrl,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'email': email,
+        'name': name,
+        'role': role,
+        'university': university,
+        'career': career,
+        'semester': semester,
+        'bio': bio,
+        'avatarUrl': avatarUrl ?? '',
+      };
+
+  factory LocalUser.fromJson(Map<String, dynamic> json) => LocalUser(
+        id: json['id']?.toString() ?? '',
+        email: json['email']?.toString() ?? '',
+        name: json['name']?.toString() ?? '',
+        role: json['role']?.toString() ?? 'student',
+        university: json['university']?.toString(),
+        career: json['career']?.toString(),
+        semester: json['semester'] as int?,
+        bio: json['bio']?.toString(),
+        avatarUrl: json['avatarUrl']?.toString(),
+      );
+
+  LocalUser copyWith({
+    String? id,
+    String? email,
+    String? name,
+    String? role,
+    String? university,
+    String? career,
+    int? semester,
+    String? bio,
+    String? avatarUrl,
+  }) {
+    return LocalUser(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      name: name ?? this.name,
+      role: role ?? this.role,
+      university: university ?? this.university,
+      career: career ?? this.career,
+      semester: semester ?? this.semester,
+      bio: bio ?? this.bio,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+    );
+  }
+}
+
 class AuthState {
   final AuthStatus status;
-  final User? user;
+  final LocalUser? user;
   final String? errorMessage;
 
   const AuthState({
@@ -37,191 +105,131 @@ class AuthState {
   bool get isLoading => status == AuthStatus.loading;
   bool get isAuthenticated => status == AuthStatus.authenticated;
 
-  String get role =>
-      (user?.userMetadata?['role'] as String?) ?? 'student';
+  String get role => user?.role ?? 'student';
 
-  String get displayName =>
-      (user?.userMetadata?['display_name'] as String?) ??
-      (user?.userMetadata?['name'] as String?) ??
-      user?.email?.split('@').first ??
-      'Usuario';
+  String get displayName => user?.name ?? 'Usuario';
 
   String get email => user?.email ?? '';
 }
 
-// ── Notifier ──────────────────────────────────────────────────────────────────
-
 class AuthNotifier extends AsyncNotifier<AuthState> {
   @override
   Future<AuthState> build() async {
-    // Listen to Supabase auth changes and update state accordingly.
-    SupabaseService.auth.onAuthStateChange.listen((data) {
-      final session = data.session;
-      if (session != null) {
-        state = AsyncData(AuthState.authenticated(session.user));
-      } else {
-        state = const AsyncData(AuthState.unauthenticated());
-      }
-    });
-
-    // Return the initial state from the persisted session.
-    final user = SupabaseService.currentUser;
-    if (user != null) return AuthState.authenticated(user);
+    final userData = LocalStorageService.currentUserData;
+    if (userData != null) {
+      return AuthState.authenticated(LocalUser.fromJson(userData));
+    }
     return const AuthState.unauthenticated();
   }
 
-  // ── Actions ───────────────────────────────────────────────────────────────
-
-  /// Sign in with email + password.
-  /// Returns null on success, an error message on failure.
   Future<String?> signIn({
     required String email,
     required String password,
   }) async {
     state = const AsyncData(AuthState.loading());
-    try {
-      final res = await SupabaseService.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
 
-      if (res.user == null) {
-        state = const AsyncData(AuthState.unauthenticated('Credenciales inválidas'));
-        return 'Credenciales inválidas';
-      }
+    await Future.delayed(const Duration(milliseconds: 500));
 
-      // Sync user profile to our backend (same pattern as the web app).
-      _syncToBackend();
+    final user = LocalStorageService.findUserByEmail(email);
 
-      state = AsyncData(AuthState.authenticated(res.user!));
-      return null;
-    } on AuthException catch (e) {
-      final msg = _mapAuthError(e.message);
-      state = AsyncData(AuthState.unauthenticated(msg));
-      return msg;
-    } catch (e) {
-      const msg = 'Error de conexión. Intenta de nuevo.';
-      state = const AsyncData(AuthState.unauthenticated(msg));
-      return msg;
+    if (user == null) {
+      state =
+          const AsyncData(AuthState.unauthenticated('Usuario no encontrado'));
+      return 'Usuario no encontrado';
     }
+
+    final storedPassword = user['password']?.toString() ?? '';
+    if (storedPassword != password) {
+      state =
+          const AsyncData(AuthState.unauthenticated('Contraseña incorrecta'));
+      return 'Contraseña incorrecta';
+    }
+
+    await SampleData.initializeSampleData();
+
+    final localUser = LocalUser.fromJson(user);
+    await LocalStorageService.setCurrentUserData(localUser.toJson());
+
+    state = AsyncData(AuthState.authenticated(localUser));
+    return null;
   }
 
-  /// Register a new user.
-  /// Returns null on success, an error message on failure.
   Future<String?> signUp({
     required String name,
     required String email,
     required String password,
-    String role = 'student',
+    required String role,
   }) async {
     state = const AsyncData(AuthState.loading());
-    try {
-      final res = await SupabaseService.auth.signUp(
-        email: email,
-        password: password,
-        data: {
-          'name': name,
-          'display_name': name,
-          'full_name': name,
-          'role': role,
-        },
-      );
 
-      if (res.user == null) {
-        state = const AsyncData(AuthState.unauthenticated());
-        return 'No se pudo crear la cuenta. Intenta de nuevo.';
-      }
+    await Future.delayed(const Duration(milliseconds: 500));
 
-      // If email confirmation is enabled, the session may be null.
-      if (res.session != null) {
-        _syncToBackend();
-        state = AsyncData(AuthState.authenticated(res.user!));
-      } else {
-        // Email confirmation pending.
-        state = const AsyncData(AuthState.unauthenticated());
-      }
-      return null;
-    } on AuthException catch (e) {
-      final msg = _mapAuthError(e.message);
-      state = AsyncData(AuthState.unauthenticated(msg));
-      return msg;
-    } catch (e) {
-      const msg = 'Error al registrarse. Intenta de nuevo.';
-      state = const AsyncData(AuthState.unauthenticated(msg));
-      return msg;
+    final existing = LocalStorageService.findUserByEmail(email);
+    if (existing != null) {
+      state = const AsyncData(
+          AuthState.unauthenticated('Este correo ya está registrado'));
+      return 'Este correo ya está registrado';
     }
+
+    final userId = DateTime.now().millisecondsSinceEpoch.toString();
+    final newUser = {
+      'id': userId,
+      'email': email.toLowerCase(),
+      'name': name,
+      'password': password,
+      'role': role,
+    };
+
+    await LocalStorageService.addUser(newUser);
+
+    final stats = StatisticsModel.createNew(userId);
+    await LocalStorageService.setUserStatistics(stats.toJson());
+
+    await SampleData.initializeSampleData();
+
+    final localUser = LocalUser.fromJson(newUser);
+    await LocalStorageService.setCurrentUserData(localUser.toJson());
+
+    state = AsyncData(AuthState.authenticated(localUser));
+    return null;
   }
 
-  /// Send a password reset email.
   Future<String?> sendPasswordReset(String email) async {
-    try {
-      await SupabaseService.auth.resetPasswordForEmail(email);
-      return null;
-    } on AuthException catch (e) {
-      return _mapAuthError(e.message);
-    } catch (_) {
-      return 'Error al enviar el correo.';
-    }
+    await Future.delayed(const Duration(milliseconds: 300));
+    return null;
   }
 
-  /// Sign out and clear local state.
   Future<void> signOut() async {
-    // Unregister FCM token so this device stops receiving push notifications.
-    await FcmService.deleteToken();
-    await SupabaseService.auth.signOut();
+    await LocalStorageService.clearCurrentUser();
     state = const AsyncData(AuthState.unauthenticated());
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
+  Future<void> updateProfile(Map<String, dynamic> data) async {
+    if (state.value?.user == null) return;
 
-  /// Fire-and-forget backend sync (same as web AuthContext.login does).
-  void _syncToBackend() {
-    ApiClient.instance
-        .post('/users/sync')
-        // ignore: avoid_types_on_closure_parameters
-        .catchError((Object _) => Response(
-              requestOptions: RequestOptions(path: '/users/sync'),
-              statusCode: 0,
-            ));
-  }
+    final currentUser = state.value!.user!;
+    final updatedUser = currentUser.copyWith(
+      name: data['name'] ?? currentUser.name,
+      university: data['university'] ?? currentUser.university,
+      career: data['career'] ?? currentUser.career,
+      semester: data['semester'] ?? currentUser.semester,
+      bio: data['bio'] ?? currentUser.bio,
+      avatarUrl: data['avatarUrl'] ?? currentUser.avatarUrl,
+    );
 
-  String _mapAuthError(String raw) {
-    final lower = raw.toLowerCase();
-    if (lower.contains('invalid login credentials') ||
-        lower.contains('invalid password')) {
-      return 'Correo o contraseña incorrectos.';
-    }
-    if (lower.contains('email not confirmed')) {
-      return 'Confirma tu correo antes de ingresar.';
-    }
-    if (lower.contains('user already registered') ||
-        lower.contains('already been registered')) {
-      return 'Este correo ya está registrado.';
-    }
-    if (lower.contains('password should be at least')) {
-      return 'La contraseña debe tener al menos 6 caracteres.';
-    }
-    if (lower.contains('rate limit') || lower.contains('too many')) {
-      return 'Demasiados intentos. Espera unos minutos.';
-    }
-    return raw;
+    await LocalStorageService.setCurrentUserData(updatedUser.toJson());
+    state = AsyncData(AuthState.authenticated(updatedUser));
   }
 }
 
-// ── Providers ─────────────────────────────────────────────────────────────────
-
-/// The main auth provider. Watch this from the router and any screen
-/// that needs to know if the user is logged in.
 final authProvider = AsyncNotifierProvider<AuthNotifier, AuthState>(
   AuthNotifier.new,
 );
 
-/// Convenience provider — just the current [User] or null.
-final currentUserProvider = Provider<User?>((ref) {
+final currentUserProvider = Provider<LocalUser?>((ref) {
   return ref.watch(authProvider).asData?.value.user;
 });
 
-/// Convenience provider — just the role string ('student' | 'teacher').
 final userRoleProvider = Provider<String>((ref) {
   return ref.watch(authProvider).asData?.value.role ?? 'student';
 });

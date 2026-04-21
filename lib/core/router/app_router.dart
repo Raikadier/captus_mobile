@@ -47,7 +47,7 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Routes that are accessible without authentication.
 const _publicRoutes = {'/splash', '/onboarding', '/login', '/register',
-    '/register/profile', '/register/notifications', '/forgot-password'};
+    '/forgot-password'};
 
 /// Creates the GoRouter with a Riverpod [ref] so the [redirect] callback
 /// can read the live [authProvider] state.

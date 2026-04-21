@@ -28,7 +28,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     _emailCtrl = TextEditingController(text: user.email);
     _universityCtrl = TextEditingController(text: user.university);
     _careerCtrl = TextEditingController(text: user.career);
-    _semester = user.semester;
+    _semester = user.semester ?? 1;
   }
 
   @override
@@ -140,7 +140,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                   validator: (v) =>
                       v == null || v.isEmpty ? 'Campo requerido' : null,
                 ),
-                const Divider(height: 0, color: AppColors.border, thickness: 0.5),
+                const Divider(
+                    height: 0, color: AppColors.border, thickness: 0.5),
                 _FormField(
                   controller: _emailCtrl,
                   label: 'Correo institucional',
@@ -161,16 +162,18 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                   label: 'Universidad',
                   icon: Icons.school_rounded,
                 ),
-                const Divider(height: 0, color: AppColors.border, thickness: 0.5),
+                const Divider(
+                    height: 0, color: AppColors.border, thickness: 0.5),
                 _FormField(
                   controller: _careerCtrl,
                   label: 'Carrera',
                   icon: Icons.laptop_rounded,
                 ),
-                const Divider(height: 0, color: AppColors.border, thickness: 0.5),
+                const Divider(
+                    height: 0, color: AppColors.border, thickness: 0.5),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   child: Row(
                     children: [
                       const Icon(Icons.layers_rounded,
@@ -178,8 +181,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                       const SizedBox(width: 12),
                       Text('Semestre',
                           style: GoogleFonts.inter(
-                              fontSize: 13,
-                              color: AppColors.textSecondary)),
+                              fontSize: 13, color: AppColors.textSecondary)),
                       const Spacer(),
                       DropdownButton<int>(
                         value: _semester,
@@ -190,8 +192,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                         items: List.generate(
                           10,
                           (i) => DropdownMenuItem(
-                              value: i + 1,
-                              child: Text('${i + 1}°')),
+                              value: i + 1, child: Text('${i + 1}°')),
                         ),
                         onChanged: (v) =>
                             setState(() => _semester = v ?? _semester),
@@ -273,8 +274,8 @@ class _FormField extends StatelessWidget {
               controller: controller,
               keyboardType: keyboardType,
               validator: validator,
-              style: GoogleFonts.inter(
-                  fontSize: 13, color: AppColors.textPrimary),
+              style:
+                  GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary),
               decoration: InputDecoration(
                 labelText: label,
                 labelStyle: GoogleFonts.inter(

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../../models/task.dart';
 import '../../../models/course.dart';
 import '../../../models/user.dart';
@@ -11,12 +13,27 @@ import '../../../shared/widgets/course_card.dart';
 import '../../../shared/widgets/streak_badge.dart';
 import '../../../shared/widgets/countdown_chip.dart';
 
-class HomeDashboardScreen extends StatelessWidget {
+class HomeDashboardScreen extends ConsumerWidget {
   const HomeDashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final user = UserModel.mock;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final localUser = ref.watch(currentUserProvider);
+    final user = localUser != null
+        ? UserModel(
+            id: localUser.id,
+            name: localUser.name,
+            email: localUser.email,
+            university: localUser.university,
+            career: localUser.career,
+            semester: localUser.semester,
+            role: localUser.role == 'teacher'
+                ? UserRole.teacher
+                : UserRole.student,
+            avatarUrl: localUser.avatarUrl,
+            bio: localUser.bio,
+          )
+        : UserModel.mock;
     final tasks = TaskModel.mockList;
     final courses = CourseModel.mockList;
     final today = tasks
@@ -132,21 +149,27 @@ class _DashboardAppBar extends StatelessWidget {
             child: CircleAvatar(
               radius: 18,
               backgroundColor: AppColors.primaryDark,
-              child: Text(
-                user.firstName[0],
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-              ),
+              backgroundImage:
+                  user.avatarUrl != null && user.avatarUrl!.isNotEmpty
+                      ? NetworkImage(user.avatarUrl!)
+                      : null,
+              child: user.avatarUrl == null || user.avatarUrl!.isEmpty
+                  ? Text(
+                      user.firstName[0],
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    )
+                  : null,
             ),
           ),
           const SizedBox(width: 10),
           Text(
             'Captus',
             style: GoogleFonts.inter(
-              fontSize: 18,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
               color: AppColors.primary,
             ),
@@ -154,10 +177,6 @@ class _DashboardAppBar extends StatelessWidget {
         ],
       ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.search_rounded),
-          onPressed: () => context.push('/search'),
-        ),
         Stack(
           children: [
             IconButton(
@@ -231,7 +250,8 @@ class _GreetingCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  DateFormat('EEEE, d \'de\' MMMM', 'es').format(DateTime.now()),
+                  DateFormat('EEEE, d \'de\' MMMM \'de\' yyyy', 'es')
+                      .format(DateTime.now()),
                   style: GoogleFonts.inter(
                     fontSize: 13,
                     color: AppColors.textSecondary,
@@ -240,7 +260,7 @@ class _GreetingCard extends StatelessWidget {
               ],
             ),
           ),
-          StreakBadge(days: user.streakDays, size: StreakSize.mini),
+          StreakBadge(days: 0, size: StreakSize.mini),
         ],
       ),
     );
@@ -403,7 +423,8 @@ class _AiInsightCard extends StatelessWidget {
               color: AppColors.primary.withAlpha(38),
               shape: BoxShape.circle,
             ),
-            child: const Center(child: Text('🤖', style: TextStyle(fontSize: 20))),
+            child:
+                const Center(child: Text('🤖', style: TextStyle(fontSize: 20))),
           ),
           const SizedBox(width: 12),
           Expanded(
