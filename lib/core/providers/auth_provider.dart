@@ -185,6 +185,14 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     final stats = StatisticsModel.createNew(userId);
     await LocalStorageService.setUserStatistics(stats.toJson());
 
+    final defaultCategory = {
+      'id': DateTime.now().millisecondsSinceEpoch.toString(),
+      'name': 'General',
+      'user_id': userId,
+      'created_at': DateTime.now().toIso8601String(),
+    };
+    await LocalStorageService.addCategory(defaultCategory);
+
     await SampleData.initializeSampleData();
 
     final localUser = LocalUser.fromJson(newUser);

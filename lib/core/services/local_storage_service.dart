@@ -25,6 +25,7 @@ class LocalStorageService {
   static const String chatMessagesKey = 'local_chat_messages';
   static const String streakKey = 'user_streak';
   static const String statisticsKey = 'user_statistics';
+  static const String categoriesKey = 'local_categories';
   static const String onboardingKey = 'onboarding_completed';
 
   static Future<void> setString(String key, String value) async {
@@ -212,6 +213,37 @@ class LocalStorageService {
 
   static Future<void> setGroups(List<Map<String, dynamic>> groupList) async {
     await setList(groupsKey, groupList);
+  }
+
+  static List<Map<String, dynamic>> get categories {
+    return getList(categoriesKey);
+  }
+
+  static Future<void> addCategory(Map<String, dynamic> category) async {
+    final list = categories;
+    list.add(category);
+    await setList(categoriesKey, list);
+  }
+
+  static Future<void> updateCategory(
+      String id, Map<String, dynamic> category) async {
+    final list = categories;
+    final index = list.indexWhere((c) => c['id'] == id);
+    if (index != -1) {
+      list[index] = category;
+      await setList(categoriesKey, list);
+    }
+  }
+
+  static Future<void> deleteCategory(String id) async {
+    final list = categories;
+    list.removeWhere((c) => c['id'] == id);
+    await setList(categoriesKey, list);
+  }
+
+  static List<Map<String, dynamic>> getCategoriesByUserId(String userId) {
+    final list = categories;
+    return list.where((c) => c['user_id'] == userId).toList();
   }
 
   static List<Map<String, dynamic>> get chatMessages {

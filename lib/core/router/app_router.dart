@@ -15,6 +15,7 @@ import '../../features/home/screens/home_dashboard_teacher_screen.dart';
 import '../../features/tasks/screens/tasks_list_screen.dart';
 import '../../features/tasks/screens/task_detail_screen.dart';
 import '../../features/tasks/screens/task_create_screen.dart';
+import '../../features/tasks/screens/categories_screen.dart';
 import '../../features/tasks/screens/global_search_screen.dart';
 import '../../features/calendar/screens/calendar_screen.dart';
 import '../../features/calendar/screens/calendar_agenda_screen.dart';
@@ -160,6 +161,11 @@ GoRouter createRouter(WidgetRef ref) {
       ),
 
       // ── Tasks ──────────────────────────────────────────────────────────────
+      GoRoute(
+        path: '/tasks/categories',
+        name: 'tasks_categories',
+        builder: (_, __) => const CategoriesScreen(),
+      ),
       GoRoute(
         path: '/tasks/:id',
         name: 'task_detail',
