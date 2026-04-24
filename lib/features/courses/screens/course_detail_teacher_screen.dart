@@ -65,15 +65,15 @@ class _CourseDetailTeacherScreenState extends State<CourseDetailTeacherScreen>
             ),
             const SizedBox(height: 16),
             ListTile(
-              leading: const Icon(Icons.edit_outlined,
-                  color: AppColors.textPrimary),
+              leading:
+                  const Icon(Icons.edit_outlined, color: AppColors.textPrimary),
               title: Text('Editar curso',
                   style: GoogleFonts.inter(color: AppColors.textPrimary)),
               onTap: () => Navigator.pop(context),
             ),
             ListTile(
-              leading: const Icon(Icons.archive_outlined,
-                  color: AppColors.warning),
+              leading:
+                  const Icon(Icons.archive_outlined, color: AppColors.warning),
               title: Text('Archivar curso',
                   style: GoogleFonts.inter(color: AppColors.warning)),
               onTap: () => Navigator.pop(context),
@@ -94,7 +94,7 @@ class _CourseDetailTeacherScreenState extends State<CourseDetailTeacherScreen>
         headerSliverBuilder: (context, _) => [
           SliverAppBar(
             pinned: true,
-            expandedHeight: 140,
+            expandedHeight: 210,
             backgroundColor: color,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -110,31 +110,63 @@ class _CourseDetailTeacherScreenState extends State<CourseDetailTeacherScreen>
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [color, color.withOpacity(0.7)],
+                    colors: [color, color.withOpacity(0.75)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                 ),
-                padding: const EdgeInsets.fromLTRB(16, 80, 16, 12),
+                padding: const EdgeInsets.fromLTRB(16, 88, 16, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
+                    // Badge código
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '${_course.code} · Semestre VI',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
                     Text(
                       _course.name,
                       style: GoogleFonts.inter(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
+                        height: 1.2,
                       ),
                     ),
+                    const SizedBox(height: 2),
                     Text(
-                      '${_course.code} · ${_mockStudents.length} estudiantes',
+                      '${_mockStudents.length} estudiantes',
                       style: GoogleFonts.inter(
                         fontSize: 13,
-                        color: Colors.white.withOpacity(0.85),
+                        color: Colors.white.withOpacity(0.8),
                       ),
                     ),
+                    const SizedBox(height: 14),
+                    // Stats row en el header
+                    Row(
+                      children: [
+                        _HeaderStat(label: 'Promedio', value: '3.8'),
+                        const SizedBox(width: 8),
+                        _HeaderStat(label: 'Entrega', value: '84%'),
+                        const SizedBox(width: 8),
+                        _HeaderStat(label: 'En riesgo', value: '1'),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
                   ],
                 ),
               ),
@@ -151,8 +183,7 @@ class _CourseDetailTeacherScreenState extends State<CourseDetailTeacherScreen>
                   indicatorWeight: 2,
                   labelStyle: GoogleFonts.inter(
                       fontSize: 13, fontWeight: FontWeight.w600),
-                  unselectedLabelStyle:
-                      GoogleFonts.inter(fontSize: 13),
+                  unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
                   tabs: const [
                     Tab(text: 'Actividades'),
                     Tab(text: 'Estudiantes'),
@@ -177,10 +208,10 @@ class _CourseDetailTeacherScreenState extends State<CourseDetailTeacherScreen>
         builder: (context, _) {
           if (_tabController.index != 0) return const SizedBox.shrink();
           return FloatingActionButton(
-            onPressed: () => context.push(
-                '/teacher/courses/${_course.id}/activity/create'),
-            backgroundColor: AppColors.primary,
-            child: const Icon(Icons.add, color: Colors.black),
+            onPressed: () =>
+                context.push('/teacher/courses/${_course.id}/activity/create'),
+            backgroundColor: color,
+            child: const Icon(Icons.add, color: Colors.white),
           );
         },
       ),
@@ -188,20 +219,63 @@ class _CourseDetailTeacherScreenState extends State<CourseDetailTeacherScreen>
   }
 }
 
+// ─── Header stat chip ────────────────────────────────────────────────────────
+
+class _HeaderStat extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _HeaderStat({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.18),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: GoogleFonts.inter(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                height: 1,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                color: Colors.white.withOpacity(0.75),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Activities tab ───────────────────────────────────────────────────────────
+
 class _ActivitiesTeacherTab extends StatelessWidget {
   final CourseModel course;
   final Color color;
 
-  const _ActivitiesTeacherTab(
-      {required this.course, required this.color});
+  const _ActivitiesTeacherTab({required this.course, required this.color});
 
   @override
   Widget build(BuildContext context) {
     if (course.activities.isEmpty) {
       return Center(
         child: Text('Sin actividades.',
-            style:
-                GoogleFonts.inter(color: AppColors.textSecondary)),
+            style: GoogleFonts.inter(color: AppColors.textSecondary)),
       );
     }
 
@@ -211,8 +285,29 @@ class _ActivitiesTeacherTab extends StatelessWidget {
       separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
         final activity = course.activities[index];
-        final daysLeft =
-            activity.dueDate.difference(DateTime.now()).inDays;
+        final daysLeft = activity.dueDate.difference(DateTime.now()).inDays;
+
+        final bool isOverdue = daysLeft < 0;
+        final bool isUrgent = !isOverdue && daysLeft <= 1;
+
+        final Color pillBg = isOverdue
+            ? AppColors.error.withOpacity(0.12)
+            : isUrgent
+                ? AppColors.warning.withOpacity(0.15)
+                : color.withOpacity(0.12);
+
+        final Color pillFg = isOverdue
+            ? AppColors.error
+            : isUrgent
+                ? AppColors.warning
+                : color;
+
+        final String pillLabel = isOverdue
+            ? 'Vencida'
+            : daysLeft == 0
+                ? 'Vence hoy'
+                : 'Vence en $daysLeft días';
+
         return Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
@@ -228,8 +323,7 @@ class _ActivitiesTeacherTab extends StatelessWidget {
                   color: color.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(Icons.assignment_outlined,
-                    color: color, size: 20),
+                child: Icon(Icons.assignment_outlined, color: color, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -244,14 +338,34 @@ class _ActivitiesTeacherTab extends StatelessWidget {
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    Text(
-                      '${activity.type} · ${daysLeft < 0 ? 'Vencida' : 'Vence en $daysLeft días'}',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        color: daysLeft < 0
-                            ? AppColors.error
-                            : AppColors.textSecondary,
-                      ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Text(
+                          activity.type,
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: pillBg,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            pillLabel,
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              color: pillFg,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -270,6 +384,8 @@ class _ActivitiesTeacherTab extends StatelessWidget {
   }
 }
 
+// ─── Students tab ─────────────────────────────────────────────────────────────
+
 class _StudentsTab extends StatelessWidget {
   final List<_StudentData> students;
 
@@ -283,6 +399,15 @@ class _StudentsTab extends StatelessWidget {
       separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
         final s = students[index];
+
+        final Color barColor = s.progress >= 0.7
+            ? AppColors.primary
+            : s.progress >= 0.4
+                ? AppColors.warning
+                : AppColors.error;
+
+        final bool isCritical = s.progress < 0.4;
+
         return Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
@@ -324,7 +449,7 @@ class _StudentsTab extends StatelessWidget {
                         color: AppColors.textSecondary,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 7),
                     Row(
                       children: [
                         Expanded(
@@ -333,14 +458,9 @@ class _StudentsTab extends StatelessWidget {
                             child: LinearProgressIndicator(
                               value: s.progress,
                               backgroundColor: AppColors.surface2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                s.progress >= 0.7
-                                    ? AppColors.primary
-                                    : s.progress >= 0.4
-                                        ? AppColors.warning
-                                        : AppColors.error,
-                              ),
-                              minHeight: 4,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(barColor),
+                              minHeight: 5,
                             ),
                           ),
                         ),
@@ -361,10 +481,10 @@ class _StudentsTab extends StatelessWidget {
               if (!s.isUpToDate) ...[
                 const SizedBox(width: 8),
                 Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: AppColors.warning,
+                  width: 9,
+                  height: 9,
+                  decoration: BoxDecoration(
+                    color: isCritical ? AppColors.error : AppColors.warning,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -376,6 +496,8 @@ class _StudentsTab extends StatelessWidget {
     );
   }
 }
+
+// ─── Stats tab ────────────────────────────────────────────────────────────────
 
 class _StatsTab extends StatelessWidget {
   final CourseModel course;
@@ -486,6 +608,8 @@ class _StatCard extends StatelessWidget {
     );
   }
 }
+
+// ─── Data model ───────────────────────────────────────────────────────────────
 
 class _StudentData {
   final String id;
