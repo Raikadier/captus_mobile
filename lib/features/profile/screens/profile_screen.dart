@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/user_profile_provider.dart';
+import '../../../core/providers/statistics_provider.dart';
 import '../../../models/user.dart';
 import '../../../shared/widgets/streak_badge.dart';
 
@@ -12,8 +14,9 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user =
-        UserModel.mock; // TODO: replace with real user from authProvider
+    final profileAsync = ref.watch(userProfileProvider);
+    final user = profileAsync.asData?.value ?? UserModel.fromLocalUser(ref.watch(currentUserProvider));
+    final statsAsync = ref.watch(statisticsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -92,7 +95,7 @@ class ProfileScreen extends ConsumerWidget {
                       fontSize: 13, color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: 16),
-                StreakBadge(days: 0, size: StreakSize.mini),
+                StreakBadge(days: statsAsync.asData?.value.currentStreak ?? 0, size: StreakSize.mini),
               ],
             ),
           ),
@@ -152,19 +155,19 @@ class ProfileScreen extends ConsumerWidget {
                     _StatTile(
                         icon: Icons.check_circle_rounded,
                         label: 'Completadas',
-                        value: '42',
+                        value: '${statsAsync.asData?.value.completedTasks ?? 0}',
                         color: AppColors.primary),
                     const SizedBox(width: 8),
                     _StatTile(
                         icon: Icons.local_fire_department_rounded,
                         label: 'Racha',
-                        value: '0d',
+                        value: '${statsAsync.asData?.value.currentStreak ?? 0}d',
                         color: AppColors.warning),
                     const SizedBox(width: 8),
                     _StatTile(
-                        icon: Icons.emoji_events_rounded,
-                        label: 'Logros',
-                        value: '3',
+                        icon: Icons.school_rounded,
+                        label: 'Materias',
+                        value: '${statsAsync.asData?.value.activeCourses ?? 0}',
                         color: const Color(0xFFAB47BC)),
                   ],
                 ),

@@ -99,6 +99,23 @@ class UserModel {
     );
   }
 
+  // Also need to import auth_provider.dart? No — use a plain nullable LocalUser param.
+  static UserModel fromLocalUser(dynamic localUser) {
+    if (localUser == null) return UserModel.mock;
+    return UserModel(
+      id: localUser.id ?? '',
+      name: localUser.name ?? '',
+      email: localUser.email ?? '',
+      role: localUser.role == 'teacher' ? UserRole.teacher : UserRole.student,
+      university: localUser.university,
+      career: localUser.career,
+      semester: localUser.semester,
+      avatarUrl: localUser.avatarUrl,
+      bio: localUser.bio,
+      createdAt: DateTime.now(),
+    );
+  }
+
   static UserModel get mock => UserModel(
         id: '1',
         name: 'David Barceló',

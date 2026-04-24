@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/notifications_provider.dart';
 import '../../../models/app_notification.dart';
 
-class NotificationsScreen extends StatefulWidget {
+class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
 
   @override
-  State<NotificationsScreen> createState() => _NotificationsScreenState();
+  ConsumerState<NotificationsScreen> createState() =>
+      _NotificationsScreenState();
 }
 
-class _NotificationsScreenState extends State<NotificationsScreen> {
+class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   int _selectedTab = 0;
-  List<AppNotification> _notifications = AppNotification.mockList;
-
-  List<AppNotification> get _filtered => _selectedTab == 0
-      ? _notifications
-      : _notifications.where((n) => !n.isRead).toList();
 
   IconData _iconForType(NotificationType type) {
     switch (type) {
@@ -60,6 +58,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final asyncNotifs = ref.watch(notificationsProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -70,23 +70,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => setState(() {
-              _notifications = _notifications
-                  .map((n) => AppNotification(
-                        id: n.id,
-                        type: n.type,
-                        title: n.title,
-                        body: n.body,
-                        isRead: true,
-                        createdAt: n.createdAt,
-                        deepLink: n.deepLink,
-                      ))
-                  .toList();
-            }),
-            child: Text(
-              'Todo leído',
-              style: GoogleFonts.inter(fontSize: 13),
-            ),
+            onPressed: () =>
+                ref.read(notificationsProvider.notifier).markAllRead(),
+            child: Text('Todo leído', style: GoogleFonts.inter(fontSize: 13)),
           ),
         ],
       ),
@@ -114,8 +100,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       style: GoogleFonts.inter(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color:
-                            isSelected ? Colors.black : AppColors.textSecondary,
+                        color: isSelected
+                            ? Colors.black
+                            : AppColors.textSecondary,
                       ),
                     ),
                   ),
@@ -125,8 +112,21 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
           const SizedBox(height: 8),
           Expanded(
-            child: _filtered.isEmpty
-                ? Center(
+            child: asyncNotifs.when(
+              loading: () =>
+                  const Center(child: CircularProgressIndicator()),
+              error: (_, __) => Center(
+                child: Text('No se pudieron cargar las notificaciones',
+                    style: GoogleFonts.inter(
+                        color: AppColors.textSecondary)),
+              ),
+              data: (all) {
+                final notifs = _selectedTab == 0
+                    ? all
+                    : all.where((n) => !n.isRead).toList();
+
+                if (notifs.isEmpty) {
+                  return Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -142,111 +142,119 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         ),
                       ],
                     ),
-                  )
-                : ListView.separated(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemCount: _filtered.length,
-                    separatorBuilder: (_, __) =>
-                        const Divider(color: AppColors.border, height: 1),
-                    itemBuilder: (_, i) {
-                      final n = _filtered[i];
-                      final color = _colorForType(n.type);
-                      return Dismissible(
-                        key: ValueKey(n.id),
-                        direction: DismissDirection.endToStart,
-                        background: Container(
-                          color: AppColors.error,
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.only(right: 16),
-                          child: const Icon(Icons.delete_outline_rounded,
-                              color: Colors.white),
-                        ),
-                        onDismissed: (_) => setState(
-                            () => _notifications.removeWhere((x) => x.id == n.id)),
-                        child: GestureDetector(
-                          onTap: () {
-                            if (n.deepLink != null) context.push(n.deepLink!);
-                          },
-                          child: Container(
-                            color: n.isRead
-                                ? Colors.transparent
-                                : AppColors.primary.withAlpha(8),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    color: color.withAlpha(25),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(_iconForType(n.type),
-                                      size: 20, color: color),
+                  );
+                }
+
+                return ListView.separated(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  itemCount: notifs.length,
+                  separatorBuilder: (_, __) => const Divider(
+                      color: AppColors.border, height: 1),
+                  itemBuilder: (_, i) {
+                    final n = notifs[i];
+                    final color = _colorForType(n.type);
+                    return Dismissible(
+                      key: ValueKey(n.id),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        color: AppColors.error,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 16),
+                        child: const Icon(Icons.delete_outline_rounded,
+                            color: Colors.white),
+                      ),
+                      onDismissed: (_) =>
+                          ref.read(notificationsProvider.notifier).remove(n.id),
+                      child: GestureDetector(
+                        onTap: () {
+                          ref
+                              .read(notificationsProvider.notifier)
+                              .markRead(n.id);
+                          if (n.deepLink != null) context.push(n.deepLink!);
+                        },
+                        child: Container(
+                          color: n.isRead
+                              ? Colors.transparent
+                              : AppColors.primary.withAlpha(8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: color.withAlpha(25),
+                                  shape: BoxShape.circle,
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              n.title,
-                                              style: GoogleFonts.inter(
-                                                fontSize: 13,
-                                                fontWeight: n.isRead
-                                                    ? FontWeight.normal
-                                                    : FontWeight.w700,
-                                                color: AppColors.textPrimary,
-                                              ),
+                                child: Icon(_iconForType(n.type),
+                                    size: 20, color: color),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            n.title,
+                                            style: GoogleFonts.inter(
+                                              fontSize: 13,
+                                              fontWeight: n.isRead
+                                                  ? FontWeight.normal
+                                                  : FontWeight.w700,
+                                              color: AppColors.textPrimary,
                                             ),
                                           ),
-                                          Text(
-                                            _timeLabel(n.createdAt),
-                                            style: GoogleFonts.inter(
-                                                fontSize: 11,
-                                                color: AppColors.textSecondary),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 3),
-                                      Text(
-                                        n.body,
-                                        style: GoogleFonts.inter(
-                                          fontSize: 12,
-                                          color: AppColors.textSecondary,
-                                          height: 1.4,
                                         ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
+                                        Text(
+                                          _timeLabel(n.createdAt),
+                                          style: GoogleFonts.inter(
+                                              fontSize: 11,
+                                              color:
+                                                  AppColors.textSecondary),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      n.body,
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        color: AppColors.textSecondary,
+                                        height: 1.4,
                                       ),
-                                    ],
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (!n.isRead) ...[
+                                const SizedBox(width: 8),
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  margin: const EdgeInsets.only(top: 4),
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.primary,
+                                    shape: BoxShape.circle,
                                   ),
                                 ),
-                                if (!n.isRead) ...[
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    width: 8,
-                                    height: 8,
-                                    margin: const EdgeInsets.only(top: 4),
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.primary,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ],
                               ],
-                            ),
+                            ],
                           ),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),
