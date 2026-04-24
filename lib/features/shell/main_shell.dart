@@ -18,32 +18,27 @@ class MainShell extends StatelessWidget {
 
   void _onTabTap(BuildContext context, int index) {
     switch (index) {
-      case 0:
-        context.go('/home');
-      case 1:
-        context.go('/tasks');
-      case 2:
-        context.go('/calendar');
-      case 3:
-        context.go('/ai');
-      case 4:
-        context.go('/groups');
+      case 0: context.go('/home');
+      case 1: context.go('/tasks');
+      case 2: context.go('/calendar');
+      case 3: context.go('/ai');
+      case 4: context.go('/groups');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final selectedIndex = _selectedIndex(context);
-
     return Scaffold(
       body: child,
       bottomNavigationBar: _CaptusBottomNav(
-        selectedIndex: selectedIndex,
+        selectedIndex: _selectedIndex(context),
         onTap: (i) => _onTabTap(context, i),
       ),
     );
   }
 }
+
+// ── Bottom nav ────────────────────────────────────────────────────────────────
 
 class _CaptusBottomNav extends StatelessWidget {
   final int selectedIndex;
@@ -58,12 +53,15 @@ class _CaptusBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Color(0xFF1A1A1A),
-        border: Border(top: BorderSide(color: AppColors.border, width: 0.5)),
+        color: AppColors.surface,
+        border: Border(
+          top: BorderSide(color: AppColors.border, width: 1),
+        ),
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+        top: false,
+        child: SizedBox(
+          height: 60,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -97,9 +95,9 @@ class _CaptusBottomNav extends StatelessWidget {
                 onTap: () => onTap(3),
               ),
               _NavItem(
-                icon: Icons.group_outlined,
-                activeIcon: Icons.group_rounded,
-                label: 'Grupos',
+                icon: Icons.grid_view_outlined,
+                activeIcon: Icons.grid_view_rounded,
+                label: 'Más',
                 isSelected: selectedIndex == 4,
                 onTap: () => onTap(4),
               ),
@@ -110,6 +108,8 @@ class _CaptusBottomNav extends StatelessWidget {
     );
   }
 }
+
+// ── Nav item ──────────────────────────────────────────────────────────────────
 
 class _NavItem extends StatelessWidget {
   final IconData icon;
@@ -124,8 +124,8 @@ class _NavItem extends StatelessWidget {
     required this.activeIcon,
     required this.label,
     required this.isSelected,
-    this.badge,
     required this.onTap,
+    this.badge,
   });
 
   @override
@@ -136,33 +136,26 @@ class _NavItem extends StatelessWidget {
       child: SizedBox(
         width: 64,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Stack(
               clipBehavior: Clip.none,
               children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? AppColors.primary.withAlpha(25)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Icon(
-                    isSelected ? activeIcon : icon,
-                    size: 24,
-                    color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                  ),
+                Icon(
+                  isSelected ? activeIcon : icon,
+                  size: 24,
+                  color: isSelected
+                      ? AppColors.primary
+                      : AppColors.textSecondary,
                 ),
+                // Badge de notificación
                 if (badge != null && badge! > 0)
                   Positioned(
-                    top: -2,
-                    right: -2,
+                    top: -4,
+                    right: -6,
                     child: Container(
-                      width: 16,
-                      height: 16,
+                      width: 15,
+                      height: 15,
                       decoration: const BoxDecoration(
                         color: AppColors.error,
                         shape: BoxShape.circle,
@@ -171,22 +164,37 @@ class _NavItem extends StatelessWidget {
                         child: Text(
                           '$badge',
                           style: const TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
                   ),
               ],
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 3),
             Text(
               label,
               style: GoogleFonts.inter(
                 fontSize: 10,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                fontWeight:
+                    isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected
+                    ? AppColors.primary
+                    : AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 4),
+            // Punto indicador activo
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: isSelected ? 4 : 0,
+              height: isSelected ? 4 : 0,
+              decoration: const BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
               ),
             ),
           ],

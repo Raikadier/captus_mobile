@@ -36,7 +36,7 @@ class CaptusApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Captus',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark,
+      theme: AppTheme.light,
       routerConfig: router,
     );
   }

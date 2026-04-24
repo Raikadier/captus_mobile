@@ -10,8 +10,6 @@ import '../../../models/course.dart';
 import '../../../models/user.dart';
 import '../../../shared/widgets/task_card.dart';
 import '../../../shared/widgets/course_card.dart';
-import '../../../shared/widgets/streak_badge.dart';
-import '../../../shared/widgets/countdown_chip.dart';
 
 class HomeDashboardScreen extends ConsumerWidget {
   const HomeDashboardScreen({super.key});
@@ -34,77 +32,89 @@ class HomeDashboardScreen extends ConsumerWidget {
             bio: localUser.bio,
           )
         : UserModel.mock;
+
     final tasks = TaskModel.mockList;
     final courses = CourseModel.mockList;
-    final today = tasks
-        .where((t) =>
-            t.dueDate != null &&
-            t.dueDate!.difference(DateTime.now()).inHours < 24 &&
-            t.status != TaskStatus.completed)
-        .toList();
-    final upcoming = tasks
-        .where((t) =>
-            t.dueDate != null &&
-            t.dueDate!.difference(DateTime.now()).inDays < 3 &&
-            t.dueDate!.isAfter(DateTime.now()) &&
-            t.status != TaskStatus.completed)
-        .toList();
+    final streakDays = 7; // TODO: conectar con provider real
+
+    final pendingTasks = tasks.where((t) => t.status != TaskStatus.completed).toList();
+    final todayTasks = pendingTasks.where((t) {
+      if (t.dueDate == null) return false;
+      final diff = t.dueDate!.difference(DateTime.now());
+      return diff.inHours < 24 && t.dueDate!.isAfter(DateTime.now());
+    }).toList();
+    final overdueCount = tasks.where((t) => t.isOverdue).length;
+    final upcomingTasks = pendingTasks.where((t) {
+      if (t.dueDate == null) return false;
+      final diff = t.dueDate!.difference(DateTime.now());
+      return diff.inDays < 3 && diff.inDays >= 0;
+    }).toList();
 
     return Scaffold(
       backgroundColor: AppColors.background,
       body: CustomScrollView(
         slivers: [
+          // ── AppBar ──────────────────────────────────────────────────────────
           _DashboardAppBar(user: user),
+
+          // ── Saludo + fecha ──────────────────────────────────────────────────
           SliverToBoxAdapter(
-            child: _GreetingCard(user: user),
+            child: _GreetingHeader(user: user),
           ),
-          if (today.isNotEmpty) ...[
-            _SectionHeader(
-              title: 'Hoy',
-              badge: today.length,
-              onSeeAll: () => context.go('/tasks'),
+
+          // ── Tarjeta sugerencia IA ───────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: _AiSuggestionCard(
+              taskCount: pendingTasks.length,
+              onTap: () => context.push('/ai'),
             ),
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 104,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: today.length,
-                  itemBuilder: (_, i) => _CompactTaskCard(task: today[i]),
-                ),
-              ),
+          ),
+
+          // ── Stats row ───────────────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: _StatsRow(
+              todayCount: todayTasks.length,
+              streakDays: streakDays,
+              overdueCount: overdueCount,
             ),
-          ],
-          if (upcoming.isNotEmpty) ...[
+          ),
+
+          // ── Racha semanal ───────────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: _WeeklyStreak(),
+          ),
+
+          // ── Tareas prioritarias ─────────────────────────────────────────────
+          if (upcomingTasks.isNotEmpty) ...[
             _SectionHeader(
-              title: 'Próximos vencimientos',
-              badge: upcoming.length,
+              title: 'Priorizado por IA',
               onSeeAll: () => context.go('/tasks'),
             ),
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (_, i) => TaskCard(
-                  task: upcoming[i],
-                  onTap: () => context.push('/tasks/${upcoming[i].id}'),
+                  task: upcomingTasks[i],
+                  onTap: () => context.push('/tasks/${upcomingTasks[i].id}'),
                 ),
-                childCount: upcoming.length.clamp(0, 3),
+                childCount: upcomingTasks.length.clamp(0, 3),
               ),
             ),
           ],
+
+          // ── Mis materias ────────────────────────────────────────────────────
           _SectionHeader(
             title: 'Mis materias',
             onSeeAll: () => context.push('/courses'),
           ),
           SliverToBoxAdapter(
             child: SizedBox(
-              height: 180,
+              height: 190,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: courses.length,
                 itemBuilder: (_, i) => SizedBox(
-                  width: 148,
+                  width: 152,
                   child: Padding(
                     padding: const EdgeInsets.only(right: 12),
                     child: CourseCard(
@@ -116,20 +126,15 @@ class HomeDashboardScreen extends ConsumerWidget {
               ),
             ),
           ),
-          SliverToBoxAdapter(
-            child: _AiInsightCard(),
-          ),
+
           const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/ai'),
-        tooltip: 'Asistente IA',
-        child: const Icon(Icons.auto_awesome_rounded),
       ),
     );
   }
 }
+
+// ── AppBar ─────────────────────────────────────────────────────────────────────
 
 class _DashboardAppBar extends StatelessWidget {
   final UserModel user;
@@ -139,27 +144,29 @@ class _DashboardAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverAppBar(
       floating: true,
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.surface,
       elevation: 0,
+      scrolledUnderElevation: 0,
       titleSpacing: 16,
       title: Row(
         children: [
+          // Avatar
           GestureDetector(
             onTap: () => context.push('/profile'),
             child: CircleAvatar(
               radius: 18,
-              backgroundColor: AppColors.primaryDark,
+              backgroundColor: AppColors.primaryLight,
               backgroundImage:
                   user.avatarUrl != null && user.avatarUrl!.isNotEmpty
                       ? NetworkImage(user.avatarUrl!)
                       : null,
               child: user.avatarUrl == null || user.avatarUrl!.isEmpty
                   ? Text(
-                      user.firstName[0],
+                      user.firstName[0].toUpperCase(),
                       style: GoogleFonts.inter(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryDark,
                       ),
                     )
                   : null,
@@ -169,23 +176,28 @@ class _DashboardAppBar extends StatelessWidget {
           Text(
             'Captus',
             style: GoogleFonts.inter(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
               color: AppColors.primary,
             ),
           ),
         ],
       ),
       actions: [
+        // Notificaciones
         Stack(
+          clipBehavior: Clip.none,
           children: [
             IconButton(
-              icon: const Icon(Icons.notifications_outlined),
+              icon: const Icon(
+                Icons.notifications_outlined,
+                color: AppColors.textPrimary,
+              ),
               onPressed: () => context.push('/notifications'),
             ),
             Positioned(
-              right: 8,
-              top: 8,
+              right: 10,
+              top: 10,
               child: Container(
                 width: 8,
                 height: 8,
@@ -197,36 +209,37 @@ class _DashboardAppBar extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(width: 4),
       ],
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1),
+        child: Container(color: AppColors.border, height: 1),
+      ),
     );
   }
 }
 
-class _GreetingCard extends StatelessWidget {
+// ── Saludo ─────────────────────────────────────────────────────────────────────
+
+class _GreetingHeader extends StatelessWidget {
   final UserModel user;
-  const _GreetingCard({required this.user});
+  const _GreetingHeader({required this.user});
 
   String get _greeting {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return 'Buenos días';
-    if (hour < 18) return 'Buenas tardes';
+    final h = DateTime.now().hour;
+    if (h < 12) return 'Buenos días';
+    if (h < 18) return 'Buenas tardes';
     return 'Buenas noches';
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primaryDark, AppColors.surface],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withAlpha(51), width: 1),
-      ),
+    final dateStr = DateFormat("EEEE d 'de' MMMM", 'es').format(DateTime.now());
+    // Capitaliza primera letra
+    final dateLabel = dateStr[0].toUpperCase() + dateStr.substring(1);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
       child: Row(
         children: [
           Expanded(
@@ -234,24 +247,16 @@ class _GreetingCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '$_greeting,',
+                  '$_greeting, ${user.firstName}',
                   style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                Text(
-                  user.firstName,
-                  style: GoogleFonts.inter(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
-                  DateFormat('EEEE, d \'de\' MMMM \'de\' yyyy', 'es')
-                      .format(DateTime.now()),
+                  dateLabel,
                   style: GoogleFonts.inter(
                     fontSize: 13,
                     color: AppColors.textSecondary,
@@ -260,80 +265,77 @@ class _GreetingCard extends StatelessWidget {
               ],
             ),
           ),
-          StreakBadge(days: 0, size: StreakSize.mini),
         ],
       ),
     );
   }
 }
 
-class _CompactTaskCard extends StatelessWidget {
-  final TaskModel task;
-  const _CompactTaskCard({required this.task});
+// ── Tarjeta sugerencia IA ──────────────────────────────────────────────────────
 
-  Color get _priorityColor {
-    switch (task.priority) {
-      case TaskPriority.high:
-        return AppColors.priorityHigh;
-      case TaskPriority.medium:
-        return AppColors.priorityMedium;
-      case TaskPriority.low:
-        return AppColors.priorityLow;
-    }
-  }
+class _AiSuggestionCard extends StatelessWidget {
+  final int taskCount;
+  final VoidCallback onTap;
+  const _AiSuggestionCard({required this.taskCount, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.push('/tasks/${task.id}'),
+      onTap: onTap,
       child: Container(
-        width: 200,
-        margin: const EdgeInsets.only(right: 12),
-        padding: const EdgeInsets.all(14),
+        margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: _priorityColor.withAlpha(76)),
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(16),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Row(
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: _priorityColor,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    task.courseName ?? '',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      color: AppColors.textSecondary,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            Text(
-              task.title,
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+            // Icono cactus / IA
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white.withAlpha(40),
+                borderRadius: BorderRadius.circular(10),
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+              child: const Center(
+                child: Text('🌵', style: TextStyle(fontSize: 22)),
+              ),
             ),
-            if (task.dueDate != null)
-              CountdownChip(dueDate: task.dueDate!, compact: true),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'CAPTUS SUGIERE',
+                    style: GoogleFonts.inter(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white.withAlpha(180),
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Tienes $taskCount entregas esta semana. Empieza por Estructuras de Datos — vence mañana.',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 14,
+              color: Colors.white,
+            ),
           ],
         ),
       ),
@@ -341,47 +343,218 @@ class _CompactTaskCard extends StatelessWidget {
   }
 }
 
+// ── Stats row ──────────────────────────────────────────────────────────────────
+
+class _StatsRow extends StatelessWidget {
+  final int todayCount;
+  final int streakDays;
+  final int overdueCount;
+
+  const _StatsRow({
+    required this.todayCount,
+    required this.streakDays,
+    required this.overdueCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      child: Row(
+        children: [
+          _StatCard(
+            value: '$todayCount',
+            label: 'Tareas hoy',
+            color: AppColors.textPrimary,
+          ),
+          const SizedBox(width: 10),
+          _StatCard(
+            value: '$streakDays 🔥',
+            label: 'Días racha',
+            color: AppColors.warning,
+          ),
+          const SizedBox(width: 10),
+          _StatCard(
+            value: '$overdueCount',
+            label: 'Por entregar',
+            color: overdueCount > 0 ? AppColors.error : AppColors.textPrimary,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final String value;
+  final String label;
+  final Color color;
+
+  const _StatCard({
+    required this.value,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.border, width: 1.5),
+        ),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: GoogleFonts.inter(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Racha semanal ──────────────────────────────────────────────────────────────
+
+class _WeeklyStreak extends StatelessWidget {
+  const _WeeklyStreak();
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    // L M M J V S D
+    final days = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+    // weekday: Mon=1 ... Sun=7
+    final completedUpTo = now.weekday; // días con racha hasta hoy
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border, width: 1.5),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(7, (i) {
+              final isActive = i < completedUpTo;
+              final isToday = i == completedUpTo - 1;
+              return _DayDot(
+                label: days[i],
+                isActive: isActive,
+                isToday: isToday,
+              );
+            }),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            '7 días productivos seguidos',
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DayDot extends StatelessWidget {
+  final String label;
+  final bool isActive;
+  final bool isToday;
+
+  const _DayDot({
+    required this.label,
+    required this.isActive,
+    required this.isToday,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 11,
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 5),
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isActive ? AppColors.streak : AppColors.surface2,
+            border: isToday
+                ? Border.all(color: AppColors.primary, width: 2)
+                : null,
+          ),
+          child: isActive
+              ? Center(
+                  child: Text(
+                    '✓',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.streakText,
+                    ),
+                  ),
+                )
+              : null,
+        ),
+      ],
+    );
+  }
+}
+
+// ── Section header ─────────────────────────────────────────────────────────────
+
 class _SectionHeader extends StatelessWidget {
   final String title;
-  final int? badge;
   final VoidCallback? onSeeAll;
 
-  const _SectionHeader({required this.title, this.badge, this.onSeeAll});
+  const _SectionHeader({required this.title, this.onSeeAll});
 
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 20, 8, 10),
+        padding: const EdgeInsets.fromLTRB(16, 22, 8, 10),
         child: Row(
           children: [
             Text(
-              title.toUpperCase(),
+              title,
               style: GoogleFonts.inter(
-                fontSize: 11,
+                fontSize: 15,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textSecondary,
-                letterSpacing: 0.8,
+                color: AppColors.textPrimary,
               ),
             ),
-            if (badge != null) ...[
-              const SizedBox(width: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.error.withAlpha(38),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '$badge',
-                  style: GoogleFonts.inter(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.error,
-                  ),
-                ),
-              ),
-            ],
             const Spacer(),
             if (onSeeAll != null)
               TextButton(
@@ -393,83 +566,15 @@ class _SectionHeader extends StatelessWidget {
                 ),
                 child: Text(
                   'Ver todo',
-                  style: GoogleFonts.inter(fontSize: 12),
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _AiInsightCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.primaryDark,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withAlpha(76)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withAlpha(38),
-              shape: BoxShape.circle,
-            ),
-            child:
-                const Center(child: Text('🤖', style: TextStyle(fontSize: 20))),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Captus IA',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primary,
-                  ),
-                ),
-                Text(
-                  'Tienes 3 entregas esta semana. ¿Planificamos tu semana ahora?',
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    color: AppColors.textPrimary,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          GestureDetector(
-            onTap: () => context.push('/ai'),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                'Ver',
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
