@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/local_storage_service.dart';
-import '../services/sample_data.dart';
-import '../../models/statistics.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../services/supabase_service.dart';
+import '../services/api_client.dart';
 
 enum AuthStatus { loading, authenticated, unauthenticated }
 
@@ -51,6 +51,21 @@ class LocalUser {
         bio: json['bio']?.toString(),
         avatarUrl: json['avatarUrl']?.toString(),
       );
+
+  factory LocalUser.fromSupabase(User user) {
+    final meta = user.userMetadata ?? {};
+    return LocalUser(
+      id: user.id,
+      email: user.email ?? '',
+      name: (meta['name'] ?? meta['full_name'] ?? meta['display_name'] ?? '').toString(),
+      role: (meta['role'] ?? 'student').toString(),
+      university: meta['university']?.toString(),
+      career: meta['career']?.toString(),
+      semester: meta['semester'] as int?,
+      bio: meta['bio']?.toString(),
+      avatarUrl: (meta['avatar_url'] ?? meta['avatarUrl'])?.toString(),
+    );
+  }
 
   LocalUser copyWith({
     String? id,
@@ -115,9 +130,20 @@ class AuthState {
 class AuthNotifier extends AsyncNotifier<AuthState> {
   @override
   Future<AuthState> build() async {
-    final userData = LocalStorageService.currentUserData;
-    if (userData != null) {
-      return AuthState.authenticated(LocalUser.fromJson(userData));
+    // Listen for Supabase auth state changes and update provider state
+    SupabaseService.auth.onAuthStateChange.listen((data) {
+      final session = data.session;
+      if (session != null) {
+        state = AsyncData(AuthState.authenticated(LocalUser.fromSupabase(session.user)));
+      } else {
+        state = const AsyncData(AuthState.unauthenticated());
+      }
+    });
+
+    // Return current session on startup
+    final session = SupabaseService.currentSession;
+    if (session != null) {
+      return AuthState.authenticated(LocalUser.fromSupabase(session.user));
     }
     return const AuthState.unauthenticated();
   }
@@ -127,31 +153,27 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     required String password,
   }) async {
     state = const AsyncData(AuthState.loading());
-
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    final user = LocalStorageService.findUserByEmail(email);
-
-    if (user == null) {
-      state =
-          const AsyncData(AuthState.unauthenticated('Usuario no encontrado'));
-      return 'Usuario no encontrado';
+    try {
+      final res = await SupabaseService.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      if (res.session == null) {
+        state = const AsyncData(AuthState.unauthenticated('No se pudo iniciar sesión'));
+        return 'No se pudo iniciar sesión';
+      }
+      final localUser = LocalUser.fromSupabase(res.user!);
+      state = AsyncData(AuthState.authenticated(localUser));
+      _syncUser();
+      return null;
+    } on AuthException catch (e) {
+      final msg = _mapAuthError(e.message);
+      state = AsyncData(AuthState.unauthenticated(msg));
+      return msg;
+    } catch (e) {
+      state = const AsyncData(AuthState.unauthenticated('Error de conexión'));
+      return 'Error de conexión';
     }
-
-    final storedPassword = user['password']?.toString() ?? '';
-    if (storedPassword != password) {
-      state =
-          const AsyncData(AuthState.unauthenticated('Contraseña incorrecta'));
-      return 'Contraseña incorrecta';
-    }
-
-    await SampleData.initializeSampleData();
-
-    final localUser = LocalUser.fromJson(user);
-    await LocalStorageService.setCurrentUserData(localUser.toJson());
-
-    state = AsyncData(AuthState.authenticated(localUser));
-    return null;
   }
 
   Future<String?> signUp({
@@ -161,52 +183,56 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     required String role,
   }) async {
     state = const AsyncData(AuthState.loading());
-
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    final existing = LocalStorageService.findUserByEmail(email);
-    if (existing != null) {
-      state = const AsyncData(
-          AuthState.unauthenticated('Este correo ya está registrado'));
-      return 'Este correo ya está registrado';
+    try {
+      final res = await SupabaseService.auth.signUp(
+        email: email,
+        password: password,
+        data: {
+          'name': name,
+          'full_name': name,
+          'display_name': name,
+          'role': role,
+        },
+      );
+      if (res.user == null) {
+        state = const AsyncData(AuthState.unauthenticated('No se pudo crear la cuenta'));
+        return 'No se pudo crear la cuenta';
+      }
+      if (res.session != null) {
+        final localUser = LocalUser.fromSupabase(res.user!);
+        state = AsyncData(AuthState.authenticated(localUser));
+        _syncUser();
+        return null;
+      }
+      // Email confirmation required
+      state = const AsyncData(AuthState.unauthenticated());
+      return null;
+    } on AuthException catch (e) {
+      final msg = _mapAuthError(e.message);
+      state = AsyncData(AuthState.unauthenticated(msg));
+      return msg;
+    } catch (e) {
+      state = const AsyncData(AuthState.unauthenticated('Error de conexión'));
+      return 'Error de conexión';
     }
-
-    final userId = DateTime.now().millisecondsSinceEpoch.toString();
-    final newUser = {
-      'id': userId,
-      'email': email.toLowerCase(),
-      'name': name,
-      'password': password,
-      'role': role,
-    };
-
-    await LocalStorageService.addUser(newUser);
-
-    final stats = StatisticsModel.createNew(userId);
-    await LocalStorageService.setUserStatistics(stats.toJson());
-
-    await SampleData.initializeSampleData();
-
-    final localUser = LocalUser.fromJson(newUser);
-    await LocalStorageService.setCurrentUserData(localUser.toJson());
-
-    state = AsyncData(AuthState.authenticated(localUser));
-    return null;
   }
 
   Future<String?> sendPasswordReset(String email) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return null;
+    try {
+      await SupabaseService.auth.resetPasswordForEmail(email);
+      return null;
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<void> signOut() async {
-    await LocalStorageService.clearCurrentUser();
+    await SupabaseService.auth.signOut();
     state = const AsyncData(AuthState.unauthenticated());
   }
 
   Future<void> updateProfile(Map<String, dynamic> data) async {
     if (state.value?.user == null) return;
-
     final currentUser = state.value!.user!;
     final updatedUser = currentUser.copyWith(
       name: data['name'] ?? currentUser.name,
@@ -216,9 +242,28 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       bio: data['bio'] ?? currentUser.bio,
       avatarUrl: data['avatarUrl'] ?? currentUser.avatarUrl,
     );
-
-    await LocalStorageService.setCurrentUserData(updatedUser.toJson());
     state = AsyncData(AuthState.authenticated(updatedUser));
+  }
+
+  void _syncUser() {
+    ApiClient.instance.post<void>('/users/sync').catchError((e) => throw e);
+  }
+
+  String _mapAuthError(String message) {
+    if (message.contains('Invalid login credentials') ||
+        message.contains('invalid_credentials')) {
+      return 'Correo o contraseña incorrectos';
+    }
+    if (message.contains('already registered') || message.contains('already been registered')) {
+      return 'Este correo ya está registrado';
+    }
+    if (message.contains('Email not confirmed')) {
+      return 'Confirma tu correo antes de iniciar sesión';
+    }
+    if (message.contains('Password should be')) {
+      return 'La contraseña debe tener al menos 6 caracteres';
+    }
+    return message;
   }
 }
 
