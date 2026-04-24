@@ -1,5 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/api_client.dart';
+
+// Gemini 2.5 Pro puede tardar hasta 40s en razonamiento complejo.
+// Este override se aplica solo a las llamadas de IA.
+final _aiRequestOptions = Options(receiveTimeout: const Duration(seconds: 90));
 
 // ── Data models ───────────────────────────────────────────────────────────────
 
@@ -84,6 +89,7 @@ class AiChatNotifier extends Notifier<AiChatState> {
           'message': text.trim(),
           if (state.conversationId != null) 'conversationId': state.conversationId,
         },
+        options: _aiRequestOptions,
       );
 
       final body = res.data is Map<String, dynamic> ? res.data as Map<String, dynamic> : <String, dynamic>{};
@@ -121,6 +127,36 @@ class AiChatNotifier extends Notifier<AiChatState> {
           ),
         ],
       );
+    }
+  }
+
+  /// Loads an existing conversation from the backend by ID.
+  /// Replaces the current state with the fetched messages.
+  Future<void> loadConversation(String conversationId) async {
+    state = state.copyWith(isLoading: true, conversationId: conversationId);
+    try {
+      final res = await ApiClient.instance
+          .get<List<dynamic>>('/ai/conversations/$conversationId/messages');
+      final raw = res.data is List ? res.data as List<dynamic> : <dynamic>[];
+      final loaded = raw.map((m) {
+        final map = m as Map<String, dynamic>;
+        return ChatMessage(
+          text: (map['content'] as String?) ?? '',
+          isUser: map['role'] == 'user',
+          time: DateTime.tryParse(map['createdAt'] as String? ?? '') ??
+              DateTime.now(),
+        );
+      }).toList();
+
+      state = AiChatState(
+        messages: loaded.isEmpty
+            ? [ChatMessage(text: _welcomeText, isUser: false, time: DateTime.now())]
+            : loaded,
+        isLoading: false,
+        conversationId: conversationId,
+      );
+    } on Exception {
+      state = state.copyWith(isLoading: false);
     }
   }
 
