@@ -13,8 +13,8 @@ class MainShell extends ConsumerWidget {
     final location = GoRouterState.of(context).uri.toString();
     if (location.startsWith('/tasks')) return 1;
     if (location.startsWith('/calendar')) return 2;
-    if (location.startsWith('/ai')) return 3;
-    if (location.startsWith('/groups')) return 4;
+    if (location.startsWith('/notes')) return 3;
+    if (location.startsWith('/ai')) return 4;
     return 0;
   }
 
@@ -28,9 +28,9 @@ class MainShell extends ConsumerWidget {
       case 2:
         context.go('/calendar');
       case 3:
-        context.go('/ai');
+        context.go('/notes');
       case 4:
-        context.go('/groups');
+        context.go('/ai');
     }
   }
 
@@ -93,16 +93,16 @@ class _CaptusBottomNav extends StatelessWidget {
                 onTap: () => onTap(2),
               ),
               _NavItem(
-                icon: Icons.auto_awesome_outlined,
-                activeIcon: Icons.auto_awesome_rounded,
-                label: 'IA',
+                icon: Icons.sticky_note_2_outlined,
+                activeIcon: Icons.sticky_note_2_rounded,
+                label: 'Notas',
                 isSelected: selectedIndex == 3,
                 onTap: () => onTap(3),
               ),
               _NavItem(
-                icon: Icons.group_outlined,
-                activeIcon: Icons.group_rounded,
-                label: 'Grupos',
+                icon: Icons.auto_awesome_outlined,
+                activeIcon: Icons.auto_awesome_rounded,
+                label: 'IA',
                 isSelected: selectedIndex == 4,
                 onTap: () => onTap(4),
               ),

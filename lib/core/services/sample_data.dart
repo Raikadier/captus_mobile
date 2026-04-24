@@ -11,6 +11,7 @@ class SampleData {
     await _initializeSampleCourses();
     await _initializeSampleEvents();
     await _initializeSampleGroups();
+    await _initializeSampleNotes();
   }
 
   // ── Usuarios por defecto ──────────────────────────────────────────────────
@@ -317,5 +318,55 @@ class SampleData {
       },
     ];
     await LocalStorageService.setList(LocalStorageService.groupsKey, groups);
+  }
+
+  static Future<void> _initializeSampleNotes() async {
+    final notes = [
+      {
+        'id': 'n1',
+        'title': 'Algoritmos de Ordenamiento',
+        'content':
+            'QuickSort: O(n log n) promedio, O(n²) peor caso.\nMergeSort: O(n log n) siempre, O(n) espacio extra.\nHeapSort: O(n log n) siempre, O(1) espacio extra.\n\nPara la mayoría de casos prácticos usar TimSort (Python/Java).',
+        'subject': 'Estructuras de Datos',
+        'isPinned': true,
+        'createdAt':
+            DateTime.now().subtract(const Duration(days: 5)).toIso8601String(),
+        'updatedAt': null,
+      },
+      {
+        'id': 'n2',
+        'title': 'Integrales Dobles - Fórmulas Clave',
+        'content':
+            '∫∫ f(x,y) dA = ∫_a^b ∫_c^d f(x,y) dy dx\n\nCambio de variable a polares:\nx = r·cos(θ), y = r·sin(θ)\ndA = r dr dθ\n\nRecordar el Jacobiano cuando se cambia de variable.',
+        'subject': 'Cálculo II',
+        'isPinned': true,
+        'createdAt':
+            DateTime.now().subtract(const Duration(days: 3)).toIso8601String(),
+        'updatedAt': null,
+      },
+      {
+        'id': 'n3',
+        'title': 'Patrones de Diseño - Resumen',
+        'content':
+            'Creacionales: Singleton, Factory, Abstract Factory, Builder, Prototype.\nEstructurales: Adapter, Composite, Decorator, Facade.\nComportamiento: Observer, Strategy, Command, Iterator.\n\nMás usados en el proyecto: MVC + Observer.',
+        'subject': 'Ingeniería de Software I',
+        'isPinned': false,
+        'createdAt':
+            DateTime.now().subtract(const Duration(days: 10)).toIso8601String(),
+        'updatedAt': null,
+      },
+      {
+        'id': 'n4',
+        'title': 'Comandos Shell Scripting',
+        'content':
+            'chmod +x script.sh  → dar permisos de ejecución\ncron: */5 * * * * /ruta/script → ejecutar cada 5 min\n\$? → código de retorno del último comando\n\$# → número de argumentos\n\$@ → todos los argumentos',
+        'subject': 'Sistemas Operativos',
+        'isPinned': false,
+        'createdAt':
+            DateTime.now().subtract(const Duration(days: 7)).toIso8601String(),
+        'updatedAt': null,
+      },
+    ];
+    await LocalStorageService.setList(LocalStorageService.notesKey, notes);
   }
 }

@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/tasks_provider.dart';
+import '../../../core/providers/courses_provider.dart';
 import '../../../models/task.dart';
 import '../../../models/course.dart';
 import '../../../models/user.dart';
@@ -34,8 +36,10 @@ class HomeDashboardScreen extends ConsumerWidget {
             bio: localUser.bio,
           )
         : UserModel.mock;
-    final tasks = TaskModel.mockList;
-    final courses = CourseModel.mockList;
+    final tasksAsync = ref.watch(tasksNotifierProvider);
+    final coursesAsync = ref.watch(coursesProvider);
+    final tasks = tasksAsync.value ?? [];
+    final courses = coursesAsync.value ?? CourseModel.mockList;
     final today = tasks
         .where((t) =>
             t.dueDate != null &&

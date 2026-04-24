@@ -27,6 +27,7 @@ class LocalStorageService {
   static const String statisticsKey = 'user_statistics';
   static const String categoriesKey = 'local_categories';
   static const String onboardingKey = 'onboarding_completed';
+  static const String notesKey = 'local_notes';
 
   static Future<void> setString(String key, String value) async {
     await _instance.setString(key, value);
@@ -258,5 +259,32 @@ class LocalStorageService {
 
   static Future<void> clearChatMessages() async {
     await remove(chatMessagesKey);
+  }
+
+  // ── Notes ─────────────────────────────────────────────────────────────────
+
+  static List<Map<String, dynamic>> get notes {
+    return getList(notesKey);
+  }
+
+  static Future<void> addNote(Map<String, dynamic> note) async {
+    final list = notes;
+    list.insert(0, note);
+    await setList(notesKey, list);
+  }
+
+  static Future<void> updateNote(String id, Map<String, dynamic> note) async {
+    final list = notes;
+    final index = list.indexWhere((n) => n['id'] == id);
+    if (index != -1) {
+      list[index] = note;
+      await setList(notesKey, list);
+    }
+  }
+
+  static Future<void> deleteNote(String id) async {
+    final list = notes;
+    list.removeWhere((n) => n['id'] == id);
+    await setList(notesKey, list);
   }
 }

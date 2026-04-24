@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../../models/user.dart';
 
-class ProfileEditScreen extends StatefulWidget {
+class ProfileEditScreen extends ConsumerStatefulWidget {
   const ProfileEditScreen({super.key});
 
   @override
-  State<ProfileEditScreen> createState() => _ProfileEditScreenState();
+  ConsumerState<ProfileEditScreen> createState() => _ProfileEditScreenState();
 }
 
-class _ProfileEditScreenState extends State<ProfileEditScreen> {
+class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameCtrl;
   late final TextEditingController _emailCtrl;
@@ -23,11 +25,24 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   @override
   void initState() {
     super.initState();
-    final user = UserModel.mock;
+    final localUser = ref.read(currentUserProvider);
+    final user = localUser != null
+        ? UserModel(
+            id: localUser.id,
+            name: localUser.name,
+            email: localUser.email,
+            university: localUser.university,
+            career: localUser.career,
+            semester: localUser.semester,
+            role: localUser.role == 'teacher'
+                ? UserRole.teacher
+                : UserRole.student,
+          )
+        : UserModel.mock;
     _nameCtrl = TextEditingController(text: user.name);
     _emailCtrl = TextEditingController(text: user.email);
-    _universityCtrl = TextEditingController(text: user.university);
-    _careerCtrl = TextEditingController(text: user.career);
+    _universityCtrl = TextEditingController(text: user.university ?? '');
+    _careerCtrl = TextEditingController(text: user.career ?? '');
     _semester = user.semester ?? 1;
   }
 
@@ -43,7 +58,12 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _saving = true);
-    await Future.delayed(const Duration(milliseconds: 600));
+    await ref.read(authProvider.notifier).updateProfile({
+      'name': _nameCtrl.text.trim(),
+      'university': _universityCtrl.text.trim(),
+      'career': _careerCtrl.text.trim(),
+      'semester': _semester,
+    });
     if (mounted) {
       setState(() => _saving = false);
       context.pop();

@@ -14,9 +14,26 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+<<<<<<< Updated upstream
     final profileAsync = ref.watch(userProfileProvider);
     final user = profileAsync.asData?.value ?? UserModel.fromLocalUser(ref.watch(currentUserProvider));
     final statsAsync = ref.watch(statisticsProvider);
+=======
+    final localUser = ref.watch(currentUserProvider);
+    final user = localUser != null
+        ? UserModel(
+            id: localUser.id,
+            name: localUser.name,
+            email: localUser.email,
+            university: localUser.university,
+            career: localUser.career,
+            semester: localUser.semester,
+            role: localUser.role == 'teacher' ? UserRole.teacher : UserRole.student,
+            avatarUrl: localUser.avatarUrl,
+            bio: localUser.bio,
+          )
+        : UserModel.mock;
+>>>>>>> Stashed changes
 
     return Scaffold(
       backgroundColor: AppColors.background,

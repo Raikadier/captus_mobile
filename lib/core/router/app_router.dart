@@ -42,6 +42,8 @@ import '../../features/profile/screens/profile_screen.dart';
 import '../../features/profile/screens/profile_edit_screen.dart';
 import '../../features/profile/screens/settings_screen.dart';
 import '../../features/profile/screens/settings_security_screen.dart';
+import '../../features/notes/screens/notes_list_screen.dart';
+import '../../features/notes/screens/note_create_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -156,6 +158,11 @@ GoRouter createRouter(WidgetRef ref) {
             path: '/groups',
             name: 'groups_list',
             builder: (_, __) => const GroupsListScreen(),
+          ),
+          GoRoute(
+            path: '/notes',
+            name: 'notes_list',
+            builder: (_, __) => const NotesListScreen(),
           ),
         ],
       ),
@@ -319,6 +326,19 @@ GoRouter createRouter(WidgetRef ref) {
         name: 'student_profile_view',
         builder: (_, state) =>
             StudentProfileViewScreen(studentId: state.pathParameters['id']!),
+      ),
+
+      // ── Notes ─────────────────────────────────────────────────────────────
+      GoRoute(
+        path: '/notes/create',
+        name: 'note_create',
+        builder: (_, __) => const NoteCreateScreen(),
+      ),
+      GoRoute(
+        path: '/notes/:id',
+        name: 'note_detail',
+        builder: (_, state) =>
+            NoteCreateScreen(noteId: state.pathParameters['id']),
       ),
 
       // ── Profile ────────────────────────────────────────────────────────────
