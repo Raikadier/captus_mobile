@@ -4,8 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/auth_provider.dart';
-import '../../../core/providers/user_profile_provider.dart';
-import '../../../core/providers/statistics_provider.dart';
+import '../../../core/services/local_storage_service.dart';
 import '../../../models/user.dart';
 import '../../../shared/widgets/streak_badge.dart';
 
@@ -14,11 +13,6 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-<<<<<<< Updated upstream
-    final profileAsync = ref.watch(userProfileProvider);
-    final user = profileAsync.asData?.value ?? UserModel.fromLocalUser(ref.watch(currentUserProvider));
-    final statsAsync = ref.watch(statisticsProvider);
-=======
     final localUser = ref.watch(currentUserProvider);
     final user = localUser != null
         ? UserModel(
@@ -28,12 +22,19 @@ class ProfileScreen extends ConsumerWidget {
             university: localUser.university,
             career: localUser.career,
             semester: localUser.semester,
-            role: localUser.role == 'teacher' ? UserRole.teacher : UserRole.student,
+            role: localUser.role == 'teacher'
+                ? UserRole.teacher
+                : UserRole.student,
             avatarUrl: localUser.avatarUrl,
             bio: localUser.bio,
           )
         : UserModel.mock;
->>>>>>> Stashed changes
+
+    final streak = LocalStorageService.userStreak;
+    final completedTasks = LocalStorageService.tasks
+        .where((t) => t['completed'] == true)
+        .length;
+    final activeCourses = LocalStorageService.courses.length;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -112,14 +113,13 @@ class ProfileScreen extends ConsumerWidget {
                       fontSize: 13, color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: 16),
-                StreakBadge(days: statsAsync.asData?.value.currentStreak ?? 0, size: StreakSize.mini),
+                StreakBadge(days: streak, size: StreakSize.mini),
               ],
             ),
           ),
 
           const SizedBox(height: 16),
 
-          // Academic info
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
@@ -139,24 +139,25 @@ class ProfileScreen extends ConsumerWidget {
                   _InfoRow(
                     icon: Icons.school_rounded,
                     label: 'Universidad',
-                    value: user.university ?? '',
+                    value: user.university ?? '—',
                   ),
                   _InfoRow(
                     icon: Icons.laptop_rounded,
                     label: 'Carrera',
-                    value: user.career ?? '',
+                    value: user.career ?? '—',
                   ),
                   _InfoRow(
                     icon: Icons.layers_rounded,
                     label: 'Semestre',
-                    value: '${user.semester}° semestre',
+                    value: user.semester != null
+                        ? '${user.semester}° semestre'
+                        : '—',
                     isLast: true,
                   ),
                 ]),
 
                 const SizedBox(height: 24),
 
-                // Stats
                 Text(
                   'ESTADÍSTICAS',
                   style: GoogleFonts.inter(
@@ -172,26 +173,25 @@ class ProfileScreen extends ConsumerWidget {
                     _StatTile(
                         icon: Icons.check_circle_rounded,
                         label: 'Completadas',
-                        value: '${statsAsync.asData?.value.completedTasks ?? 0}',
+                        value: '$completedTasks',
                         color: AppColors.primary),
                     const SizedBox(width: 8),
                     _StatTile(
                         icon: Icons.local_fire_department_rounded,
                         label: 'Racha',
-                        value: '${statsAsync.asData?.value.currentStreak ?? 0}d',
+                        value: '${streak}d',
                         color: AppColors.warning),
                     const SizedBox(width: 8),
                     _StatTile(
                         icon: Icons.school_rounded,
                         label: 'Materias',
-                        value: '${statsAsync.asData?.value.activeCourses ?? 0}',
+                        value: '$activeCourses',
                         color: const Color(0xFFAB47BC)),
                   ],
                 ),
 
                 const SizedBox(height: 24),
 
-                // Quick links
                 Text(
                   'ACCESO RÁPIDO',
                   style: GoogleFonts.inter(
@@ -223,7 +223,6 @@ class ProfileScreen extends ConsumerWidget {
 
                 const SizedBox(height: 24),
 
-                // Settings
                 Text(
                   'CUENTA',
                   style: GoogleFonts.inter(
@@ -280,7 +279,6 @@ class ProfileScreen extends ConsumerWidget {
             onPressed: () {
               Navigator.pop(context);
               ref.read(authProvider.notifier).signOut();
-              // Router redirect handles navigation to /login automatically.
             },
             child: Text('Salir', style: TextStyle(color: AppColors.error)),
           ),
@@ -334,9 +332,12 @@ class _InfoRow extends StatelessWidget {
                   style: GoogleFonts.inter(
                       fontSize: 13, color: AppColors.textSecondary)),
               const Spacer(),
-              Text(value,
-                  style: GoogleFonts.inter(
-                      fontSize: 13, color: AppColors.textPrimary)),
+              Flexible(
+                child: Text(value,
+                    style: GoogleFonts.inter(
+                        fontSize: 13, color: AppColors.textPrimary),
+                    textAlign: TextAlign.end),
+              ),
             ],
           ),
         ),

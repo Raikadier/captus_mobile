@@ -21,12 +21,48 @@ dependencies:
   google_fonts: ^8.0.2
   shimmer: ^3.0.0
   flutter_slidable: ^4.0.3
+  lottie: ^3.1.0
+  flutter_animate: ^4.5.0
+  smooth_page_indicator: ^1.2.0
 
   # Calendar
   table_calendar: ^3.1.2
 
   # Charts
   fl_chart: ^0.69.0
+
+  # ━━━ RETO 1: El Mundo Real Entra a tu App ━━━
+  # Cámara
+  image_picker: ^1.1.2
+  
+  # QR
+  qr_flutter: ^10.2.0
+  mobile_scanner: ^3.6.0
+  
+  # Sensores
+  sensors_plus: ^1.6.0
+  geolocator: ^11.0.0
+  
+  # Almacenamiento local persistente
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # ━━━ RETO 2: La App que Habla Primero ━━━
+  # Notificaciones
+  firebase_core: ^3.3.0
+  firebase_messaging: ^15.1.0
+  flutter_local_notifications: ^16.3.0
+  timezone: ^0.9.2
+
+  # ━━━ RETO 3: Tu App, Bajo el Microscopio ━━━
+  # Exportación
+  pdf: ^3.13.0
+  screenshot: ^2.1.1
+  permission_handler: ^11.4.4
+
+  # ━━━ RETO 4: App Blindada ━━━
+  # Seguridad
+  flutter_secure_storage: ^9.2.2
 
   # Local storage
   shared_preferences: ^2.3.2
@@ -39,6 +75,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  
+  # ━━━ RETO 4: App Blindada ━━━
+  mockito: ^4.4.4
+  build_runner: ^2.4.11
 
 flutter:
   uses-material-design: true
