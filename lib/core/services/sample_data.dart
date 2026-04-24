@@ -2,6 +2,8 @@ import '../services/local_storage_service.dart';
 
 class SampleData {
   static Future<void> initializeSampleData() async {
+    await _initializeDefaultUsers();
+
     final existingCourses = LocalStorageService.courses;
     if (existingCourses.isNotEmpty) return;
 
@@ -11,6 +13,39 @@ class SampleData {
     await _initializeSampleGroups();
   }
 
+  // ── Usuarios por defecto ──────────────────────────────────────────────────
+  static Future<void> _initializeDefaultUsers() async {
+    final existing = LocalStorageService.users;
+    if (existing.isNotEmpty) return;
+
+    final defaultUsers = [
+      {
+        'id': 'u_student_1',
+        'email': 'estudiante@captus.app',
+        'name': 'David Barceló',
+        'password': '12345678',
+        'role': 'student',
+        'university': 'Universidad Popular del Cesar',
+        'career': 'Ingeniería de Sistemas',
+        'semester': 5,
+      },
+      {
+        'id': 'u_teacher_1',
+        'email': 'docente@captus.app',
+        'name': 'Prof. García',
+        'password': '12345678',
+        'role': 'teacher',
+        'university': 'Universidad Popular del Cesar',
+        'career': 'Docente',
+        'semester': 0,
+      },
+    ];
+
+    await LocalStorageService.setList(
+        LocalStorageService.usersKey, defaultUsers);
+  }
+
+  // ── Tareas ────────────────────────────────────────────────────────────────
   static Future<void> _initializeSampleTasks() async {
     final tasks = [
       {
@@ -59,8 +94,7 @@ class SampleData {
       {
         'id': 't3',
         'title': 'Proyecto Final - Ingeniería de Software',
-        'description':
-            'Documentar requisitos y arquitectura del sistema de gestión académica.',
+        'description': 'Documentar requisitos y arquitectura del sistema.',
         'priority': 'medium',
         'priority_id': 2,
         'completed': false,
@@ -127,6 +161,7 @@ class SampleData {
     await LocalStorageService.setList(LocalStorageService.tasksKey, tasks);
   }
 
+  // ── Cursos ────────────────────────────────────────────────────────────────
   static Future<void> _initializeSampleCourses() async {
     final courses = [
       {
@@ -134,9 +169,11 @@ class SampleData {
         'name': 'Estructuras de Datos',
         'code': 'IS-301',
         'teacherName': 'Prof. García',
+        'teacherId': 'u_teacher_1',
         'colorIndex': 0,
         'progress': 0.65,
-        'pendingActivities': 2,
+        'pendingActivities': 5,
+        'studentCount': 42,
         'description': 'Algoritmos y estructuras de datos fundamentales.',
         'schedule': 'Lun/Mié 10:00-12:00',
         'activities': [
@@ -147,7 +184,8 @@ class SampleData {
                 DateTime.now().add(const Duration(days: 2)).toIso8601String(),
             'type': 'Tarea',
             'isSubmitted': false,
-            'requiresFile': true
+            'requiresFile': true,
+            'submissionCount': 37,
           },
           {
             'id': 'a2',
@@ -156,7 +194,8 @@ class SampleData {
                 DateTime.now().add(const Duration(days: 10)).toIso8601String(),
             'type': 'Examen',
             'isSubmitted': false,
-            'requiresFile': false
+            'requiresFile': false,
+            'submissionCount': 0,
           },
         ],
       },
@@ -164,10 +203,12 @@ class SampleData {
         'id': 'c2',
         'name': 'Cálculo II',
         'code': 'MA-201',
-        'teacherName': 'Prof. Martínez',
+        'teacherName': 'Prof. García',
+        'teacherId': 'u_teacher_1',
         'colorIndex': 1,
         'progress': 0.40,
-        'pendingActivities': 1,
+        'pendingActivities': 12,
+        'studentCount': 38,
         'description': 'Cálculo integral multivariable.',
         'schedule': 'Mar/Jue 14:00-16:00',
         'activities': [
@@ -178,57 +219,41 @@ class SampleData {
                 DateTime.now().add(const Duration(days: 3)).toIso8601String(),
             'type': 'Tarea',
             'isSubmitted': false,
-            'requiresFile': true
+            'requiresFile': true,
+            'submissionCount': 26,
           },
         ],
       },
       {
         'id': 'c3',
-        'name': 'Ingeniería de Software I',
+        'name': 'Taller Algoritmos',
         'code': 'IS-401',
-        'teacherName': 'Prof. López',
+        'teacherName': 'Prof. García',
+        'teacherId': 'u_teacher_1',
         'colorIndex': 2,
         'progress': 0.80,
-        'pendingActivities': 3,
-        'description': 'Metodologías y proceso de desarrollo de software.',
-        'schedule': 'Lun/Mié/Vie 08:00-10:00',
+        'pendingActivities': 8,
+        'studentCount': 44,
+        'description': 'Diseño y análisis de algoritmos.',
+        'schedule': 'Vie 08:00-12:00',
         'activities': [
           {
             'id': 'a4',
-            'title': 'Diagrama UML',
+            'title': 'Algoritmos de Ordenamiento',
             'dueDate':
                 DateTime.now().add(const Duration(days: 5)).toIso8601String(),
-            'type': 'Proyecto',
+            'type': 'Tarea',
             'isSubmitted': false,
-            'requiresFile': true
-          },
-          {
-            'id': 'a5',
-            'title': 'Caso de Estudio',
-            'dueDate':
-                DateTime.now().add(const Duration(days: 8)).toIso8601String(),
-            'type': 'Ensayo',
-            'isSubmitted': false,
-            'requiresFile': true
+            'requiresFile': true,
+            'submissionCount': 36,
           },
         ],
-      },
-      {
-        'id': 'c4',
-        'name': 'Sistemas Operativos',
-        'code': 'IS-302',
-        'teacherName': 'Prof. Rodríguez',
-        'colorIndex': 3,
-        'progress': 0.55,
-        'pendingActivities': 0,
-        'description': 'Fundamentos de sistemas operativos y administración.',
-        'schedule': 'Mar/Jue 16:00-18:00',
-        'activities': [],
       },
     ];
     await LocalStorageService.setList(LocalStorageService.coursesKey, courses);
   }
 
+  // ── Eventos ───────────────────────────────────────────────────────────────
   static Future<void> _initializeSampleEvents() async {
     final events = [
       {
@@ -242,9 +267,9 @@ class SampleData {
       },
       {
         'id': 'e2',
-        'title': 'Entrega Proyecto IS',
-        'description': 'Documentación completa',
-        'date': DateTime.now().add(const Duration(days: 14)).toIso8601String(),
+        'title': 'Entrega Taller Algoritmos',
+        'description': 'Algoritmos de ordenamiento',
+        'date': DateTime.now().add(const Duration(days: 5)).toIso8601String(),
         'type': 'deadline',
         'colorIndex': 2,
         'courseId': 'c3',
@@ -253,7 +278,7 @@ class SampleData {
         'id': 'e3',
         'title': 'Clase Extra - EDD',
         'description': 'Repaso para el parcial',
-        'date': DateTime.now().add(const Duration(days: 5)).toIso8601String(),
+        'date': DateTime.now().add(const Duration(days: 2)).toIso8601String(),
         'type': 'class',
         'colorIndex': 0,
         'courseId': 'c1',
@@ -262,6 +287,7 @@ class SampleData {
     await LocalStorageService.setList(LocalStorageService.eventsKey, events);
   }
 
+  // ── Grupos ────────────────────────────────────────────────────────────────
   static Future<void> _initializeSampleGroups() async {
     final groups = [
       {
@@ -272,10 +298,9 @@ class SampleData {
         'memberCount': 4,
         'isJoined': true,
         'members': [
-          {'id': 'u1', 'name': 'Tú', 'role': 'student'},
+          {'id': 'u_student_1', 'name': 'David Barceló', 'role': 'student'},
           {'id': 'u2', 'name': 'Ana García', 'role': 'student'},
           {'id': 'u3', 'name': 'Carlos Ruiz', 'role': 'student'},
-          {'id': 'u4', 'name': 'María López', 'role': 'student'},
         ],
         'createdAt':
             DateTime.now().subtract(const Duration(days: 30)).toIso8601String(),

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/providers/auth_provider.dart';
 
-class MainShell extends StatelessWidget {
+class MainShell extends ConsumerWidget {
   final Widget child;
   const MainShell({super.key, required this.child});
 
@@ -16,10 +18,11 @@ class MainShell extends StatelessWidget {
     return 0;
   }
 
-  void _onTabTap(BuildContext context, int index) {
+  void _onTabTap(BuildContext context, WidgetRef ref, int index) {
+    final role = ref.read(userRoleProvider);
     switch (index) {
       case 0:
-        context.go('/home');
+        context.go(role == 'teacher' ? '/home/teacher' : '/home');
       case 1:
         context.go('/tasks');
       case 2:
@@ -32,14 +35,14 @@ class MainShell extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final selectedIndex = _selectedIndex(context);
 
     return Scaffold(
       body: child,
       bottomNavigationBar: _CaptusBottomNav(
         selectedIndex: selectedIndex,
-        onTap: (i) => _onTabTap(context, i),
+        onTap: (i) => _onTabTap(context, ref, i),
       ),
     );
   }
@@ -143,7 +146,8 @@ class _NavItem extends StatelessWidget {
               children: [
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? AppColors.primary.withAlpha(25)
@@ -153,7 +157,9 @@ class _NavItem extends StatelessWidget {
                   child: Icon(
                     isSelected ? activeIcon : icon,
                     size: 24,
-                    color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                    color: isSelected
+                        ? AppColors.primary
+                        : AppColors.textSecondary,
                   ),
                 ),
                 if (badge != null && badge! > 0)
