@@ -297,7 +297,7 @@ class _MessageBubble extends StatelessWidget {
                     ),
                   ),
                   // Show action tag if the bot performed an action
-                  if (message.actionPerformed != null) ...[
+                  if (message.actionPerformed != null && message.actionPerformed!.isNotEmpty) ...[
                     const SizedBox(height: 6),
                     Container(
                       padding: const EdgeInsets.symmetric(

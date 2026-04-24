@@ -1,25 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/ai_chat_provider.dart';
+import '../../../core/providers/ai_settings_provider.dart';
 
-class AiSettingsScreen extends StatefulWidget {
+class AiSettingsScreen extends ConsumerWidget {
   const AiSettingsScreen({super.key});
 
   @override
-  State<AiSettingsScreen> createState() => _AiSettingsScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final asyncSettings = ref.watch(aiSettingsProvider);
 
-class _AiSettingsScreenState extends State<AiSettingsScreen> {
-  bool _accessTasks = true;
-  bool _accessCalendar = true;
-  bool _accessGroups = true;
-  bool _voiceResponses = false;
-  bool _proactiveSuggestions = true;
-  int _toneIndex = 1; // 0=Formal, 1=Amigable, 2=Motivacional
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -29,122 +22,175 @@ class _AiSettingsScreenState extends State<AiSettingsScreen> {
           onPressed: () => context.pop(),
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _SectionLabel('PERMISOS DE ACCESO'),
-          _ToggleItem(
-            icon: '📋',
-            label: 'Acceso a mis tareas',
-            subtitle: 'La IA puede ver y sugerir sobre tus tareas',
-            value: _accessTasks,
-            onChanged: (v) => setState(() => _accessTasks = v),
-          ),
-          _ToggleItem(
-            icon: '📅',
-            label: 'Acceso a mi calendario',
-            subtitle: 'La IA puede leer tus fechas y entregas',
-            value: _accessCalendar,
-            onChanged: (v) => setState(() => _accessCalendar = v),
-          ),
-          _ToggleItem(
-            icon: '👥',
-            label: 'Acceso a mis grupos',
-            subtitle: 'La IA puede leer actividades de grupos',
-            value: _accessGroups,
-            onChanged: (v) => setState(() => _accessGroups = v),
-          ),
+      body: asyncSettings.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(
+          child: Text('Error al cargar configuración',
+              style: GoogleFonts.inter(color: AppColors.textSecondary)),
+        ),
+        data: (settings) => _SettingsBody(settings: settings),
+      ),
+    );
+  }
+}
 
-          const SizedBox(height: 8),
-          _SectionLabel('COMPORTAMIENTO'),
+class _SettingsBody extends ConsumerWidget {
+  final AiSettings settings;
+  const _SettingsBody({required this.settings});
 
-          Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border, width: 0.5),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Tono de respuestas',
-                    style: GoogleFonts.inter(
-                        fontSize: 14, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 12),
-                Row(
-                  children: ['Formal', 'Amigable', 'Motivacional']
-                      .asMap()
-                      .entries
-                      .map((e) {
-                    final isSelected = _toneIndex == e.key;
-                    return Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _toneIndex = e.key),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 150),
-                          margin: const EdgeInsets.only(right: 6),
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          decoration: BoxDecoration(
+  void _update(WidgetRef ref, AiSettings updated) =>
+      ref.read(aiSettingsProvider.notifier).save(updated);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        _SectionLabel('PERMISOS DE ACCESO'),
+        _ToggleItem(
+          icon: '📋',
+          label: 'Acceso a mis tareas',
+          subtitle: 'La IA puede ver y sugerir sobre tus tareas',
+          value: settings.accessTasks,
+          onChanged: (v) =>
+              _update(ref, settings.copyWith(accessTasks: v)),
+        ),
+        _ToggleItem(
+          icon: '📅',
+          label: 'Acceso a mi calendario',
+          subtitle: 'La IA puede leer tus fechas y entregas',
+          value: settings.accessCalendar,
+          onChanged: (v) =>
+              _update(ref, settings.copyWith(accessCalendar: v)),
+        ),
+        _ToggleItem(
+          icon: '👥',
+          label: 'Acceso a mis grupos',
+          subtitle: 'La IA puede leer actividades de grupos',
+          value: settings.accessGroups,
+          onChanged: (v) =>
+              _update(ref, settings.copyWith(accessGroups: v)),
+        ),
+
+        const SizedBox(height: 8),
+        _SectionLabel('COMPORTAMIENTO'),
+
+        Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.border, width: 0.5),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Tono de respuestas',
+                  style: GoogleFonts.inter(
+                      fontSize: 14, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 12),
+              Row(
+                children: ['Formal', 'Amigable', 'Motivacional']
+                    .asMap()
+                    .entries
+                    .map((e) {
+                  final isSelected = settings.toneIndex == e.key;
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () =>
+                          _update(ref, settings.copyWith(toneIndex: e.key)),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 150),
+                        margin: const EdgeInsets.only(right: 6),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppColors.primaryDark
+                              : AppColors.surface2,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
                             color: isSelected
-                                ? AppColors.primaryDark
-                                : AppColors.surface2,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
+                                ? AppColors.primary
+                                : AppColors.border,
+                            width: isSelected ? 1.5 : 0.5,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            e.value,
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
                               color: isSelected
                                   ? AppColors.primary
-                                  : AppColors.border,
-                              width: isSelected ? 1.5 : 0.5,
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              e.value,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: isSelected
-                                    ? AppColors.primary
-                                    : AppColors.textSecondary,
-                              ),
+                                  : AppColors.textSecondary,
                             ),
                           ),
                         ),
                       ),
-                    );
-                  }).toList(),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+
+        _ToggleItem(
+          icon: '🔊',
+          label: 'Respuestas por voz',
+          subtitle: 'Lee las respuestas en voz alta',
+          value: settings.voiceResponses,
+          onChanged: (v) =>
+              _update(ref, settings.copyWith(voiceResponses: v)),
+        ),
+        _ToggleItem(
+          icon: '💡',
+          label: 'Sugerencias proactivas',
+          subtitle: 'Captus IA te sugiere acciones sin que preguntes',
+          value: settings.proactiveSuggestions,
+          onChanged: (v) =>
+              _update(ref, settings.copyWith(proactiveSuggestions: v)),
+        ),
+
+        const SizedBox(height: 24),
+        OutlinedButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                backgroundColor: AppColors.surface,
+                title: const Text('Borrar historial'),
+                content: const Text(
+                  '¿Estás seguro? Se eliminará la conversación actual de la app.',
                 ),
-              ],
-            ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: const Text('Cancelar'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      ref.read(aiChatProvider.notifier).clear();
+                      Navigator.of(ctx).pop();
+                      context.pop();
+                    },
+                    style: TextButton.styleFrom(
+                        foregroundColor: AppColors.error),
+                    child: const Text('Borrar'),
+                  ),
+                ],
+              ),
+            );
+          },
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.error,
+            side: const BorderSide(color: AppColors.error),
           ),
-
-          _ToggleItem(
-            icon: '🔊',
-            label: 'Respuestas por voz',
-            subtitle: 'Lee las respuestas en voz alta',
-            value: _voiceResponses,
-            onChanged: (v) => setState(() => _voiceResponses = v),
-          ),
-          _ToggleItem(
-            icon: '💡',
-            label: 'Sugerencias proactivas',
-            subtitle: 'Captus IA te sugiere acciones sin que preguntes',
-            value: _proactiveSuggestions,
-            onChanged: (v) => setState(() => _proactiveSuggestions = v),
-          ),
-
-          const SizedBox(height: 24),
-          OutlinedButton(
-            onPressed: () {},
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.error,
-              side: const BorderSide(color: AppColors.error),
-            ),
-            child: const Text('Borrar historial de conversaciones'),
-          ),
-        ],
-      ),
+          child: const Text('Borrar historial de conversaciones'),
+        ),
+      ],
     );
   }
 }

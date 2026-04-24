@@ -1,5 +1,12 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/local_storage_service.dart';
+import '../services/api_client.dart';
+
+// Gemini 2.5 Pro puede tardar hasta 40s en razonamiento complejo.
+// Este override se aplica solo a las llamadas de IA.
+final _aiRequestOptions = Options(receiveTimeout: const Duration(seconds: 90));
+
+// ── Data models ───────────────────────────────────────────────────────────────
 
 class ChatMessage {
   final String text;
@@ -44,27 +51,14 @@ class AiChatState {
       );
 }
 
+// ── Notifier ──────────────────────────────────────────────────────────────────
+
 class AiChatNotifier extends Notifier<AiChatState> {
   static const _welcomeText =
       '¡Hola! Soy Captus IA. Tengo acceso a tus tareas, calendario y cursos. ¿En qué te puedo ayudar hoy?';
 
   @override
   AiChatState build() {
-    final storedMessages = LocalStorageService.chatMessages;
-    if (storedMessages.isNotEmpty) {
-      final messages = storedMessages
-          .map((m) => ChatMessage(
-                text: m['text']?.toString() ?? '',
-                isUser: m['isUser'] as bool? ?? false,
-                time: DateTime.tryParse(m['time']?.toString() ?? '') ??
-                    DateTime.now(),
-                actionPerformed: m['actionPerformed']?.toString(),
-                data: m['data'] as Map<String, dynamic>?,
-              ))
-          .toList();
-      return AiChatState(messages: messages);
-    }
-
     return AiChatState(
       messages: [
         ChatMessage(
@@ -79,91 +73,94 @@ class AiChatNotifier extends Notifier<AiChatState> {
   Future<void> send(String text) async {
     if (text.trim().isEmpty) return;
 
-    final userMsg =
-        ChatMessage(text: text.trim(), isUser: true, time: DateTime.now());
+    // 1. Append user message immediately
+    final userMsg = ChatMessage(text: text.trim(), isUser: true, time: DateTime.now());
     state = state.copyWith(
       messages: [...state.messages, userMsg],
       isLoading: true,
       error: null,
     );
 
-    await Future.delayed(const Duration(milliseconds: 800));
+    try {
+      // 2. Call backend
+      final res = await ApiClient.instance.post<Map<String, dynamic>>(
+        '/ai/chat',
+        data: {
+          'message': text.trim(),
+          if (state.conversationId != null) 'conversationId': state.conversationId,
+        },
+        options: _aiRequestOptions,
+      );
 
-    final reply = _generateMockResponse(text.trim());
+      final body = res.data is Map<String, dynamic> ? res.data as Map<String, dynamic> : <String, dynamic>{};
+      final reply = (body['result'] as String?) ?? 'Sin respuesta.';
+      final convId = body['conversationId']?.toString();
+      final action = body['actionPerformed'] as String?;
+      final rawData = body['data'];
+      final toolData =
+          rawData is Map<String, dynamic> ? rawData : null;
 
-    final botMsg = ChatMessage(
-      text: reply,
-      isUser: false,
-      time: DateTime.now(),
-    );
+      final botMsg = ChatMessage(
+        text: reply,
+        isUser: false,
+        time: DateTime.now(),
+        actionPerformed: action,
+        data: toolData,
+      );
 
-    final newMessages = [...state.messages, botMsg];
-    state = state.copyWith(
-      messages: newMessages,
-      isLoading: false,
-    );
-
-    await LocalStorageService.clearChatMessages();
-    for (final msg in newMessages) {
-      await LocalStorageService.addChatMessage({
-        'text': msg.text,
-        'isUser': msg.isUser,
-        'time': msg.time.toIso8601String(),
-        'actionPerformed': msg.actionPerformed,
-        'data': msg.data,
-      });
+      state = state.copyWith(
+        messages: [...state.messages, botMsg],
+        isLoading: false,
+        conversationId: convId ?? state.conversationId,
+      );
+    } on Exception catch (e) {
+      final errMsg = e.toString().replaceFirst('Exception: ', '');
+      state = state.copyWith(
+        isLoading: false,
+        error: errMsg,
+        messages: [
+          ...state.messages,
+          ChatMessage(
+            text: 'No pude conectar con el asistente. Intenta de nuevo.',
+            isUser: false,
+            time: DateTime.now(),
+          ),
+        ],
+      );
     }
   }
 
-  String _generateMockResponse(String input) {
-    final lower = input.toLowerCase();
+  /// Loads an existing conversation from the backend by ID.
+  /// Replaces the current state with the fetched messages.
+  Future<void> loadConversation(String conversationId) async {
+    state = state.copyWith(isLoading: true, conversationId: conversationId);
+    try {
+      final res = await ApiClient.instance
+          .get<List<dynamic>>('/ai/conversations/$conversationId/messages');
+      final raw = res.data is List ? res.data as List<dynamic> : <dynamic>[];
+      final loaded = raw.map((m) {
+        final map = m as Map<String, dynamic>;
+        return ChatMessage(
+          text: (map['content'] as String?) ?? '',
+          isUser: map['role'] == 'user',
+          time: DateTime.tryParse(map['createdAt'] as String? ?? '') ??
+              DateTime.now(),
+        );
+      }).toList();
 
-    if (lower.contains('tarea') || lower.contains('tareas')) {
-      return 'Tienes 5 tareas pendientes. Las más urgentes son:\n\n'
-          '• Taller Árboles Binarios - mañana\n'
-          '• Práctica Shell Scripting - en 1 día\n'
-          '• Parcial Cálculo II - en 7 días';
+      state = AiChatState(
+        messages: loaded.isEmpty
+            ? [ChatMessage(text: _welcomeText, isUser: false, time: DateTime.now())]
+            : loaded,
+        isLoading: false,
+        conversationId: conversationId,
+      );
+    } on Exception {
+      state = state.copyWith(isLoading: false);
     }
-
-    if (lower.contains('curso') || lower.contains('cursos')) {
-      return 'Estás inscrito en 4 cursos:\n\n'
-          '• Estructuras de Datos - 65% completado\n'
-          '• Cálculo II - 40% completado\n'
-          '• Ingeniería de Software I - 80% completado\n'
-          '• Sistemas Operativos - 55% completado';
-    }
-
-    if (lower.contains('calendario') || lower.contains('evento')) {
-      return 'Tienes los siguientes eventos próximos:\n\n'
-          '• Parcial Cálculo II - en 7 días\n'
-          '• Entrega Proyecto IS - en 14 días\n'
-          '• Clase Extra EDD - en 5 días';
-    }
-
-    if (lower.contains('ayuda') || lower.contains('help')) {
-      return 'Puedo ayudarte con:\n\n'
-          '📝 Ver tus tareas pendientes\n'
-          '📚 Info de tus cursos\n'
-          '📅 Ver eventos del calendario\n'
-          '📊 Tu progreso académico\n'
-          '❓ Responder preguntas generales';
-    }
-
-    if (lower.contains('progreso') || lower.contains('estadística')) {
-      return 'Tu progreso esta semana:\n\n'
-          '✅ 2 tareas completadas\n'
-          '🔥 Racha: 7 días\n'
-          '📚 Promedio: 72%\n\n'
-          '¡Sigue así! 💪';
-    }
-
-    return 'Entendido: "$input"\n\n'
-        'Como asistente local, puedo mostrarte información sobre tus tareas, '
-        'cursos y calendario. ¿Qué te gustaría saber?';
   }
 
   void clear() {
-    LocalStorageService.clearChatMessages();
     state = AiChatState(
       messages: [
         ChatMessage(
