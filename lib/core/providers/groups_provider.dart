@@ -42,7 +42,7 @@ class GroupModel {
 class GroupsService {
   Future<List<GroupModel>> fetchAll() async {
     final res =
-        await ApiClient.instance.get<dynamic>('/academic-groups/my-groups');
+        await ApiClient.instance.get<dynamic>('/groups/my-groups');
     final raw = res.data is List
         ? res.data as List
         : (res.data is Map ? (res.data['data'] as List? ?? []) : []);
