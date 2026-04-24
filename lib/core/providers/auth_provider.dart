@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/local_storage_service.dart';
+import '../services/sample_data.dart';
 import '../../models/statistics.dart';
 
 enum AuthStatus { loading, authenticated, unauthenticated }
@@ -105,7 +106,9 @@ class AuthState {
   bool get isAuthenticated => status == AuthStatus.authenticated;
 
   String get role => user?.role ?? 'student';
+
   String get displayName => user?.name ?? 'Usuario';
+
   String get email => user?.email ?? '';
 }
 
@@ -124,9 +127,11 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     required String password,
   }) async {
     state = const AsyncData(AuthState.loading());
-    await Future.delayed(const Duration(milliseconds: 300));
+
+    await Future.delayed(const Duration(milliseconds: 500));
 
     final user = LocalStorageService.findUserByEmail(email);
+
     if (user == null) {
       state =
           const AsyncData(AuthState.unauthenticated('Usuario no encontrado'));
@@ -140,8 +145,11 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       return 'Contraseña incorrecta';
     }
 
+    await SampleData.initializeSampleData();
+
     final localUser = LocalUser.fromJson(user);
     await LocalStorageService.setCurrentUserData(localUser.toJson());
+
     state = AsyncData(AuthState.authenticated(localUser));
     return null;
   }
@@ -153,7 +161,8 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     required String role,
   }) async {
     state = const AsyncData(AuthState.loading());
-    await Future.delayed(const Duration(milliseconds: 300));
+
+    await Future.delayed(const Duration(milliseconds: 500));
 
     final existing = LocalStorageService.findUserByEmail(email);
     if (existing != null) {
@@ -176,8 +185,19 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     final stats = StatisticsModel.createNew(userId);
     await LocalStorageService.setUserStatistics(stats.toJson());
 
+    final defaultCategory = {
+      'id': DateTime.now().millisecondsSinceEpoch.toString(),
+      'name': 'General',
+      'user_id': userId,
+      'created_at': DateTime.now().toIso8601String(),
+    };
+    await LocalStorageService.addCategory(defaultCategory);
+
+    await SampleData.initializeSampleData();
+
     final localUser = LocalUser.fromJson(newUser);
     await LocalStorageService.setCurrentUserData(localUser.toJson());
+
     state = AsyncData(AuthState.authenticated(localUser));
     return null;
   }
@@ -194,6 +214,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
 
   Future<void> updateProfile(Map<String, dynamic> data) async {
     if (state.value?.user == null) return;
+
     final currentUser = state.value!.user!;
     final updatedUser = currentUser.copyWith(
       name: data['name'] ?? currentUser.name,
@@ -203,6 +224,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       bio: data['bio'] ?? currentUser.bio,
       avatarUrl: data['avatarUrl'] ?? currentUser.avatarUrl,
     );
+
     await LocalStorageService.setCurrentUserData(updatedUser.toJson());
     state = AsyncData(AuthState.authenticated(updatedUser));
   }
