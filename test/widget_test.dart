@@ -13,7 +13,7 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          theme: AppTheme.dark,
+          theme: AppTheme.light,
           home: const Scaffold(body: Text('Captus')),
         ),
       );
@@ -25,7 +25,7 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          theme: AppTheme.dark,
+          theme: AppTheme.light,
           home: const Scaffold(body: SizedBox()),
         ),
       );
@@ -37,7 +37,7 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          theme: AppTheme.dark,
+          theme: AppTheme.light,
           home: const Scaffold(body: SizedBox()),
         ),
       );

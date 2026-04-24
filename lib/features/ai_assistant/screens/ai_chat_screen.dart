@@ -1,360 +1,200 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/providers/ai_chat_provider.dart';
 
-class AiChatScreen extends ConsumerStatefulWidget {
+class AiChatScreen extends StatefulWidget {
   const AiChatScreen({super.key});
 
   @override
-  ConsumerState<AiChatScreen> createState() => _AiChatScreenState();
+  State<AiChatScreen> createState() => _AiChatScreenState();
 }
 
-class _AiChatScreenState extends ConsumerState<AiChatScreen> {
-  final _inputCtrl = TextEditingController();
-  final _scrollCtrl = ScrollController();
+class _AiChatScreenState extends State<AiChatScreen> {
+  final TextEditingController _controller = TextEditingController();
 
-  final List<String> _suggestions = [
-    '¿Cómo voy esta semana?',
-    'Priorizar mis tareas',
-    '¿Cuándo es mi próxima entrega?',
-    'Crear una tarea rápida',
+  List<Map<String, dynamic>> messages = [
+    {
+      "isUser": false,
+      "text":
+          "Hola David. Basándome en tus fechas, te recomiendo:\n\n1. Entrega Estructuras de Datos — vence mañana\n2. Estudiar para Parcial Cálculo II — en 3 días\n\n¿Quieres que cree recordatorios?"
+    }
   ];
 
-  @override
-  void dispose() {
-    _inputCtrl.dispose();
-    _scrollCtrl.dispose();
-    super.dispose();
-  }
+  void sendMessage() {
+    if (_controller.text.trim().isEmpty) return;
 
-  Future<void> _sendMessage(String text) async {
-    if (text.trim().isEmpty) return;
-    _inputCtrl.clear();
-    _scrollToBottom();
-    await ref.read(aiChatProvider.notifier).send(text);
-    _scrollToBottom();
-  }
+    setState(() {
+      messages.add({
+        "isUser": true,
+        "text": _controller.text,
+      });
 
-  void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollCtrl.hasClients) {
-        _scrollCtrl.animateTo(
-          _scrollCtrl.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
+      messages.add({
+        "isUser": false,
+        "text": "Estoy procesando tu solicitud..."
+      });
     });
+
+    _controller.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    final chatState = ref.watch(aiChatProvider);
-    final messages = chatState.messages;
-    final isLoading = chatState.isLoading;
-
-    // Auto-scroll when new messages arrive
-    ref.listen(aiChatProvider, (_, __) => _scrollToBottom());
-
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Row(
+      body: SafeArea(
+        child: Column(
           children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: AppColors.primaryDark,
-                shape: BoxShape.circle,
-              ),
-              child: const Center(child: Text('🌵', style: TextStyle(fontSize: 18))),
-            ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Captus IA',
-                    style: GoogleFonts.inter(
-                        fontSize: 16, fontWeight: FontWeight.w600)),
-                Row(
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: isLoading ? AppColors.warning : AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      isLoading ? 'Escribiendo...' : 'En línea',
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
-                        color: isLoading ? AppColors.warning : AppColors.primary,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.history_rounded),
-            onPressed: () => context.push('/ai/history'),
-          ),
-          IconButton(
-            icon: const Icon(Icons.more_vert_rounded),
-            onPressed: () => context.push('/ai/settings'),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Message list
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollCtrl,
+            // HEADER
+            Padding(
               padding: const EdgeInsets.all(16),
-              itemCount: messages.length + (isLoading ? 1 : 0),
-              itemBuilder: (_, i) {
-                if (i == messages.length && isLoading) {
-                  return const _TypingIndicator();
-                }
-                return _MessageBubble(message: messages[i]);
-              },
-            ),
-          ),
-
-          // Suggestion chips (only when not loading and few messages)
-          if (messages.length <= 3)
-            SizedBox(
-              height: 40,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: _suggestions.length,
-                itemBuilder: (_, i) => Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ActionChip(
-                    label: Text(_suggestions[i]),
-                    onPressed: isLoading ? null : () => _sendMessage(_suggestions[i]),
-                    backgroundColor: AppColors.surface2,
-                    side: const BorderSide(color: AppColors.primary, width: 0.5),
-                    labelStyle: GoogleFonts.inter(
-                      fontSize: 12,
+              child: Row(
+                children: [
+                  Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
                       color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(12),
                     ),
+                    child: const Icon(Icons.eco, color: Colors.white),
                   ),
-                ),
+                  const SizedBox(width: 12),
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Asistente Captus",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        "Powered by IA",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
               ),
             ),
-          if (messages.length <= 3) const SizedBox(height: 8),
 
-          // Input bar
-          Container(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            decoration: const BoxDecoration(
-              color: AppColors.surface,
-              border: Border(top: BorderSide(color: AppColors.border, width: 0.5)),
+            // CHAT
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: messages.length,
+                itemBuilder: (context, index) {
+                  final msg = messages[index];
+                  return Align(
+                    alignment: msg["isUser"]
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      padding: const EdgeInsets.all(14),
+                      constraints:
+                          const BoxConstraints(maxWidth: 280),
+                      decoration: BoxDecoration(
+                        color: msg["isUser"]
+                            ? AppColors.primary
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(14),
+                        border: msg["isUser"]
+                            ? null
+                            : Border.all(color: Colors.grey.shade200),
+                      ),
+                      child: Text(
+                        msg["text"],
+                        style: TextStyle(
+                          color: msg["isUser"]
+                              ? Colors.white
+                              : Colors.black87,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
-            child: SafeArea(
+
+            // QUICK ACTIONS
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  _quickButton("Sí, crear recordatorios"),
+                  const SizedBox(width: 8),
+                  _quickButton("Ver mi calendario"),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            // INPUT
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              color: AppColors.background,
               child: Row(
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: _inputCtrl,
-                      style: GoogleFonts.inter(fontSize: 14),
-                      enabled: !isLoading,
+                      controller: _controller,
                       decoration: InputDecoration(
-                        hintText: isLoading
-                            ? 'Captus está respondiendo...'
-                            : 'Escríbele a Captus...',
-                        hintStyle: GoogleFonts.inter(
-                            fontSize: 14, color: AppColors.textDisabled),
+                        hintText: "Escribe o habla con Captus...",
                         filled: true,
-                        fillColor: AppColors.surface2,
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 10),
+                        fillColor: Colors.white,
+                        contentPadding:
+                            const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 14),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius:
+                              BorderRadius.circular(14),
                           borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: const BorderSide(color: AppColors.primary),
                         ),
                       ),
-                      onSubmitted: _sendMessage,
                     ),
                   ),
                   const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: isLoading ? null : () => _sendMessage(_inputCtrl.text),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: isLoading
-                            ? AppColors.surface2
-                            : AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: isLoading
-                          ? const Padding(
-                              padding: EdgeInsets.all(10),
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppColors.primary,
-                              ),
-                            )
-                          : const Icon(Icons.send_rounded,
-                              size: 18, color: Colors.black),
+                  Container(
+                    height: 48,
+                    width: 48,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                  ),
+                    child: IconButton(
+                      icon: const Icon(Icons.send,
+                          color: Colors.white),
+                      onPressed: sendMessage,
+                    ),
+                  )
                 ],
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MessageBubble extends StatelessWidget {
-  final ChatMessage message;
-  const _MessageBubble({required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          if (!message.isUser) ...[
-            Container(
-              width: 24,
-              height: 24,
-              margin: const EdgeInsets.only(right: 6, bottom: 4),
-              decoration: BoxDecoration(
-                color: AppColors.primaryDark,
-                shape: BoxShape.circle,
-              ),
-              child: const Center(
-                  child: Text('🌵', style: TextStyle(fontSize: 12))),
-            ),
+            )
           ],
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.75,
-            ),
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: message.isUser
-                    ? AppColors.primaryDark
-                    : AppColors.surface,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(18),
-                  topRight: const Radius.circular(18),
-                  bottomLeft: message.isUser
-                      ? const Radius.circular(18)
-                      : const Radius.circular(4),
-                  bottomRight: message.isUser
-                      ? const Radius.circular(4)
-                      : const Radius.circular(18),
-                ),
-                border: message.isUser
-                    ? null
-                    : Border.all(
-                        color: AppColors.primary.withAlpha(51), width: 1),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    message.text,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: AppColors.textPrimary,
-                      height: 1.5,
-                    ),
-                  ),
-                  // Show action tag if the bot performed an action
-                  if (message.actionPerformed != null && message.actionPerformed!.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withAlpha(30),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        '✓ ${message.actionPerformed}',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
-}
 
-class _TypingIndicator extends StatelessWidget {
-  const _TypingIndicator();
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
+  Widget _quickButton(String text) {
+    return Expanded(
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12, left: 30),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.border),
+          borderRadius: BorderRadius.circular(12),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: List.generate(
-            3,
-            (i) => Container(
-              width: 6,
-              height: 6,
-              margin: const EdgeInsets.symmetric(horizontal: 2),
-              decoration: const BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
+        alignment: Alignment.center,
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 12),
+          textAlign: TextAlign.center,
         ),
       ),
     );
