@@ -1,48 +1,43 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/local_storage_service.dart';
+import '../services/api_client.dart';
 import '../../models/task.dart';
 
 class TasksService {
   Future<List<TaskModel>> fetchAll() async {
-    final tasks = LocalStorageService.tasks;
-    return tasks.map((t) => TaskModel.fromJson(t)).toList();
+    final res = await ApiClient.instance.get<Map<String, dynamic>>('/tasks');
+    final raw = res.data is Map ? (res.data!['data'] as List? ?? []) : [];
+    return raw
+        .map((t) => TaskModel.fromJson(t as Map<String, dynamic>))
+        .toList();
   }
 
   Future<TaskModel> create(Map<String, dynamic> payload) async {
-    final task = TaskModel.fromJson(payload);
-    await LocalStorageService.addTask(payload);
-    return task;
+    final res =
+        await ApiClient.instance.post<Map<String, dynamic>>('/tasks', data: payload);
+    final body = res.data is Map ? res.data! : <String, dynamic>{};
+    final taskJson = (body['data'] as Map<String, dynamic>?) ?? body;
+    return TaskModel.fromJson(taskJson);
   }
 
   Future<void> complete(String taskId) async {
-    final tasks = LocalStorageService.tasks;
-    final index = tasks.indexWhere((t) => t['id'] == taskId);
-    if (index != -1) {
-      tasks[index]['completed'] = true;
-      await LocalStorageService.setList(LocalStorageService.tasksKey, tasks);
-    }
+    await ApiClient.instance.put<void>('/tasks/$taskId/complete');
   }
 
   Future<void> delete(String taskId) async {
-    await LocalStorageService.deleteTask(taskId);
+    await ApiClient.instance.delete<void>('/tasks/$taskId');
   }
 
   Future<TaskModel?> updateTask(
       String taskId, Map<String, dynamic> updates) async {
-    final tasks = LocalStorageService.tasks;
-    final index = tasks.indexWhere((t) => t['id'] == taskId);
-    if (index != -1) {
-      tasks[index] = {...tasks[index], ...updates};
-      await LocalStorageService.setList(LocalStorageService.tasksKey, tasks);
-      return TaskModel.fromJson(tasks[index]);
-    }
-    return null;
+    final res = await ApiClient.instance
+        .put<Map<String, dynamic>>('/tasks/$taskId', data: updates);
+    final body = res.data is Map ? res.data! : <String, dynamic>{};
+    final taskJson = (body['data'] as Map<String, dynamic>?) ?? body;
+    return TaskModel.fromJson(taskJson);
   }
 }
 
-final tasksServiceProvider = Provider<TasksService>(
-  (ref) => TasksService(),
-);
+final tasksServiceProvider = Provider<TasksService>((_) => TasksService());
 
 final tasksProvider = FutureProvider.autoDispose<List<TaskModel>>((ref) {
   return ref.read(tasksServiceProvider).fetchAll();
@@ -76,8 +71,8 @@ class TasksNotifier extends AsyncNotifier<List<TaskModel>> {
 
   Future<void> refresh() async {
     state = const AsyncLoading();
-    state =
-        await AsyncValue.guard(() => ref.read(tasksServiceProvider).fetchAll());
+    state = await AsyncValue.guard(
+        () => ref.read(tasksServiceProvider).fetchAll());
   }
 
   Future<void> complete(String taskId) async {
