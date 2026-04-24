@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/api_client.dart';
 import 'auth_provider.dart';
-import '../../models/user.dart' hide UserRole;
+import '../../models/user.dart';
 
 class UserProfileNotifier extends AsyncNotifier<UserModel> {
   @override
@@ -35,7 +35,9 @@ class UserProfileNotifier extends AsyncNotifier<UserModel> {
       id: d['id']?.toString() ?? authUser?.id ?? '',
       name: d['name']?.toString() ?? authUser?.name ?? '',
       email: d['email']?.toString() ?? authUser?.email ?? '',
-      role: d['role']?.toString() ?? authUser?.role ?? 'student',
+      role: (d['role']?.toString() ?? authUser?.role ?? 'student') == 'teacher'
+          ? UserRole.teacher
+          : UserRole.student,
       career: d['carrer']?.toString() ?? d['career']?.toString(),
       bio: d['bio']?.toString(),
       university: d['university']?.toString(),

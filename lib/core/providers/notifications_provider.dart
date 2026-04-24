@@ -93,7 +93,7 @@ class NotificationsNotifier
     final ids =
         state.value?.where((n) => !n.isRead).map((n) => n.id).toList() ?? [];
     for (final id in ids) {
-      ApiClient.instance.put<void>('/notifications/$id/read').catchError((_) {});
+      ApiClient.instance.put<void>('/notifications/$id/read').catchError((e) => throw e);
     }
   }
 
