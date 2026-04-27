@@ -25,6 +25,7 @@ import '../../features/ai_assistant/screens/ai_settings_screen.dart';
 import '../../features/courses/screens/courses_list_screen.dart';
 import '../../features/courses/screens/course_detail_student_screen.dart';
 import '../../features/courses/screens/activity_detail_student_screen.dart';
+import '../../features/courses/screens/join_course_screen.dart';
 import '../../features/courses/screens/courses_list_teacher_screen.dart';
 import '../../features/courses/screens/course_detail_teacher_screen.dart';
 import '../../features/courses/screens/activity_create_screen.dart';
@@ -52,7 +53,8 @@ const _publicRoutes = {
   '/onboarding',
   '/login',
   '/register',
-  '/forgot-password'
+  '/forgot-password',
+  '/join',
 };
 
 /// Creates the GoRouter with a Riverpod [ref] so the [redirect] callback
@@ -346,6 +348,13 @@ GoRouter createRouter(WidgetRef ref) {
         path: '/settings/security',
         name: 'settings_security',
         builder: (_, __) => const SettingsSecurityScreen(),
+      ),
+      GoRoute(
+        path: '/join',
+        builder: (context, state) {
+          final code = state.uri.queryParameters['code'] ?? '';
+          return JoinCourseScreen(inviteCode: code);
+        },
       ),
     ],
   );

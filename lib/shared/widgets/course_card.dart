@@ -12,6 +12,9 @@ class CourseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = AppColors.courseColor(course.colorIndex);
+    final trimmedName = course.name.trim();
+    final displayName = trimmedName.isEmpty ? 'Sin nombre' : trimmedName;
+    final displayInitial = trimmedName.isEmpty ? '?' : trimmedName[0].toUpperCase();
 
     return GestureDetector(
       onTap: onTap,
@@ -50,7 +53,7 @@ class CourseCard extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            course.name[0],
+                            displayInitial,
                             style: GoogleFonts.inter(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -81,7 +84,7 @@ class CourseCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    course.name,
+                    displayName,
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
