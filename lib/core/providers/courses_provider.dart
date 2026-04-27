@@ -24,15 +24,18 @@ class TeacherCourse {
     required this.createdAt,
   });
 
-  factory TeacherCourse.fromJson(Map<String, dynamic> json, int index) {
+  factory TeacherCourse.fromJson(Map<String, dynamic> json) {
+    // FIX Bug 2 & 3: colorIndex basado en el id del curso (estable),
+    // no en la posición de la lista (cambia según cuántos cursos haya).
+    final id = json['id'] as int;
     final enrollments = json['course_enrollments'] as List? ?? [];
     return TeacherCourse(
-      id: json['id'] as int,
+      id: id,
       title: json['title']?.toString() ?? '',
       inviteCode: json['invite_code']?.toString() ?? '',
       description: json['description']?.toString(),
       studentCount: enrollments.length,
-      colorIndex: index % 6,
+      colorIndex: id % 10, // 10 colores disponibles en AppColors.courseColors
       createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ??
           DateTime.now(),
     );
@@ -52,9 +55,9 @@ final teacherCoursesProvider =
       .order('created_at', ascending: false);
 
   final list = res as List;
-  return list.asMap().entries.map((e) {
-    return TeacherCourse.fromJson(e.value as Map<String, dynamic>, e.key);
-  }).toList();
+  return list
+      .map((e) => TeacherCourse.fromJson(e as Map<String, dynamic>))
+      .toList();
 });
 
 // ── Crear curso ───────────────────────────────────────────────────────────────
@@ -71,9 +74,9 @@ class TeacherCoursesNotifier extends AsyncNotifier<List<TeacherCourse>> {
         .order('created_at', ascending: false);
 
     final list = res as List;
-    return list.asMap().entries.map((e) {
-      return TeacherCourse.fromJson(e.value as Map<String, dynamic>, e.key);
-    }).toList();
+    return list
+        .map((e) => TeacherCourse.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<TeacherCourse?> createCourse({
@@ -96,8 +99,7 @@ class TeacherCoursesNotifier extends AsyncNotifier<List<TeacherCourse>> {
         .select('*, course_enrollments(id)')
         .single();
 
-    final newCourse = TeacherCourse.fromJson(
-        res as Map<String, dynamic>, state.value?.length ?? 0);
+    final newCourse = TeacherCourse.fromJson(res as Map<String, dynamic>);
 
     state = AsyncData([newCourse, ...?state.value]);
     return newCourse;
@@ -114,3 +116,60 @@ class TeacherCoursesNotifier extends AsyncNotifier<List<TeacherCourse>> {
 final teacherCoursesNotifierProvider =
     AsyncNotifierProvider<TeacherCoursesNotifier, List<TeacherCourse>>(
         TeacherCoursesNotifier.new);
+
+// ── Modelo de estudiante inscrito ─────────────────────────────────────────────
+class EnrolledStudent {
+  final String id;
+  final String name;
+  final String email;
+  final String? avatarUrl;
+  final DateTime enrolledAt;
+
+  const EnrolledStudent({
+    required this.id,
+    required this.name,
+    required this.email,
+    this.avatarUrl,
+    required this.enrolledAt,
+  });
+
+  factory EnrolledStudent.fromJson(Map<String, dynamic> json) {
+    final profile = json['profiles'] as Map<String, dynamic>? ?? {};
+    return EnrolledStudent(
+      id: profile['id']?.toString() ?? '',
+      name: profile['name']?.toString() ?? 'Sin nombre',
+      email: profile['email']?.toString() ?? '',
+      avatarUrl: profile['avatar_url']?.toString(),
+      enrolledAt: DateTime.tryParse(json['enrolled_at']?.toString() ?? '') ??
+          DateTime.now(),
+    );
+  }
+}
+
+// ── Provider de estudiantes de un curso ───────────────────────────────────────
+final courseStudentsProvider = FutureProvider.autoDispose
+    .family<List<EnrolledStudent>, int>((ref, courseId) async {
+  final res = await _supabase
+      .from('course_enrollments')
+      .select('enrolled_at, profiles:user_id(id, name, email, avatar_url)')
+      .eq('course_id', courseId);
+
+  final list = res as List;
+  return list
+      .map((e) => EnrolledStudent.fromJson(e as Map<String, dynamic>))
+      .toList();
+});
+
+// ── Provider de un curso individual ───────────────────────────────────────────
+final teacherCourseDetailProvider = FutureProvider.autoDispose
+    .family<TeacherCourse?, int>((ref, courseId) async {
+  final res = await _supabase
+      .from('courses')
+      .select('*, course_enrollments(id)')
+      .eq('id', courseId)
+      .single();
+
+  // FIX Bug 2: antes pasaba índice 0 fijo → siempre morado.
+  // Ahora fromJson usa el id del curso directamente.
+  return TeacherCourse.fromJson(res as Map<String, dynamic>);
+});
