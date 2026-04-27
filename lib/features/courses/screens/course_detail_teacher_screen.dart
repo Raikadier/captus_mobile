@@ -696,7 +696,7 @@ class _StudentsTab extends ConsumerWidget {
                               ),
                             ),
                             Text(
-                              s.email,
+                              s.email.isNotEmpty ? s.email : 'Sin correo',
                               style: GoogleFonts.inter(
                                 fontSize: 12,
                                 color: AppColors.textSecondary,

@@ -33,11 +33,12 @@ class CoursesListScreen extends StatelessWidget {
         ],
       ),
       body: courses.isEmpty
-          ? const EmptyState(
+          ? EmptyState(
               icon: Icons.school_outlined,
               title: 'Sin cursos',
               subtitle: 'Aún no tienes cursos matriculados.',
-              actionLabel: 'Agregar curso',
+              actionLabel: 'Escanear QR',
+              onAction: () => context.push('/scan-qr'),
             )
           : Padding(
               padding: const EdgeInsets.all(16),
@@ -56,9 +57,10 @@ class CoursesListScreen extends StatelessWidget {
               ),
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => context.push('/scan-qr'),
         backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.black),
+        tooltip: 'Escanear QR',
+        child: const Icon(Icons.qr_code_scanner_rounded, color: Colors.black),
       ),
     );
   }
