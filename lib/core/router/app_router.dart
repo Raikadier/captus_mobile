@@ -44,6 +44,11 @@ import '../../features/profile/screens/profile_screen.dart';
 import '../../features/profile/screens/profile_edit_screen.dart';
 import '../../features/profile/screens/settings_screen.dart';
 import '../../features/profile/screens/settings_security_screen.dart';
+import '../../features/admin/screens/admin_shell_screen.dart';
+import '../../features/admin/screens/admin_dashboard_screen.dart';
+import '../../features/admin/screens/admin_users_screen.dart';
+import '../../features/admin/screens/admin_courses_screen.dart';
+import '../../features/admin/screens/admin_institution_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -86,7 +91,20 @@ GoRouter createRouter(WidgetRef ref) {
           state.matchedLocation != '/splash' &&
           state.matchedLocation != '/join') {
         final role = authState?.role ?? 'student';
+        if (role == 'admin') return '/admin/dashboard';
         return role == 'teacher' ? '/home/teacher' : '/home';
+      }
+
+      // Admin users should not reach student/teacher routes
+      if (isAuthenticated && !(state.matchedLocation.startsWith('/admin'))) {
+        final role = authState?.role ?? 'student';
+        if (role == 'admin' &&
+            !_publicRoutes.contains(state.matchedLocation) &&
+            state.matchedLocation != '/settings' &&
+            state.matchedLocation != '/profile' &&
+            state.matchedLocation != '/notifications') {
+          return '/admin/dashboard';
+        }
       }
 
       return null; // No redirect needed.
@@ -169,6 +187,35 @@ GoRouter createRouter(WidgetRef ref) {
             builder: (_, __) => const GroupsListScreen(),
           ),
         ],
+      ),
+
+      // ── Admin shell ───────────────────────────────────────────────────────
+      ShellRoute(
+        builder: (context, state, child) => AdminShellScreen(child: child),
+        routes: [
+          GoRoute(
+            path: '/admin/dashboard',
+            name: 'admin_dashboard',
+            builder: (_, __) => const AdminDashboardScreen(),
+          ),
+          GoRoute(
+            path: '/admin/users',
+            name: 'admin_users',
+            builder: (_, __) => const AdminUsersScreen(),
+          ),
+          GoRoute(
+            path: '/admin/courses',
+            name: 'admin_courses',
+            builder: (_, __) => const AdminCoursesScreen(),
+          ),
+        ],
+      ),
+
+      // ── Admin detail routes (outside shell) ───────────────────────────────
+      GoRoute(
+        path: '/admin/institution',
+        name: 'admin_institution',
+        builder: (_, __) => const AdminInstitutionScreen(),
       ),
 
       // ── Tasks ──────────────────────────────────────────────────────────────
