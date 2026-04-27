@@ -28,6 +28,7 @@ import '../../features/courses/screens/activity_detail_student_screen.dart';
 import '../../features/courses/screens/courses_list_teacher_screen.dart';
 import '../../features/courses/screens/course_detail_teacher_screen.dart';
 import '../../features/courses/screens/activity_create_screen.dart';
+import '../../features/courses/screens/course_create_screen.dart';
 import '../../features/groups/screens/groups_list_screen.dart';
 import '../../features/groups/screens/group_detail_screen.dart';
 import '../../features/groups/screens/group_settings_screen.dart';
@@ -46,8 +47,13 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Routes that are accessible without authentication.
-const _publicRoutes = {'/splash', '/onboarding', '/login', '/register',
-    '/forgot-password'};
+const _publicRoutes = {
+  '/splash',
+  '/onboarding',
+  '/login',
+  '/register',
+  '/forgot-password'
+};
 
 /// Creates the GoRouter with a Riverpod [ref] so the [redirect] callback
 /// can read the live [authProvider] state.
@@ -244,6 +250,11 @@ GoRouter createRouter(WidgetRef ref) {
         path: '/teacher/courses',
         name: 'courses_list_teacher',
         builder: (_, __) => const CoursesListTeacherScreen(),
+      ),
+      GoRoute(
+        path: '/teacher/courses/new',
+        name: 'course_create',
+        builder: (_, __) => const CourseCreateScreen(),
       ),
       GoRoute(
         path: '/teacher/courses/:id',
