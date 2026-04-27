@@ -57,6 +57,7 @@ dev_dependencies:
   network_image_mock: ^2.1.1
   integration_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -66,3 +67,8 @@ flutter:
     - assets/icons/
     - assets/animations/
     - .env
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/captus.jpeg"
