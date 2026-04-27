@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../../core/constants/app_colors.dart';
 
-// ── Provider de inscripción ───────────────────────────────────────────────────
-final joinCourseProvider = FutureProvider.autoDispose
-    .family<_JoinResult, String>((ref, inviteCode) async {
+final joinCourseProvider =
+    FutureProvider.autoDispose.family<_JoinResult, String>((ref, inviteCode) async {
   final supabase = Supabase.instance.client;
   final user = supabase.auth.currentUser;
   final normalizedCode = inviteCode.trim().toUpperCase();
@@ -15,12 +15,10 @@ final joinCourseProvider = FutureProvider.autoDispose
   if (user == null) {
     return _JoinResult.notLoggedIn;
   }
-
   if (normalizedCode.isEmpty) {
     return _JoinResult.notFound;
   }
 
-  // 1. Buscar el curso por invite_code
   final courseRes = await supabase
       .from('courses')
       .select('id, title')
@@ -31,10 +29,12 @@ final joinCourseProvider = FutureProvider.autoDispose
     return _JoinResult.notFound;
   }
 
-  final courseId = courseRes['id'] as int;
-  final courseTitle = courseRes['title'] as String;
+  final courseId = (courseRes['id'] as num?)?.toInt();
+  if (courseId == null) {
+    return _JoinResult.error('No se pudo obtener el curso.');
+  }
+  final courseTitle = courseRes['title']?.toString() ?? 'Curso';
 
-  // 2. Verificar si ya está inscrito
   final existing = await supabase
       .from('course_enrollments')
       .select('id')
@@ -46,33 +46,74 @@ final joinCourseProvider = FutureProvider.autoDispose
     return _JoinResult.alreadyEnrolled(courseTitle);
   }
 
-  // 3. Inscribir al estudiante
-  await supabase.from('course_enrollments').insert({
-    'course_id': courseId,
-    'student_id': user.id,
-  });
+  await _ensurePublicUserExists(supabase, user);
+
+  try {
+    await supabase.from('course_enrollments').insert({
+      'course_id': courseId,
+      'student_id': user.id,
+    });
+  } on PostgrestException catch (e) {
+    final message = e.message.toLowerCase();
+    if (e.code == '23505' || message.contains('duplicate')) {
+      return _JoinResult.alreadyEnrolled(courseTitle);
+    }
+    if (e.code == '23503' ||
+        message.contains('course_enrollments_student_id_fkey') ||
+        message.contains('violates foreign key constraint')) {
+      // One more attempt after syncing user row.
+      await _ensurePublicUserExists(supabase, user);
+      await supabase.from('course_enrollments').insert({
+        'course_id': courseId,
+        'student_id': user.id,
+      });
+      return _JoinResult.success(courseTitle);
+    }
+    return _JoinResult.error(e.message);
+  }
 
   return _JoinResult.success(courseTitle);
 });
 
-// ── Resultado de la inscripción ───────────────────────────────────────────────
+Future<void> _ensurePublicUserExists(SupabaseClient supabase, User user) async {
+  final existingUser = await supabase.from('users').select('id').eq('id', user.id).maybeSingle();
+  if (existingUser != null) return;
+
+  final meta = user.userMetadata ?? {};
+  final rawRole = (meta['role'] ?? 'student').toString();
+  final role = rawRole == 'teacher' ? 'teacher' : 'student';
+  final name = (meta['name'] ?? meta['full_name'] ?? meta['display_name'] ?? '').toString().trim();
+
+  try {
+    await supabase.from('users').insert({
+      'id': user.id,
+      'email': user.email ?? '',
+      'name': name.isEmpty ? (user.email ?? 'Usuario') : name,
+      'role': role,
+    });
+  } on PostgrestException catch (e) {
+    final message = e.message.toLowerCase();
+    if (e.code == '23505' || message.contains('duplicate')) return;
+    rethrow;
+  }
+}
+
 class _JoinResult {
   final _JoinStatus status;
-  final String? courseTitle;
+  final String? message;
 
-  const _JoinResult._(this.status, [this.courseTitle]);
+  const _JoinResult._(this.status, [this.message]);
 
   static const notLoggedIn = _JoinResult._(_JoinStatus.notLoggedIn);
   static const notFound = _JoinResult._(_JoinStatus.notFound);
+  static _JoinResult error(String message) => _JoinResult._(_JoinStatus.error, message);
   static _JoinResult alreadyEnrolled(String title) =>
       _JoinResult._(_JoinStatus.alreadyEnrolled, title);
-  static _JoinResult success(String title) =>
-      _JoinResult._(_JoinStatus.success, title);
+  static _JoinResult success(String title) => _JoinResult._(_JoinStatus.success, title);
 }
 
-enum _JoinStatus { notLoggedIn, notFound, alreadyEnrolled, success }
+enum _JoinStatus { notLoggedIn, notFound, error, alreadyEnrolled, success }
 
-// ── Pantalla ──────────────────────────────────────────────────────────────────
 class JoinCourseScreen extends ConsumerWidget {
   final String inviteCode;
 
@@ -102,15 +143,15 @@ class JoinCourseScreen extends ConsumerWidget {
                 children: [
                   CircularProgressIndicator(),
                   SizedBox(height: 20),
-                  Text('Procesando invitación...'),
+                  Text('Procesando invitacion...'),
                 ],
               ),
             ),
             error: (e, _) => _ResultView(
               icon: Icons.error_outline,
               iconColor: Colors.red,
-              title: 'Algo salió mal',
-              subtitle: 'No pudimos procesar la invitación.\nIntenta de nuevo.',
+              title: 'Algo salio mal',
+              subtitle: 'No pudimos procesar la invitacion.\n$e',
               buttonLabel: 'Volver al inicio',
               onButton: () => context.go('/home'),
             ),
@@ -120,42 +161,45 @@ class JoinCourseScreen extends ConsumerWidget {
                   return _ResultView(
                     icon: Icons.lock_outline,
                     iconColor: AppColors.primary,
-                    title: 'Inicia sesión primero',
-                    subtitle:
-                        'Debes tener una cuenta en Captus para unirte a un curso.',
-                    buttonLabel: 'Ir a iniciar sesión',
+                    title: 'Inicia sesion primero',
+                    subtitle: 'Debes tener una cuenta en Captus para unirte a un curso.',
+                    buttonLabel: 'Ir a iniciar sesion',
                     onButton: () => context.go('/login'),
                   );
-
                 case _JoinStatus.notFound:
                   return _ResultView(
                     icon: Icons.search_off_outlined,
                     iconColor: AppColors.warning,
-                    title: 'Código inválido',
-                    subtitle:
-                        'No encontramos ningún curso con el código "$inviteCode".',
+                    title: 'Codigo invalido',
+                    subtitle: 'No encontramos ningun curso con el codigo "$inviteCode".',
                     buttonLabel: 'Volver al inicio',
                     onButton: () => context.go('/home'),
                   );
-
+                case _JoinStatus.error:
+                  return _ResultView(
+                    icon: Icons.error_outline,
+                    iconColor: Colors.red,
+                    title: 'Algo salio mal',
+                    subtitle:
+                        result.message ?? 'No pudimos procesar la invitacion.\nIntenta de nuevo.',
+                    buttonLabel: 'Volver al inicio',
+                    onButton: () => context.go('/home'),
+                  );
                 case _JoinStatus.alreadyEnrolled:
                   return _ResultView(
                     icon: Icons.check_circle_outline,
                     iconColor: Colors.green,
-                    title: '¡Ya estás inscrito!',
-                    subtitle:
-                        'Ya eres estudiante de "${result.courseTitle}".',
+                    title: 'Ya estas inscrito',
+                    subtitle: 'Ya eres estudiante de "${result.message}".',
                     buttonLabel: 'Ver mis cursos',
                     onButton: () => context.go('/courses'),
                   );
-
                 case _JoinStatus.success:
                   return _ResultView(
                     icon: Icons.school_outlined,
                     iconColor: AppColors.primary,
-                    title: '¡Te uniste al curso!',
-                    subtitle:
-                        'Ahora eres estudiante de\n"${result.courseTitle}".',
+                    title: 'Te uniste al curso',
+                    subtitle: 'Ahora eres estudiante de\n"${result.message}".',
                     buttonLabel: 'Ver mis cursos',
                     onButton: () => context.go('/courses'),
                     isSuccess: true,
@@ -169,7 +213,6 @@ class JoinCourseScreen extends ConsumerWidget {
   }
 }
 
-// ── Vista de resultado ────────────────────────────────────────────────────────
 class _ResultView extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
@@ -230,8 +273,7 @@ class _ResultView extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onButton,
             style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  isSuccess ? AppColors.primary : AppColors.textPrimary,
+              backgroundColor: isSuccess ? AppColors.primary : AppColors.textPrimary,
               foregroundColor: isSuccess ? Colors.black : Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
@@ -240,8 +282,7 @@ class _ResultView extends StatelessWidget {
             ),
             child: Text(
               buttonLabel,
-              style: GoogleFonts.inter(
-                  fontSize: 15, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
             ),
           ),
         ),

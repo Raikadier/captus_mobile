@@ -136,12 +136,12 @@ class EnrolledStudent {
   });
 
   factory EnrolledStudent.fromJson(Map<String, dynamic> json) {
-    final profile = json['profiles'] as Map<String, dynamic>? ?? {};
+    final profile = (json['users'] ?? json['profiles']) as Map<String, dynamic>? ?? {};
     return EnrolledStudent(
       id: profile['id']?.toString() ?? '',
       name: profile['name']?.toString() ?? 'Sin nombre',
       email: profile['email']?.toString() ?? '',
-      avatarUrl: profile['avatar_url']?.toString(),
+      avatarUrl: (profile['avatarUrl'] ?? profile['avatar_url'])?.toString(),
       enrolledAt: DateTime.tryParse(json['enrolled_at']?.toString() ?? '') ??
           DateTime.now(),
     );
@@ -153,13 +153,46 @@ final courseStudentsProvider = FutureProvider.autoDispose
     .family<List<EnrolledStudent>, int>((ref, courseId) async {
   final res = await _supabase
       .from('course_enrollments')
-      .select('enrolled_at, profiles:user_id(id, name, email, avatar_url)')
+      .select('enrolled_at, student_id')
       .eq('course_id', courseId);
 
-  final list = res as List;
-  return list
-      .map((e) => EnrolledStudent.fromJson(e as Map<String, dynamic>))
+  final enrollments = (res as List).cast<Map<String, dynamic>>();
+  if (enrollments.isEmpty) return [];
+
+  final studentIds = enrollments
+      .map((e) => e['student_id']?.toString() ?? '')
+      .where((id) => id.isNotEmpty)
+      .toSet()
       .toList();
+
+  Map<String, Map<String, dynamic>> usersById = {};
+  try {
+    final usersRes = await _supabase
+        .from('users')
+        .select('id, name, email, avatarUrl')
+        .inFilter('id', studentIds);
+
+    final usersList = (usersRes as List).cast<Map<String, dynamic>>();
+    usersById = {
+      for (final user in usersList) (user['id']?.toString() ?? ''): user,
+    };
+  } catch (_) {
+    // If user detail query fails (RLS/permissions), we still show enrollment rows.
+  }
+
+  return enrollments.map((enrollment) {
+    final studentId = enrollment['student_id']?.toString() ?? '';
+    final userData = usersById[studentId];
+    return EnrolledStudent(
+      id: studentId,
+      name: userData?['name']?.toString() ?? 'Estudiante',
+      email: userData?['email']?.toString() ?? '',
+      avatarUrl: userData?['avatarUrl']?.toString(),
+      enrolledAt:
+          DateTime.tryParse(enrollment['enrolled_at']?.toString() ?? '') ??
+              DateTime.now(),
+    );
+  }).toList();
 });
 
 // ── Provider de un curso individual ───────────────────────────────────────────

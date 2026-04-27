@@ -26,6 +26,7 @@ import '../../features/courses/screens/courses_list_screen.dart';
 import '../../features/courses/screens/course_detail_student_screen.dart';
 import '../../features/courses/screens/activity_detail_student_screen.dart';
 import '../../features/courses/screens/join_course_screen.dart';
+import '../../features/courses/screens/scan_qr_join_course_screen.dart';
 import '../../features/courses/screens/courses_list_teacher_screen.dart';
 import '../../features/courses/screens/course_detail_teacher_screen.dart';
 import '../../features/courses/screens/activity_create_screen.dart';
@@ -80,7 +81,10 @@ GoRouter createRouter(WidgetRef ref) {
       if (!isAuthenticated && !isPublic) return '/login';
 
       // Authenticated and trying to access a public/auth route → dashboard.
-      if (isAuthenticated && isPublic && state.matchedLocation != '/splash') {
+      if (isAuthenticated &&
+          isPublic &&
+          state.matchedLocation != '/splash' &&
+          state.matchedLocation != '/join') {
         final role = authState?.role ?? 'student';
         return role == 'teacher' ? '/home/teacher' : '/home';
       }
@@ -355,6 +359,11 @@ GoRouter createRouter(WidgetRef ref) {
           final code = state.uri.queryParameters['code'] ?? '';
           return JoinCourseScreen(inviteCode: code);
         },
+      ),
+      GoRoute(
+        path: '/scan-qr',
+        name: 'scan_qr_join_course',
+        builder: (_, __) => const ScanQRJoinCourseScreen(),
       ),
     ],
   );
