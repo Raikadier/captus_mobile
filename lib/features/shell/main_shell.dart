@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/providers/auth_provider.dart';
 
-class MainShell extends StatelessWidget {
+class MainShell extends ConsumerWidget {
   final Widget child;
   const MainShell({super.key, required this.child});
 
@@ -16,29 +18,33 @@ class MainShell extends StatelessWidget {
     return 0;
   }
 
-  void _onTabTap(BuildContext context, int index) {
+  void _onTabTap(BuildContext context, WidgetRef ref, int index) {
+    final role = ref.read(userRoleProvider);
     switch (index) {
-      case 0: context.go('/home');
-      case 1: context.go('/tasks');
-      case 2: context.go('/calendar');
-      case 3: context.go('/ai');
-      case 4: context.go('/groups');
+      case 0:
+        context.go(role == 'teacher' ? '/home/teacher' : '/home');
+      case 1:
+        context.go('/tasks');
+      case 2:
+        context.go('/calendar');
+      case 3:
+        context.go('/ai');
+      case 4:
+        context.go('/groups');
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: child,
       bottomNavigationBar: _CaptusBottomNav(
         selectedIndex: _selectedIndex(context),
-        onTap: (i) => _onTabTap(context, i),
+        onTap: (i) => _onTabTap(context, ref, i),
       ),
     );
   }
 }
-
-// ── Bottom nav ────────────────────────────────────────────────────────────────
 
 class _CaptusBottomNav extends StatelessWidget {
   final int selectedIndex;
@@ -109,8 +115,6 @@ class _CaptusBottomNav extends StatelessWidget {
   }
 }
 
-// ── Nav item ──────────────────────────────────────────────────────────────────
-
 class _NavItem extends StatelessWidget {
   final IconData icon;
   final IconData activeIcon;
@@ -144,11 +148,9 @@ class _NavItem extends StatelessWidget {
                 Icon(
                   isSelected ? activeIcon : icon,
                   size: 24,
-                  color: isSelected
-                      ? AppColors.primary
-                      : AppColors.textSecondary,
+                  color:
+                      isSelected ? AppColors.primary : AppColors.textSecondary,
                 ),
-                // Badge de notificación
                 if (badge != null && badge! > 0)
                   Positioned(
                     top: -4,
@@ -179,15 +181,11 @@ class _NavItem extends StatelessWidget {
               label,
               style: GoogleFonts.inter(
                 fontSize: 10,
-                fontWeight:
-                    isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected
-                    ? AppColors.primary
-                    : AppColors.textSecondary,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected ? AppColors.primary : AppColors.textSecondary,
               ),
             ),
             const SizedBox(height: 4),
-            // Punto indicador activo
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               width: isSelected ? 4 : 0,
