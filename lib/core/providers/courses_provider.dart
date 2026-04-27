@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth_provider.dart';
 
 final _supabase = Supabase.instance.client;
+final _random = Random.secure();
 
 // ── Modelo liviano para cursos del docente ────────────────────────────────────
 class TeacherCourse {
@@ -102,14 +105,13 @@ class TeacherCoursesNotifier extends AsyncNotifier<List<TeacherCourse>> {
     final newCourse = TeacherCourse.fromJson(res as Map<String, dynamic>);
 
     state = AsyncData([newCourse, ...?state.value]);
+    ref.invalidate(teacherCoursesProvider);
     return newCourse;
   }
 
   String _generateCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final random = List.generate(6,
-        (_) => chars[(DateTime.now().microsecondsSinceEpoch) % chars.length]);
-    return random.join();
+    return List.generate(6, (_) => chars[_random.nextInt(chars.length)]).join();
   }
 }
 
@@ -163,11 +165,17 @@ final courseStudentsProvider = FutureProvider.autoDispose
 // ── Provider de un curso individual ───────────────────────────────────────────
 final teacherCourseDetailProvider = FutureProvider.autoDispose
     .family<TeacherCourse?, int>((ref, courseId) async {
+  final user = ref.watch(currentUserProvider);
+  if (user == null) return null;
+
   final res = await _supabase
       .from('courses')
       .select('*, course_enrollments(id)')
       .eq('id', courseId)
-      .single();
+      .eq('teacher_id', user.id)
+      .maybeSingle();
+
+  if (res == null) return null;
 
   // FIX Bug 2: antes pasaba índice 0 fijo → siempre morado.
   // Ahora fromJson usa el id del curso directamente.

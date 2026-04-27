@@ -34,7 +34,12 @@ class _CourseDetailTeacherScreenState
     super.dispose();
   }
 
-  int get _courseId => int.tryParse(widget.courseId) ?? 0;
+  int? get _courseId => int.tryParse(widget.courseId);
+
+  String _safeInitial(String value) {
+    final trimmed = value.trim();
+    return trimmed.isNotEmpty ? trimmed[0].toUpperCase() : '?';
+  }
 
   void _showShareQRModal(BuildContext context, TeacherCourse course) {
     final color = AppColors.courseColor(course.colorIndex);
@@ -89,7 +94,7 @@ class _CourseDetailTeacherScreenState
                       ),
                       child: Center(
                         child: Text(
-                          course.title[0].toUpperCase(),
+                          _safeInitial(course.title),
                           style: GoogleFonts.inter(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
@@ -196,7 +201,27 @@ class _CourseDetailTeacherScreenState
 
   @override
   Widget build(BuildContext context) {
-    final courseAsync = ref.watch(teacherCourseDetailProvider(_courseId));
+    final courseId = _courseId;
+    if (courseId == null || courseId <= 0) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          backgroundColor: AppColors.background,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            onPressed: () => context.pop(),
+          ),
+        ),
+        body: Center(
+          child: Text(
+            'Curso no válido',
+            style: GoogleFonts.inter(color: AppColors.textSecondary),
+          ),
+        ),
+      );
+    }
+
+    final courseAsync = ref.watch(teacherCourseDetailProvider(courseId));
 
     return courseAsync.when(
       loading: () => const Scaffold(
@@ -316,8 +341,8 @@ class _CourseDetailTeacherScreenState
             body: TabBarView(
               controller: _tabController,
               children: [
-                _ActivitiesTab(courseId: _courseId, color: color),
-                _StudentsTab(courseId: _courseId),
+                _ActivitiesTab(courseId: courseId, color: color),
+                _StudentsTab(courseId: courseId),
                 _StatsTab(color: color),
               ],
             ),
@@ -354,6 +379,9 @@ class _QRFullScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final courseInitial =
+        course.title.trim().isNotEmpty ? course.title.trim()[0].toUpperCase() : '?';
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -445,7 +473,7 @@ class _QRFullScreen extends StatelessWidget {
                               ),
                               child: Center(
                                 child: Text(
-                                  course.title[0].toUpperCase(),
+                                  courseInitial,
                                   style: GoogleFonts.inter(
                                     fontSize: 22,
                                     fontWeight: FontWeight.w800,
