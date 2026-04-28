@@ -41,6 +41,7 @@ import '../../features/profile/screens/profile_screen.dart';
 import '../../features/profile/screens/profile_edit_screen.dart';
 import '../../features/profile/screens/settings_screen.dart';
 import '../../features/profile/screens/settings_security_screen.dart';
+import '../../features/evidence/screens/evidence_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -120,6 +121,10 @@ GoRouter createRouter(WidgetRef ref) {
         name: 'forgot_password',
         builder: (_, __) => const ForgotPasswordScreen(),
       ),
+      GoRoute(
+        path: '/evidences',
+        builder: (context, state) => const EvidenceScreen(),
+      ), 
 
       // ── Main shell with bottom nav ─────────────────────────────────────────
       ShellRoute(

@@ -66,5 +66,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+	<key>NSCameraUsageDescription</key>
+	<string>Captus usa la cámara para adjuntar evidencias y escanear códigos QR.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Captus usa tu ubicación para registrar evidencias académicas.</string>
 </dict>
 </plist>

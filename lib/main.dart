@@ -4,6 +4,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'core/router/app_router.dart';
 import 'core/services/local_storage_service.dart';
 import 'core/theme/app_theme.dart';
+import 'features/evidence/services/evidence_local_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +14,9 @@ Future<void> main() async {
 
   // 2. Spanish locale data for date formatting.
   await initializeDateFormatting('es');
-
+  
+  await EvidenceLocalService().init();
+  
   runApp(const ProviderScope(child: CaptusApp()));
 }
 
