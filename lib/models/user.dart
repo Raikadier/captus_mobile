@@ -28,9 +28,11 @@ class UserModel {
   });
 
   String get firstName {
-    final parts = name.split(' ');
-    if (parts.isEmpty) return '';
-    return parts[0][0].toUpperCase() + parts[0].substring(1).toLowerCase();
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return 'Usuario';
+    final first = trimmed.split(RegExp(r'\s+')).first;
+    if (first.isEmpty) return 'Usuario';
+    return first[0].toUpperCase() + first.substring(1).toLowerCase();
   }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -101,7 +103,14 @@ class UserModel {
 
   // Also need to import auth_provider.dart? No — use a plain nullable LocalUser param.
   static UserModel fromLocalUser(dynamic localUser) {
-    if (localUser == null) return UserModel.mock;
+    if (localUser == null) {
+      return const UserModel(
+        id: '',
+        name: 'Usuario',
+        email: '',
+        role: UserRole.student,
+      );
+    }
     return UserModel(
       id: localUser.id ?? '',
       name: localUser.name ?? '',

@@ -29,6 +29,7 @@ import '../../features/courses/screens/join_course_screen.dart';
 import '../../features/courses/screens/scan_qr_join_course_screen.dart';
 import '../../features/courses/screens/courses_list_teacher_screen.dart';
 import '../../features/courses/screens/course_detail_teacher_screen.dart';
+import '../../features/courses/screens/course_groups_teacher_screens.dart';
 import '../../features/courses/screens/activity_create_screen.dart';
 import '../../features/courses/screens/course_create_screen.dart';
 import '../../features/groups/screens/groups_list_screen.dart';
@@ -327,6 +328,29 @@ GoRouter createRouter(WidgetRef ref) {
         builder: (_, state) => ActivityCreateScreen(
           courseId: state.pathParameters['courseId']!,
           activityId: state.pathParameters['activityId'],
+        ),
+      ),
+      GoRoute(
+        path: '/teacher/courses/:courseId/groups/new',
+        name: 'course_group_create_teacher',
+        builder: (_, state) => CreateCourseGroupScreen(
+          courseId: int.parse(state.pathParameters['courseId']!),
+        ),
+      ),
+      GoRoute(
+        path: '/teacher/courses/:courseId/groups/:groupId',
+        name: 'course_group_detail_teacher',
+        builder: (_, state) => GroupDetailTeacherScreen(
+          courseId: int.parse(state.pathParameters['courseId']!),
+          groupId: int.parse(state.pathParameters['groupId']!),
+        ),
+      ),
+      GoRoute(
+        path: '/teacher/courses/:courseId/groups/:groupId/admin',
+        name: 'course_group_admin_teacher',
+        builder: (_, state) => GroupAdminTeacherScreen(
+          courseId: int.parse(state.pathParameters['courseId']!),
+          groupId: int.parse(state.pathParameters['groupId']!),
         ),
       ),
 

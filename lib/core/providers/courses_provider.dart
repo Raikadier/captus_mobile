@@ -122,7 +122,7 @@ class TeacherCoursesNotifier extends AsyncNotifier<List<TeacherCourse>> {
         .select('*, course_enrollments(id)')
         .single();
 
-    final newCourse = TeacherCourse.fromJson(res as Map<String, dynamic>);
+    final newCourse = TeacherCourse.fromJson(res);
 
     state = AsyncData([newCourse, ...?state.value]);
     ref.invalidate(teacherCoursesProvider);
@@ -150,7 +150,7 @@ class TeacherCoursesNotifier extends AsyncNotifier<List<TeacherCourse>> {
         .maybeSingle();
 
     if (res == null) return null;
-    final updated = TeacherCourse.fromJson(res as Map<String, dynamic>);
+    final updated = TeacherCourse.fromJson(res);
     final current = state.value ?? [];
     state = AsyncData(
       [
@@ -169,8 +169,9 @@ class TeacherCoursesNotifier extends AsyncNotifier<List<TeacherCourse>> {
     if (user == null) return null;
 
     final inviteCode = _generateCode();
+    final baseTitle = sourceCourse.title.replaceFirst(_archivedPrefix, '');
     final duplicateTitle = sourceCourse.title.startsWith(_archivedPrefix)
-        ? sourceCourse.title.replaceFirst(_archivedPrefix, '') + ' (Copia)'
+        ? '$baseTitle (Copia)'
         : '${sourceCourse.title} (Copia)';
 
     final res = await _supabase
@@ -184,7 +185,7 @@ class TeacherCoursesNotifier extends AsyncNotifier<List<TeacherCourse>> {
         .select('*, course_enrollments(id)')
         .single();
 
-    final duplicated = TeacherCourse.fromJson(res as Map<String, dynamic>);
+    final duplicated = TeacherCourse.fromJson(res);
     state = AsyncData([duplicated, ...?state.value]);
     ref.invalidate(teacherCoursesProvider);
     return duplicated;
@@ -213,7 +214,7 @@ class TeacherCoursesNotifier extends AsyncNotifier<List<TeacherCourse>> {
         .maybeSingle();
 
     if (res == null) return null;
-    final archived = TeacherCourse.fromJson(res as Map<String, dynamic>);
+    final archived = TeacherCourse.fromJson(res);
     final current = state.value ?? [];
     state = AsyncData(
       [
@@ -249,7 +250,7 @@ class TeacherCoursesNotifier extends AsyncNotifier<List<TeacherCourse>> {
         .maybeSingle();
 
     if (res == null) return null;
-    final restored = TeacherCourse.fromJson(res as Map<String, dynamic>);
+    final restored = TeacherCourse.fromJson(res);
     final current = state.value ?? [];
     state = AsyncData(
       [
@@ -422,5 +423,5 @@ final teacherCourseDetailProvider = FutureProvider.autoDispose
 
   // FIX Bug 2: antes pasaba índice 0 fijo → siempre morado.
   // Ahora fromJson usa el id del curso directamente.
-  return TeacherCourse.fromJson(res as Map<String, dynamic>);
+  return TeacherCourse.fromJson(res);
 });

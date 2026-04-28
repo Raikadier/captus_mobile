@@ -7,6 +7,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/courses_provider.dart';
+import 'course_groups_teacher_screens.dart';
 
 class CourseDetailTeacherScreen extends ConsumerStatefulWidget {
   final String courseId;
@@ -26,7 +27,7 @@ class _CourseDetailTeacherScreenState
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -97,7 +98,8 @@ class _CourseDetailTeacherScreenState
             children: [
               TextFormField(
                 controller: titleCtrl,
-                decoration: const InputDecoration(labelText: 'Nombre del curso'),
+                decoration:
+                    const InputDecoration(labelText: 'Nombre del curso'),
                 validator: (value) => value == null || value.trim().isEmpty
                     ? 'El nombre es requerido'
                     : null,
@@ -113,7 +115,8 @@ class _CourseDetailTeacherScreenState
         ),
         actions: [
           TextButton(
-            onPressed: _actionInProgress ? null : () => Navigator.pop(dialogContext),
+            onPressed:
+                _actionInProgress ? null : () => Navigator.pop(dialogContext),
             child: Text('Cancelar',
                 style: GoogleFonts.inter(color: AppColors.textSecondary)),
           ),
@@ -512,22 +515,30 @@ class _CourseDetailTeacherScreenState
                   ),
                 ),
                 bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(48),
+                  preferredSize: const Size.fromHeight(50),
                   child: Container(
+                    height: 50,
                     color: AppColors.background,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12),
                     child: TabBar(
                       controller: _tabController,
+                      dividerColor: AppColors.border.withOpacity(0.5),
                       labelColor: color,
                       unselectedLabelColor: AppColors.textSecondary,
                       indicatorColor: color,
-                      indicatorWeight: 2,
+                      indicatorWeight: 3,
+                      indicatorSize: TabBarIndicatorSize.label,
+                      labelPadding: EdgeInsets.zero,
                       labelStyle: GoogleFonts.inter(
-                          fontSize: 13, fontWeight: FontWeight.w600),
-                      unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
+                          fontSize: 12, fontWeight: FontWeight.w800),
+                      unselectedLabelStyle: GoogleFonts.inter(
+                          fontSize: 12, fontWeight: FontWeight.w600),
                       tabs: const [
                         Tab(text: 'Actividades'),
                         Tab(text: 'Estudiantes'),
-                        Tab(text: 'Estadísticas'),
+                        Tab(text: 'Grupos'),
+                        Tab(text: 'Estad.'),
                       ],
                     ),
                   ),
@@ -539,6 +550,7 @@ class _CourseDetailTeacherScreenState
               children: [
                 _ActivitiesTab(courseId: courseId, color: color),
                 _StudentsTab(courseId: courseId),
+                CourseGroupsTab(courseId: courseId, courseTitle: course.title),
                 _StatsTab(color: color),
               ],
             ),
@@ -575,8 +587,9 @@ class _QRFullScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final courseInitial =
-        course.title.trim().isNotEmpty ? course.title.trim()[0].toUpperCase() : '?';
+    final courseInitial = course.title.trim().isNotEmpty
+        ? course.title.trim()[0].toUpperCase()
+        : '?';
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -651,7 +664,8 @@ class _QRFullScreen extends StatelessWidget {
                               size: 240,
                               eyeStyle: QrEyeStyle(
                                 eyeShape: QrEyeShape.square,
-                                color: color, // FIX Bug 2: usa el color del curso
+                                color:
+                                    color, // FIX Bug 2: usa el color del curso
                               ),
                               dataModuleStyle: QrDataModuleStyle(
                                 dataModuleShape: QrDataModuleShape.square,
@@ -662,7 +676,8 @@ class _QRFullScreen extends StatelessWidget {
                               width: 52,
                               height: 52,
                               decoration: BoxDecoration(
-                                color: color, // FIX Bug 2: usa el color del curso
+                                color:
+                                    color, // FIX Bug 2: usa el color del curso
                                 borderRadius: BorderRadius.circular(14),
                                 border:
                                     Border.all(color: Colors.white, width: 3),
