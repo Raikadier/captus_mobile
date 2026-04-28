@@ -1,51 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-<<<<<<< Updated upstream
-import '../services/local_storage_service.dart';
-import '../../models/task.dart';
-
-class TasksService {
-  Future<List<TaskModel>> fetchAll() async {
-    final tasks = LocalStorageService.tasks;
-    return tasks.map((t) => TaskModel.fromJson(t)).toList();
-  }
-
-  Future<TaskModel> create(Map<String, dynamic> payload) async {
-    final task = TaskModel.fromJson(payload);
-    await LocalStorageService.addTask(payload);
-    return task;
-  }
-
-  Future<void> complete(String taskId) async {
-    final tasks = LocalStorageService.tasks;
-    final index = tasks.indexWhere((t) => t['id'] == taskId);
-    if (index != -1) {
-      tasks[index]['completed'] = true;
-      await LocalStorageService.setList(LocalStorageService.tasksKey, tasks);
-    }
-  }
-
-  Future<void> delete(String taskId) async {
-    await LocalStorageService.deleteTask(taskId);
-  }
-
-  Future<TaskModel?> updateTask(
-      String taskId, Map<String, dynamic> updates) async {
-    final tasks = LocalStorageService.tasks;
-    final index = tasks.indexWhere((t) => t['id'] == taskId);
-    if (index != -1) {
-      tasks[index] = {...tasks[index], ...updates};
-      await LocalStorageService.setList(LocalStorageService.tasksKey, tasks);
-      return TaskModel.fromJson(tasks[index]);
-    }
-    return null;
-=======
 import 'package:uuid/uuid.dart';
 import '../database/database_service.dart';
 import 'auth_provider.dart';
 import '../../models/task.dart';
 
 class TasksService {
-  final _uuid = const Uuid();
+  final _uuid = Uuid();
 
   Future<List<TaskModel>> fetchAll(String userId) async {
     final rawTasks = await DatabaseService.query(
@@ -54,7 +14,7 @@ class TasksService {
       whereArgs: [userId],
       orderBy: 'dueDate ASC',
     );
-    
+
     List<TaskModel> tasks = [];
     for (final raw in rawTasks) {
       final subtasksRaw = await DatabaseService.query(
@@ -62,11 +22,11 @@ class TasksService {
         where: 'taskId = ?',
         whereArgs: [raw['id']],
       );
-      
+
       final taskMap = Map<String, dynamic>.from(raw);
       taskMap['subTasks'] = subtasksRaw;
       taskMap['completed'] = raw['completed'] == 1;
-      
+
       tasks.add(TaskModel.fromJson(taskMap));
     }
     return tasks;
@@ -75,7 +35,7 @@ class TasksService {
   Future<TaskModel> create(Map<String, dynamic> payload) async {
     final id = _uuid.v4();
     final now = DateTime.now().toIso8601String();
-    
+
     final taskData = {
       'id': id,
       'title': payload['title'],
@@ -108,19 +68,23 @@ class TasksService {
   }
 
   Future<TaskModel?> fetchById(String id) async {
-    final res = await DatabaseService.query('tasks', where: 'id = ?', whereArgs: [id]);
+    final res = await DatabaseService.query(
+      'tasks',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
     if (res.isEmpty) return null;
-    
+
     final subtasksRaw = await DatabaseService.query(
       'subtasks',
       where: 'taskId = ?',
       whereArgs: [id],
     );
-    
+
     final taskMap = Map<String, dynamic>.from(res.first);
     taskMap['subTasks'] = subtasksRaw;
     taskMap['completed'] = res.first['completed'] == 1;
-    
+
     return TaskModel.fromJson(taskMap);
   }
 
@@ -135,21 +99,20 @@ class TasksService {
 
   Future<void> delete(String taskId) async {
     await DatabaseService.delete('tasks', where: 'id = ?', whereArgs: [taskId]);
-    await DatabaseService.delete('subtasks', where: 'taskId = ?', whereArgs: [taskId]);
+    await DatabaseService.delete('subtasks',
+        where: 'taskId = ?', whereArgs: [taskId]);
   }
 
-  Future<TaskModel?> updateTask(String taskId, Map<String, dynamic> updates) async {
+  Future<TaskModel?> updateTask(
+      String taskId, Map<String, dynamic> updates) async {
     final data = Map<String, dynamic>.from(updates);
     if (data.containsKey('completed')) {
       data['completed'] = data['completed'] == true ? 1 : 0;
     }
-    
-    // If subtasks are provided, we should probably handle them too
-    // But for now let's focus on simple updates
     if (data.containsKey('subTasks')) {
       data.remove('subTasks');
     }
-    
+
     await DatabaseService.update(
       'tasks',
       data,
@@ -157,7 +120,6 @@ class TasksService {
       whereArgs: [taskId],
     );
     return fetchById(taskId);
->>>>>>> Stashed changes
   }
 }
 
@@ -175,13 +137,8 @@ class TasksNotifier extends AsyncNotifier<List<TaskModel>> {
   Future<void> refresh() async {
     final user = ref.read(currentUserProvider);
     state = const AsyncLoading();
-<<<<<<< Updated upstream
-    state =
-        await AsyncValue.guard(() => ref.read(tasksServiceProvider).fetchAll());
-=======
     state = await AsyncValue.guard(
         () => ref.read(tasksServiceProvider).fetchAll(user?.id ?? ''));
->>>>>>> Stashed changes
   }
 
   Future<void> complete(String taskId) async {
@@ -225,7 +182,8 @@ class TasksNotifier extends AsyncNotifier<List<TaskModel>> {
 
   Future<void> updateTask(String taskId, Map<String, dynamic> updates) async {
     try {
-      final updated = await ref.read(tasksServiceProvider).updateTask(taskId, updates);
+      final updated =
+          await ref.read(tasksServiceProvider).updateTask(taskId, updates);
       if (updated != null) {
         state = state.whenData(
           (tasks) => tasks.map((t) => t.id == taskId ? updated : t).toList(),

@@ -5,9 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/tasks_provider.dart';
+import '../../../core/providers/courses_provider.dart';
 import '../../../models/task.dart';
-import '../../../models/course.dart';
-import '../../../models/user.dart';
 import '../../../shared/widgets/task_card.dart';
 import '../../../shared/widgets/course_card.dart';
 import '../../../shared/widgets/streak_badge.dart';
@@ -18,8 +18,13 @@ class HomeDashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final localUser = ref.watch(currentUserProvider);
-    final user = UserModel.fromLocalUser(localUser);
+    final LocalUser user = ref.watch(currentUserProvider) ??
+        const LocalUser(
+          id: '',
+          name: 'Usuario',
+          email: '',
+          role: 'student',
+        );
 
     final tasksAsync = ref.watch(tasksNotifierProvider);
     final coursesAsync = ref.watch(coursesProvider);
@@ -29,14 +34,14 @@ class HomeDashboardScreen extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           _DashboardAppBar(user: user),
-          SliverToBoxAdapter(
-            child: _GreetingCard(user: user),
-          ),
-          
+          SliverToBoxAdapter(child: _GreetingCard(user: user)),
+
           // ── Tareas de hoy ──────────────────────────────────────────────────
           tasksAsync.when(
-            loading: () => const SliverToBoxAdapter(child: LinearProgressIndicator()),
-            error: (err, _) => SliverToBoxAdapter(child: Center(child: Text('Error: $err'))),
+            loading: () =>
+                const SliverToBoxAdapter(child: LinearProgressIndicator()),
+            error: (err, _) =>
+                SliverToBoxAdapter(child: Center(child: Text('Error: $err'))),
             data: (tasks) {
               final today = tasks
                   .where((t) =>
@@ -44,8 +49,10 @@ class HomeDashboardScreen extends ConsumerWidget {
                       t.dueDate != null &&
                       t.dueDate!.difference(DateTime.now()).inHours < 24)
                   .toList();
-              
-              if (today.isEmpty) return const SliverToBoxAdapter(child: SizedBox.shrink());
+
+              if (today.isEmpty) {
+                return const SliverToBoxAdapter(child: SizedBox.shrink());
+              }
 
               return SliverMainAxisGroup(
                 slivers: [
@@ -73,7 +80,8 @@ class HomeDashboardScreen extends ConsumerWidget {
           // ── Próximos vencimientos ──────────────────────────────────────────
           tasksAsync.when(
             loading: () => const SliverToBoxAdapter(child: SizedBox.shrink()),
-            error: (_, __) => const SliverToBoxAdapter(child: SizedBox.shrink()),
+            error: (_, __) =>
+                const SliverToBoxAdapter(child: SizedBox.shrink()),
             data: (tasks) {
               final upcoming = tasks
                   .where((t) =>
@@ -83,7 +91,9 @@ class HomeDashboardScreen extends ConsumerWidget {
                       t.dueDate!.isAfter(DateTime.now()))
                   .toList();
 
-              if (upcoming.isEmpty) return const SliverToBoxAdapter(child: SizedBox.shrink());
+              if (upcoming.isEmpty) {
+                return const SliverToBoxAdapter(child: SizedBox.shrink());
+              }
 
               return SliverMainAxisGroup(
                 slivers: [
@@ -112,15 +122,20 @@ class HomeDashboardScreen extends ConsumerWidget {
             onSeeAll: () => context.push('/courses'),
           ),
           coursesAsync.when(
-            loading: () => const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator())),
-            error: (err, _) => SliverToBoxAdapter(child: Center(child: Text('Error: $err'))),
+            loading: () => const SliverToBoxAdapter(
+                child: Center(child: CircularProgressIndicator())),
+            error: (err, _) =>
+                SliverToBoxAdapter(child: Center(child: Text('Error: $err'))),
             data: (courses) {
               if (courses.isEmpty) {
                 return const SliverToBoxAdapter(
-                  child: Center(child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Text('No estás inscrito en ninguna materia todavía'),
-                  )),
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child:
+                          Text('No estás inscrito en ninguna materia todavía'),
+                    ),
+                  ),
                 );
               }
               return SliverToBoxAdapter(
@@ -136,7 +151,8 @@ class HomeDashboardScreen extends ConsumerWidget {
                         padding: const EdgeInsets.only(right: 12),
                         child: CourseCard(
                           course: courses[i],
-                          onTap: () => context.push('/courses/${courses[i].id}'),
+                          onTap: () =>
+                              context.push('/courses/${courses[i].id}'),
                         ),
                       ),
                     ),
@@ -146,9 +162,7 @@ class HomeDashboardScreen extends ConsumerWidget {
             },
           ),
 
-          SliverToBoxAdapter(
-            child: _AiInsightCard(),
-          ),
+          SliverToBoxAdapter(child: _AiInsightCard()),
           const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
       ),
@@ -161,12 +175,24 @@ class HomeDashboardScreen extends ConsumerWidget {
   }
 }
 
+// ── Utilidad ───────────────────────────────────────────────────────────────
+
+String _firstName(String fullName) {
+  final parts = fullName.trim().split(' ');
+  if (parts.isEmpty || parts[0].isEmpty) return 'Usuario';
+  final w = parts[0];
+  return w[0].toUpperCase() + w.substring(1).toLowerCase();
+}
+
+// ── Subwidgets ─────────────────────────────────────────────────────────────
+
 class _DashboardAppBar extends StatelessWidget {
-  final UserModel user;
+  final LocalUser user;
   const _DashboardAppBar({required this.user});
 
   @override
   Widget build(BuildContext context) {
+    final avatar = user.avatarUrl;
     return SliverAppBar(
       floating: true,
       backgroundColor: AppColors.background,
@@ -179,13 +205,14 @@ class _DashboardAppBar extends StatelessWidget {
             child: CircleAvatar(
               radius: 18,
               backgroundColor: AppColors.primaryDark,
-              backgroundImage:
-                  user.avatarUrl != null && user.avatarUrl!.isNotEmpty
-                      ? NetworkImage(user.avatarUrl!)
-                      : null,
-              child: user.avatarUrl == null || user.avatarUrl!.isEmpty
+              backgroundImage: avatar != null && avatar.isNotEmpty
+                  ? NetworkImage(avatar)
+                  : null,
+              child: avatar == null || avatar.isEmpty
                   ? Text(
-                      user.firstName[0],
+                      _firstName(user.name).isNotEmpty
+                          ? _firstName(user.name)[0]
+                          : 'U',
                       style: GoogleFonts.inter(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -233,7 +260,7 @@ class _DashboardAppBar extends StatelessWidget {
 }
 
 class _GreetingCard extends StatelessWidget {
-  final UserModel user;
+  final LocalUser user;
   const _GreetingCard({required this.user});
 
   String get _greeting {
@@ -266,12 +293,10 @@ class _GreetingCard extends StatelessWidget {
                 Text(
                   '$_greeting,',
                   style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
+                      fontSize: 14, color: AppColors.textSecondary),
                 ),
                 Text(
-                  user.firstName,
+                  _firstName(user.name),
                   style: GoogleFonts.inter(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -283,9 +308,7 @@ class _GreetingCard extends StatelessWidget {
                   DateFormat('EEEE, d \'de\' MMMM \'de\' yyyy', 'es')
                       .format(DateTime.now()),
                   style: GoogleFonts.inter(
-                    fontSize: 13,
-                    color: AppColors.textSecondary,
-                  ),
+                      fontSize: 13, color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -335,18 +358,14 @@ class _CompactTaskCard extends StatelessWidget {
                   width: 8,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: _priorityColor,
-                    shape: BoxShape.circle,
-                  ),
+                      color: _priorityColor, shape: BoxShape.circle),
                 ),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     task.courseName ?? '',
                     style: GoogleFonts.inter(
-                      fontSize: 11,
-                      color: AppColors.textSecondary,
-                    ),
+                        fontSize: 11, color: AppColors.textSecondary),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -421,10 +440,7 @@ class _SectionHeader extends StatelessWidget {
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                child: Text(
-                  'Ver todo',
-                  style: GoogleFonts.inter(fontSize: 12),
-                ),
+                child: Text('Ver todo', style: GoogleFonts.inter(fontSize: 12)),
               ),
           ],
         ),
@@ -461,14 +477,12 @@ class _AiInsightCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Captus IA',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primary,
-                  ),
-                ),
+                Text('Captus IA',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    )),
                 Text(
                   'Tienes 3 entregas esta semana. ¿Planificamos tu semana ahora?',
                   style: GoogleFonts.inter(
@@ -489,14 +503,12 @@ class _AiInsightCard extends StatelessWidget {
                 color: AppColors.primary,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Text(
-                'Ver',
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
+              child: Text('Ver',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  )),
             ),
           ),
         ],

@@ -20,13 +20,15 @@ class UserProfileNotifier extends AsyncNotifier<UserModel> {
     );
 
     if (raw.isEmpty) return UserModel.fromLocalUser(authUser);
-    
+
     final d = raw.first;
     return UserModel(
       id: d['id']?.toString() ?? '',
       name: d['name']?.toString() ?? '',
       email: d['email']?.toString() ?? '',
-      role: (d['role']?.toString() == 'teacher') ? UserRole.teacher : UserRole.student,
+      role: (d['role']?.toString() == 'teacher')
+          ? UserRole.teacher
+          : UserRole.student,
       career: d['career']?.toString(),
       bio: d['bio']?.toString(),
       university: d['university']?.toString(),
@@ -43,16 +45,16 @@ class UserProfileNotifier extends AsyncNotifier<UserModel> {
   Future<void> updateProfile(Map<String, dynamic> updates) async {
     final userId = state.value?.id;
     if (userId == null) return;
-    
+
     await DatabaseService.update(
       'users',
       updates,
       where: 'id = ?',
       whereArgs: [userId],
     );
-    
+
     state = await AsyncValue.guard(_fetch);
-    
+
     // Also update current user in auth provider if needed
     // (This might require a method in currentUserProvider notifier)
   }

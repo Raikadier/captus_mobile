@@ -55,6 +55,20 @@ class UserModel {
     );
   }
 
+  factory UserModel.fromLocalUser(dynamic authUser) {
+    return UserModel(
+      id: authUser.id ?? '',
+      name: authUser.name ?? '',
+      email: authUser.email ?? '',
+      role: UserRole.student, // o lógica si tienes roles
+      career: '',
+      bio: '',
+      university: '',
+      semester: 0,
+      avatarUrl: null,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
