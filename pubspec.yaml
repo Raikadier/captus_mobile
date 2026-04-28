@@ -24,11 +24,14 @@ dependencies:
   lottie: ^3.1.2
   cached_network_image: ^3.4.1
   flutter_slidable: ^4.0.3
+  qr_flutter: ^4.1.0
+  share_plus: ^7.2.1
+  mobile_scanner: ^5.2.3
 
   # Calendar
   table_calendar: ^3.1.2
 
-  # Firebase (core + FCM — auth via Supabase, push via Firebase)
+  # Firebase
   firebase_core: ^4.7.0
   firebase_messaging: ^16.2.0
 
@@ -49,6 +52,15 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  
+  # Testing dependencies
+  mockito: ^5.4.4
+  build_runner: ^2.4.9
+  golden_toolkit: ^0.15.0
+  network_image_mock: ^2.1.1
+  integration_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.14.4
 
 
   qr_flutter: ^4.1.0
@@ -65,3 +77,10 @@ flutter:
     - assets/icons/
     - assets/animations/
     - .env
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/captus.jpeg"
+
+

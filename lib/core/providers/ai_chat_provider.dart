@@ -113,7 +113,7 @@ class AiChatNotifier extends Notifier<AiChatState> {
         isLoading: false,
         conversationId: convId ?? state.conversationId,
       );
-    } on Exception catch (e) {
+    } catch (e) {
       final errMsg = e.toString().replaceFirst('Exception: ', '');
       state = state.copyWith(
         isLoading: false,

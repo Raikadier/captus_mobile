@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/local_storage_service.dart';
+import '../services/api_client.dart';
 
 class GroupModel {
   final String id;
@@ -19,50 +19,41 @@ class GroupModel {
   });
 
   factory GroupModel.fromJson(Map<String, dynamic> json) {
+    // Backend returns members as int count or as a List
+    final membersRaw = json['members'];
+    final memberCount = membersRaw is int
+        ? membersRaw
+        : (membersRaw is List ? membersRaw.length : (json['memberCount'] as int? ?? 0));
+
     return GroupModel(
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
       description: json['description']?.toString(),
-      memberCount: json['memberCount'] as int? ?? 0,
-      isJoined: json['isJoined'] as bool? ?? false,
-      createdAt: DateTime.tryParse(json['createdAt']?.toString() ?? '') ??
-          DateTime.now(),
+      memberCount: memberCount,
+      // /my-groups only returns groups the user belongs to
+      isJoined: json['isJoined'] as bool? ?? true,
+      createdAt:
+          DateTime.tryParse(json['created_at']?.toString() ?? json['createdAt']?.toString() ?? '') ??
+              DateTime.now(),
     );
   }
 }
 
 class GroupsService {
   Future<List<GroupModel>> fetchAll() async {
-    final groups = LocalStorageService.groups;
-    return groups.map((g) => GroupModel.fromJson(g)).toList();
-  }
-
-  Future<void> joinGroup(String groupId) async {
-    final groups = LocalStorageService.groups;
-    final index = groups.indexWhere((g) => g['id'] == groupId);
-    if (index != -1) {
-      groups[index]['isJoined'] = true;
-      groups[index]['memberCount'] =
-          (groups[index]['memberCount'] as int? ?? 0) + 1;
-      await LocalStorageService.setGroups(groups);
-    }
-  }
-
-  Future<void> leaveGroup(String groupId) async {
-    final groups = LocalStorageService.groups;
-    final index = groups.indexWhere((g) => g['id'] == groupId);
-    if (index != -1) {
-      groups[index]['isJoined'] = false;
-      groups[index]['memberCount'] =
-          ((groups[index]['memberCount'] as int? ?? 1) - 1).clamp(0, 9999);
-      await LocalStorageService.setGroups(groups);
-    }
+    final res =
+        await ApiClient.instance.get<dynamic>('/groups/my-groups');
+    final raw = res.data is List
+        ? res.data as List
+        : (res.data is Map ? (res.data['data'] as List? ?? []) : []);
+    return raw
+        .map((g) => GroupModel.fromJson(g as Map<String, dynamic>))
+        .toList();
   }
 }
 
-final groupsServiceProvider = Provider<GroupsService>(
-  (ref) => GroupsService(),
-);
+final groupsServiceProvider =
+    Provider<GroupsService>((_) => GroupsService());
 
 final groupsProvider = FutureProvider.autoDispose<List<GroupModel>>((ref) {
   return ref.read(groupsServiceProvider).fetchAll();

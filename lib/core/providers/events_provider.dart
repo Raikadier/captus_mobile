@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/local_storage_service.dart';
+import '../services/api_client.dart';
 
 class CalendarEvent {
   final String id;
@@ -21,48 +21,51 @@ class CalendarEvent {
   });
 
   factory CalendarEvent.fromJson(Map<String, dynamic> json) {
+    // Backend uses start_date; local cache uses date
+    final rawDate = json['start_date'] ?? json['date'];
     return CalendarEvent(
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
       description: json['description']?.toString(),
-      date: DateTime.tryParse(json['date']?.toString() ?? '') ?? DateTime.now(),
-      type: json['type']?.toString() ?? 'event',
+      date: DateTime.tryParse(rawDate?.toString() ?? '') ?? DateTime.now(),
+      type: json['type']?.toString() ?? 'personal',
       colorIndex: json['colorIndex'] as int? ?? 0,
       courseId: json['courseId']?.toString(),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
         'title': title,
         'description': description,
-        'date': date.toIso8601String(),
+        'start_date': date.toIso8601String(),
         'type': type,
-        'colorIndex': colorIndex,
-        'courseId': courseId,
       };
 }
 
 class EventsService {
   Future<List<CalendarEvent>> fetchAll() async {
-    final events = LocalStorageService.events;
-    return events.map((e) => CalendarEvent.fromJson(e)).toList();
+    final res =
+        await ApiClient.instance.get<Map<String, dynamic>>('/events');
+    final raw = res.data is Map ? (res.data!['data'] as List? ?? []) : [];
+    return raw
+        .map((e) => CalendarEvent.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<CalendarEvent> create(Map<String, dynamic> payload) async {
-    final event = CalendarEvent.fromJson(payload);
-    await LocalStorageService.addEvent(payload);
-    return event;
+    final res = await ApiClient.instance
+        .post<Map<String, dynamic>>('/events', data: payload);
+    final body = res.data is Map ? res.data! : <String, dynamic>{};
+    final eventJson = (body['data'] as Map<String, dynamic>?) ?? body;
+    return CalendarEvent.fromJson(eventJson);
   }
 
   Future<void> delete(String eventId) async {
-    await LocalStorageService.deleteEvent(eventId);
+    await ApiClient.instance.delete<void>('/events/$eventId');
   }
 }
 
-final eventsServiceProvider = Provider<EventsService>(
-  (ref) => EventsService(),
-);
+final eventsServiceProvider = Provider<EventsService>((_) => EventsService());
 
 final eventsProvider = FutureProvider.autoDispose<List<CalendarEvent>>((ref) {
   return ref.read(eventsServiceProvider).fetchAll();
