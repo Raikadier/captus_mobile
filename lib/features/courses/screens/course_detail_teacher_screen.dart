@@ -21,6 +21,7 @@ class _CourseDetailTeacherScreenState
     extends ConsumerState<CourseDetailTeacherScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  bool _actionInProgress = false;
 
   @override
   void initState() {
@@ -39,6 +40,191 @@ class _CourseDetailTeacherScreenState
   String _safeInitial(String value) {
     final trimmed = value.trim();
     return trimmed.isNotEmpty ? trimmed[0].toUpperCase() : '?';
+  }
+
+  Future<void> _runAction(
+    Future<void> Function() action, {
+    required String successMessage,
+  }) async {
+    if (_actionInProgress) return;
+    setState(() => _actionInProgress = true);
+    try {
+      await action();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(successMessage, style: GoogleFonts.inter()),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No se pudo completar la acción: $e',
+              style: GoogleFonts.inter()),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red.shade700,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _actionInProgress = false);
+    }
+  }
+
+  Future<void> _showEditDialog(TeacherCourse course) async {
+    final titleCtrl = TextEditingController(text: course.title);
+    final descCtrl = TextEditingController(text: course.description ?? '');
+    final formKey = GlobalKey<FormState>();
+
+    await showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Editar curso',
+          style: GoogleFonts.inter(
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: titleCtrl,
+                decoration: const InputDecoration(labelText: 'Nombre del curso'),
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? 'El nombre es requerido'
+                    : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: descCtrl,
+                maxLines: 3,
+                decoration: const InputDecoration(labelText: 'Descripción'),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: _actionInProgress ? null : () => Navigator.pop(dialogContext),
+            child: Text('Cancelar',
+                style: GoogleFonts.inter(color: AppColors.textSecondary)),
+          ),
+          TextButton(
+            onPressed: _actionInProgress
+                ? null
+                : () async {
+                    if (!formKey.currentState!.validate()) return;
+                    Navigator.pop(dialogContext);
+                    await _runAction(
+                      () async {
+                        await ref
+                            .read(teacherCoursesNotifierProvider.notifier)
+                            .updateCourse(
+                              courseId: course.id,
+                              title: titleCtrl.text,
+                              description: descCtrl.text,
+                            );
+                        ref.invalidate(teacherCourseDetailProvider(course.id));
+                      },
+                      successMessage: 'Curso actualizado',
+                    );
+                  },
+            child: Text(
+              'Guardar',
+              style: GoogleFonts.inter(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    titleCtrl.dispose();
+    descCtrl.dispose();
+  }
+
+  Future<void> _duplicateCourse(TeacherCourse course) async {
+    await _runAction(
+      () async {
+        await ref
+            .read(teacherCoursesNotifierProvider.notifier)
+            .duplicateCourse(sourceCourse: course);
+      },
+      successMessage: 'Curso duplicado',
+    );
+  }
+
+  Future<void> _archiveCourse(TeacherCourse course) async {
+    await _runAction(
+      () async {
+        await ref
+            .read(teacherCoursesNotifierProvider.notifier)
+            .archiveCourse(course: course);
+        if (mounted) context.go('/teacher/courses');
+      },
+      successMessage: 'Curso archivado',
+    );
+  }
+
+  Future<void> _confirmAndDeleteCourse(TeacherCourse course) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Eliminar curso',
+          style: GoogleFonts.inter(
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        content: Text(
+          'Esta acción eliminará el curso y sus datos relacionados. ¿Deseas continuar?',
+          style: GoogleFonts.inter(color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text('Cancelar',
+                style: GoogleFonts.inter(color: AppColors.textSecondary)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(
+              'Eliminar',
+              style: GoogleFonts.inter(
+                color: Colors.red,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldDelete != true) return;
+
+    await _runAction(
+      () async {
+        await ref
+            .read(teacherCoursesNotifierProvider.notifier)
+            .deleteCourse(courseId: course.id);
+        if (mounted) context.go('/teacher/courses');
+      },
+      successMessage: 'Curso eliminado',
+    );
   }
 
   void _showShareQRModal(BuildContext context, TeacherCourse course) {
@@ -139,12 +325,18 @@ class _CourseDetailTeacherScreenState
                     _QuickAction(
                       icon: Icons.edit_outlined,
                       label: 'Editar',
-                      onTap: () => Navigator.pop(context),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showEditDialog(course);
+                      },
                     ),
                     _QuickAction(
                       icon: Icons.copy_outlined,
                       label: 'Duplicar',
-                      onTap: () => Navigator.pop(context),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _duplicateCourse(course);
+                      },
                     ),
                     _QuickAction(
                       icon: Icons.share_outlined,
@@ -158,7 +350,10 @@ class _CourseDetailTeacherScreenState
                       icon: Icons.archive_outlined,
                       label: 'Archivar',
                       color: AppColors.warning,
-                      onTap: () => Navigator.pop(context),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _archiveCourse(course);
+                      },
                     ),
                   ],
                 ),
@@ -169,6 +364,7 @@ class _CourseDetailTeacherScreenState
                 child: InkWell(
                   onTap: () {
                     Navigator.pop(context);
+                    _confirmAndDeleteCourse(course);
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
