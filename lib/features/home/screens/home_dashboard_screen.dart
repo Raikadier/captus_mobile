@@ -19,36 +19,10 @@ class HomeDashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final localUser = ref.watch(currentUserProvider);
-    final user = localUser != null
-        ? UserModel(
-            id: localUser.id,
-            name: localUser.name,
-            email: localUser.email,
-            university: localUser.university,
-            career: localUser.career,
-            semester: localUser.semester,
-            role: localUser.role == 'teacher'
-                ? UserRole.teacher
-                : UserRole.student,
-            avatarUrl: localUser.avatarUrl,
-            bio: localUser.bio,
-          )
-        : UserModel.mock;
-    final tasks = TaskModel.mockList;
-    final courses = CourseModel.mockList;
-    final today = tasks
-        .where((t) =>
-            t.dueDate != null &&
-            t.dueDate!.difference(DateTime.now()).inHours < 24 &&
-            t.status != TaskStatus.completed)
-        .toList();
-    final upcoming = tasks
-        .where((t) =>
-            t.dueDate != null &&
-            t.dueDate!.difference(DateTime.now()).inDays < 3 &&
-            t.dueDate!.isAfter(DateTime.now()) &&
-            t.status != TaskStatus.completed)
-        .toList();
+    final user = UserModel.fromLocalUser(localUser);
+
+    final tasksAsync = ref.watch(tasksNotifierProvider);
+    final coursesAsync = ref.watch(coursesProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -58,64 +32,120 @@ class HomeDashboardScreen extends ConsumerWidget {
           SliverToBoxAdapter(
             child: _GreetingCard(user: user),
           ),
-          if (today.isNotEmpty) ...[
-            _SectionHeader(
-              title: 'Hoy',
-              badge: today.length,
-              onSeeAll: () => context.go('/tasks'),
-            ),
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 104,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: today.length,
-                  itemBuilder: (_, i) => _CompactTaskCard(task: today[i]),
-                ),
-              ),
-            ),
-          ],
-          if (upcoming.isNotEmpty) ...[
-            _SectionHeader(
-              title: 'Próximos vencimientos',
-              badge: upcoming.length,
-              onSeeAll: () => context.go('/tasks'),
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (_, i) => TaskCard(
-                  task: upcoming[i],
-                  onTap: () => context.push('/tasks/${upcoming[i].id}'),
-                ),
-                childCount: upcoming.length.clamp(0, 3),
-              ),
-            ),
-          ],
+          
+          // ── Tareas de hoy ──────────────────────────────────────────────────
+          tasksAsync.when(
+            loading: () => const SliverToBoxAdapter(child: LinearProgressIndicator()),
+            error: (err, _) => SliverToBoxAdapter(child: Center(child: Text('Error: $err'))),
+            data: (tasks) {
+              final today = tasks
+                  .where((t) =>
+                      !t.completed &&
+                      t.dueDate != null &&
+                      t.dueDate!.difference(DateTime.now()).inHours < 24)
+                  .toList();
+              
+              if (today.isEmpty) return const SliverToBoxAdapter(child: SizedBox.shrink());
+
+              return SliverMainAxisGroup(
+                slivers: [
+                  _SectionHeader(
+                    title: 'Hoy',
+                    badge: today.length,
+                    onSeeAll: () => context.go('/tasks'),
+                  ),
+                  SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: 104,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: today.length,
+                        itemBuilder: (_, i) => _CompactTaskCard(task: today[i]),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          // ── Próximos vencimientos ──────────────────────────────────────────
+          tasksAsync.when(
+            loading: () => const SliverToBoxAdapter(child: SizedBox.shrink()),
+            error: (_, __) => const SliverToBoxAdapter(child: SizedBox.shrink()),
+            data: (tasks) {
+              final upcoming = tasks
+                  .where((t) =>
+                      !t.completed &&
+                      t.dueDate != null &&
+                      t.dueDate!.difference(DateTime.now()).inDays < 3 &&
+                      t.dueDate!.isAfter(DateTime.now()))
+                  .toList();
+
+              if (upcoming.isEmpty) return const SliverToBoxAdapter(child: SizedBox.shrink());
+
+              return SliverMainAxisGroup(
+                slivers: [
+                  _SectionHeader(
+                    title: 'Próximos vencimientos',
+                    badge: upcoming.length,
+                    onSeeAll: () => context.go('/tasks'),
+                  ),
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (_, i) => TaskCard(
+                        task: upcoming[i],
+                        onTap: () => context.push('/tasks/${upcoming[i].id}'),
+                      ),
+                      childCount: upcoming.length.clamp(0, 3),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          // ── Materias ───────────────────────────────────────────────────────
           _SectionHeader(
             title: 'Mis materias',
             onSeeAll: () => context.push('/courses'),
           ),
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height: 180,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: courses.length,
-                itemBuilder: (_, i) => SizedBox(
-                  width: 148,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: CourseCard(
-                      course: courses[i],
-                      onTap: () => context.push('/courses/${courses[i].id}'),
+          coursesAsync.when(
+            loading: () => const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator())),
+            error: (err, _) => SliverToBoxAdapter(child: Center(child: Text('Error: $err'))),
+            data: (courses) {
+              if (courses.isEmpty) {
+                return const SliverToBoxAdapter(
+                  child: Center(child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text('No estás inscrito en ninguna materia todavía'),
+                  )),
+                );
+              }
+              return SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 180,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: courses.length,
+                    itemBuilder: (_, i) => SizedBox(
+                      width: 148,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: CourseCard(
+                          course: courses[i],
+                          onTap: () => context.push('/courses/${courses[i].id}'),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
+
           SliverToBoxAdapter(
             child: _AiInsightCard(),
           ),

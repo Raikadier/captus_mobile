@@ -1,22 +1,25 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/tasks_provider.dart';
+import '../../../core/providers/courses_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../../models/task.dart';
 import '../../../models/course.dart';
 
-class TaskCreateScreen extends StatefulWidget {
+class TaskCreateScreen extends ConsumerStatefulWidget {
   final String? taskId;
   final String? courseId;
 
   const TaskCreateScreen({super.key, this.taskId, this.courseId});
 
   @override
-  State<TaskCreateScreen> createState() => _TaskCreateScreenState();
+  ConsumerState<TaskCreateScreen> createState() => _TaskCreateScreenState();
 }
 
-class _TaskCreateScreenState extends State<TaskCreateScreen> {
+class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
   final _titleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
   final _subtaskCtrl = TextEditingController();
@@ -24,6 +27,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
   DateTime? _dueDate;
   String? _selectedCourseId;
   final List<String> _subtasks = [];
+  bool _isLoading = false;
 
   bool get _isEditing => widget.taskId != null;
 
@@ -31,15 +35,21 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
   void initState() {
     super.initState();
     _selectedCourseId = widget.courseId;
+    
     if (_isEditing) {
-      final task = TaskModel.mockList.firstWhere((t) => t.id == widget.taskId!,
-          orElse: () => TaskModel.mockList.first);
-      _titleCtrl.text = task.title;
-      _descCtrl.text = task.description ?? '';
-      _priority = task.priority;
-      _dueDate = task.dueDate;
-      _selectedCourseId = task.courseId;
-      _subtasks.addAll(task.subtasks.map((s) => s.title));
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final tasks = await ref.read(tasksNotifierProvider.future);
+        final task = tasks.firstWhere((t) => t.id == widget.taskId);
+        
+        setState(() {
+          _titleCtrl.text = task.title;
+          _descCtrl.text = task.description ?? '';
+          _priority = task.priority;
+          _dueDate = task.dueDate;
+          _selectedCourseId = task.courseId;
+          _subtasks.addAll(task.subtasks.map((s) => s.title));
+        });
+      });
     }
   }
 
@@ -53,6 +63,8 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final coursesAsync = ref.watch(coursesProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -62,10 +74,19 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
           onPressed: () => context.pop(),
         ),
         actions: [
-          TextButton(
-            onPressed: _save,
-            child: const Text('Guardar'),
-          ),
+          if (_isLoading)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: SizedBox(
+                    width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+              ),
+            )
+          else
+            TextButton(
+              onPressed: _save,
+              child: const Text('Guardar'),
+            ),
         ],
       ),
       body: SingleChildScrollView(
@@ -75,8 +96,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
           children: [
             TextField(
               controller: _titleCtrl,
-              style: GoogleFonts.inter(
-                  fontSize: 20, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w600),
               decoration: InputDecoration(
                 hintText: 'Título de la tarea',
                 hintStyle: GoogleFonts.inter(
@@ -106,13 +126,12 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                     : p == TaskPriority.medium
                         ? AppColors.priorityMedium
                         : AppColors.priorityLow;
-                final label = p == TaskPriority.high
-                    ? 'Alta'
+                final label = p.label;
+                final emoji = p == TaskPriority.high
+                    ? '🔴'
                     : p == TaskPriority.medium
-                        ? 'Media'
-                        : 'Baja';
-                final emoji =
-                    p == TaskPriority.high ? '🔴' : p == TaskPriority.medium ? '🟡' : '🟢';
+                        ? '🟡'
+                        : '🟢';
                 return Expanded(
                   child: GestureDetector(
                     onTap: () => setState(() => _priority = p),
@@ -169,21 +188,16 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                     Icon(
                       Icons.calendar_today_outlined,
                       size: 18,
-                      color: _dueDate != null
-                          ? AppColors.primary
-                          : AppColors.textSecondary,
+                      color: _dueDate != null ? AppColors.primary : AppColors.textSecondary,
                     ),
                     const SizedBox(width: 10),
                     Text(
                       _dueDate != null
-                          ? DateFormat("d 'de' MMMM, h:mm a", 'es')
-                              .format(_dueDate!)
+                          ? DateFormat("d 'de' MMMM, h:mm a", 'es').format(_dueDate!)
                           : 'Sin fecha límite',
                       style: GoogleFonts.inter(
                         fontSize: 14,
-                        color: _dueDate != null
-                            ? AppColors.textPrimary
-                            : AppColors.textDisabled,
+                        color: _dueDate != null ? AppColors.textPrimary : AppColors.textDisabled,
                       ),
                     ),
                     const Spacer(),
@@ -197,58 +211,32 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 10),
-            // Quick date shortcuts
-            Row(
-              children: ['Hoy', 'Mañana', 'Esta semana'].map((label) {
-                DateTime date;
-                if (label == 'Hoy') {
-                  date = DateTime.now().copyWith(hour: 23, minute: 59);
-                } else if (label == 'Mañana') {
-                  date = DateTime.now()
-                      .add(const Duration(days: 1))
-                      .copyWith(hour: 23, minute: 59);
-                } else {
-                  date = DateTime.now()
-                      .add(Duration(days: 7 - DateTime.now().weekday))
-                      .copyWith(hour: 23, minute: 59);
-                }
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ActionChip(
-                    label: Text(label),
-                    onPressed: () => setState(() => _dueDate = date),
-                    backgroundColor: AppColors.surface2,
-                    labelStyle: GoogleFonts.inter(
-                        fontSize: 12, color: AppColors.textSecondary),
-                  ),
-                );
-              }).toList(),
-            ),
             const SizedBox(height: 24),
 
             // Course
             Text('Materia', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
-            DropdownButtonFormField<String>(
-              value: _selectedCourseId,
-              hint: const Text('Selecciona una materia'),
-              dropdownColor: AppColors.surface,
-              decoration: const InputDecoration(),
-              items: [
-                const DropdownMenuItem(value: null, child: Text('Sin materia')),
-                ...CourseModel.mockList.map((c) => DropdownMenuItem(
-                      value: c.id,
-                      child: Text(c.name),
-                    )),
-              ],
-              onChanged: (v) => setState(() => _selectedCourseId = v),
+            coursesAsync.when(
+              loading: () => const LinearProgressIndicator(),
+              error: (_, __) => const Text('Error al cargar materias'),
+              data: (courses) => DropdownButtonFormField<String>(
+                value: courses.any((c) => c.id == _selectedCourseId) ? _selectedCourseId : null,
+                hint: const Text('Selecciona una materia'),
+                dropdownColor: AppColors.surface,
+                items: [
+                  const DropdownMenuItem(value: null, child: Text('Sin materia')),
+                  ...courses.map((c) => DropdownMenuItem(
+                        value: c.id,
+                        child: Text(c.name),
+                      )),
+                ],
+                onChanged: (v) => setState(() => _selectedCourseId = v),
+              ),
             ),
             const SizedBox(height: 24),
 
             // Description
-            Text('Descripción (opcional)',
-                style: Theme.of(context).textTheme.titleMedium),
+            Text('Descripción (opcional)', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
             TextFormField(
               controller: _descCtrl,
@@ -262,14 +250,12 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
             // Subtasks
             Row(
               children: [
-                Text('Subtareas',
-                    style: Theme.of(context).textTheme.titleMedium),
+                Text('Subtareas', style: Theme.of(context).textTheme.titleMedium),
                 const Spacer(),
                 TextButton.icon(
                   onPressed: _generateWithAI,
                   icon: const Text('🤖', style: TextStyle(fontSize: 14)),
-                  label: const Text('Generar con IA',
-                      style: TextStyle(fontSize: 12)),
+                  label: const Text('Generar con IA', style: TextStyle(fontSize: 12)),
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     minimumSize: Size.zero,
@@ -292,30 +278,22 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                           size: 18, color: AppColors.textDisabled),
                       const SizedBox(width: 10),
                       Expanded(
-                          child: Text(e.value,
-                              style: GoogleFonts.inter(fontSize: 14))),
+                          child: Text(e.value, style: GoogleFonts.inter(fontSize: 14))),
                       GestureDetector(
-                        onTap: () =>
-                            setState(() => _subtasks.removeAt(e.key)),
+                        onTap: () => setState(() => _subtasks.removeAt(e.key)),
                         child: const Icon(Icons.close_rounded,
                             size: 16, color: AppColors.textSecondary),
                       ),
                     ],
                   ),
                 )),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: _subtaskCtrl,
-                    decoration: const InputDecoration(
-                      hintText: 'Agregar subtarea...',
-                      prefixIcon: Icon(Icons.add_rounded),
-                    ),
-                    onFieldSubmitted: _addSubtask,
-                  ),
-                ),
-              ],
+            TextFormField(
+              controller: _subtaskCtrl,
+              decoration: const InputDecoration(
+                hintText: 'Agregar subtarea...',
+                prefixIcon: Icon(Icons.add_rounded),
+              ),
+              onFieldSubmitted: _addSubtask,
             ),
             const SizedBox(height: 80),
           ],
@@ -339,18 +317,20 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
       initialDate: _dueDate ?? DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
-      builder: (_, child) => Theme(
-        data: Theme.of(context),
-        child: child!,
-      ),
     );
     if (date != null && mounted) {
-      setState(() => _dueDate = date.copyWith(hour: 23, minute: 59));
+      final time = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(_dueDate ?? DateTime.now()),
+      );
+      if (time != null) {
+        setState(() => _dueDate =
+            DateTime(date.year, date.month, date.day, time.hour, time.minute));
+      }
     }
   }
 
   void _generateWithAI() {
-    // Placeholder: show mock subtasks generated by AI
     if (_titleCtrl.text.isNotEmpty) {
       setState(() {
         _subtasks.addAll([
@@ -366,13 +346,45 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
     }
   }
 
-  void _save() {
-    if (_titleCtrl.text.trim().isEmpty) {
+  Future<void> _save() async {
+    final title = _titleCtrl.text.trim();
+    if (title.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ingresa un título para la tarea')),
+        const SnackBar(content: Text('Ingresa un título')),
       );
       return;
     }
-    context.pop();
+
+    setState(() => _isLoading = true);
+
+    try {
+      final userId = ref.read(currentUserProvider)?.id ?? '';
+      final payload = {
+        'title': title,
+        'description': _descCtrl.text.trim(),
+        'priority': _priority.name,
+        'dueDate': _dueDate?.toIso8601String(),
+        'courseId': _selectedCourseId,
+        'userId': userId,
+        'subTasks': _subtasks.map((s) => {'title': s}).toList(),
+      };
+
+      if (_isEditing) {
+        await ref
+            .read(tasksNotifierProvider.notifier)
+            .updateTask(widget.taskId!, payload);
+      } else {
+        await ref.read(tasksNotifierProvider.notifier).create(payload);
+      }
+
+      if (mounted) context.pop();
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al guardar: $e')),
+        );
+      }
+    }
   }
 }

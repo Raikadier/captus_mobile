@@ -38,12 +38,18 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   flutter_dotenv: ^5.2.1
 
+  # Persistence
+  sqflite: ^2.4.1
+  path_provider: ^2.1.5
+  path: ^1.9.1
+
   # Utils
   intl: ^0.20.2
   shared_preferences: ^2.3.2
   image_picker: ^1.1.2
   speech_to_text: ^7.3.0
   cupertino_icons: ^1.0.8
+  uuid: ^4.5.1
 
 dev_dependencies:
   flutter_test:

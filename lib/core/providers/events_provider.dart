@@ -1,5 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+<<<<<<< Updated upstream
 import '../services/local_storage_service.dart';
+=======
+import 'package:uuid/uuid.dart';
+import '../database/database_service.dart';
+import 'auth_provider.dart';
+>>>>>>> Stashed changes
 
 class CalendarEvent {
   final String id;
@@ -21,6 +27,10 @@ class CalendarEvent {
   });
 
   factory CalendarEvent.fromJson(Map<String, dynamic> json) {
+<<<<<<< Updated upstream
+=======
+    final rawDate = json['start_date'] ?? json['date'];
+>>>>>>> Stashed changes
     return CalendarEvent(
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
@@ -44,6 +54,7 @@ class CalendarEvent {
 }
 
 class EventsService {
+<<<<<<< Updated upstream
   Future<List<CalendarEvent>> fetchAll() async {
     final events = LocalStorageService.events;
     return events.map((e) => CalendarEvent.fromJson(e)).toList();
@@ -57,6 +68,38 @@ class EventsService {
 
   Future<void> delete(String eventId) async {
     await LocalStorageService.deleteEvent(eventId);
+=======
+  final _uuid = const Uuid();
+
+  Future<List<CalendarEvent>> fetchAll(String userId) async {
+    final raw = await DatabaseService.query(
+      'events',
+      where: 'userId = ?',
+      whereArgs: [userId],
+    );
+    return raw.map((e) => CalendarEvent.fromJson(e)).toList();
+  }
+
+  Future<CalendarEvent> create(Map<String, dynamic> payload, String userId) async {
+    final id = _uuid.v4();
+    final data = {
+      'id': id,
+      'title': payload['title'],
+      'description': payload['description'],
+      'date': payload['start_date'] ?? payload['date'],
+      'type': payload['type'],
+      'colorIndex': payload['colorIndex'] ?? 0,
+      'courseId': payload['courseId'],
+      'userId': userId,
+    };
+
+    await DatabaseService.insert('events', data);
+    return CalendarEvent.fromJson(data);
+  }
+
+  Future<void> delete(String eventId) async {
+    await DatabaseService.delete('events', where: 'id = ?', whereArgs: [eventId]);
+>>>>>>> Stashed changes
   }
 }
 
@@ -65,7 +108,8 @@ final eventsServiceProvider = Provider<EventsService>(
 );
 
 final eventsProvider = FutureProvider.autoDispose<List<CalendarEvent>>((ref) {
-  return ref.read(eventsServiceProvider).fetchAll();
+  final user = ref.watch(currentUserProvider);
+  return ref.read(eventsServiceProvider).fetchAll(user?.id ?? '');
 });
 
 final todayEventsProvider =

@@ -1,5 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+<<<<<<< Updated upstream
 import '../services/local_storage_service.dart';
+=======
+import '../database/database_service.dart';
+import 'auth_provider.dart';
+>>>>>>> Stashed changes
 
 class GroupModel {
   final String id;
@@ -7,31 +12,38 @@ class GroupModel {
   final String? description;
   final int memberCount;
   final bool isJoined;
-  final DateTime createdAt;
+  final String? userId;
 
   const GroupModel({
     required this.id,
     required this.name,
     this.description,
-    required this.memberCount,
-    required this.isJoined,
-    required this.createdAt,
+    this.memberCount = 0,
+    this.isJoined = false,
+    this.userId,
   });
 
   factory GroupModel.fromJson(Map<String, dynamic> json) {
     return GroupModel(
       id: json['id']?.toString() ?? '',
-      name: json['name']?.toString() ?? '',
+      name: json['title']?.toString() ?? json['name']?.toString() ?? '',
       description: json['description']?.toString(),
+<<<<<<< Updated upstream
       memberCount: json['memberCount'] as int? ?? 0,
       isJoined: json['isJoined'] as bool? ?? false,
       createdAt: DateTime.tryParse(json['createdAt']?.toString() ?? '') ??
           DateTime.now(),
+=======
+      memberCount: (json['memberCount'] as int?) ?? 0,
+      isJoined: (json['isJoined'] == 1) || (json['isJoined'] == true),
+      userId: json['userId']?.toString(),
+>>>>>>> Stashed changes
     );
   }
 }
 
 class GroupsService {
+<<<<<<< Updated upstream
   Future<List<GroupModel>> fetchAll() async {
     final groups = LocalStorageService.groups;
     return groups.map((g) => GroupModel.fromJson(g)).toList();
@@ -63,9 +75,32 @@ class GroupsService {
 final groupsServiceProvider = Provider<GroupsService>(
   (ref) => GroupsService(),
 );
+=======
+  Future<List<GroupModel>> fetchAll(String userId) async {
+    final raw = await DatabaseService.query(
+      'groups',
+      where: 'userId = ?',
+      whereArgs: [userId],
+    );
+    return raw.map((g) => GroupModel.fromJson(g)).toList();
+  }
+
+  Future<void> joinGroup(String groupId) async {
+    await DatabaseService.update(
+      'groups',
+      {'isJoined': 1},
+      where: 'id = ?',
+      whereArgs: [groupId],
+    );
+  }
+}
+
+final groupsServiceProvider = Provider<GroupsService>((_) => GroupsService());
+>>>>>>> Stashed changes
 
 final groupsProvider = FutureProvider.autoDispose<List<GroupModel>>((ref) {
-  return ref.read(groupsServiceProvider).fetchAll();
+  final user = ref.watch(currentUserProvider);
+  return ref.read(groupsServiceProvider).fetchAll(user?.id ?? '');
 });
 
 final myGroupsProvider =
