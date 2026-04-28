@@ -104,13 +104,13 @@ abstract class FcmService {
 
   static void _handleForegroundMessage(RemoteMessage message) {
     debugPrint('[FCM] Foreground message: ${message.notification?.title}');
-    // TODO (Phase 3): Show in-app notification banner via a Riverpod state.
+
     // e.g. ref.read(inAppNotificationProvider.notifier).show(message)
   }
 
   static void _handleNotificationOpen(RemoteMessage message) {
     debugPrint('[FCM] Notification opened: ${message.data}');
-    // TODO (Phase 3): Deep-link navigation based on message.data['route']
+
     // e.g. router.push(message.data['route'] ?? '/notifications')
   }
 
