@@ -373,6 +373,9 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
       );
       return;
     }
-    context.pop();
+    FocusScope.of(context).unfocus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.pop();
+    });
   }
 }
