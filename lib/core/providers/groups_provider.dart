@@ -1,7 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-<<<<<<< Updated upstream
-import '../services/local_storage_service.dart';
-=======
 import '../database/database_service.dart';
 import 'auth_provider.dart';
 >>>>>>> Stashed changes
