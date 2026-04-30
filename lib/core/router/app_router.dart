@@ -49,6 +49,11 @@ import '../../features/admin/screens/admin_dashboard_screen.dart';
 import '../../features/admin/screens/admin_users_screen.dart';
 import '../../features/admin/screens/admin_courses_screen.dart';
 import '../../features/admin/screens/admin_institution_screen.dart';
+import '../../features/superadmin/screens/superadmin_shell_screen.dart';
+import '../../features/superadmin/screens/superadmin_dashboard_screen.dart';
+import '../../features/superadmin/screens/superadmin_institutions_screen.dart';
+import '../../features/superadmin/screens/superadmin_users_screen.dart';
+import '../../features/superadmin/screens/superadmin_audit_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -91,18 +96,24 @@ GoRouter createRouter(WidgetRef ref) {
           state.matchedLocation != '/splash' &&
           state.matchedLocation != '/join') {
         final role = authState?.role ?? 'student';
+        if (role == 'superadmin') return '/superadmin/dashboard';
         if (role == 'admin') return '/admin/dashboard';
         return role == 'teacher' ? '/home/teacher' : '/home';
       }
 
-      // Admin users should not reach student/teacher routes
-      if (isAuthenticated && !(state.matchedLocation.startsWith('/admin'))) {
+      // Superadmin should not reach student/teacher/admin routes
+      if (isAuthenticated) {
         final role = authState?.role ?? 'student';
-        if (role == 'admin' &&
-            !_publicRoutes.contains(state.matchedLocation) &&
-            state.matchedLocation != '/settings' &&
-            state.matchedLocation != '/profile' &&
-            state.matchedLocation != '/notifications') {
+        final loc  = state.matchedLocation;
+        final isCommon = _publicRoutes.contains(loc) ||
+            loc == '/settings' || loc == '/profile' || loc == '/notifications';
+
+        if (role == 'superadmin' && !loc.startsWith('/superadmin') && !isCommon) {
+          return '/superadmin/dashboard';
+        }
+
+        // Admin users should not reach student/teacher routes
+        if (role == 'admin' && !loc.startsWith('/admin') && !isCommon) {
           return '/admin/dashboard';
         }
       }
@@ -216,6 +227,34 @@ GoRouter createRouter(WidgetRef ref) {
         path: '/admin/institution',
         name: 'admin_institution',
         builder: (_, __) => const AdminInstitutionScreen(),
+      ),
+
+      // ── Superadmin shell ──────────────────────────────────────────────────
+      ShellRoute(
+        builder: (context, state, child) =>
+            SuperAdminShellScreen(child: child),
+        routes: [
+          GoRoute(
+            path: '/superadmin/dashboard',
+            name: 'superadmin_dashboard',
+            builder: (_, __) => const SuperAdminDashboardScreen(),
+          ),
+          GoRoute(
+            path: '/superadmin/institutions',
+            name: 'superadmin_institutions',
+            builder: (_, __) => const SuperAdminInstitutionsScreen(),
+          ),
+          GoRoute(
+            path: '/superadmin/users',
+            name: 'superadmin_users',
+            builder: (_, __) => const SuperAdminUsersScreen(),
+          ),
+          GoRoute(
+            path: '/superadmin/audit',
+            name: 'superadmin_audit',
+            builder: (_, __) => const SuperAdminAuditScreen(),
+          ),
+        ],
       ),
 
       // ── Tasks ──────────────────────────────────────────────────────────────
