@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../models/task.dart';
 import '../../../models/course.dart';
+import '../../../core/services/local_notification_service.dart';
 
 class TaskCreateScreen extends StatefulWidget {
   final String? taskId;
@@ -366,14 +367,28 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
     }
   }
 
-  void _save() {
+  void _save() async {
     if (_titleCtrl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Ingresa un título para la tarea')),
       );
       return;
     }
+
+    // 🔔 PROGRAMAR NOTIFICACIÓN
+    if (_dueDate != null) {
+      final reminderDate = _dueDate!.subtract(const Duration(hours: 1));
+
+      await LocalNotificationService.instance.scheduleTaskReminder(
+        id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        title: 'Tarea pendiente',
+        body: _titleCtrl.text,
+        scheduledDate: reminderDate,
+      );
+    }
+
     FocusScope.of(context).unfocus();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) context.pop();
     });

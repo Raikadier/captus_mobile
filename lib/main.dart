@@ -7,10 +7,11 @@ import 'core/services/local_storage_service.dart';
 import 'core/services/supabase_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/evidence/services/evidence_local_service.dart';
-
+import 'core/services/local_notification_service.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  
+  await LocalNotificationService.instance.init();
   // 1. Load environment variables from .env
   await Env.load();
 
@@ -24,6 +25,7 @@ Future<void> main() async {
   await initializeDateFormatting('es');
   
   await EvidenceLocalService().init();
+ 
   
   runApp(const ProviderScope(child: CaptusApp()));
 }
