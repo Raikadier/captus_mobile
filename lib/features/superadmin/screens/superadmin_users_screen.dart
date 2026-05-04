@@ -42,7 +42,7 @@ class _SuperAdminUsersScreenState extends State<SuperAdminUsersScreen> {
         search: _searchCtrl.text.trim(),
         role: _roleFilter,
       );
-      setState(() {
+      if (mounted) setState(() {
         _items = reset
             ? List<dynamic>.from(res['data'] as List)
             : [..._items, ...List<dynamic>.from(res['data'] as List)];
@@ -50,7 +50,7 @@ class _SuperAdminUsersScreenState extends State<SuperAdminUsersScreen> {
         _loading = false;
       });
     } catch (e) {
-      setState(() { _error = e.toString(); _loading = false; });
+      if (mounted) setState(() { _error = e.toString(); _loading = false; });
     }
   }
 

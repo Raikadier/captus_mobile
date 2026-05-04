@@ -28,7 +28,7 @@ class _SuperAdminAuditScreenState extends State<SuperAdminAuditScreen> {
     setState(() { _loading = true; _error = null; });
     try {
       final res = await _svc.getAuditLog(page: _page);
-      setState(() {
+      if (mounted) setState(() {
         _logs = reset
             ? List<dynamic>.from(res['data'] as List)
             : [..._logs, ...List<dynamic>.from(res['data'] as List)];
@@ -36,7 +36,7 @@ class _SuperAdminAuditScreenState extends State<SuperAdminAuditScreen> {
         _loading = false;
       });
     } catch (e) {
-      setState(() { _error = e.toString(); _loading = false; });
+      if (mounted) setState(() { _error = e.toString(); _loading = false; });
     }
   }
 
