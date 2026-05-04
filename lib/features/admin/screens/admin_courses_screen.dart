@@ -41,7 +41,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
   }
 
   Future<void> _showCreateDialog() async {
-    String name = '';
+    String title = '';
     String desc = '';
 
     await showModalBottomSheet(
@@ -69,7 +69,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                 hintText: 'Ej: Matemáticas 10°',
                 border: OutlineInputBorder(),
               ),
-              onChanged: (v) => name = v,
+              onChanged: (v) => title = v,
             ),
             const SizedBox(height: 12),
             TextField(
@@ -85,11 +85,14 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
                 onPressed: () async {
-                  if (name.isEmpty) return;
+                  if (title.trim().isEmpty) return;
                   Navigator.pop(ctx);
                   try {
                     final data = await AdminService.instance
-                        .createCourse({'name': name, 'description': desc});
+                        .createCourse({
+                      'title': title.trim(),
+                      'description': desc.trim(),
+                    });
                     if (mounted) {
                       setState(() => _courses.insert(0, data));
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -134,7 +137,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
             children: [
               Text('Asignar docente',
                 style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold)),
-              Text(course['name'] ?? '',
+              Text((course['title'] ?? course['name'] ?? '').toString(),
                 style: GoogleFonts.inter(color: AppColors.textSecondary)),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
@@ -240,11 +243,13 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                         Row(
                           children: [
                             Expanded(
-                              child: Text(c['name'] ?? '',
+                              child: Text(
+                                (c['title'] ?? c['name'] ?? '').toString(),
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w600,
                                   color: AppColors.textPrimary,
-                                )),
+                                ),
+                              ),
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),

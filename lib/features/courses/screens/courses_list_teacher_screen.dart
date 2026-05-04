@@ -11,6 +11,7 @@ class CoursesListTeacherScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final coursesAsync = ref.watch(teacherCoursesProvider);
+    final archivedAsync = ref.watch(teacherArchivedCoursesProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -19,7 +20,13 @@ class CoursesListTeacherScreen extends ConsumerWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home/teacher');
+            }
+          },
         ),
         title: Text(
           'Mis Cursos',
@@ -30,155 +37,162 @@ class CoursesListTeacherScreen extends ConsumerWidget {
           ),
         ),
       ),
-      body: coursesAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, color: AppColors.error, size: 48),
-              const SizedBox(height: 12),
-              Text(
-                'Error al cargar cursos',
-                style: GoogleFonts.inter(color: AppColors.textSecondary),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () => ref.refresh(teacherCoursesProvider),
-                child: const Text('Reintentar'),
-              ),
-            ],
+      body: SafeArea(
+        top: false,
+        child: coursesAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, color: AppColors.error, size: 48),
+                const SizedBox(height: 12),
+                Text(
+                  'Error al cargar cursos',
+                  style: GoogleFonts.inter(color: AppColors.textSecondary),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () => ref.refresh(teacherCoursesProvider),
+                  child: const Text('Reintentar'),
+                ),
+              ],
+            ),
           ),
-        ),
-        data: (courses) => courses.isEmpty
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+          data: (courses) => courses.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.school_outlined,
+                        size: 64,
+                        color: AppColors.textSecondary,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Sin cursos',
+                        style: GoogleFonts.inter(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Crea tu primer curso para comenzar.',
+                        style: GoogleFonts.inter(color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                )
+              : ListView(
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    16,
+                    16,
+                    120 + MediaQuery.of(context).padding.bottom,
+                  ),
                   children: [
-                    const Icon(Icons.school_outlined,
-                        size: 64, color: AppColors.textSecondary),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Sin cursos',
-                      style: GoogleFonts.inter(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                    ...courses.map(
+                      (course) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: _TeacherCourseCard(course: course),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Crea tu primer curso para comenzar.',
-                      style: GoogleFonts.inter(color: AppColors.textSecondary),
+                    archivedAsync.when(
+                      loading: () => const SizedBox.shrink(),
+                      error: (_, __) => const SizedBox.shrink(),
+                      data: (archivedCourses) {
+                        if (archivedCourses.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
+                        return _ArchivedCoursesSection(courses: archivedCourses);
+                      },
                     ),
                   ],
                 ),
-              )
-            : ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: courses.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  final course = courses[index];
-                  return _TeacherCourseCard(course: course);
-                },
-              ),
+        ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showCreateCourseDialog(context, ref),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/teacher/courses/new'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.black,
-        icon: const Icon(Icons.add),
-        label: Text(
-          'Nuevo curso',
-          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-        ),
+        child: const Icon(Icons.add),
       ),
     );
   }
+}
 
-  void _showCreateCourseDialog(BuildContext context, WidgetRef ref) {
-    final titleCtrl = TextEditingController();
-    final descCtrl = TextEditingController();
-    final formKey = GlobalKey<FormState>();
+class _ArchivedCoursesSection extends ConsumerWidget {
+  final List<TeacherCourse> courses;
+  const _ArchivedCoursesSection({required this.courses});
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border.withOpacity(0.4)),
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.fromLTRB(
-            24, 24, 24, MediaQuery.of(ctx).viewInsets.bottom + 24),
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Nuevo curso',
-                style: GoogleFonts.inter(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: titleCtrl,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  labelText: 'Nombre del curso',
-                  hintText: 'Ej. Estructuras de Datos',
-                ),
-                validator: (v) => v == null || v.trim().isEmpty
-                    ? 'El nombre es requerido'
-                    : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: descCtrl,
-                maxLines: 3,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  labelText: 'Descripción',
-                  hintText: 'Descripción del curso...',
-                ),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Cursos archivados',
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 10),
+          ...courses.map(
+            (course) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      course.title.replaceFirst('[ARCHIVADO] ', ''),
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   ),
-                  onPressed: () async {
-                    if (!formKey.currentState!.validate()) return;
-                    Navigator.pop(ctx);
-                    await ref
-                        .read(teacherCoursesNotifierProvider.notifier)
-                        .createCourse(
-                          title: titleCtrl.text.trim(),
-                          description: descCtrl.text.trim(),
-                        );
-                  },
-                  child: Text(
-                    'Crear curso',
-                    style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                  TextButton(
+                    onPressed: () async {
+                      await ref
+                          .read(teacherCoursesNotifierProvider.notifier)
+                          .unarchiveCourse(course: course);
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Curso desarchivado',
+                            style: GoogleFonts.inter(),
+                          ),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Desarchivar',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -225,7 +239,9 @@ class _TeacherCourseCard extends StatelessWidget {
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 7, vertical: 2),
+                            horizontal: 7,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: color.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(6),
@@ -253,8 +269,11 @@ class _TeacherCourseCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        const Icon(Icons.people_outline,
-                            size: 14, color: AppColors.textSecondary),
+                        const Icon(
+                          Icons.people_outline,
+                          size: 14,
+                          color: AppColors.textSecondary,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           '${course.studentCount} estudiantes',
@@ -271,8 +290,11 @@ class _TeacherCourseCard extends StatelessWidget {
             ),
             const Padding(
               padding: EdgeInsets.only(right: 12),
-              child: Icon(Icons.chevron_right,
-                  color: AppColors.textDisabled, size: 20),
+              child: Icon(
+                Icons.chevron_right,
+                color: AppColors.textDisabled,
+                size: 20,
+              ),
             ),
           ],
         ),

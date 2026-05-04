@@ -6,6 +6,7 @@ import 'auth_provider.dart';
 
 final _supabase = Supabase.instance.client;
 final _random = Random.secure();
+const _archivedPrefix = '[ARCHIVADO] ';
 
 // ── Modelo liviano para cursos del docente ────────────────────────────────────
 class TeacherCourse {
@@ -60,6 +61,25 @@ final teacherCoursesProvider =
   final list = res as List;
   return list
       .map((e) => TeacherCourse.fromJson(e as Map<String, dynamic>))
+      .where((course) => !course.title.startsWith(_archivedPrefix))
+      .toList();
+});
+
+final teacherArchivedCoursesProvider =
+    FutureProvider.autoDispose<List<TeacherCourse>>((ref) async {
+  final user = ref.watch(currentUserProvider);
+  if (user == null) return [];
+
+  final res = await _supabase
+      .from('courses')
+      .select('*, course_enrollments(id)')
+      .eq('teacher_id', user.id)
+      .order('created_at', ascending: false);
+
+  final list = res as List;
+  return list
+      .map((e) => TeacherCourse.fromJson(e as Map<String, dynamic>))
+      .where((course) => course.title.startsWith(_archivedPrefix))
       .toList();
 });
 
@@ -102,11 +122,202 @@ class TeacherCoursesNotifier extends AsyncNotifier<List<TeacherCourse>> {
         .select('*, course_enrollments(id)')
         .single();
 
-    final newCourse = TeacherCourse.fromJson(res as Map<String, dynamic>);
+    final newCourse = TeacherCourse.fromJson(res);
 
     state = AsyncData([newCourse, ...?state.value]);
     ref.invalidate(teacherCoursesProvider);
     return newCourse;
+  }
+
+  Future<TeacherCourse?> updateCourse({
+    required int courseId,
+    required String title,
+    required String description,
+  }) async {
+    final user = ref.read(currentUserProvider);
+    if (user == null) return null;
+
+    final res = await _supabase
+        .from('courses')
+        .update({
+          'title': title.trim(),
+          'description': description.trim(),
+          'updated_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', courseId)
+        .eq('teacher_id', user.id)
+        .select('*, course_enrollments(id)')
+        .maybeSingle();
+
+    if (res == null) return null;
+    final updated = TeacherCourse.fromJson(res);
+    final current = state.value ?? [];
+    state = AsyncData(
+      [
+        for (final c in current)
+          if (c.id == courseId) updated else c,
+      ],
+    );
+    ref.invalidate(teacherCoursesProvider);
+    return updated;
+  }
+
+  Future<TeacherCourse?> duplicateCourse({
+    required TeacherCourse sourceCourse,
+  }) async {
+    final user = ref.read(currentUserProvider);
+    if (user == null) return null;
+
+    final inviteCode = _generateCode();
+    final baseTitle = sourceCourse.title.replaceFirst(_archivedPrefix, '');
+    final duplicateTitle = sourceCourse.title.startsWith(_archivedPrefix)
+        ? '$baseTitle (Copia)'
+        : '${sourceCourse.title} (Copia)';
+
+    final res = await _supabase
+        .from('courses')
+        .insert({
+          'teacher_id': user.id,
+          'title': duplicateTitle,
+          'description': sourceCourse.description ?? '',
+          'invite_code': inviteCode,
+        })
+        .select('*, course_enrollments(id)')
+        .single();
+
+    final duplicated = TeacherCourse.fromJson(res);
+    state = AsyncData([duplicated, ...?state.value]);
+    ref.invalidate(teacherCoursesProvider);
+    return duplicated;
+  }
+
+  Future<TeacherCourse?> archiveCourse({
+    required TeacherCourse course,
+  }) async {
+    final user = ref.read(currentUserProvider);
+    if (user == null) return null;
+
+    final currentTitle = course.title.trim();
+    final archivedTitle = currentTitle.startsWith(_archivedPrefix)
+        ? currentTitle
+        : '$_archivedPrefix$currentTitle';
+
+    final res = await _supabase
+        .from('courses')
+        .update({
+          'title': archivedTitle,
+          'updated_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', course.id)
+        .eq('teacher_id', user.id)
+        .select('*, course_enrollments(id)')
+        .maybeSingle();
+
+    if (res == null) return null;
+    final archived = TeacherCourse.fromJson(res);
+    final current = state.value ?? [];
+    state = AsyncData(
+      [
+        for (final c in current)
+          if (c.id == course.id) archived else c,
+      ],
+    );
+    ref.invalidate(teacherCoursesProvider);
+    ref.invalidate(teacherArchivedCoursesProvider);
+    return archived;
+  }
+
+  Future<TeacherCourse?> unarchiveCourse({
+    required TeacherCourse course,
+  }) async {
+    final user = ref.read(currentUserProvider);
+    if (user == null) return null;
+
+    final currentTitle = course.title.trim();
+    final restoredTitle = currentTitle.startsWith(_archivedPrefix)
+        ? currentTitle.replaceFirst(_archivedPrefix, '').trim()
+        : currentTitle;
+
+    final res = await _supabase
+        .from('courses')
+        .update({
+          'title': restoredTitle,
+          'updated_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', course.id)
+        .eq('teacher_id', user.id)
+        .select('*, course_enrollments(id)')
+        .maybeSingle();
+
+    if (res == null) return null;
+    final restored = TeacherCourse.fromJson(res);
+    final current = state.value ?? [];
+    state = AsyncData(
+      [
+        for (final c in current)
+          if (c.id == course.id) restored else c,
+      ],
+    );
+    ref.invalidate(teacherCoursesProvider);
+    ref.invalidate(teacherArchivedCoursesProvider);
+    return restored;
+  }
+
+  Future<void> deleteCourse({
+    required int courseId,
+  }) async {
+    final user = ref.read(currentUserProvider);
+    if (user == null) return;
+
+    final assignmentRows = await _supabase
+        .from('course_assignments')
+        .select('id')
+        .eq('course_id', courseId);
+    final assignmentIds = (assignmentRows as List)
+        .map((row) => (row as Map<String, dynamic>)['id'])
+        .whereType<int>()
+        .toList();
+
+    final groupRows = await _supabase
+        .from('course_groups')
+        .select('id')
+        .eq('course_id', courseId);
+    final groupIds = (groupRows as List)
+        .map((row) => (row as Map<String, dynamic>)['id'])
+        .whereType<int>()
+        .toList();
+
+    if (assignmentIds.isNotEmpty) {
+      await _supabase
+          .from('assignment_submissions')
+          .delete()
+          .inFilter('assignment_id', assignmentIds);
+    }
+
+    if (groupIds.isNotEmpty) {
+      await _supabase
+          .from('assignment_submissions')
+          .delete()
+          .inFilter('group_id', groupIds);
+      await _supabase
+          .from('course_group_members')
+          .delete()
+          .inFilter('group_id', groupIds);
+    }
+
+    await _supabase.from('course_enrollments').delete().eq('course_id', courseId);
+    await _supabase.from('course_assignments').delete().eq('course_id', courseId);
+    await _supabase.from('course_groups').delete().eq('course_id', courseId);
+    await _supabase
+        .from('courses')
+        .delete()
+        .eq('id', courseId)
+        .eq('teacher_id', user.id);
+
+    final current = state.value ?? [];
+    state = AsyncData(current.where((c) => c.id != courseId).toList());
+    ref.invalidate(teacherCoursesProvider);
+    ref.invalidate(teacherArchivedCoursesProvider);
   }
 
   String _generateCode() {
@@ -212,5 +423,5 @@ final teacherCourseDetailProvider = FutureProvider.autoDispose
 
   // FIX Bug 2: antes pasaba índice 0 fijo → siempre morado.
   // Ahora fromJson usa el id del curso directamente.
-  return TeacherCourse.fromJson(res as Map<String, dynamic>);
+  return TeacherCourse.fromJson(res);
 });
