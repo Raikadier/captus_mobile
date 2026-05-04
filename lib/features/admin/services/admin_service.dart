@@ -86,6 +86,40 @@ class AdminService {
     return res.data ?? {};
   }
 
+  Future<Map<String, dynamic>> updateCourse(
+      String courseId, Map<String, dynamic> data) async {
+    final res = await ApiClient.instance
+        .put<Map<String, dynamic>>('$_base/courses/$courseId', data: data);
+    return res.data ?? {};
+  }
+
+  Future<List<dynamic>> getCourseStudents(String courseId) async {
+    final res = await ApiClient.instance
+        .get<List<dynamic>>('$_base/courses/$courseId/students');
+    return res.data ?? [];
+  }
+
+  Future<void> unenrollStudent(String courseId, String studentId) async {
+    await ApiClient.instance
+        .delete<void>('$_base/courses/$courseId/students/$studentId');
+  }
+
+  Future<Map<String, dynamic>> broadcastNotification({
+    required String title,
+    String? body,
+    String? role,
+  }) async {
+    final res = await ApiClient.instance.post<Map<String, dynamic>>(
+      '$_base/notifications/broadcast',
+      data: {
+        'title': title,
+        if (body != null && body.isNotEmpty) 'body': body,
+        if (role != null) 'role': role,
+      },
+    );
+    return res.data ?? {};
+  }
+
   // ── Grading Scales ───────────────────────────────────────────────────────
 
   Future<List<dynamic>> getGradingScales() async {
