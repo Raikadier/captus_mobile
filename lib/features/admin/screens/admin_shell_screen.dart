@@ -3,30 +3,28 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 
-/// Top-level shell for admin users. Provides a persistent bottom navigation
-/// with: Dashboard · Usuarios · Cursos · Ajustes.
+/// Top-level shell for admin users.
+/// Bottom nav: Panel · Usuarios · Cursos · Escalas · Períodos
 class AdminShellScreen extends StatelessWidget {
   final Widget child;
   const AdminShellScreen({super.key, required this.child});
 
   int _selectedIndex(BuildContext context) {
     final location = GoRouterState.of(context).uri.toString();
-    if (location.startsWith('/admin/users')) return 1;
-    if (location.startsWith('/admin/courses')) return 2;
-    if (location.startsWith('/admin/settings')) return 3;
+    if (location.startsWith('/admin/users'))          return 1;
+    if (location.startsWith('/admin/courses'))        return 2;
+    if (location.startsWith('/admin/grading-scales')) return 3;
+    if (location.startsWith('/admin/periods'))        return 4;
     return 0;
   }
 
   void _onTap(BuildContext context, int index) {
     switch (index) {
-      case 0:
-        context.go('/admin/dashboard');
-      case 1:
-        context.go('/admin/users');
-      case 2:
-        context.go('/admin/courses');
-      case 3:
-        context.go('/settings');
+      case 0: context.go('/admin/dashboard');
+      case 1: context.go('/admin/users');
+      case 2: context.go('/admin/courses');
+      case 3: context.go('/admin/grading-scales');
+      case 4: context.go('/admin/periods');
     }
   }
 
@@ -69,11 +67,18 @@ class AdminShellScreen extends StatelessWidget {
                   onTap: () => _onTap(context, 2),
                 ),
                 _AdminNavItem(
-                  icon: Icons.settings_outlined,
-                  activeIcon: Icons.settings_rounded,
-                  label: 'Ajustes',
+                  icon: Icons.grading_outlined,
+                  activeIcon: Icons.grading_rounded,
+                  label: 'Escalas',
                   isSelected: idx == 3,
                   onTap: () => _onTap(context, 3),
+                ),
+                _AdminNavItem(
+                  icon: Icons.date_range_outlined,
+                  activeIcon: Icons.date_range_rounded,
+                  label: 'Períodos',
+                  isSelected: idx == 4,
+                  onTap: () => _onTap(context, 4),
                 ),
               ],
             ),
@@ -105,20 +110,20 @@ class _AdminNavItem extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
-        width: 64,
+        width: 56,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               isSelected ? activeIcon : icon,
-              size: 24,
+              size: 22,
               color: isSelected ? AppColors.primary : AppColors.textSecondary,
             ),
             const SizedBox(height: 3),
             Text(
               label,
               style: GoogleFonts.inter(
-                fontSize: 10,
+                fontSize: 9,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                 color: isSelected ? AppColors.primary : AppColors.textSecondary,
               ),

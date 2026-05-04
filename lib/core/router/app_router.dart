@@ -50,6 +50,8 @@ import '../../features/admin/screens/admin_dashboard_screen.dart';
 import '../../features/admin/screens/admin_users_screen.dart';
 import '../../features/admin/screens/admin_courses_screen.dart';
 import '../../features/admin/screens/admin_institution_screen.dart';
+import '../../features/admin/screens/admin_grading_scales_screen.dart';
+import '../../features/admin/screens/admin_periods_screen.dart';
 import '../../features/superadmin/screens/superadmin_shell_screen.dart';
 import '../../features/superadmin/screens/superadmin_dashboard_screen.dart';
 import '../../features/superadmin/screens/superadmin_institutions_screen.dart';
@@ -219,6 +221,16 @@ GoRouter createRouter(WidgetRef ref) {
             path: '/admin/courses',
             name: 'admin_courses',
             builder: (_, __) => const AdminCoursesScreen(),
+          ),
+          GoRoute(
+            path: '/admin/grading-scales',
+            name: 'admin_grading_scales',
+            builder: (_, __) => const AdminGradingScalesScreen(),
+          ),
+          GoRoute(
+            path: '/admin/periods',
+            name: 'admin_periods',
+            builder: (_, __) => const AdminPeriodsScreen(),
           ),
         ],
       ),
