@@ -26,8 +26,10 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
+      body: SafeArea(
+        bottom: false,
+        child: CustomScrollView(
+          slivers: [
           // ── AppBar ──────────────────────────────────────────────────────
           SliverAppBar(
             floating: true,
@@ -183,6 +185,23 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
                         ),
                       ),
                       const Spacer(),
+                      TextButton(
+                        onPressed: () => context.push('/teacher/courses'),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: Text(
+                          'Ver todo',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
                       _PillButton(
                         label: '+ Nuevo',
                         onTap: () => context.push('/teacher/courses/new'),
@@ -280,8 +299,13 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
             ),
           ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
-        ],
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 120 + MediaQuery.of(context).padding.bottom,
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/ai'),

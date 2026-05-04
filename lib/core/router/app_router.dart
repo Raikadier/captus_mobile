@@ -29,6 +29,7 @@ import '../../features/courses/screens/join_course_screen.dart';
 import '../../features/courses/screens/scan_qr_join_course_screen.dart';
 import '../../features/courses/screens/courses_list_teacher_screen.dart';
 import '../../features/courses/screens/course_detail_teacher_screen.dart';
+import '../../features/courses/screens/course_groups_teacher_screens.dart';
 import '../../features/courses/screens/activity_create_screen.dart';
 import '../../features/courses/screens/course_create_screen.dart';
 import '../../features/groups/screens/groups_list_screen.dart';
@@ -50,6 +51,11 @@ import '../../features/admin/screens/admin_dashboard_screen.dart';
 import '../../features/admin/screens/admin_users_screen.dart';
 import '../../features/admin/screens/admin_courses_screen.dart';
 import '../../features/admin/screens/admin_institution_screen.dart';
+import '../../features/superadmin/screens/superadmin_shell_screen.dart';
+import '../../features/superadmin/screens/superadmin_dashboard_screen.dart';
+import '../../features/superadmin/screens/superadmin_institutions_screen.dart';
+import '../../features/superadmin/screens/superadmin_users_screen.dart';
+import '../../features/superadmin/screens/superadmin_audit_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -92,18 +98,24 @@ GoRouter createRouter(WidgetRef ref) {
           state.matchedLocation != '/splash' &&
           state.matchedLocation != '/join') {
         final role = authState?.role ?? 'student';
+        if (role == 'superadmin') return '/superadmin/dashboard';
         if (role == 'admin') return '/admin/dashboard';
         return role == 'teacher' ? '/home/teacher' : '/home';
       }
 
-      // Admin users should not reach student/teacher routes
-      if (isAuthenticated && !(state.matchedLocation.startsWith('/admin'))) {
+      // Superadmin should not reach student/teacher/admin routes
+      if (isAuthenticated) {
         final role = authState?.role ?? 'student';
-        if (role == 'admin' &&
-            !_publicRoutes.contains(state.matchedLocation) &&
-            state.matchedLocation != '/settings' &&
-            state.matchedLocation != '/profile' &&
-            state.matchedLocation != '/notifications') {
+        final loc  = state.matchedLocation;
+        final isCommon = _publicRoutes.contains(loc) ||
+            loc == '/settings' || loc == '/profile' || loc == '/notifications';
+
+        if (role == 'superadmin' && !loc.startsWith('/superadmin') && !isCommon) {
+          return '/superadmin/dashboard';
+        }
+
+        // Admin users should not reach student/teacher routes
+        if (role == 'admin' && !loc.startsWith('/admin') && !isCommon) {
           return '/admin/dashboard';
         }
       }
@@ -223,6 +235,34 @@ GoRouter createRouter(WidgetRef ref) {
         builder: (_, __) => const AdminInstitutionScreen(),
       ),
 
+      // ── Superadmin shell ──────────────────────────────────────────────────
+      ShellRoute(
+        builder: (context, state, child) =>
+            SuperAdminShellScreen(child: child),
+        routes: [
+          GoRoute(
+            path: '/superadmin/dashboard',
+            name: 'superadmin_dashboard',
+            builder: (_, __) => const SuperAdminDashboardScreen(),
+          ),
+          GoRoute(
+            path: '/superadmin/institutions',
+            name: 'superadmin_institutions',
+            builder: (_, __) => const SuperAdminInstitutionsScreen(),
+          ),
+          GoRoute(
+            path: '/superadmin/users',
+            name: 'superadmin_users',
+            builder: (_, __) => const SuperAdminUsersScreen(),
+          ),
+          GoRoute(
+            path: '/superadmin/audit',
+            name: 'superadmin_audit',
+            builder: (_, __) => const SuperAdminAuditScreen(),
+          ),
+        ],
+      ),
+
       // ── Tasks ──────────────────────────────────────────────────────────────
       GoRoute(
         path: '/tasks/:id',
@@ -332,6 +372,29 @@ GoRouter createRouter(WidgetRef ref) {
         builder: (_, state) => ActivityCreateScreen(
           courseId: state.pathParameters['courseId']!,
           activityId: state.pathParameters['activityId'],
+        ),
+      ),
+      GoRoute(
+        path: '/teacher/courses/:courseId/groups/new',
+        name: 'course_group_create_teacher',
+        builder: (_, state) => CreateCourseGroupScreen(
+          courseId: int.parse(state.pathParameters['courseId']!),
+        ),
+      ),
+      GoRoute(
+        path: '/teacher/courses/:courseId/groups/:groupId',
+        name: 'course_group_detail_teacher',
+        builder: (_, state) => GroupDetailTeacherScreen(
+          courseId: int.parse(state.pathParameters['courseId']!),
+          groupId: int.parse(state.pathParameters['groupId']!),
+        ),
+      ),
+      GoRoute(
+        path: '/teacher/courses/:courseId/groups/:groupId/admin',
+        name: 'course_group_admin_teacher',
+        builder: (_, state) => GroupAdminTeacherScreen(
+          courseId: int.parse(state.pathParameters['courseId']!),
+          groupId: int.parse(state.pathParameters['groupId']!),
         ),
       ),
 

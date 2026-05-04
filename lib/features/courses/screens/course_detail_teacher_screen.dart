@@ -7,6 +7,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/courses_provider.dart';
+import 'course_groups_teacher_screens.dart';
 
 class CourseDetailTeacherScreen extends ConsumerStatefulWidget {
   final String courseId;
@@ -21,11 +22,12 @@ class _CourseDetailTeacherScreenState
     extends ConsumerState<CourseDetailTeacherScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  bool _actionInProgress = false;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -39,6 +41,193 @@ class _CourseDetailTeacherScreenState
   String _safeInitial(String value) {
     final trimmed = value.trim();
     return trimmed.isNotEmpty ? trimmed[0].toUpperCase() : '?';
+  }
+
+  Future<void> _runAction(
+    Future<void> Function() action, {
+    required String successMessage,
+  }) async {
+    if (_actionInProgress) return;
+    setState(() => _actionInProgress = true);
+    try {
+      await action();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(successMessage, style: GoogleFonts.inter()),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No se pudo completar la acción: $e',
+              style: GoogleFonts.inter()),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red.shade700,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _actionInProgress = false);
+    }
+  }
+
+  Future<void> _showEditDialog(TeacherCourse course) async {
+    final titleCtrl = TextEditingController(text: course.title);
+    final descCtrl = TextEditingController(text: course.description ?? '');
+    final formKey = GlobalKey<FormState>();
+
+    await showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Editar curso',
+          style: GoogleFonts.inter(
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: titleCtrl,
+                decoration:
+                    const InputDecoration(labelText: 'Nombre del curso'),
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? 'El nombre es requerido'
+                    : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: descCtrl,
+                maxLines: 3,
+                decoration: const InputDecoration(labelText: 'Descripción'),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed:
+                _actionInProgress ? null : () => Navigator.pop(dialogContext),
+            child: Text('Cancelar',
+                style: GoogleFonts.inter(color: AppColors.textSecondary)),
+          ),
+          TextButton(
+            onPressed: _actionInProgress
+                ? null
+                : () async {
+                    if (!formKey.currentState!.validate()) return;
+                    Navigator.pop(dialogContext);
+                    await _runAction(
+                      () async {
+                        await ref
+                            .read(teacherCoursesNotifierProvider.notifier)
+                            .updateCourse(
+                              courseId: course.id,
+                              title: titleCtrl.text,
+                              description: descCtrl.text,
+                            );
+                        ref.invalidate(teacherCourseDetailProvider(course.id));
+                      },
+                      successMessage: 'Curso actualizado',
+                    );
+                  },
+            child: Text(
+              'Guardar',
+              style: GoogleFonts.inter(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    titleCtrl.dispose();
+    descCtrl.dispose();
+  }
+
+  Future<void> _duplicateCourse(TeacherCourse course) async {
+    await _runAction(
+      () async {
+        await ref
+            .read(teacherCoursesNotifierProvider.notifier)
+            .duplicateCourse(sourceCourse: course);
+      },
+      successMessage: 'Curso duplicado',
+    );
+  }
+
+  Future<void> _archiveCourse(TeacherCourse course) async {
+    await _runAction(
+      () async {
+        await ref
+            .read(teacherCoursesNotifierProvider.notifier)
+            .archiveCourse(course: course);
+        if (mounted) context.go('/teacher/courses');
+      },
+      successMessage: 'Curso archivado',
+    );
+  }
+
+  Future<void> _confirmAndDeleteCourse(TeacherCourse course) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Eliminar curso',
+          style: GoogleFonts.inter(
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        content: Text(
+          'Esta acción eliminará el curso y sus datos relacionados. ¿Deseas continuar?',
+          style: GoogleFonts.inter(color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text('Cancelar',
+                style: GoogleFonts.inter(color: AppColors.textSecondary)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(
+              'Eliminar',
+              style: GoogleFonts.inter(
+                color: Colors.red,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldDelete != true) return;
+
+    await _runAction(
+      () async {
+        await ref
+            .read(teacherCoursesNotifierProvider.notifier)
+            .deleteCourse(courseId: course.id);
+        if (mounted) context.go('/teacher/courses');
+      },
+      successMessage: 'Curso eliminado',
+    );
   }
 
   void _showShareQRModal(BuildContext context, TeacherCourse course) {
@@ -139,12 +328,18 @@ class _CourseDetailTeacherScreenState
                     _QuickAction(
                       icon: Icons.edit_outlined,
                       label: 'Editar',
-                      onTap: () => Navigator.pop(context),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showEditDialog(course);
+                      },
                     ),
                     _QuickAction(
                       icon: Icons.copy_outlined,
                       label: 'Duplicar',
-                      onTap: () => Navigator.pop(context),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _duplicateCourse(course);
+                      },
                     ),
                     _QuickAction(
                       icon: Icons.share_outlined,
@@ -158,7 +353,10 @@ class _CourseDetailTeacherScreenState
                       icon: Icons.archive_outlined,
                       label: 'Archivar',
                       color: AppColors.warning,
-                      onTap: () => Navigator.pop(context),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _archiveCourse(course);
+                      },
                     ),
                   ],
                 ),
@@ -169,6 +367,7 @@ class _CourseDetailTeacherScreenState
                 child: InkWell(
                   onTap: () {
                     Navigator.pop(context);
+                    _confirmAndDeleteCourse(course);
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -316,22 +515,30 @@ class _CourseDetailTeacherScreenState
                   ),
                 ),
                 bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(48),
+                  preferredSize: const Size.fromHeight(50),
                   child: Container(
+                    height: 50,
                     color: AppColors.background,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12),
                     child: TabBar(
                       controller: _tabController,
+                      dividerColor: AppColors.border.withOpacity(0.5),
                       labelColor: color,
                       unselectedLabelColor: AppColors.textSecondary,
                       indicatorColor: color,
-                      indicatorWeight: 2,
+                      indicatorWeight: 3,
+                      indicatorSize: TabBarIndicatorSize.label,
+                      labelPadding: EdgeInsets.zero,
                       labelStyle: GoogleFonts.inter(
-                          fontSize: 13, fontWeight: FontWeight.w600),
-                      unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
+                          fontSize: 12, fontWeight: FontWeight.w800),
+                      unselectedLabelStyle: GoogleFonts.inter(
+                          fontSize: 12, fontWeight: FontWeight.w600),
                       tabs: const [
                         Tab(text: 'Actividades'),
                         Tab(text: 'Estudiantes'),
-                        Tab(text: 'Estadísticas'),
+                        Tab(text: 'Grupos'),
+                        Tab(text: 'Estad.'),
                       ],
                     ),
                   ),
@@ -343,6 +550,7 @@ class _CourseDetailTeacherScreenState
               children: [
                 _ActivitiesTab(courseId: courseId, color: color),
                 _StudentsTab(courseId: courseId),
+                CourseGroupsTab(courseId: courseId, courseTitle: course.title),
                 _StatsTab(color: color),
               ],
             ),
@@ -379,8 +587,9 @@ class _QRFullScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final courseInitial =
-        course.title.trim().isNotEmpty ? course.title.trim()[0].toUpperCase() : '?';
+    final courseInitial = course.title.trim().isNotEmpty
+        ? course.title.trim()[0].toUpperCase()
+        : '?';
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -455,7 +664,8 @@ class _QRFullScreen extends StatelessWidget {
                               size: 240,
                               eyeStyle: QrEyeStyle(
                                 eyeShape: QrEyeShape.square,
-                                color: color, // FIX Bug 2: usa el color del curso
+                                color:
+                                    color, // FIX Bug 2: usa el color del curso
                               ),
                               dataModuleStyle: QrDataModuleStyle(
                                 dataModuleShape: QrDataModuleShape.square,
@@ -466,7 +676,8 @@ class _QRFullScreen extends StatelessWidget {
                               width: 52,
                               height: 52,
                               decoration: BoxDecoration(
-                                color: color, // FIX Bug 2: usa el color del curso
+                                color:
+                                    color, // FIX Bug 2: usa el color del curso
                                 borderRadius: BorderRadius.circular(14),
                                 border:
                                     Border.all(color: Colors.white, width: 3),

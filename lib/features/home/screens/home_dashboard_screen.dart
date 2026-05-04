@@ -35,9 +35,10 @@ class HomeDashboardScreen extends ConsumerWidget {
 
     final tasks = TaskModel.mockList;
     final courses = CourseModel.mockList;
-    final streakDays = 7; // TODO: conectar con provider real
+    final streakDays = 7;
 
-    final pendingTasks = tasks.where((t) => t.status != TaskStatus.completed).toList();
+    final pendingTasks =
+        tasks.where((t) => t.status != TaskStatus.completed).toList();
     final todayTasks = pendingTasks.where((t) {
       if (t.dueDate == null) return false;
       final diff = t.dueDate!.difference(DateTime.now());
@@ -510,9 +511,8 @@ class _DayDot extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: isActive ? AppColors.streak : AppColors.surface2,
-            border: isToday
-                ? Border.all(color: AppColors.primary, width: 2)
-                : null,
+            border:
+                isToday ? Border.all(color: AppColors.primary, width: 2) : null,
           ),
           child: isActive
               ? Center(

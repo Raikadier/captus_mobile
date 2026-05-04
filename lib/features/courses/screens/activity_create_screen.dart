@@ -90,6 +90,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
 
   void _submit(bool publish) {
     if (!_formKey.currentState!.validate()) return;
+    FocusScope.of(context).unfocus();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -99,7 +100,9 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
         backgroundColor: publish ? AppColors.primary : AppColors.surface2,
       ),
     );
-    context.pop();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.pop();
+    });
   }
 
   @override

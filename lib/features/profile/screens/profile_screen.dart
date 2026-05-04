@@ -15,8 +15,10 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(userProfileProvider);
-    final user = profileAsync.asData?.value ?? UserModel.fromLocalUser(ref.watch(currentUserProvider));
+    final user = profileAsync.asData?.value ??
+        UserModel.fromLocalUser(ref.watch(currentUserProvider));
     final statsAsync = ref.watch(statisticsProvider);
+    final avatarUrl = user.avatarUrl?.trim() ?? '';
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -50,14 +52,18 @@ class ProfileScreen extends ConsumerWidget {
                     CircleAvatar(
                       radius: 44,
                       backgroundColor: AppColors.primaryDark,
-                      child: Text(
-                        user.firstName[0],
-                        style: GoogleFonts.inter(
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
-                      ),
+                      backgroundImage:
+                          avatarUrl.isNotEmpty ? NetworkImage(avatarUrl) : null,
+                      child: avatarUrl.isEmpty
+                          ? Text(
+                              user.firstName[0],
+                              style: GoogleFonts.inter(
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                            )
+                          : null,
                     ),
                     Positioned(
                       bottom: 0,
@@ -132,7 +138,9 @@ class ProfileScreen extends ConsumerWidget {
                   _InfoRow(
                     icon: Icons.layers_rounded,
                     label: 'Semestre',
-                    value: '${user.semester}° semestre',
+                    value: user.semester == null
+                        ? 'Sin registrar'
+                        : '${user.semester} semestre',
                     isLast: true,
                   ),
                 ]),
