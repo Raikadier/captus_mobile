@@ -85,4 +85,62 @@ class AdminService {
     );
     return res.data ?? {};
   }
+
+  // ── Grading Scales ───────────────────────────────────────────────────────
+
+  Future<List<dynamic>> getGradingScales() async {
+    final res = await ApiClient.instance.get<List<dynamic>>('$_base/grading-scales');
+    return res.data ?? [];
+  }
+
+  Future<Map<String, dynamic>> createGradingScale(Map<String, dynamic> data) async {
+    final res = await ApiClient.instance
+        .post<Map<String, dynamic>>('$_base/grading-scales', data: data);
+    return res.data ?? {};
+  }
+
+  Future<Map<String, dynamic>> updateGradingScale(
+      String id, Map<String, dynamic> data) async {
+    final res = await ApiClient.instance
+        .put<Map<String, dynamic>>('$_base/grading-scales/$id', data: data);
+    return res.data ?? {};
+  }
+
+  Future<void> deleteGradingScale(String id) async {
+    await ApiClient.instance.delete<void>('$_base/grading-scales/$id');
+  }
+
+  Future<void> setDefaultGradingScale(String id) async {
+    await ApiClient.instance
+        .patch<void>('$_base/grading-scales/$id/set-default', data: {});
+  }
+
+  // ── Academic Periods ─────────────────────────────────────────────────────
+
+  Future<List<dynamic>> getPeriods() async {
+    final res = await ApiClient.instance.get<List<dynamic>>('$_base/periods');
+    return res.data ?? [];
+  }
+
+  Future<Map<String, dynamic>> createPeriod(Map<String, dynamic> data) async {
+    final res = await ApiClient.instance
+        .post<Map<String, dynamic>>('$_base/periods', data: data);
+    return res.data ?? {};
+  }
+
+  Future<Map<String, dynamic>> updatePeriod(
+      String id, Map<String, dynamic> data) async {
+    final res = await ApiClient.instance
+        .put<Map<String, dynamic>>('$_base/periods/$id', data: data);
+    return res.data ?? {};
+  }
+
+  Future<void> deletePeriod(String id) async {
+    await ApiClient.instance.delete<void>('$_base/periods/$id');
+  }
+
+  Future<void> setActivePeriod(String id) async {
+    await ApiClient.instance
+        .patch<void>('$_base/periods/$id/set-active', data: {});
+  }
 }
