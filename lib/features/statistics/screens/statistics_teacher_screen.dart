@@ -28,170 +28,143 @@ class StatisticsTeacherScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Stack(
-        children: [
-          // Background Decorative Elements
-          Positioned(
-            top: -100,
-            left: -100,
-            child: _buildBlurCircle(300, AppColors.primary.withAlpha(15)),
-          ),
-          Positioned(
-            bottom: 200,
-            right: -150,
-            child: _buildBlurCircle(400, AppColors.info.withAlpha(10)),
-          ),
-          
-          statsAsync.when(
-            data: (stats) => RefreshIndicator(
-              onRefresh: () async => ref.refresh(teacherStatsSummaryProvider),
-              color: AppColors.primary,
-              backgroundColor: AppColors.surface,
-              child: CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  _buildAppBar(context, ref),
+      body: statsAsync.when(
+        data: (stats) => RefreshIndicator(
+          onRefresh: () async => ref.refresh(teacherStatsSummaryProvider),
+          color: AppColors.primary,
+          backgroundColor: AppColors.surface,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              _buildAppBar(context, ref),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: _buildCourseSelector(ref, coursesAsync, selectedCourseId),
+                ),
+              ),
+              if (stats.totalStudents == 0)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _buildEmptyState(
+                    title: 'No hay estudiantes asociados',
+                    message: 'No hay estudiantes asociados a tus cursos todavía.',
+                    icon: Icons.people_outline_rounded,
+                  ),
+                )
+              else ...[
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: _buildSummaryGrid(context, stats),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: _buildPerformanceChart(stats),
+                  ),
+                ),
+                if (stats.totalStudents > 0 && stats.averageGrade == null)
                   SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                      child: _buildCourseSelector(ref, coursesAsync, selectedCourseId),
-                    ),
-                  ),
-                  if (stats.totalStudents == 0)
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: _buildEmptyState(
-                        title: 'No hay estudiantes asociados',
-                        message: 'No hay estudiantes asociados a tus cursos todavía.',
-                        icon: Icons.people_outline_rounded,
+                    child: Container(
+                      margin: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.info.withAlpha(20),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.info.withAlpha(40)),
                       ),
-                    )
-                  else ...[
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: _buildSummaryGrid(stats),
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _buildPerformanceChart(stats),
-                      ),
-                    ),
-                    if (stats.totalStudents > 0 && stats.averageGrade == null)
-                      SliverToBoxAdapter(
-                        child: Container(
-                          margin: const EdgeInsets.all(16),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: AppColors.info.withAlpha(20),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: AppColors.info.withAlpha(40)),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.lightbulb_outline_rounded, color: AppColors.info),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  'Ya tienes estudiantes. Crea tareas y califica entregas para activar métricas completas.',
-                                  style: GoogleFonts.inter(
-                                    color: AppColors.info,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.lightbulb_outline_rounded, color: AppColors.info, size: 20),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Ya tienes estudiantes. Crea tareas y califica entregas para activar métricas completas.',
+                              style: GoogleFonts.inter(
+                                color: AppColors.info,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                    SliverPersistentHeader(
-                      pinned: true,
-                      delegate: _SliverHeaderDelegate(
-                        child: _buildFilters(ref, activeFilter),
+                        ],
                       ),
                     ),
-                    _buildStudentList(context, stats, activeFilter),
-                    const SliverToBoxAdapter(child: SizedBox(height: 100)),
-                  ],
-                ],
-              ),
-            ),
-            loading: () => const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(color: AppColors.primary),
-                  SizedBox(height: 16),
-                  Text(
-                    'Cargando estadísticas...',
-                    style: TextStyle(color: AppColors.textSecondary),
                   ),
-                ],
-              ),
-            ),
-            error: (err, stack) => _buildErrorState(ref, err),
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _SliverHeaderDelegate(
+                    child: _buildFilters(ref, activeFilter),
+                  ),
+                ),
+                _buildStudentList(context, stats, activeFilter),
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              ],
+            ],
           ),
-        ],
+        ),
+        loading: () => const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(color: AppColors.primary),
+              SizedBox(height: 16),
+              Text(
+                'Cargando estadísticas...',
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
+            ],
+          ),
+        ),
+        error: (err, stack) => _buildErrorState(ref, err),
       ),
     );
   }
 
   Widget _buildAppBar(BuildContext context, WidgetRef ref) {
+    final canPop = GoRouter.of(context).canPop();
+    
     return SliverAppBar(
-      expandedHeight: 140,
+      expandedHeight: 120,
       floating: false,
       pinned: true,
-      backgroundColor: AppColors.background.withAlpha(230),
+      backgroundColor: AppColors.background.withAlpha(240),
       elevation: 0,
       centerTitle: false,
+      leading: canPop ? IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 20),
+        onPressed: () => context.pop(),
+      ) : null,
       flexibleSpace: FlexibleSpaceBar(
         titlePadding: EdgeInsets.zero,
-        background: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.primary.withAlpha(40),
-                    AppColors.background,
-                  ],
-                ),
-              ),
+        background: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.primary.withAlpha(30),
+                AppColors.background,
+              ],
             ),
-            // Decorative shapes
-            Positioned(
-              top: -20,
-              right: -20,
-              child: Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.primary.withAlpha(10),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
         title: LayoutBuilder(
           builder: (context, constraints) {
-            final isExpanded = constraints.maxHeight > 100;
+            final isExpanded = constraints.maxHeight > 80;
             return Padding(
               padding: EdgeInsets.only(
-                left: 16,
-                bottom: isExpanded ? 20 : 14,
+                left: canPop ? 48 : 16,
+                bottom: isExpanded ? 16 : 14,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Estadísticas docentes',
+                    'Estadísticas',
                     style: GoogleFonts.outfit(
                       fontSize: isExpanded ? 24 : 18,
                       fontWeight: FontWeight.bold,
@@ -200,12 +173,11 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                   ),
                   if (isExpanded)
                     Text(
-                      'Seguimiento de rendimiento estudiantil',
+                      'Rendimiento académico',
                       style: GoogleFonts.inter(
-                        fontSize: 12,
+                        fontSize: 11,
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w400,
-                        letterSpacing: 0.5,
                       ),
                     ),
                 ],
@@ -219,13 +191,13 @@ class StatisticsTeacherScreen extends ConsumerWidget {
           padding: const EdgeInsets.only(right: 8.0),
           child: IconButton(
             icon: Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.refresh_rounded, color: AppColors.primary, size: 20),
+              child: const Icon(Icons.refresh_rounded, color: AppColors.primary, size: 18),
             ),
             onPressed: () => ref.invalidate(teacherStatsSummaryProvider),
           ),
@@ -234,17 +206,6 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBlurCircle(double size, Color color) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: color,
-      ),
-      child: const SizedBox.shrink(),
-    );
-  }
 
   Widget _buildCourseSelector(WidgetRef ref, AsyncValue coursesAsync, String? selectedId) {
     return coursesAsync.when(
@@ -295,35 +256,39 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSummaryGrid(TeacherStatsSummaryModel stats) {
+  Widget _buildSummaryGrid(BuildContext context, TeacherStatsSummaryModel stats) {
+    final width = MediaQuery.of(context).size.width;
+    final crossAxisCount = width > 600 ? 4 : 2;
+    final aspectRatio = width < 400 ? 1.4 : 1.6;
+
     return GridView.count(
-      crossAxisCount: 2,
+      crossAxisCount: crossAxisCount,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
-      childAspectRatio: 1.6,
+      childAspectRatio: aspectRatio,
       children: [
         _buildStatCard(
-          'Total estudiantes',
+          'Estudiantes',
           stats.totalStudents.toString(),
           Icons.people_alt_rounded,
           AppColors.info,
         ),
         _buildStatCard(
-          'Promedio general',
+          'Promedio',
           stats.averageGrade == null ? '—' : stats.averageGrade!.toStringAsFixed(1),
           Icons.auto_graph_rounded,
           AppColors.primary,
         ),
         _buildStatCard(
-          'Entregas calificadas',
+          'Calificadas',
           (stats.totalSubmissions - stats.pendingToGrade).toString(),
           Icons.check_circle_outline_rounded,
           AppColors.success,
         ),
         _buildStatCard(
-          'Pendientes por calificar',
+          'Pendientes',
           stats.pendingToGrade.toString(),
           Icons.hourglass_bottom_rounded,
           AppColors.warning,
@@ -334,52 +299,37 @@ class StatisticsTeacherScreen extends ConsumerWidget {
 
   Widget _buildStatCard(String label, String value, IconData icon, Color color) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.border, width: 0.5),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.surface,
-            AppColors.surface.withAlpha(180),
-          ],
-        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(40),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withAlpha(20),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: color.withAlpha(20),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: color, size: 20),
-          ),
+          Icon(icon, color: color, size: 18),
           const Spacer(),
           Text(
             value,
             style: GoogleFonts.outfit(
-              fontSize: 24,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             label,
             style: GoogleFonts.inter(
-              fontSize: 11,
+              fontSize: 10,
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
             ),
@@ -393,24 +343,16 @@ class StatisticsTeacherScreen extends ConsumerWidget {
 
   Widget _buildPerformanceChart(TeacherStatsSummaryModel stats) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppColors.border, width: 0.5),
-        gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [
-            AppColors.surface,
-            AppColors.surface2.withAlpha(150),
-          ],
-        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(50),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withAlpha(30),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -419,31 +361,24 @@ class StatisticsTeacherScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withAlpha(20),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(Icons.analytics_rounded, color: AppColors.primary, size: 18),
-              ),
-              const SizedBox(width: 12),
+              const Icon(Icons.analytics_rounded, color: AppColors.primary, size: 18),
+              const SizedBox(width: 8),
               Text(
-                'Distribución académica',
+                'Distribución',
                 style: GoogleFonts.outfit(
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 28),
-          _buildResponsiveBar('Alto rendimiento', stats.highPerformancePercentage, AppColors.success),
-          const SizedBox(height: 22),
-          _buildResponsiveBar('Rendimiento medio', stats.mediumPerformancePercentage, AppColors.warning),
-          const SizedBox(height: 22),
-          _buildResponsiveBar('En riesgo / seguimiento', stats.riskPercentage, AppColors.error),
+          const SizedBox(height: 20),
+          _buildResponsiveBar('Alto', stats.highPerformancePercentage, AppColors.success),
+          const SizedBox(height: 16),
+          _buildResponsiveBar('Medio', stats.mediumPerformancePercentage, AppColors.warning),
+          const SizedBox(height: 16),
+          _buildResponsiveBar('Riesgo', stats.riskPercentage, AppColors.error),
         ],
       ),
     );
@@ -666,31 +601,16 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.border, width: 0.5),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.surface,
-            AppColors.surface2.withAlpha(100),
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(20),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
           onTap: () {
             try {
               context.push('/teacher/student/${student.studentId}');
@@ -705,11 +625,11 @@ class StatisticsTeacherScreen extends ConsumerWidget {
             }
           },
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             child: Row(
               children: [
                 _buildAvatar(student.studentName, statusColor),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -717,70 +637,65 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                       Text(
                         student.studentName,
                         style: GoogleFonts.outfit(
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 4),
                       Row(
                         children: [
                           _buildMiniBadge(
                             hasGrades && student.averageGrade != null 
                                 ? student.averageGrade!.toStringAsFixed(1) 
-                                : 'S/N',
+                                : '—',
                             hasGrades ? statusColor : AppColors.textDisabled,
                             Icons.star_rounded,
                             filled: hasGrades,
                           ),
-                          const SizedBox(width: 12),
-                          _buildMiniBadge(
-                            '${(student.completionRate * 100).toInt()}% cumpl.',
-                            AppColors.textSecondary,
-                            Icons.task_alt_rounded,
+                          const SizedBox(width: 8),
+                          Text(
+                            '${(student.completionRate * 100).toInt()}% ent.',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ],
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: statusColor.withAlpha(30),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: statusColor.withAlpha(50), width: 0.5),
+                        color: statusColor.withAlpha(20),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         statusLabel,
                         style: GoogleFonts.inter(
                           color: statusColor,
-                          fontSize: 10,
+                          fontSize: 9,
                           fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        const Icon(Icons.assignment_turned_in_outlined, size: 12, color: AppColors.textDisabled),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${student.submittedAssignments}/${student.totalAssignments}',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 6),
+                    Text(
+                      '${student.submittedAssignments}/${student.totalAssignments}',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),

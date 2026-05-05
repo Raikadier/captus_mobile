@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/user_profile_provider.dart';
 import '../../../models/user.dart';
 import '../../../shared/widgets/streak_badge.dart';
 
@@ -12,234 +13,282 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user =
-        UserModel.mock; // TODO: replace with real user from authProvider
+    final profileAsync = ref.watch(userProfileProvider);
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Mi Perfil'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () => context.pop(),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit_outlined),
-            onPressed: () => context.push('/profile/edit'),
-          ),
-        ],
+    return profileAsync.when(
+      loading: () => const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(child: CircularProgressIndicator()),
       ),
-      body: ListView(
-        children: [
-          // Header
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              border: Border(
-                  bottom: BorderSide(color: AppColors.border, width: 0.5)),
+      error: (err, _) => Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(title: const Text('Mi Perfil')),
+        body: Center(child: Text('Error al cargar perfil: $err')),
+      ),
+      data: (user) {
+        if (user == null) {
+          return Scaffold(
+            backgroundColor: AppColors.background,
+            appBar: AppBar(title: const Text('Mi Perfil')),
+            body: const Center(child: Text('No se encontró el perfil')),
+          );
+        }
+
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          appBar: AppBar(
+            title: const Text('Mi Perfil'),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_rounded),
+              onPressed: () => context.pop(),
             ),
-            child: Column(
-              children: [
-                Stack(
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: () => context.push('/profile/edit'),
+              ),
+            ],
+          ),
+          body: ListView(
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  border: Border(
+                      bottom: BorderSide(color: AppColors.border, width: 0.5)),
+                ),
+                child: Column(
                   children: [
-                    CircleAvatar(
-                      radius: 44,
-                      backgroundColor: AppColors.primaryDark,
-                      child: Text(
-                        user.firstName[0],
-                        style: GoogleFonts.inter(
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: () => context.push('/profile/edit'),
-                        child: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            shape: BoxShape.circle,
-                            border:
-                                Border.all(color: AppColors.surface, width: 2),
+                    Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 44,
+                          backgroundColor: AppColors.primaryDark,
+                          child: Text(
+                            user.firstName.isNotEmpty ? user.firstName[0] : 'U',
+                            style: GoogleFonts.inter(
+                              fontSize: 36,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                            ),
                           ),
-                          child: const Icon(Icons.camera_alt_rounded,
-                              size: 14, color: Colors.black),
                         ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: () => context.push('/profile/edit'),
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                    color: AppColors.surface, width: 2),
+                              ),
+                              child: const Icon(Icons.camera_alt_rounded,
+                                  size: 14, color: Colors.black),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          user.name,
+                          style: GoogleFonts.inter(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        if (user.role == UserRole.teacher) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                  color: AppColors.primary.withOpacity(0.5)),
+                            ),
+                            child: Text(
+                              'Docente',
+                              style: GoogleFonts.inter(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      user.email,
+                      style: GoogleFonts.inter(
+                          fontSize: 13, color: AppColors.textSecondary),
+                    ),
+                    const SizedBox(height: 16),
+                    StreakBadge(days: 0, size: StreakSize.mini),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Academic info
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'INFORMACIÓN ACADÉMICA',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textSecondary,
+                        letterSpacing: 0.8,
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  user.name,
-                  style: GoogleFonts.inter(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  user.email,
-                  style: GoogleFonts.inter(
-                      fontSize: 13, color: AppColors.textSecondary),
-                ),
-                const SizedBox(height: 16),
-                StreakBadge(days: 0, size: StreakSize.mini),
-              ],
-            ),
-          ),
+                    const SizedBox(height: 8),
+                    _InfoCard(children: [
+                      _InfoRow(
+                        icon: Icons.school_rounded,
+                        label: 'Universidad',
+                        value: user.university ?? '',
+                      ),
+                      _InfoRow(
+                        icon: Icons.laptop_rounded,
+                        label: 'Carrera',
+                        value: user.career ?? '',
+                      ),
+                      _InfoRow(
+                        icon: Icons.layers_rounded,
+                        label: 'Semestre',
+                        value: user.role == UserRole.teacher
+                            ? 'N/A'
+                            : '${user.semester}° semestre',
+                        isLast: true,
+                      ),
+                    ]),
 
-          const SizedBox(height: 16),
+                    const SizedBox(height: 24),
 
-          // Academic info
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'INFORMACIÓN ACADÉMICA',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textSecondary,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _InfoCard(children: [
-                  _InfoRow(
-                    icon: Icons.school_rounded,
-                    label: 'Universidad',
-                    value: user.university ?? '',
-                  ),
-                  _InfoRow(
-                    icon: Icons.laptop_rounded,
-                    label: 'Carrera',
-                    value: user.career ?? '',
-                  ),
-                  _InfoRow(
-                    icon: Icons.layers_rounded,
-                    label: 'Semestre',
-                    value: '${user.semester}° semestre',
-                    isLast: true,
-                  ),
-                ]),
+                    // Stats
+                    Text(
+                      'ESTADÍSTICAS',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textSecondary,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        _StatTile(
+                            icon: Icons.check_circle_rounded,
+                            label: 'Completadas',
+                            value: '42',
+                            color: AppColors.primary),
+                        const SizedBox(width: 8),
+                        _StatTile(
+                            icon: Icons.local_fire_department_rounded,
+                            label: 'Racha',
+                            value: '0d',
+                            color: AppColors.warning),
+                        const SizedBox(width: 8),
+                        _StatTile(
+                            icon: Icons.emoji_events_rounded,
+                            label: 'Logros',
+                            value: '3',
+                            color: const Color(0xFFAB47BC)),
+                      ],
+                    ),
 
-                const SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
-                // Stats
-                Text(
-                  'ESTADÍSTICAS',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textSecondary,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    _StatTile(
-                        icon: Icons.check_circle_rounded,
-                        label: 'Completadas',
-                        value: '42',
-                        color: AppColors.primary),
-                    const SizedBox(width: 8),
-                    _StatTile(
-                        icon: Icons.local_fire_department_rounded,
-                        label: 'Racha',
-                        value: '0d',
-                        color: AppColors.warning),
-                    const SizedBox(width: 8),
-                    _StatTile(
+                    // Quick links
+                    Text(
+                      'ACCESO RÁPIDO',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textSecondary,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _InfoCard(children: [
+                      _LinkRow(
+                        icon: Icons.bar_chart_rounded,
+                        label: 'Mi progreso',
+                        onTap: () => context.push('/statistics'),
+                      ),
+                      _LinkRow(
                         icon: Icons.emoji_events_rounded,
-                        label: 'Logros',
-                        value: '3',
-                        color: const Color(0xFFAB47BC)),
+                        label: 'Mis logros',
+                        onTap: () => context.push('/statistics/achievements'),
+                      ),
+                      _LinkRow(
+                        icon: Icons.notifications_outlined,
+                        label: 'Notificaciones',
+                        onTap: () => context.push('/notifications/settings'),
+                        isLast: true,
+                      ),
+                    ]),
+
+                    const SizedBox(height: 24),
+
+                    // Settings
+                    Text(
+                      'CUENTA',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textSecondary,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _InfoCard(children: [
+                      _LinkRow(
+                        icon: Icons.settings_outlined,
+                        label: 'Configuración',
+                        onTap: () => context.push('/settings'),
+                      ),
+                      _LinkRow(
+                        icon: Icons.lock_outline_rounded,
+                        label: 'Seguridad',
+                        onTap: () => context.push('/settings/security'),
+                      ),
+                      _LinkRow(
+                        icon: Icons.logout_rounded,
+                        label: 'Cerrar sesión',
+                        color: AppColors.error,
+                        onTap: () => _confirmLogout(context, ref),
+                        isLast: true,
+                      ),
+                    ]),
+
+                    const SizedBox(height: 32),
                   ],
                 ),
-
-                const SizedBox(height: 24),
-
-                // Quick links
-                Text(
-                  'ACCESO RÁPIDO',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textSecondary,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _InfoCard(children: [
-                  _LinkRow(
-                    icon: Icons.bar_chart_rounded,
-                    label: 'Mi progreso',
-                    onTap: () => context.push('/statistics'),
-                  ),
-                  _LinkRow(
-                    icon: Icons.emoji_events_rounded,
-                    label: 'Mis logros',
-                    onTap: () => context.push('/statistics/achievements'),
-                  ),
-                  _LinkRow(
-                    icon: Icons.notifications_outlined,
-                    label: 'Notificaciones',
-                    onTap: () => context.push('/notifications/settings'),
-                    isLast: true,
-                  ),
-                ]),
-
-                const SizedBox(height: 24),
-
-                // Settings
-                Text(
-                  'CUENTA',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textSecondary,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _InfoCard(children: [
-                  _LinkRow(
-                    icon: Icons.settings_outlined,
-                    label: 'Configuración',
-                    onTap: () => context.push('/settings'),
-                  ),
-                  _LinkRow(
-                    icon: Icons.lock_outline_rounded,
-                    label: 'Seguridad',
-                    onTap: () => context.push('/settings/security'),
-                  ),
-                  _LinkRow(
-                    icon: Icons.logout_rounded,
-                    label: 'Cerrar sesión',
-                    color: AppColors.error,
-                    onTap: () => _confirmLogout(context, ref),
-                    isLast: true,
-                  ),
-                ]),
-
-                const SizedBox(height: 32),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -260,7 +309,6 @@ class ProfileScreen extends ConsumerWidget {
             onPressed: () {
               Navigator.pop(context);
               ref.read(authProvider.notifier).signOut();
-              // Router redirect handles navigation to /login automatically.
             },
             child: Text('Salir', style: TextStyle(color: AppColors.error)),
           ),

@@ -162,6 +162,21 @@ class AiChatNotifier extends Notifier<AiChatState> {
         'cursos y calendario. ¿Qué te gustaría saber?';
   }
 
+  Future<void> loadConversation(String conversationId) async {
+    state = state.copyWith(
+      isLoading: true,
+      error: null,
+      conversationId: conversationId,
+    );
+
+    // Simular carga de datos remotos
+    await Future.delayed(const Duration(milliseconds: 600));
+
+    // Por ahora mantenemos los mensajes actuales o podríamos cargar mocks específicos.
+    // Lo importante es que el estado refleje el ID de la conversación.
+    state = state.copyWith(isLoading: false);
+  }
+
   void clear() {
     LocalStorageService.clearChatMessages();
     state = AiChatState(
