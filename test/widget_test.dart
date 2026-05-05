@@ -9,8 +9,7 @@ import 'package:captus_mobile/core/theme/app_theme.dart';
 
 void main() {
   group('AppTheme', () {
-    testWidgets('dark theme sets Brightness.dark',
-        (WidgetTester tester) async {
+    testWidgets('dark theme sets Brightness.dark', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.dark,
@@ -33,8 +32,7 @@ void main() {
       expect(theme.colorScheme.primary, const Color(0xFF00C853));
     });
 
-    testWidgets('scaffold background is #121212',
-        (WidgetTester tester) async {
+    testWidgets('scaffold background is #121212', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.dark,
@@ -47,8 +45,7 @@ void main() {
   });
 
   group('MaterialApp basics', () {
-    testWidgets('renders Text without crashing',
-        (WidgetTester tester) async {
+    testWidgets('renders Text without crashing', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(body: Center(child: Text('Hello Captus'))),

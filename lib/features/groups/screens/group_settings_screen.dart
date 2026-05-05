@@ -40,8 +40,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Archivar grupo',
           style: GoogleFonts.inter(
@@ -52,15 +51,14 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
         ),
         content: Text(
           'El grupo quedará archivado y no aparecerá en tu lista activa.',
-          style: GoogleFonts.inter(
-              fontSize: 14, color: AppColors.textSecondary),
+          style:
+              GoogleFonts.inter(fontSize: 14, color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text('Cancelar',
-                style:
-                    GoogleFonts.inter(color: AppColors.textSecondary)),
+                style: GoogleFonts.inter(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () {
@@ -80,8 +78,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Salir del grupo',
           style: GoogleFonts.inter(
@@ -92,23 +89,22 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
         ),
         content: Text(
           '¿Seguro que deseas salir de "${_group.name}"?',
-          style: GoogleFonts.inter(
-              fontSize: 14, color: AppColors.textSecondary),
+          style:
+              GoogleFonts.inter(fontSize: 14, color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text('Cancelar',
-                style:
-                    GoogleFonts.inter(color: AppColors.textSecondary)),
+                style: GoogleFonts.inter(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               context.go('/groups');
             },
-            child: Text('Salir',
-                style: GoogleFonts.inter(color: AppColors.error)),
+            child:
+                Text('Salir', style: GoogleFonts.inter(color: AppColors.error)),
           ),
         ],
       ),
@@ -133,8 +129,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back,
-              color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => context.pop(),
         ),
         title: Text(
@@ -151,8 +146,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Guardado',
-                      style: GoogleFonts.inter(
-                          color: AppColors.textPrimary)),
+                      style: GoogleFonts.inter(color: AppColors.textPrimary)),
                   backgroundColor: AppColors.surface2,
                 ),
               );
@@ -175,8 +169,8 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
           const SizedBox(height: 8),
           TextField(
             controller: _nameController,
-            style: GoogleFonts.inter(
-                fontSize: 15, color: AppColors.textPrimary),
+            style:
+                GoogleFonts.inter(fontSize: 15, color: AppColors.textPrimary),
             decoration: InputDecoration(
               hintText: 'Nombre del grupo',
               hintStyle: GoogleFonts.inter(
@@ -189,18 +183,16 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide:
-                    const BorderSide(color: AppColors.primary),
+                borderSide: const BorderSide(color: AppColors.primary),
               ),
-              contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 14, vertical: 12),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             ),
           ),
           const SizedBox(height: 28),
           _sectionHeader('Miembros'),
           const SizedBox(height: 8),
-          ..._group.members.map((member) =>
-              _MemberTile(member: member)),
+          ..._group.members.map((member) => _MemberTile(member: member)),
           const SizedBox(height: 28),
           _sectionHeader('Código de invitación'),
           const SizedBox(height: 8),
@@ -213,13 +205,13 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                        color: AppColors.primary.withOpacity(0.3)),
+                    border:
+                        Border.all(color: AppColors.primary.withOpacity(0.3)),
                   ),
                   child: Text(
                     _group.inviteCode,
@@ -237,8 +229,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
                       color: AppColors.textSecondary, size: 20),
                   tooltip: 'Copiar',
                   onPressed: () {
-                    Clipboard.setData(
-                        ClipboardData(text: _group.inviteCode));
+                    Clipboard.setData(ClipboardData(text: _group.inviteCode));
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('Código copiado',
@@ -262,8 +253,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
           _sectionHeader('Notificaciones'),
           const SizedBox(height: 8),
           Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 14, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(12),
@@ -284,8 +274,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
                 ),
                 Switch(
                   value: _notificationsEnabled,
-                  onChanged: (v) =>
-                      setState(() => _notificationsEnabled = v),
+                  onChanged: (v) => setState(() => _notificationsEnabled = v),
                   activeColor: AppColors.primary,
                   inactiveTrackColor: AppColors.surface2,
                 ),
@@ -306,8 +295,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
               ),
             ),
             style: OutlinedButton.styleFrom(
-              side: BorderSide(
-                  color: AppColors.warning.withOpacity(0.5)),
+              side: BorderSide(color: AppColors.warning.withOpacity(0.5)),
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
@@ -382,8 +370,7 @@ class _MemberTileState extends State<_MemberTile> {
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: AppColors.courseColor(
-                widget.member.id.hashCode),
+            backgroundColor: AppColors.courseColor(widget.member.id.hashCode),
             child: Text(
               widget.member.name[0],
               style: GoogleFonts.inter(
@@ -408,8 +395,8 @@ class _MemberTileState extends State<_MemberTile> {
             icon: const Icon(Icons.more_vert,
                 color: AppColors.textDisabled, size: 18),
             color: AppColors.surface2,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             onSelected: (value) {
               if (value == 'promote') {
                 setState(() => _isAdmin = !_isAdmin);
@@ -418,8 +405,7 @@ class _MemberTileState extends State<_MemberTile> {
                   SnackBar(
                     content: Text(
                       '${widget.member.name} eliminado',
-                      style: GoogleFonts.inter(
-                          color: AppColors.textPrimary),
+                      style: GoogleFonts.inter(color: AppColors.textPrimary),
                     ),
                     backgroundColor: AppColors.surface2,
                   ),
@@ -432,20 +418,15 @@ class _MemberTileState extends State<_MemberTile> {
                 child: Row(
                   children: [
                     Icon(
-                      _isAdmin
-                          ? Icons.arrow_downward
-                          : Icons.arrow_upward,
+                      _isAdmin ? Icons.arrow_downward : Icons.arrow_upward,
                       size: 16,
                       color: AppColors.textSecondary,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      _isAdmin
-                          ? 'Quitar admin'
-                          : 'Hacer admin',
+                      _isAdmin ? 'Quitar admin' : 'Hacer admin',
                       style: GoogleFonts.inter(
-                          color: AppColors.textPrimary,
-                          fontSize: 13),
+                          color: AppColors.textPrimary, fontSize: 13),
                     ),
                   ],
                 ),
@@ -460,8 +441,7 @@ class _MemberTileState extends State<_MemberTile> {
                     Text(
                       'Eliminar',
                       style: GoogleFonts.inter(
-                          color: AppColors.error,
-                          fontSize: 13),
+                          color: AppColors.error, fontSize: 13),
                     ),
                   ],
                 ),
@@ -470,8 +450,7 @@ class _MemberTileState extends State<_MemberTile> {
           ),
           if (_isAdmin)
             Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 6, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
                 color: AppColors.primary.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(6),

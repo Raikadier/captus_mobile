@@ -65,15 +65,15 @@ class _CourseDetailTeacherScreenState extends State<CourseDetailTeacherScreen>
             ),
             const SizedBox(height: 16),
             ListTile(
-              leading: const Icon(Icons.edit_outlined,
-                  color: AppColors.textPrimary),
+              leading:
+                  const Icon(Icons.edit_outlined, color: AppColors.textPrimary),
               title: Text('Editar curso',
                   style: GoogleFonts.inter(color: AppColors.textPrimary)),
               onTap: () => Navigator.pop(context),
             ),
             ListTile(
-              leading: const Icon(Icons.archive_outlined,
-                  color: AppColors.warning),
+              leading:
+                  const Icon(Icons.archive_outlined, color: AppColors.warning),
               title: Text('Archivar curso',
                   style: GoogleFonts.inter(color: AppColors.warning)),
               onTap: () => Navigator.pop(context),
@@ -151,8 +151,7 @@ class _CourseDetailTeacherScreenState extends State<CourseDetailTeacherScreen>
                   indicatorWeight: 2,
                   labelStyle: GoogleFonts.inter(
                       fontSize: 13, fontWeight: FontWeight.w600),
-                  unselectedLabelStyle:
-                      GoogleFonts.inter(fontSize: 13),
+                  unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
                   tabs: const [
                     Tab(text: 'Actividades'),
                     Tab(text: 'Estudiantes'),
@@ -177,8 +176,8 @@ class _CourseDetailTeacherScreenState extends State<CourseDetailTeacherScreen>
         builder: (context, _) {
           if (_tabController.index != 0) return const SizedBox.shrink();
           return FloatingActionButton(
-            onPressed: () => context.push(
-                '/teacher/courses/${_course.id}/activity/create'),
+            onPressed: () =>
+                context.push('/teacher/courses/${_course.id}/activity/create'),
             backgroundColor: AppColors.primary,
             child: const Icon(Icons.add, color: Colors.black),
           );
@@ -192,16 +191,14 @@ class _ActivitiesTeacherTab extends StatelessWidget {
   final CourseModel course;
   final Color color;
 
-  const _ActivitiesTeacherTab(
-      {required this.course, required this.color});
+  const _ActivitiesTeacherTab({required this.course, required this.color});
 
   @override
   Widget build(BuildContext context) {
     if (course.activities.isEmpty) {
       return Center(
         child: Text('Sin actividades.',
-            style:
-                GoogleFonts.inter(color: AppColors.textSecondary)),
+            style: GoogleFonts.inter(color: AppColors.textSecondary)),
       );
     }
 
@@ -211,8 +208,7 @@ class _ActivitiesTeacherTab extends StatelessWidget {
       separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
         final activity = course.activities[index];
-        final daysLeft =
-            activity.dueDate.difference(DateTime.now()).inDays;
+        final daysLeft = activity.dueDate.difference(DateTime.now()).inDays;
         return Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
@@ -228,8 +224,7 @@ class _ActivitiesTeacherTab extends StatelessWidget {
                   color: color.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(Icons.assignment_outlined,
-                    color: color, size: 20),
+                child: Icon(Icons.assignment_outlined, color: color, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(

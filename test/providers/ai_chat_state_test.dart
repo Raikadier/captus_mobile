@@ -100,7 +100,8 @@ void main() {
 
     test('appending messages builds correct sequence', () {
       final now = DateTime.now();
-      final userMsg = ChatMessage(text: 'Dame mis tareas', isUser: true, time: now);
+      final userMsg =
+          ChatMessage(text: 'Dame mis tareas', isUser: true, time: now);
       final botMsg = ChatMessage(
         text: 'Tienes 3 tareas pendientes.',
         isUser: false,

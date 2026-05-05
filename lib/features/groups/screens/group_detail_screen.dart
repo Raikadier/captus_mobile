@@ -23,9 +23,11 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
 
   static const _activityFeed = [
     _ActivityEntry('Harold Flórez', 'creó la tarea', '"Revisar mockups"', '2h'),
-    _ActivityEntry('Isabella Manjarrez', 'completó', '"Diagrama de clases"', '5h'),
+    _ActivityEntry(
+        'Isabella Manjarrez', 'completó', '"Diagrama de clases"', '5h'),
     _ActivityEntry('David Barceló', 'comentó en', '"Informe final"', 'Ayer'),
-    _ActivityEntry('Harold Flórez', 'adjuntó un archivo a', '"Informe final"', 'Ayer'),
+    _ActivityEntry(
+        'Harold Flórez', 'adjuntó un archivo a', '"Informe final"', 'Ayer'),
   ];
 
   @override
@@ -36,9 +38,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
       (g) => g.id == widget.groupId,
       orElse: () => GroupModel.mockList.first,
     );
-    _tasks = TaskModel.mockList
-        .where((t) => t.groupId == widget.groupId)
-        .toList();
+    _tasks =
+        TaskModel.mockList.where((t) => t.groupId == widget.groupId).toList();
     if (_tasks.isEmpty) _tasks = TaskModel.mockList.take(3).toList();
   }
 
@@ -84,8 +85,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
           IconButton(
             icon: const Icon(Icons.settings_outlined,
                 color: AppColors.textSecondary),
-            onPressed: () =>
-                context.push('/groups/${widget.groupId}/settings'),
+            onPressed: () => context.push('/groups/${widget.groupId}/settings'),
           ),
         ],
         bottom: TabBar(
@@ -182,19 +182,14 @@ class _TasksTab extends StatelessWidget {
                   height: 22,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isDone
-                        ? AppColors.primary
-                        : Colors.transparent,
+                    color: isDone ? AppColors.primary : Colors.transparent,
                     border: Border.all(
-                      color: isDone
-                          ? AppColors.primary
-                          : AppColors.border,
+                      color: isDone ? AppColors.primary : AppColors.border,
                       width: 2,
                     ),
                   ),
                   child: isDone
-                      ? const Icon(Icons.check,
-                          size: 13, color: Colors.black)
+                      ? const Icon(Icons.check, size: 13, color: Colors.black)
                       : null,
                 ),
                 const SizedBox(width: 12),
@@ -210,9 +205,8 @@ class _TasksTab extends StatelessWidget {
                           color: isDone
                               ? AppColors.textDisabled
                               : AppColors.textPrimary,
-                          decoration: isDone
-                              ? TextDecoration.lineThrough
-                              : null,
+                          decoration:
+                              isDone ? TextDecoration.lineThrough : null,
                         ),
                       ),
                       if (task.dueDate != null) ...[
@@ -296,8 +290,7 @@ class _MembersTab extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 22,
-                backgroundColor:
-                    AppColors.courseColor(index),
+                backgroundColor: AppColors.courseColor(index),
                 child: Text(
                   member.name[0],
                   style: GoogleFonts.inter(
@@ -328,10 +321,8 @@ class _MembersTab extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color:
-                                  AppColors.primary.withOpacity(0.12),
-                              borderRadius:
-                                  BorderRadius.circular(6),
+                              color: AppColors.primary.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               'Admin',
@@ -350,14 +341,11 @@ class _MembersTab extends StatelessWidget {
                       children: [
                         Expanded(
                           child: ClipRRect(
-                            borderRadius:
-                                BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(4),
                             child: LinearProgressIndicator(
                               value: contribution,
-                              backgroundColor:
-                                  AppColors.surface2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(
+                              backgroundColor: AppColors.surface2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
                                 AppColors.courseColor(index),
                               ),
                               minHeight: 4,
@@ -408,8 +396,7 @@ class _ActivityTab extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor:
-                    AppColors.courseColor(index),
+                backgroundColor: AppColors.courseColor(index),
                 child: Text(
                   entry.actor[0],
                   style: GoogleFonts.inter(
@@ -424,8 +411,7 @@ class _ActivityTab extends StatelessWidget {
                 child: RichText(
                   text: TextSpan(
                     style: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: AppColors.textSecondary),
+                        fontSize: 13, color: AppColors.textSecondary),
                     children: [
                       TextSpan(
                         text: entry.actor,

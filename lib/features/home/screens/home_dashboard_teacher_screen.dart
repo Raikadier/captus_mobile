@@ -1,17 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../models/user.dart';
+import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/assignments_provider.dart';
+import '../../../core/providers/courses_provider.dart';
+import '../../../models/assignment.dart';
 import '../../../models/course.dart';
 
-class HomeDashboardTeacherScreen extends StatelessWidget {
+class HomeDashboardTeacherScreen extends ConsumerWidget {
   const HomeDashboardTeacherScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final user = UserModel.mockTeacher;
-    final courses = CourseModel.mockList;
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 1. Obtenemos el usuario actual
+    final user = ref.watch(currentUserProvider);
+    if (user == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    // 2. Escuchamos los nuevos providers
+    final statsAsync = ref.watch(teacherStatsProvider);
+    final assignmentsAsync = ref.watch(teacherAssignmentsProvider);
+    final recentSubmissionsAsync = ref.watch(recentSubmissionsProvider);
+    final coursesAsync = ref.watch(coursesProvider);
+
+    // Valores seguros
+    final stats = statsAsync.asData?.value ?? {};
+    final totalAssignments = stats['totalAssignments'] ?? 0;
+    final pendingToGrade = stats['pendingToGrade'] ?? 0;
+
+    final assignments = assignmentsAsync.asData?.value ?? [];
+    final recentAssignments = assignments.take(3).toList();
+
+    final recentSubmissions = recentSubmissionsAsync.asData?.value ?? [];
+
+    final courses = coursesAsync.asData?.value ?? [];
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -30,7 +55,7 @@ class HomeDashboardTeacherScreen extends StatelessWidget {
                     radius: 18,
                     backgroundColor: AppColors.info.withAlpha(38),
                     child: Text(
-                      user.firstName[0],
+                      user.name.isNotEmpty ? user.name[0] : 'U',
                       style: GoogleFonts.inter(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -50,7 +75,8 @@ class HomeDashboardTeacherScreen extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: AppColors.info.withAlpha(25),
                     borderRadius: BorderRadius.circular(8),
@@ -75,7 +101,7 @@ class HomeDashboardTeacherScreen extends StatelessWidget {
             ],
           ),
 
-          // Greeting
+          // Greeting & Stats
           SliverToBoxAdapter(
             child: Container(
               margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
@@ -109,28 +135,34 @@ class HomeDashboardTeacherScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      _StatMini(label: 'Cursos', value: '${courses.length}'),
-                      const SizedBox(width: 12),
-                      _StatMini(label: 'Pendientes de revisar', value: '12'),
-                      const SizedBox(width: 12),
-                      _StatMini(label: 'Estudiantes', value: '87'),
-                    ],
-                  ),
+                  if (statsAsync.isLoading)
+                    const Center(child: CircularProgressIndicator())
+                  else
+                    Row(
+                      children: [
+                        _StatMini(
+                            label: 'Tareas creadas',
+                            value: '$totalAssignments'),
+                        const SizedBox(width: 12),
+                        _StatMini(
+                            label: 'Por calificar', value: '$pendingToGrade'),
+                        const SizedBox(width: 12),
+                        _StatMini(label: 'Cursos', value: '${courses.length}'),
+                      ],
+                    ),
                 ],
               ),
             ),
           ),
 
-          // Pending submissions
+          // Últimas Tareas Creadas
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 8, 10),
               child: Row(
                 children: [
                   Text(
-                    'ENTREGAS RECIENTES',
+                    'ÚLTIMAS TAREAS CREADAS',
                     style: GoogleFonts.inter(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
@@ -139,32 +171,95 @@ class HomeDashboardTeacherScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppColors.warning.withAlpha(38),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      '12 sin revisar',
-                      style: GoogleFonts.inter(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.warning,
+                  if (pendingToGrade > 0)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppColors.warning.withAlpha(38),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '$pendingToGrade sin calificar',
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.warning,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
           ),
 
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (_, i) => _SubmissionItem(course: courses[i]),
-              childCount: courses.length.clamp(0, 3),
+          if (assignmentsAsync.isLoading)
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            )
+          else if (recentAssignments.isEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Text(
+                  'No has creado tareas aún.',
+                  style: GoogleFonts.inter(color: AppColors.textSecondary),
+                ),
+              ),
+            )
+          else
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (_, i) => _AssignmentItem(assignment: recentAssignments[i]),
+                childCount: recentAssignments.length,
+              ),
+            ),
+
+          // Sección: Últimas Entregas
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 8, 10),
+              child: Text(
+                'ÚLTIMAS ENTREGAS',
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textSecondary,
+                  letterSpacing: 0.8,
+                ),
+              ),
             ),
           ),
+
+          if (recentSubmissionsAsync.isLoading)
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            )
+          else if (recentSubmissions.isEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Text(
+                  'No hay entregas recientes.',
+                  style: GoogleFonts.inter(color: AppColors.textSecondary),
+                ),
+              ),
+            )
+          else
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (_, i) => _SubmissionItem(data: recentSubmissions[i]),
+                childCount: recentSubmissions.length,
+              ),
+            ),
 
           // My courses
           SliverToBoxAdapter(
@@ -199,15 +294,35 @@ class HomeDashboardTeacherScreen extends StatelessWidget {
             ),
           ),
 
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (_, i) => _CourseRow(
-                course: courses[i],
-                onTap: () => context.push('/teacher/courses/${courses[i].id}'),
+          if (coursesAsync.isLoading)
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(child: CircularProgressIndicator()),
               ),
-              childCount: courses.length,
+            )
+          else if (courses.isEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Text(
+                  'No tienes cursos asignados.',
+                  style: GoogleFonts.inter(color: AppColors.textSecondary),
+                ),
+              ),
+            )
+          else
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (_, i) => _CourseRow(
+                  course: courses[i],
+                  onTap: () =>
+                      context.push('/teacher/courses/${courses[i].id}'),
+                ),
+                childCount: courses.length,
+              ),
             ),
-          ),
 
           const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
@@ -240,20 +355,21 @@ class _StatMini extends StatelessWidget {
         ),
         Text(
           label,
-          style: GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary),
+          style:
+              GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary),
         ),
       ],
     );
   }
 }
 
-class _SubmissionItem extends StatelessWidget {
-  final CourseModel course;
-  const _SubmissionItem({required this.course});
+class _AssignmentItem extends StatelessWidget {
+  final AssignmentModel assignment;
+  const _AssignmentItem({required this.assignment});
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColors.courseColor(course.colorIndex);
+    final color = AppColors.primary;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       padding: const EdgeInsets.all(14),
@@ -272,13 +388,10 @@ class _SubmissionItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Center(
-              child: Text(
-                course.name[0],
-                style: GoogleFonts.inter(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
+              child: Icon(
+                Icons.assignment,
+                color: color,
+                size: 20,
               ),
             ),
           ),
@@ -288,9 +401,7 @@ class _SubmissionItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  course.activities.isNotEmpty
-                      ? course.activities.first.title
-                      : 'Sin actividades recientes',
+                  assignment.title,
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -298,7 +409,7 @@ class _SubmissionItem extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  course.name,
+                  'Tipo: ${assignment.type}',
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     color: AppColors.textSecondary,
@@ -307,22 +418,102 @@ class _SubmissionItem extends StatelessWidget {
               ],
             ),
           ),
-          if (course.pendingActivities > 0)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.warning.withAlpha(38),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                '${course.pendingActivities} nuevas',
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.warning,
-                ),
+          Icon(Icons.chevron_right, color: AppColors.textSecondary),
+        ],
+      ),
+    );
+  }
+}
+
+class _SubmissionItem extends StatelessWidget {
+  final Map<String, dynamic> data;
+  const _SubmissionItem({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    final status = data['status']?.toString() ?? 'submitted';
+    final isGraded = status == 'graded';
+    final isLate = status == 'late';
+
+    Color color;
+    String statusText;
+
+    if (isGraded) {
+      color = AppColors.success;
+      statusText = 'Calificada: ${data['grade'] ?? '-'}';
+    } else if (isLate) {
+      color = AppColors.error;
+      statusText = 'Entregado tarde';
+    } else {
+      color = AppColors.warning;
+      statusText = 'Pendiente de revisión';
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border, width: 0.5),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: color.withAlpha(38),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              child: Icon(
+                isGraded ? Icons.check_circle : Icons.pending_actions,
+                color: color,
+                size: 20,
               ),
             ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  data['title']?.toString() ?? 'Sin título',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                Text(
+                  'Estudiante: ${data['studentId']}',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: color.withAlpha(25),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    statusText,
+                    style: GoogleFonts.inter(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: color,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

@@ -12,8 +12,7 @@ class CalendarAgendaScreen extends StatelessWidget {
     final map = <DateTime, List<TaskModel>>{};
     for (final t in tasks) {
       if (t.dueDate == null) continue;
-      final day = DateTime(
-          t.dueDate!.year, t.dueDate!.month, t.dueDate!.day);
+      final day = DateTime(t.dueDate!.year, t.dueDate!.month, t.dueDate!.day);
       map[day] ??= [];
       map[day]!.add(t);
     }
@@ -61,7 +60,8 @@ class CalendarAgendaScreen extends StatelessWidget {
                       child: Text(
                         isToday
                             ? 'Hoy — ${DateFormat("d 'de' MMMM", 'es').format(entry.key)}'
-                            : DateFormat("EEEE d 'de' MMMM", 'es').format(entry.key),
+                            : DateFormat("EEEE d 'de' MMMM", 'es')
+                                .format(entry.key),
                         style: GoogleFonts.inter(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -99,7 +99,8 @@ class CalendarAgendaScreen extends StatelessWidget {
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(task.title,
                                           style: GoogleFonts.inter(
@@ -109,7 +110,8 @@ class CalendarAgendaScreen extends StatelessWidget {
                                         Text(task.courseName!,
                                             style: GoogleFonts.inter(
                                                 fontSize: 11,
-                                                color: AppColors.textSecondary)),
+                                                color:
+                                                    AppColors.textSecondary)),
                                     ],
                                   ),
                                 ),

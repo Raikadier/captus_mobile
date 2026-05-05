@@ -70,7 +70,8 @@ class _CalendarEventCreateScreenState extends State<CalendarEventCreateScreen> {
           children: [
             TextFormField(
               controller: _titleCtrl,
-              style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w600),
+              style:
+                  GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w600),
               decoration: InputDecoration(
                 hintText: 'Título del evento',
                 hintStyle: GoogleFonts.inter(
@@ -86,7 +87,6 @@ class _CalendarEventCreateScreenState extends State<CalendarEventCreateScreen> {
             ),
             const Divider(color: AppColors.border),
             const SizedBox(height: 20),
-
             Text('Tipo de evento',
                 style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
@@ -100,10 +100,11 @@ class _CalendarEventCreateScreenState extends State<CalendarEventCreateScreen> {
                   onTap: () => setState(() => _typeIndex = e.key),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 150),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
-                      color: isSelected ? color.withAlpha(38) : AppColors.surface2,
+                      color:
+                          isSelected ? color.withAlpha(38) : AppColors.surface2,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isSelected ? color : AppColors.border,
@@ -123,7 +124,6 @@ class _CalendarEventCreateScreenState extends State<CalendarEventCreateScreen> {
               }).toList(),
             ),
             const SizedBox(height: 24),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -136,7 +136,6 @@ class _CalendarEventCreateScreenState extends State<CalendarEventCreateScreen> {
               ],
             ),
             const SizedBox(height: 16),
-
             GestureDetector(
               onTap: _pickDate,
               child: Container(
@@ -152,10 +151,11 @@ class _CalendarEventCreateScreenState extends State<CalendarEventCreateScreen> {
                         size: 18, color: AppColors.textSecondary),
                     const SizedBox(width: 10),
                     Text(
-                      DateFormat(_allDay
-                              ? "d 'de' MMMM, yyyy"
-                              : "d 'de' MMMM, yyyy — h:mm a",
-                          'es')
+                      DateFormat(
+                              _allDay
+                                  ? "d 'de' MMMM, yyyy"
+                                  : "d 'de' MMMM, yyyy — h:mm a",
+                              'es')
                           .format(_startDate),
                       style: GoogleFonts.inter(fontSize: 14),
                     ),

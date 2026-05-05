@@ -44,13 +44,14 @@ class SubTask {
     this.isCompleted = false,
   });
 
-  SubTask copyWith({bool? isCompleted}) =>
-      SubTask(id: id, title: title, isCompleted: isCompleted ?? this.isCompleted);
+  SubTask copyWith({bool? isCompleted}) => SubTask(
+      id: id, title: title, isCompleted: isCompleted ?? this.isCompleted);
 
   factory SubTask.fromJson(Map<String, dynamic> json) => SubTask(
         id: json['id_SubTask']?.toString() ?? json['id']?.toString() ?? '',
         title: json['title'] as String? ?? '',
-        isCompleted: (json['state'] as bool?) ?? (json['completed'] as bool?) ?? false,
+        isCompleted:
+            (json['state'] as bool?) ?? (json['completed'] as bool?) ?? false,
       );
 }
 
@@ -135,7 +136,8 @@ class TaskModel {
       ),
       status: status,
       dueDate: dueDate,
-      subjectName: json['subject']?['name'] as String? ?? json['subjectName'] as String?,
+      subjectName:
+          json['subject']?['name'] as String? ?? json['subjectName'] as String?,
       subtasks: subtasks,
       createdAt: DateTime.tryParse(
               (json['created_at'] ?? json['creationDate'] ?? '').toString()) ??

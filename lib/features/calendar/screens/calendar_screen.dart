@@ -77,8 +77,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
             onPageChanged: (focused) => _focusedDay = focused,
             calendarStyle: CalendarStyle(
               outsideDaysVisible: false,
-              defaultTextStyle: GoogleFonts.inter(
-                  fontSize: 13, color: AppColors.textPrimary),
+              defaultTextStyle:
+                  GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary),
               weekendTextStyle: GoogleFonts.inter(
                   fontSize: 13, color: AppColors.textSecondary),
               selectedDecoration: const BoxDecoration(

@@ -54,10 +54,8 @@ class _AiSettingsScreenState extends State<AiSettingsScreen> {
             value: _accessGroups,
             onChanged: (v) => setState(() => _accessGroups = v),
           ),
-
           const SizedBox(height: 8),
           _SectionLabel('COMPORTAMIENTO'),
-
           Container(
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(16),
@@ -118,7 +116,6 @@ class _AiSettingsScreenState extends State<AiSettingsScreen> {
               ],
             ),
           ),
-
           _ToggleItem(
             icon: '🔊',
             label: 'Respuestas por voz',
@@ -133,7 +130,6 @@ class _AiSettingsScreenState extends State<AiSettingsScreen> {
             value: _proactiveSuggestions,
             onChanged: (v) => setState(() => _proactiveSuggestions = v),
           ),
-
           const SizedBox(height: 24),
           OutlinedButton(
             onPressed: () {},

@@ -8,15 +8,18 @@ class StatisticsTeacherScreen extends StatefulWidget {
   const StatisticsTeacherScreen({super.key});
 
   @override
-  State<StatisticsTeacherScreen> createState() => _StatisticsTeacherScreenState();
+  State<StatisticsTeacherScreen> createState() =>
+      _StatisticsTeacherScreenState();
 }
 
 class _StatisticsTeacherScreenState extends State<StatisticsTeacherScreen> {
   String _selectedCourseId = 'c1';
   final _courses = CourseModel.mockList;
 
-  CourseModel get _selectedCourse =>
-      _courses.firstWhere((c) => c.id == _selectedCourseId);
+  CourseModel get _selectedCourse => _courses.firstWhere(
+        (c) => c.id == _selectedCourseId,
+        orElse: () => _courses.first,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +43,7 @@ class _StatisticsTeacherScreenState extends State<StatisticsTeacherScreen> {
             dropdownColor: AppColors.surface,
             decoration: const InputDecoration(),
             items: _courses
-                .map((c) =>
-                    DropdownMenuItem(value: c.id, child: Text(c.name)))
+                .map((c) => DropdownMenuItem(value: c.id, child: Text(c.name)))
                 .toList(),
             onChanged: (v) =>
                 setState(() => _selectedCourseId = v ?? _selectedCourseId),
@@ -157,8 +159,7 @@ class _StudentRow extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-              color: AppColors.error.withAlpha(51), width: 0.5),
+          border: Border.all(color: AppColors.error.withAlpha(51), width: 0.5),
         ),
         child: Row(
           children: [

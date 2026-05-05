@@ -47,8 +47,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
   Future<void> _pickDate() async {
     final date = await showDatePicker(
       context: context,
-      initialDate:
-          _dueDate ?? DateTime.now().add(const Duration(days: 7)),
+      initialDate: _dueDate ?? DateTime.now().add(const Duration(days: 7)),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
       builder: (context, child) => Theme(
@@ -137,26 +136,23 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
                 return GestureDetector(
                   onTap: () => setState(() => _selectedType = type),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
                       color: selected
                           ? AppColors.primary.withOpacity(0.15)
                           : AppColors.surface,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: selected
-                            ? AppColors.primary
-                            : AppColors.border,
+                        color: selected ? AppColors.primary : AppColors.border,
                       ),
                     ),
                     child: Text(
                       type,
                       style: GoogleFonts.inter(
                         fontSize: 13,
-                        fontWeight: selected
-                            ? FontWeight.w600
-                            : FontWeight.w400,
+                        fontWeight:
+                            selected ? FontWeight.w600 : FontWeight.w400,
                         color: selected
                             ? AppColors.primary
                             : AppColors.textSecondary,
@@ -171,8 +167,8 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
             const SizedBox(height: 8),
             TextFormField(
               controller: _titleController,
-              style: GoogleFonts.inter(
-                  fontSize: 14, color: AppColors.textPrimary),
+              style:
+                  GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
               decoration: _inputDecoration('Ej. Parcial 2 — Capítulo 5'),
               validator: (v) => (v == null || v.trim().isEmpty)
                   ? 'El título es requerido'
@@ -184,10 +180,10 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
             TextFormField(
               controller: _descriptionController,
               maxLines: 5,
-              style: GoogleFonts.inter(
-                  fontSize: 14, color: AppColors.textPrimary),
-              decoration: _inputDecoration(
-                  'Instrucciones, criterios de evaluación...'),
+              style:
+                  GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
+              decoration:
+                  _inputDecoration('Instrucciones, criterios de evaluación...'),
             ),
             const SizedBox(height: 20),
             _SectionLabel('Fecha de entrega'),
@@ -200,9 +196,8 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: _dueDate != null
-                        ? AppColors.primary
-                        : AppColors.border,
+                    color:
+                        _dueDate != null ? AppColors.primary : AppColors.border,
                   ),
                 ),
                 child: Row(
@@ -232,8 +227,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
             ),
             const SizedBox(height: 24),
             Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 14, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(12),
@@ -254,8 +248,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
                   ),
                   Switch(
                     value: _requiresFile,
-                    onChanged: (v) =>
-                        setState(() => _requiresFile = v),
+                    onChanged: (v) => setState(() => _requiresFile = v),
                     activeColor: AppColors.primary,
                     inactiveTrackColor: AppColors.surface2,
                   ),
@@ -271,8 +264,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.textSecondary,
                       side: BorderSide(color: AppColors.border),
-                      padding:
-                          const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -291,8 +283,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.black,
-                      padding:
-                          const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -316,8 +307,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: GoogleFonts.inter(
-          fontSize: 14, color: AppColors.textDisabled),
+      hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.textDisabled),
       filled: true,
       fillColor: AppColors.surface,
       border: OutlineInputBorder(
@@ -340,8 +330,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: AppColors.error),
       ),
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     );
   }
 }

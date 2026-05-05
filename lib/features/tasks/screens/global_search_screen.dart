@@ -51,8 +51,8 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
           style: GoogleFonts.inter(fontSize: 16, color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: 'Buscar tareas, materias, grupos...',
-            hintStyle: GoogleFonts.inter(
-                fontSize: 16, color: AppColors.textDisabled),
+            hintStyle:
+                GoogleFonts.inter(fontSize: 16, color: AppColors.textDisabled),
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
@@ -205,8 +205,8 @@ class _NoResults extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               'Sin resultados para "$query"',
-              style: GoogleFonts.inter(
-                  fontSize: 16, fontWeight: FontWeight.w600),
+              style:
+                  GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),

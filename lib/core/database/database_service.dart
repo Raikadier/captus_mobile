@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import '../../models/task.dart';
-import '../../models/user.dart';
-import '../services/local_storage_service.dart';
 
 class DatabaseService {
   static Database? _database;
@@ -127,7 +124,7 @@ class DatabaseService {
         userId TEXT
       )
     ''');
-    
+
     // Statistics table
     await db.execute('''
       CREATE TABLE statistics (
@@ -137,6 +134,51 @@ class DatabaseService {
         currentStreak INTEGER,
         bestStreak INTEGER,
         lastActiveDate TEXT
+      )
+    ''');
+
+    // Assignments table (snake_case compatible with Supabase)
+    await db.execute('''
+      CREATE TABLE assignments (
+        id TEXT PRIMARY KEY,
+        course_id TEXT,
+        teacher_id TEXT,
+        title TEXT,
+        description TEXT,
+        start_date TEXT,
+        due_date TEXT,
+        created_at TEXT,
+        type TEXT,
+        max_grade REAL,
+        requires_file INTEGER,
+        FOREIGN KEY (course_id) REFERENCES courses (id) ON DELETE CASCADE
+      )
+    ''');
+
+    // Assignment Targets table (for assigning to specific groups/students)
+    await db.execute('''
+      CREATE TABLE assignment_targets (
+        id TEXT PRIMARY KEY,
+        assignment_id TEXT,
+        target_type TEXT, -- 'group' or 'student'
+        target_id TEXT,
+        FOREIGN KEY (assignment_id) REFERENCES assignments (id) ON DELETE CASCADE
+      )
+    ''');
+
+    // Submissions table (snake_case compatible with Supabase)
+    await db.execute('''
+      CREATE TABLE submissions (
+        id TEXT PRIMARY KEY,
+        assignment_id TEXT,
+        student_id TEXT,
+        file_url TEXT,
+        content TEXT,
+        submitted_at TEXT,
+        status TEXT,
+        grade REAL,
+        feedback TEXT,
+        FOREIGN KEY (assignment_id) REFERENCES assignments (id) ON DELETE CASCADE
       )
     ''');
   }

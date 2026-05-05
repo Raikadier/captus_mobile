@@ -147,7 +147,8 @@ class TaskCard extends StatelessWidget {
                               ),
                           ],
                         ),
-                        if (task.subtasks.isNotEmpty && showSubtaskProgress) ...[
+                        if (task.subtasks.isNotEmpty &&
+                            showSubtaskProgress) ...[
                           const SizedBox(height: 6),
                           LinearProgressIndicator(
                             value: task.subtasks.isEmpty

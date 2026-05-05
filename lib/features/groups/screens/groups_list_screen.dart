@@ -15,8 +15,7 @@ class GroupsListScreen extends StatefulWidget {
 class _GroupsListScreenState extends State<GroupsListScreen> {
   final List<TextEditingController> _codeControllers =
       List.generate(6, (_) => TextEditingController());
-  final List<FocusNode> _codeFocuses =
-      List.generate(6, (_) => FocusNode());
+  final List<FocusNode> _codeFocuses = List.generate(6, (_) => FocusNode());
 
   @override
   void dispose() {
@@ -84,11 +83,9 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            const BorderSide(color: AppColors.primary),
+                        borderSide: const BorderSide(color: AppColors.primary),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                     onChanged: (v) {
                       if (v.isNotEmpty && i < 5) {
@@ -111,15 +108,13 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              final code =
-                  _codeControllers.map((c) => c.text).join();
+              final code = _codeControllers.map((c) => c.text).join();
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
                     'Buscando grupo: $code',
-                    style:
-                        GoogleFonts.inter(color: AppColors.textPrimary),
+                    style: GoogleFonts.inter(color: AppColors.textPrimary),
                   ),
                   backgroundColor: AppColors.surface2,
                 ),
@@ -201,8 +196,8 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
                   color: AppColors.info.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.qr_code,
-                    color: AppColors.info, size: 22),
+                child:
+                    const Icon(Icons.qr_code, color: AppColors.info, size: 22),
               ),
               title: Text(
                 'Unirse con código',
@@ -258,22 +253,19 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
           ? EmptyState(
               icon: Icons.group_outlined,
               title: 'Sin grupos',
-              subtitle:
-                  'Crea un grupo o únete con un código.',
+              subtitle: 'Crea un grupo o únete con un código.',
               actionLabel: 'Comenzar',
               onAction: _showFabMenu,
             )
           : ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: groups.length,
-              separatorBuilder: (_, __) =>
-                  const SizedBox(height: 12),
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final group = groups[index];
                 return _GroupCard(
                   group: group,
-                  lastActivityText:
-                      _formatLastActivity(group.lastActivity),
+                  lastActivityText: _formatLastActivity(group.lastActivity),
                 );
               },
             ),
@@ -353,8 +345,7 @@ class _GroupCard extends StatelessWidget {
             const SizedBox(width: 8),
             if (group.pendingTasks > 0)
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.warning.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
@@ -401,8 +392,7 @@ class _StackedAvatars extends StatelessWidget {
               height: avatarSize,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border:
-                    Border.all(color: AppColors.surface, width: 2),
+                border: Border.all(color: AppColors.surface, width: 2),
                 color: AppColors.courseColor(i),
               ),
               child: Center(

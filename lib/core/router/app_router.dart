@@ -28,6 +28,11 @@ import '../../features/courses/screens/activity_detail_student_screen.dart';
 import '../../features/courses/screens/courses_list_teacher_screen.dart';
 import '../../features/courses/screens/course_detail_teacher_screen.dart';
 import '../../features/courses/screens/activity_create_screen.dart';
+import '../../features/assignments/screens/teacher_assignment_create_screen.dart';
+import '../../features/assignments/screens/teacher_assignments_list_screen.dart';
+import '../../features/assignments/screens/assignment_review_screen.dart';
+import '../../features/assignments/screens/student_assignments_screen.dart';
+import '../../features/assignments/screens/student_submission_create_screen.dart';
 import '../../features/groups/screens/groups_list_screen.dart';
 import '../../features/groups/screens/group_detail_screen.dart';
 import '../../features/groups/screens/group_settings_screen.dart';
@@ -46,8 +51,13 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Routes that are accessible without authentication.
-const _publicRoutes = {'/splash', '/onboarding', '/login', '/register',
-    '/forgot-password'};
+const _publicRoutes = {
+  '/splash',
+  '/onboarding',
+  '/login',
+  '/register',
+  '/forgot-password'
+};
 
 /// Creates the GoRouter with a Riverpod [ref] so the [redirect] callback
 /// can read the live [authProvider] state.
@@ -59,25 +69,25 @@ GoRouter createRouter(WidgetRef ref) {
 
     // ── Auth redirect guard ──────────────────────────────────────────────────
     redirect: (context, state) {
-      final authAsync = ref.read(authProvider);
+      final authState = ref.read(authProvider).asData?.value;
+      if (authState == null || authState.isLoading) return null;
 
-      // While the auth state is loading, stay on splash.
-      if (authAsync.isLoading) return '/splash';
+      final isPublic =
+          _publicRoutes.any((route) => state.matchedLocation.startsWith(route));
 
-      final authState = authAsync.asData?.value;
-      final isAuthenticated = authState?.isAuthenticated ?? false;
-      final isPublic = _publicRoutes.contains(state.matchedLocation);
-
-      // Not authenticated and trying to access a protected route → login.
-      if (!isAuthenticated && !isPublic) return '/login';
-
-      // Authenticated and trying to access a public/auth route → dashboard.
-      if (isAuthenticated && isPublic && state.matchedLocation != '/splash') {
-        final role = authState?.role ?? 'student';
-        return role == 'teacher' ? '/home/teacher' : '/home';
+      if (!authState.isAuthenticated) {
+        if (!isPublic) return '/login';
+        return null;
       }
 
-      return null; // No redirect needed.
+      if (isPublic) {
+        if (authState.role == 'teacher') {
+          return '/home/teacher';
+        } else {
+          return '/home';
+        }
+      }
+      return null;
     },
 
     // Refresh the router whenever auth state changes.
@@ -264,6 +274,33 @@ GoRouter createRouter(WidgetRef ref) {
           courseId: state.pathParameters['courseId']!,
           activityId: state.pathParameters['activityId'],
         ),
+      ),
+      GoRoute(
+        path: '/teacher/assignments',
+        name: 'teacher_assignments_list',
+        builder: (_, __) => const TeacherAssignmentsListScreen(),
+      ),
+      GoRoute(
+        path: '/teacher/assignments/create',
+        name: 'teacher_assignment_create',
+        builder: (_, __) => const TeacherAssignmentCreateScreen(),
+      ),
+      GoRoute(
+        path: '/teacher/assignments/:id/review',
+        name: 'assignment_review',
+        builder: (_, state) =>
+            AssignmentReviewScreen(assignmentId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/student/assignments',
+        name: 'student_assignments_list',
+        builder: (_, __) => const StudentAssignmentsScreen(),
+      ),
+      GoRoute(
+        path: '/student/assignments/:id/submit',
+        name: 'student_submission_create',
+        builder: (_, state) => StudentSubmissionCreateScreen(
+            assignmentId: state.pathParameters['id']!),
       ),
 
       // ── Groups ─────────────────────────────────────────────────────────────

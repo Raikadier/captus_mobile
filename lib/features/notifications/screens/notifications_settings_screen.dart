@@ -120,16 +120,14 @@ class _NotificationsSettingsScreenState
                           Text(
                             'Silencia todas las notificaciones',
                             style: GoogleFonts.inter(
-                                fontSize: 12,
-                                color: AppColors.textSecondary),
+                                fontSize: 12, color: AppColors.textSecondary),
                           ),
                         ],
                       ),
                     ),
                     Switch(
                       value: _doNotDisturb,
-                      onChanged: (v) =>
-                          setState(() => _doNotDisturb = v),
+                      onChanged: (v) => setState(() => _doNotDisturb = v),
                     ),
                   ],
                 ),
@@ -145,8 +143,7 @@ class _NotificationsSettingsScreenState
                   TextButton(
                     onPressed: () {},
                     style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: Size.zero),
+                        padding: EdgeInsets.zero, minimumSize: Size.zero),
                     child: const Text('Cambiar horario',
                         style: TextStyle(fontSize: 12)),
                   ),
@@ -225,13 +222,11 @@ class _NotifRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
-                    style: GoogleFonts.inter(fontSize: 13)),
+                Text(label, style: GoogleFonts.inter(fontSize: 13)),
                 if (subtitle != null)
                   Text(subtitle!,
                       style: GoogleFonts.inter(
-                          fontSize: 11,
-                          color: AppColors.textSecondary)),
+                          fontSize: 11, color: AppColors.textSecondary)),
               ],
             ),
           ),

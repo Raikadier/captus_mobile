@@ -143,7 +143,8 @@ class _NavItem extends StatelessWidget {
               children: [
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? AppColors.primary.withAlpha(25)
@@ -153,7 +154,9 @@ class _NavItem extends StatelessWidget {
                   child: Icon(
                     isSelected ? activeIcon : icon,
                     size: 24,
-                    color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                    color: isSelected
+                        ? AppColors.primary
+                        : AppColors.textSecondary,
                   ),
                 ),
                 if (badge != null && badge! > 0)

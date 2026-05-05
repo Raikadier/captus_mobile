@@ -101,12 +101,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   onTap: () => setState(() => _selectedTab = e.key),
                   child: Container(
                     margin: const EdgeInsets.only(right: 8),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.primary
-                          : AppColors.surface2,
+                      color:
+                          isSelected ? AppColors.primary : AppColors.surface2,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -161,8 +160,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           child: const Icon(Icons.delete_outline_rounded,
                               color: Colors.white),
                         ),
-                        onDismissed: (_) => setState(
-                            () => _notifications.removeWhere((x) => x.id == n.id)),
+                        onDismissed: (_) => setState(() =>
+                            _notifications.removeWhere((x) => x.id == n.id)),
                         child: GestureDetector(
                           onTap: () {
                             if (n.deepLink != null) context.push(n.deepLink!);

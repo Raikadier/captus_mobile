@@ -71,7 +71,8 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                 color: AppColors.primaryDark,
                 shape: BoxShape.circle,
               ),
-              child: const Center(child: Text('🌵', style: TextStyle(fontSize: 18))),
+              child: const Center(
+                  child: Text('🌵', style: TextStyle(fontSize: 18))),
             ),
             const SizedBox(width: 10),
             Column(
@@ -86,7 +87,8 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
-                        color: isLoading ? AppColors.warning : AppColors.primary,
+                        color:
+                            isLoading ? AppColors.warning : AppColors.primary,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -95,7 +97,8 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                       isLoading ? 'Escribiendo...' : 'En línea',
                       style: GoogleFonts.inter(
                         fontSize: 11,
-                        color: isLoading ? AppColors.warning : AppColors.primary,
+                        color:
+                            isLoading ? AppColors.warning : AppColors.primary,
                       ),
                     ),
                   ],
@@ -144,9 +147,11 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                   padding: const EdgeInsets.only(right: 8),
                   child: ActionChip(
                     label: Text(_suggestions[i]),
-                    onPressed: isLoading ? null : () => _sendMessage(_suggestions[i]),
+                    onPressed:
+                        isLoading ? null : () => _sendMessage(_suggestions[i]),
                     backgroundColor: AppColors.surface2,
-                    side: const BorderSide(color: AppColors.primary, width: 0.5),
+                    side:
+                        const BorderSide(color: AppColors.primary, width: 0.5),
                     labelStyle: GoogleFonts.inter(
                       fontSize: 12,
                       color: AppColors.primary,
@@ -162,7 +167,8 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             decoration: const BoxDecoration(
               color: AppColors.surface,
-              border: Border(top: BorderSide(color: AppColors.border, width: 0.5)),
+              border:
+                  Border(top: BorderSide(color: AppColors.border, width: 0.5)),
             ),
             child: SafeArea(
               child: Row(
@@ -192,7 +198,8 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24),
-                          borderSide: const BorderSide(color: AppColors.primary),
+                          borderSide:
+                              const BorderSide(color: AppColors.primary),
                         ),
                       ),
                       onSubmitted: _sendMessage,
@@ -200,15 +207,15 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                   ),
                   const SizedBox(width: 8),
                   GestureDetector(
-                    onTap: isLoading ? null : () => _sendMessage(_inputCtrl.text),
+                    onTap:
+                        isLoading ? null : () => _sendMessage(_inputCtrl.text),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: isLoading
-                            ? AppColors.surface2
-                            : AppColors.primary,
+                        color:
+                            isLoading ? AppColors.surface2 : AppColors.primary,
                         shape: BoxShape.circle,
                       ),
                       child: isLoading
@@ -264,12 +271,10 @@ class _MessageBubble extends StatelessWidget {
             ),
             child: Container(
               margin: const EdgeInsets.only(bottom: 12),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: message.isUser
-                    ? AppColors.primaryDark
-                    : AppColors.surface,
+                color:
+                    message.isUser ? AppColors.primaryDark : AppColors.surface,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(18),
                   topRight: const Radius.circular(18),

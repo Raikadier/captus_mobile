@@ -3,18 +3,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+
 import '../../../core/constants/app_colors.dart';
-import '../../../core/providers/tasks_provider.dart';
-import '../../../core/providers/courses_provider.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/courses_provider.dart';
+import '../../../core/providers/tasks_provider.dart';
 import '../../../models/task.dart';
-import '../../../models/course.dart';
 
 class TaskCreateScreen extends ConsumerStatefulWidget {
   final String? taskId;
   final String? courseId;
 
-  const TaskCreateScreen({super.key, this.taskId, this.courseId});
+  const TaskCreateScreen({
+    super.key,
+    this.taskId,
+    this.courseId,
+  });
 
   @override
   ConsumerState<TaskCreateScreen> createState() => _TaskCreateScreenState();
@@ -24,11 +28,13 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
   final _titleCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
   final _subtaskCtrl = TextEditingController();
+
   TaskPriority _priority = TaskPriority.medium;
   DateTime? _dueDate;
   String? _selectedCourseId;
   final List<String> _subtasks = [];
   bool _isLoading = false;
+  bool _taskNotFound = false;
 
   bool get _isEditing => widget.taskId != null;
 
@@ -40,15 +46,36 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
     if (_isEditing) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         final tasks = await ref.read(tasksNotifierProvider.future);
-        final task = tasks.firstWhere((t) => t.id == widget.taskId);
+
+        if (!mounted) return;
+
+        if (tasks.isEmpty) {
+          setState(() => _taskNotFound = true);
+          return;
+        }
+
+        TaskModel? task;
+        for (final item in tasks) {
+          if (item.id == widget.taskId) {
+            task = item;
+            break;
+          }
+        }
+
+        if (task == null) {
+          setState(() => _taskNotFound = true);
+          return;
+        }
 
         setState(() {
-          _titleCtrl.text = task.title;
+          _titleCtrl.text = task!.title;
           _descCtrl.text = task.description ?? '';
           _priority = task.priority;
           _dueDate = task.dueDate;
           _selectedCourseId = task.courseId;
-          _subtasks.addAll(task.subtasks.map((s) => s.title));
+          _subtasks
+            ..clear()
+            ..addAll(task.subtasks.map((s) => s.title));
         });
       });
     }
@@ -66,6 +93,58 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
   Widget build(BuildContext context) {
     final coursesAsync = ref.watch(coursesProvider);
 
+    if (_taskNotFound) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          title: const Text('Tarea no encontrada'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_rounded),
+            onPressed: () => context.pop(),
+          ),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.search_off_rounded,
+                  size: 64,
+                  color: AppColors.textSecondary,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Tarea no encontrada',
+                  style: GoogleFonts.inter(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'La tarea que intentas editar no existe o ya no está disponible.',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                OutlinedButton.icon(
+                  onPressed: () => context.pop(),
+                  icon: const Icon(Icons.arrow_back),
+                  label: const Text('Volver'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -80,9 +159,10 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2)),
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
               ),
             )
           else
@@ -99,8 +179,10 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
           children: [
             TextField(
               controller: _titleCtrl,
-              style:
-                  GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
               decoration: InputDecoration(
                 hintText: 'Título de la tarea',
                 hintStyle: GoogleFonts.inter(
@@ -118,8 +200,6 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
             ),
             const Divider(color: AppColors.border),
             const SizedBox(height: 16),
-
-            // Priority
             Text('Prioridad', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
             Row(
@@ -130,12 +210,13 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
                     : p == TaskPriority.medium
                         ? AppColors.priorityMedium
                         : AppColors.priorityLow;
-                final label = p.label;
+
                 final emoji = p == TaskPriority.high
                     ? '🔴'
                     : p == TaskPriority.medium
                         ? '🟡'
                         : '🟢';
+
                 return Expanded(
                   child: GestureDetector(
                     onTap: () => setState(() => _priority = p),
@@ -158,7 +239,7 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
                           Text(emoji, style: const TextStyle(fontSize: 20)),
                           const SizedBox(height: 4),
                           Text(
-                            label,
+                            p.label,
                             style: GoogleFonts.inter(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -174,10 +255,10 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
               }).toList(),
             ),
             const SizedBox(height: 24),
-
-            // Due date
-            Text('Fecha límite',
-                style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              'Fecha límite',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 10),
             GestureDetector(
               onTap: _pickDate,
@@ -218,43 +299,50 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
                     if (_dueDate != null)
                       GestureDetector(
                         onTap: () => setState(() => _dueDate = null),
-                        child: const Icon(Icons.close_rounded,
-                            size: 16, color: AppColors.textSecondary),
+                        child: const Icon(
+                          Icons.close_rounded,
+                          size: 16,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 24),
-
-            // Course
             Text('Materia', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
             coursesAsync.when(
               loading: () => const LinearProgressIndicator(),
-              error: (_, __) => const Text('Error al cargar materias'),
-              data: (courses) => DropdownButtonFormField<String>(
-                value: courses.any((c) => c.id == _selectedCourseId)
-                    ? _selectedCourseId
-                    : null,
-                hint: const Text('Selecciona una materia'),
-                dropdownColor: AppColors.surface,
-                items: [
-                  const DropdownMenuItem(
-                      value: null, child: Text('Sin materia')),
-                  ...courses.map((c) => DropdownMenuItem(
+              error: (err, _) => Text('Error al cargar materias: $err'),
+              data: (courses) {
+                return DropdownButtonFormField<String>(
+                  value: courses.any((c) => c.id == _selectedCourseId)
+                      ? _selectedCourseId
+                      : null,
+                  hint: const Text('Selecciona una materia'),
+                  dropdownColor: AppColors.surface,
+                  items: [
+                    const DropdownMenuItem<String>(
+                      value: null,
+                      child: Text('Sin materia'),
+                    ),
+                    ...courses.map(
+                      (c) => DropdownMenuItem<String>(
                         value: c.id,
                         child: Text(c.name),
-                      )),
-                ],
-                onChanged: (v) => setState(() => _selectedCourseId = v),
-              ),
+                      ),
+                    ),
+                  ],
+                  onChanged: (v) => setState(() => _selectedCourseId = v),
+                );
+              },
             ),
             const SizedBox(height: 24),
-
-            // Description
-            Text('Descripción (opcional)',
-                style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              'Descripción (opcional)',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 10),
             TextFormField(
               controller: _descCtrl,
@@ -264,18 +352,20 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
               ),
             ),
             const SizedBox(height: 24),
-
-            // Subtasks
             Row(
               children: [
-                Text('Subtareas',
-                    style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  'Subtareas',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 const Spacer(),
                 TextButton.icon(
                   onPressed: _generateWithAI,
                   icon: const Text('🤖', style: TextStyle(fontSize: 14)),
-                  label: const Text('Generar con IA',
-                      style: TextStyle(fontSize: 12)),
+                  label: const Text(
+                    'Generar con IA',
+                    style: TextStyle(fontSize: 12),
+                  ),
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     minimumSize: Size.zero,
@@ -284,36 +374,51 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
               ],
             ),
             const SizedBox(height: 10),
-            ..._subtasks.asMap().entries.map((e) => Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.border, width: 0.5),
+            ..._subtasks.asMap().entries.map(
+                  (e) => Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.border, width: 0.5),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.drag_handle_rounded,
+                          size: 18,
+                          color: AppColors.textDisabled,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            e.value,
+                            style: GoogleFonts.inter(fontSize: 14),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => setState(
+                            () => _subtasks.removeAt(e.key),
+                          ),
+                          child: const Icon(
+                            Icons.close_rounded,
+                            size: 16,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.drag_handle_rounded,
-                          size: 18, color: AppColors.textDisabled),
-                      const SizedBox(width: 10),
-                      Expanded(
-                          child: Text(e.value,
-                              style: GoogleFonts.inter(fontSize: 14))),
-                      GestureDetector(
-                        onTap: () => setState(() => _subtasks.removeAt(e.key)),
-                        child: const Icon(Icons.close_rounded,
-                            size: 16, color: AppColors.textSecondary),
-                      ),
-                    ],
-                  ),
-                )),
+                ),
             TextFormField(
               controller: _subtaskCtrl,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Agregar subtarea...',
-                prefixIcon: const Icon(Icons.add_rounded),
+                prefixIcon: Icon(Icons.add_rounded),
               ),
               onFieldSubmitted: _addSubtask,
             ),
@@ -340,20 +445,29 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
+
     if (date != null && mounted) {
       final time = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.fromDateTime(_dueDate ?? DateTime.now()),
       );
+
       if (time != null) {
-        setState(() => _dueDate =
-            DateTime(date.year, date.month, date.day, time.hour, time.minute));
+        setState(
+          () => _dueDate = DateTime(
+            date.year,
+            date.month,
+            date.day,
+            time.hour,
+            time.minute,
+          ),
+        );
       }
     }
   }
 
   void _generateWithAI() {
-    if (_titleCtrl.text.isNotEmpty) {
+    if (_titleCtrl.text.trim().isNotEmpty) {
       setState(() {
         _subtasks.addAll([
           'Investigar el tema',
@@ -362,6 +476,7 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
           'Entregar',
         ]);
       });
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Subtareas generadas por IA ✓')),
       );
@@ -370,6 +485,7 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
 
   Future<void> _save() async {
     final title = _titleCtrl.text.trim();
+
     if (title.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Ingresa un título')),
@@ -381,6 +497,7 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
 
     try {
       final userId = ref.read(currentUserProvider)?.id ?? '';
+
       final payload = {
         'title': title,
         'description': _descCtrl.text.trim(),
@@ -402,10 +519,13 @@ class _TaskCreateScreenState extends ConsumerState<TaskCreateScreen> {
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error al guardar: $e')),
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
       }
     }
   }

@@ -106,7 +106,8 @@ class _FormView extends StatelessWidget {
               color: AppColors.info.withAlpha(25),
               shape: BoxShape.circle,
             ),
-            child: const Center(child: Text('🔑', style: TextStyle(fontSize: 40))),
+            child:
+                const Center(child: Text('🔑', style: TextStyle(fontSize: 40))),
           ),
         ),
         const SizedBox(height: 24),
@@ -115,7 +116,8 @@ class _FormView extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           'Ingresa tu correo y te enviaremos instrucciones para restablecerla.',
-          style: GoogleFonts.inter(fontSize: 14, color: AppColors.textSecondary, height: 1.5),
+          style: GoogleFonts.inter(
+              fontSize: 14, color: AppColors.textSecondary, height: 1.5),
         ),
         const SizedBox(height: 32),
         TextFormField(
@@ -129,16 +131,14 @@ class _FormView extends StatelessWidget {
         if (errorMessage != null) ...[
           const SizedBox(height: 12),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
               color: AppColors.error.withAlpha(25),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: AppColors.error.withAlpha(76)),
             ),
             child: Text(errorMessage!,
-                style: GoogleFonts.inter(
-                    fontSize: 12, color: AppColors.error)),
+                style: GoogleFonts.inter(fontSize: 12, color: AppColors.error)),
           ),
         ],
         const SizedBox(height: 24),
@@ -175,7 +175,8 @@ class _ConfirmationView extends StatelessWidget {
         const SizedBox(height: 12),
         Text(
           'Enviamos instrucciones a\n$email',
-          style: GoogleFonts.inter(fontSize: 14, color: AppColors.textSecondary, height: 1.5),
+          style: GoogleFonts.inter(
+              fontSize: 14, color: AppColors.textSecondary, height: 1.5),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 40),

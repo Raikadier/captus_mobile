@@ -9,9 +9,21 @@ class AiChatHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chats = [
-      {'title': 'Planificación semana', 'preview': 'Tienes 3 entregas...', 'date': 'Hoy'},
-      {'title': 'Ayuda con Cálculo', 'preview': '¿Puedes explicarme integrales?', 'date': 'Ayer'},
-      {'title': 'Crear tareas', 'preview': 'Entregar ensayo de historia...', 'date': 'Lun'},
+      {
+        'title': 'Planificación semana',
+        'preview': 'Tienes 3 entregas...',
+        'date': 'Hoy'
+      },
+      {
+        'title': 'Ayuda con Cálculo',
+        'preview': '¿Puedes explicarme integrales?',
+        'date': 'Ayer'
+      },
+      {
+        'title': 'Crear tareas',
+        'preview': 'Entregar ensayo de historia...',
+        'date': 'Lun'
+      },
     ];
 
     return Scaffold(
@@ -37,10 +49,12 @@ class AiChatHistoryScreen extends StatelessWidget {
                 color: AppColors.primaryDark,
                 shape: BoxShape.circle,
               ),
-              child: const Center(child: Text('🌵', style: TextStyle(fontSize: 20))),
+              child: const Center(
+                  child: Text('🌵', style: TextStyle(fontSize: 20))),
             ),
             title: Text(chat['title']!,
-                style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
+                style: GoogleFonts.inter(
+                    fontSize: 14, fontWeight: FontWeight.w600)),
             subtitle: Text(chat['preview']!,
                 style: GoogleFonts.inter(
                     fontSize: 12, color: AppColors.textSecondary),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../models/task.dart';
 import '../../../shared/widgets/task_card.dart';
@@ -51,7 +52,8 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen>
         tasks = tasks.where((t) => t.isOverdue).toList();
     }
     if (_priorityFilters.isNotEmpty) {
-      tasks = tasks.where((t) => _priorityFilters.contains(t.priority)).toList();
+      tasks =
+          tasks.where((t) => _priorityFilters.contains(t.priority)).toList();
     }
     return tasks;
   }
@@ -85,13 +87,14 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen>
       ),
       data: (allTasks) {
         final filtered = _applyFilters(allTasks);
-        final todayCount = allTasks.where((t) =>
-          !t.completed &&
-          t.dueDate != null &&
-          t.dueDate!.difference(DateTime.now()).inHours < 24 &&
-          t.dueDate!.isAfter(DateTime.now())).length;
-        final overdueCount =
-            allTasks.where((t) => t.isOverdue).length;
+        final todayCount = allTasks
+            .where((t) =>
+                !t.completed &&
+                t.dueDate != null &&
+                t.dueDate!.difference(DateTime.now()).inHours < 24 &&
+                t.dueDate!.isAfter(DateTime.now()))
+            .length;
+        final overdueCount = allTasks.where((t) => t.isOverdue).length;
 
         return Scaffold(
           backgroundColor: AppColors.background,
@@ -139,15 +142,13 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen>
           ),
           body: RefreshIndicator(
             color: AppColors.primary,
-            onRefresh: () =>
-                ref.read(tasksNotifierProvider.notifier).refresh(),
+            onRefresh: () => ref.read(tasksNotifierProvider.notifier).refresh(),
             child: Column(
               children: [
                 if (_priorityFilters.isNotEmpty)
                   _ActiveFiltersBar(
                     filters: _priorityFilters,
-                    onClear: () =>
-                        setState(() => _priorityFilters.clear()),
+                    onClear: () => setState(() => _priorityFilters.clear()),
                   ),
                 Expanded(
                   child: filtered.isEmpty
@@ -159,19 +160,26 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen>
                           subtitle: _tabController.index == 3
                               ? 'Excelente, estás al día.'
                               : '¿Agregamos algo nuevo?',
-                          actionLabel: 'Nueva tarea',
-                          onAction: () => context.push('/tasks/create'),
+                           actionLabel: 'Nueva tarea',
+                          onAction: () {
+                            final role =
+                                ref.read(userRoleProvider);
+                            if (role == 'teacher') {
+                              context.push(
+                                  '/teacher/assignments/create');
+                            } else {
+                              context.push('/tasks/create');
+                            }
+                          },
                         )
                       : ListView.builder(
-                          padding:
-                              const EdgeInsets.only(top: 8, bottom: 80),
+                          padding: const EdgeInsets.only(top: 8, bottom: 80),
                           itemCount: filtered.length,
                           itemBuilder: (_, i) {
                             final task = filtered[i];
                             return TaskCard(
                               task: task,
-                              onTap: () =>
-                                  context.push('/tasks/${task.id}'),
+                              onTap: () => context.push('/tasks/${task.id}'),
                               onComplete: () => ref
                                   .read(tasksNotifierProvider.notifier)
                                   .complete(task.id),
@@ -186,7 +194,14 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen>
             ),
           ),
           floatingActionButton: FloatingActionButton(
-            onPressed: () => context.push('/tasks/create'),
+            onPressed: () {
+              final role = ref.read(userRoleProvider);
+              if (role == 'teacher') {
+                context.push('/teacher/assignments/create');
+              } else {
+                context.push('/tasks/create');
+              }
+            },
             child: const Icon(Icons.add_rounded),
           ),
         );
@@ -290,7 +305,8 @@ class _ActiveFiltersBar extends StatelessWidget {
       color: AppColors.surface2,
       child: Row(
         children: [
-          const Icon(Icons.filter_list_rounded, size: 16, color: AppColors.primary),
+          const Icon(Icons.filter_list_rounded,
+              size: 16, color: AppColors.primary),
           const SizedBox(width: 8),
           ...filters.map((p) => Container(
                 margin: const EdgeInsets.only(right: 8),
@@ -401,15 +417,15 @@ class _FiltersSheetState extends State<_FiltersSheet> {
                       : 'Baja';
               return Expanded(
                 child: GestureDetector(
-                  onTap: () => setState(() => isSelected
-                      ? _selected.remove(p)
-                      : _selected.add(p)),
+                  onTap: () => setState(() =>
+                      isSelected ? _selected.remove(p) : _selected.add(p)),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 150),
                     margin: const EdgeInsets.only(right: 8),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: isSelected ? color.withAlpha(38) : AppColors.surface2,
+                      color:
+                          isSelected ? color.withAlpha(38) : AppColors.surface2,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: isSelected ? color : AppColors.border,
@@ -429,7 +445,8 @@ class _FiltersSheetState extends State<_FiltersSheet> {
                             style: GoogleFonts.inter(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: isSelected ? color : AppColors.textSecondary,
+                              color:
+                                  isSelected ? color : AppColors.textSecondary,
                             )),
                       ],
                     ),

@@ -8,7 +8,8 @@ class StreakBadge extends StatelessWidget {
   final int days;
   final StreakSize size;
 
-  const StreakBadge({super.key, required this.days, this.size = StreakSize.mini});
+  const StreakBadge(
+      {super.key, required this.days, this.size = StreakSize.mini});
 
   @override
   Widget build(BuildContext context) {

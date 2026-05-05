@@ -24,7 +24,8 @@ class AppNotification {
           id: 'n1',
           type: NotificationType.task,
           title: 'Entrega en 2 horas',
-          body: 'Estructuras de Datos — Taller Árboles Binarios vence hoy a las 11 PM.',
+          body:
+              'Estructuras de Datos — Taller Árboles Binarios vence hoy a las 11 PM.',
           createdAt: DateTime.now().subtract(const Duration(minutes: 30)),
           deepLink: '/tasks/1',
         ),
@@ -49,7 +50,8 @@ class AppNotification {
           id: 'n4',
           type: NotificationType.course,
           title: 'Nueva actividad en Cálculo II',
-          body: 'Prof. Martínez publicó: "Taller Integrales — entrega el viernes"',
+          body:
+              'Prof. Martínez publicó: "Taller Integrales — entrega el viernes"',
           isRead: true,
           createdAt: DateTime.now().subtract(const Duration(days: 1)),
           deepLink: '/courses/c2',

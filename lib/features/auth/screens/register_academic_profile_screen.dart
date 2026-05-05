@@ -18,11 +18,19 @@ class _RegisterAcademicProfileScreenState
   final _careerCtrl = TextEditingController();
 
   static const _suggestedSubjects = [
-    'Cálculo I', 'Cálculo II', 'Álgebra Lineal',
-    'Programación I', 'Estructuras de Datos',
-    'Ingeniería de Software', 'Bases de Datos',
-    'Sistemas Operativos', 'Redes', 'IA',
-    'Física I', 'Química', 'Estadística',
+    'Cálculo I',
+    'Cálculo II',
+    'Álgebra Lineal',
+    'Programación I',
+    'Estructuras de Datos',
+    'Ingeniería de Software',
+    'Bases de Datos',
+    'Sistemas Operativos',
+    'Redes',
+    'IA',
+    'Física I',
+    'Química',
+    'Estadística',
   ];
 
   @override
@@ -83,10 +91,12 @@ class _RegisterAcademicProfileScreenState
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: isSelected ? AppColors.primary : AppColors.surface2,
+                        color:
+                            isSelected ? AppColors.primary : AppColors.surface2,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: isSelected ? AppColors.primary : AppColors.border,
+                          color:
+                              isSelected ? AppColors.primary : AppColors.border,
                         ),
                       ),
                       child: Center(
@@ -95,7 +105,9 @@ class _RegisterAcademicProfileScreenState
                           style: GoogleFonts.inter(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: isSelected ? Colors.black : AppColors.textPrimary,
+                            color: isSelected
+                                ? Colors.black
+                                : AppColors.textPrimary,
                           ),
                         ),
                       ),
@@ -128,7 +140,9 @@ class _RegisterAcademicProfileScreenState
                     checkmarkColor: AppColors.primary,
                     labelStyle: GoogleFonts.inter(
                       fontSize: 13,
-                      color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                      color: isSelected
+                          ? AppColors.primary
+                          : AppColors.textPrimary,
                     ),
                   );
                 }).toList(),

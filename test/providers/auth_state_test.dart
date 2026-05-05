@@ -67,11 +67,13 @@ void main() {
     });
 
     test('contains loading, authenticated, unauthenticated', () {
-      expect(AuthStatus.values, containsAll([
-        AuthStatus.loading,
-        AuthStatus.authenticated,
-        AuthStatus.unauthenticated,
-      ]));
+      expect(
+          AuthStatus.values,
+          containsAll([
+            AuthStatus.loading,
+            AuthStatus.authenticated,
+            AuthStatus.unauthenticated,
+          ]));
     });
   });
 }

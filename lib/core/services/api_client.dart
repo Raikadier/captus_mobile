@@ -47,8 +47,7 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) =>
-      _dio.get<T>(path,
-          queryParameters: queryParameters, options: options);
+      _dio.get<T>(path, queryParameters: queryParameters, options: options);
 
   Future<Response<T>> post<T>(
     String path, {
@@ -121,7 +120,8 @@ class _LogInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     assert(() {
       // ignore: avoid_print
-      print('[API] ERROR ${err.response?.statusCode} ${err.requestOptions.path}: ${err.message}');
+      print(
+          '[API] ERROR ${err.response?.statusCode} ${err.requestOptions.path}: ${err.message}');
       return true;
     }());
     handler.next(err);
@@ -137,8 +137,8 @@ class ApiException implements Exception {
 
   factory ApiException.fromDio(DioException e) {
     final data = e.response?.data;
-    final serverMsg = (data is Map ? data['message'] ?? data['error'] : null)
-        as String?;
+    final serverMsg =
+        (data is Map ? data['message'] ?? data['error'] : null) as String?;
     return ApiException(
       statusCode: e.response?.statusCode,
       message: serverMsg ?? e.message ?? 'Error de conexión',

@@ -140,7 +140,8 @@ class _OnboardingPageWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: page.accentColor.withAlpha(25),
               shape: BoxShape.circle,
-              border: Border.all(color: page.accentColor.withAlpha(76), width: 2),
+              border:
+                  Border.all(color: page.accentColor.withAlpha(76), width: 2),
             ),
             child: Center(
               child: Text(page.emoji, style: const TextStyle(fontSize: 56)),
