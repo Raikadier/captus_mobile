@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -301,14 +302,16 @@ class _MessageBubble extends StatelessWidget {
                         ? null
                         : Border.all(color: AppColors.border),
                   ),
-                  child: SelectableText(
-                    message.text,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: isUser ? Colors.white : AppColors.textPrimary,
-                      height: 1.45,
-                    ),
-                  ),
+                  child: isUser
+                      ? SelectableText(
+                          message.text,
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            color: Colors.white,
+                            height: 1.45,
+                          ),
+                        )
+                      : _MarkdownMessage(text: message.text),
                 ),
               ),
             ],
@@ -376,6 +379,83 @@ class _MessageBubble extends StatelessWidget {
       'study_document':         'Material de estudio',
     };
     return labels[action] ?? action.replaceAll('_', ' ');
+  }
+}
+
+// ── Markdown message (AI only) ────────────────────────────────────────────────
+
+class _MarkdownMessage extends StatelessWidget {
+  final String text;
+  const _MarkdownMessage({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    final baseStyle = GoogleFonts.inter(
+      fontSize: 14,
+      color: AppColors.textPrimary,
+      height: 1.5,
+    );
+
+    return MarkdownBody(
+      data: text,
+      selectable: true,
+      softLineBreak: true,
+      styleSheet: MarkdownStyleSheet(
+        // Paragraph
+        p: baseStyle,
+        // Bold
+        strong: baseStyle.copyWith(fontWeight: FontWeight.w700),
+        // Italic
+        em: baseStyle.copyWith(fontStyle: FontStyle.italic),
+        // Headings
+        h1: GoogleFonts.inter(
+            fontSize: 17, fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary, height: 1.4),
+        h2: GoogleFonts.inter(
+            fontSize: 15, fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary, height: 1.4),
+        h3: GoogleFonts.inter(
+            fontSize: 14, fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary, height: 1.4),
+        // Inline code
+        code: GoogleFonts.sourceCodePro(
+          fontSize: 13,
+          color: AppColors.primary,
+          backgroundColor: AppColors.primary.withAlpha(15),
+        ),
+        // Code block
+        codeblockDecoration: BoxDecoration(
+          color: AppColors.primary.withAlpha(10),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.primary.withAlpha(40)),
+        ),
+        codeblockPadding: const EdgeInsets.all(12),
+        // Blockquote
+        blockquoteDecoration: BoxDecoration(
+          border: Border(
+            left: BorderSide(color: AppColors.primary, width: 3),
+          ),
+          color: AppColors.primary.withAlpha(8),
+        ),
+        blockquotePadding: const EdgeInsets.symmetric(
+            horizontal: 12, vertical: 6),
+        // Lists
+        listBullet: baseStyle,
+        listBulletPadding: const EdgeInsets.only(right: 6),
+        listIndent: 16,
+        // Horizontal rule
+        horizontalRuleDecoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: AppColors.border, width: 1),
+          ),
+        ),
+        // Spacing
+        pPadding: const EdgeInsets.only(bottom: 4),
+        h1Padding: const EdgeInsets.only(bottom: 6, top: 4),
+        h2Padding: const EdgeInsets.only(bottom: 4, top: 4),
+        h3Padding: const EdgeInsets.only(bottom: 2, top: 4),
+      ),
+    );
   }
 }
 
