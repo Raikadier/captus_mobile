@@ -26,9 +26,9 @@ class _SuperAdminDashboardScreenState
     setState(() { _loading = true; _error = null; });
     try {
       final stats = await _svc.getPlatformStats();
-      setState(() { _stats = stats; _loading = false; });
+      if (mounted) setState(() { _stats = stats; _loading = false; });
     } catch (e) {
-      setState(() { _error = e.toString(); _loading = false; });
+      if (mounted) setState(() { _error = e.toString(); _loading = false; });
     }
   }
 

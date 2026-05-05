@@ -333,15 +333,15 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                       onPressed: () async {
                                         final ok = await showDialog<bool>(
                                           context: ctx,
-                                          builder: (_) => AlertDialog(
+                                          builder: (dialogCtx) => AlertDialog(
                                             title: const Text('Desinscribir'),
                                             content: Text('¿Quitar a $name de este curso?'),
                                             actions: [
                                               TextButton(
-                                                  onPressed: () => Navigator.pop(context, false),
+                                                  onPressed: () => Navigator.pop(dialogCtx, false),
                                                   child: const Text('Cancelar')),
                                               TextButton(
-                                                  onPressed: () => Navigator.pop(context, true),
+                                                  onPressed: () => Navigator.pop(dialogCtx, true),
                                                   style: TextButton.styleFrom(
                                                       foregroundColor: Colors.red),
                                                   child: const Text('Quitar')),

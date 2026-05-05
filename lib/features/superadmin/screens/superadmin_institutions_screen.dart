@@ -38,7 +38,7 @@ class _SuperAdminInstitutionsScreenState
     try {
       final res = await _svc.listInstitutions(
           page: _page, search: _searchCtrl.text.trim());
-      setState(() {
+      if (mounted) setState(() {
         _items = reset
             ? List<dynamic>.from(res['data'] as List)
             : [..._items, ...List<dynamic>.from(res['data'] as List)];
@@ -46,7 +46,7 @@ class _SuperAdminInstitutionsScreenState
         _loading = false;
       });
     } catch (e) {
-      setState(() { _error = e.toString(); _loading = false; });
+      if (mounted) setState(() { _error = e.toString(); _loading = false; });
     }
   }
 
