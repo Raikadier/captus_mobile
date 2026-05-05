@@ -4,6 +4,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/ai_chat_provider.dart';
 import '../../../core/providers/auth_provider.dart';
@@ -20,8 +21,58 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
   final _scrollCtrl = ScrollController();
   final _focusNode  = FocusNode();
 
+  final _stt = SpeechToText();
+  bool _sttAvailable = false;
+  bool _isListening  = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initStt();
+  }
+
+  Future<void> _initStt() async {
+    final available = await _stt.initialize(
+      onError: (_) => setState(() => _isListening = false),
+      onStatus: (status) {
+        if (status == SpeechToText.doneStatus ||
+            status == SpeechToText.notListeningStatus) {
+          setState(() => _isListening = false);
+        }
+      },
+    );
+    if (mounted) setState(() => _sttAvailable = available);
+  }
+
+  Future<void> _toggleVoice() async {
+    if (!_sttAvailable) return;
+    if (_isListening) {
+      await _stt.stop();
+      setState(() => _isListening = false);
+      return;
+    }
+    final hasSpeech = await _stt.initialize();
+    if (!hasSpeech || !mounted) return;
+
+    setState(() => _isListening = true);
+    _stt.listen(
+      localeId: 'es_ES',
+      listenFor: const Duration(seconds: 30),
+      pauseFor: const Duration(seconds: 3),
+      onResult: (result) {
+        if (result.finalResult && result.recognizedWords.isNotEmpty) {
+          _controller.text = result.recognizedWords;
+          _controller.selection = TextSelection.fromPosition(
+            TextPosition(offset: _controller.text.length),
+          );
+        }
+      },
+    );
+  }
+
   @override
   void dispose() {
+    _stt.stop();
     _controller.dispose();
     _scrollCtrl.dispose();
     _focusNode.dispose();
@@ -32,7 +83,7 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
     _controller.clear();
-    _focusNode.unfocus();          // hide keyboard on send
+    _focusNode.unfocus();
     ref.read(aiChatProvider.notifier).send(text);
     _scrollToBottom();
   }
@@ -115,6 +166,9 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
               isLoading: chatState.isLoading,
               onSend: _send,
               onStop: () => ref.read(aiChatProvider.notifier).stop(),
+              sttAvailable: _sttAvailable,
+              isListening: _isListening,
+              onVoice: _toggleVoice,
             ),
           ],
         ),
@@ -802,8 +856,11 @@ class _InputBar extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final bool isLoading;
+  final bool sttAvailable;
+  final bool isListening;
   final VoidCallback onSend;
   final VoidCallback onStop;
+  final VoidCallback onVoice;
 
   const _InputBar({
     required this.controller,
@@ -811,6 +868,9 @@ class _InputBar extends StatelessWidget {
     required this.isLoading,
     required this.onSend,
     required this.onStop,
+    required this.sttAvailable,
+    required this.isListening,
+    required this.onVoice,
   });
 
   @override
@@ -867,7 +927,33 @@ class _InputBar extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 6),
+          // Mic button (voice input)
+          if (sttAvailable)
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              height: 44,
+              width: 44,
+              decoration: BoxDecoration(
+                color: isListening
+                    ? Colors.red.withAlpha(25)
+                    : AppColors.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isListening ? Colors.red : AppColors.border,
+                ),
+              ),
+              child: IconButton(
+                icon: Icon(
+                  isListening ? Icons.stop_rounded : Icons.mic_rounded,
+                  color: isListening ? Colors.red : AppColors.textSecondary,
+                  size: 20,
+                ),
+                onPressed: onVoice,
+                padding: EdgeInsets.zero,
+              ),
+            ),
+          const SizedBox(width: 6),
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 180),
             transitionBuilder: (child, anim) =>
