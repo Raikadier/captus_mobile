@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'auth_provider.dart';
-import 'courses_provider.dart';
 
 final _supabase = Supabase.instance.client;
 
@@ -52,6 +51,20 @@ class GroupMember {
     required this.id,
     required this.groupId,
     required this.studentId,
+    required this.name,
+    required this.email,
+    this.avatarUrl,
+  });
+}
+
+class EnrolledStudent {
+  final String id;
+  final String name;
+  final String email;
+  final String? avatarUrl;
+
+  const EnrolledStudent({
+    required this.id,
     required this.name,
     required this.email,
     this.avatarUrl,
@@ -138,6 +151,18 @@ final groupMembersProvider =
         avatarUrl: user?['avatarUrl']?.toString(),
       );
     }).toList();
+  },
+);
+
+final courseStudentsProvider =
+    FutureProvider.autoDispose.family<List<EnrolledStudent>, int>(
+  (ref, courseId) async {
+    try {
+      // Placeholder logic to return an empty list safely
+      return <EnrolledStudent>[];
+    } catch (e) {
+      return <EnrolledStudent>[];
+    }
   },
 );
 

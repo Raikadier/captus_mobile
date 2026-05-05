@@ -56,8 +56,10 @@ class _ActivityDetailStudentScreenState
   String _formatCountdown(DateTime dueDate) {
     final diff = dueDate.difference(DateTime.now());
     if (diff.isNegative) return 'Vencida';
-    if (diff.inDays > 0) return 'Vence en ${diff.inDays} día${diff.inDays == 1 ? '' : 's'}';
-    if (diff.inHours > 0) return 'Vence en ${diff.inHours} hora${diff.inHours == 1 ? '' : 's'}';
+    if (diff.inDays > 0)
+      return 'Vence en ${diff.inDays} día${diff.inDays == 1 ? '' : 's'}';
+    if (diff.inHours > 0)
+      return 'Vence en ${diff.inHours} hora${diff.inHours == 1 ? '' : 's'}';
     return 'Vence en ${diff.inMinutes} minuto${diff.inMinutes == 1 ? '' : 's'}';
   }
 
@@ -100,7 +102,8 @@ class _ActivityDetailStudentScreenState
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: isOverdue
                       ? AppColors.error.withOpacity(0.15)
@@ -388,9 +391,7 @@ class _UploadView extends StatelessWidget {
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: fileSelected
-                      ? AppColors.primary
-                      : AppColors.border,
+                  color: fileSelected ? AppColors.primary : AppColors.border,
                   style: BorderStyle.solid,
                 ),
               ),
@@ -437,8 +438,8 @@ class _UploadView extends StatelessWidget {
           style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: 'Comentario para el docente (opcional)...',
-            hintStyle: GoogleFonts.inter(
-                fontSize: 14, color: AppColors.textDisabled),
+            hintStyle:
+                GoogleFonts.inter(fontSize: 14, color: AppColors.textDisabled),
             filled: true,
             fillColor: AppColors.surface,
             border: OutlineInputBorder(
@@ -494,8 +495,7 @@ class _BottomBar extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor:
                 showAiButton ? AppColors.surface2 : AppColors.primary,
-            foregroundColor:
-                showAiButton ? AppColors.primary : Colors.black,
+            foregroundColor: showAiButton ? AppColors.primary : Colors.black,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
               side: showAiButton
