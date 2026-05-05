@@ -1,8 +1,8 @@
 
-enum RiskLevel {
-  high,
-  medium,
-  low,
+enum TeacherStudentRiskLevel {
+  high,   // Alto rendimiento
+  medium, // Rendimiento medio
+  risk,   // En riesgo
 }
 
 class TeacherStudentStatsModel {
@@ -12,9 +12,9 @@ class TeacherStudentStatsModel {
   final int submittedAssignments;
   final int missingAssignments;
   final int gradedSubmissions;
-  final double averageGrade;
+  final double? averageGrade;
   final double completionRate;
-  final RiskLevel riskLevel;
+  final TeacherStudentRiskLevel riskLevel;
   final DateTime? lastSubmissionDate;
 
   TeacherStudentStatsModel({
@@ -24,7 +24,7 @@ class TeacherStudentStatsModel {
     required this.submittedAssignments,
     required this.missingAssignments,
     required this.gradedSubmissions,
-    required this.averageGrade,
+    this.averageGrade,
     required this.completionRate,
     required this.riskLevel,
     this.lastSubmissionDate,
@@ -38,26 +38,27 @@ class TeacherStudentStatsModel {
       submittedAssignments: map['submittedAssignments'] ?? 0,
       missingAssignments: map['missingAssignments'] ?? 0,
       gradedSubmissions: map['gradedSubmissions'] ?? 0,
-      averageGrade: (map['averageGrade'] ?? 0.0).toDouble(),
+      averageGrade: map['averageGrade'] != null ? (map['averageGrade'] as num).toDouble() : null,
       completionRate: (map['completionRate'] ?? 0.0).toDouble(),
       riskLevel: _parseRiskLevel(map['riskLevel']),
       lastSubmissionDate: map['lastSubmissionDate'] != null
-          ? DateTime.tryParse(map['lastSubmissionDate'])
+          ? DateTime.tryParse(map['lastSubmissionDate'].toString())
           : null,
     );
   }
 
-  static RiskLevel _parseRiskLevel(String? level) {
-    switch (level) {
-      case 'high':
-        return RiskLevel.high;
-      case 'medium':
-        return RiskLevel.medium;
-      case 'low':
-        return RiskLevel.low;
-      default:
-        return RiskLevel.low;
+  static TeacherStudentRiskLevel _parseRiskLevel(dynamic level) {
+    if (level is String) {
+      switch (level) {
+        case 'high':
+          return TeacherStudentRiskLevel.high;
+        case 'medium':
+          return TeacherStudentRiskLevel.medium;
+        case 'risk':
+          return TeacherStudentRiskLevel.risk;
+      }
     }
+    return TeacherStudentRiskLevel.risk;
   }
 }
 
@@ -66,7 +67,7 @@ class TeacherStatsSummaryModel {
   final int totalAssignments;
   final int totalSubmissions;
   final int pendingToGrade;
-  final double averageGrade;
+  final double? averageGrade;
   final int highPerformanceCount;
   final int mediumPerformanceCount;
   final int riskCount;
@@ -80,7 +81,7 @@ class TeacherStatsSummaryModel {
     required this.totalAssignments,
     required this.totalSubmissions,
     required this.pendingToGrade,
-    required this.averageGrade,
+    this.averageGrade,
     required this.highPerformanceCount,
     required this.mediumPerformanceCount,
     required this.riskCount,
@@ -90,13 +91,43 @@ class TeacherStatsSummaryModel {
     required this.students,
   });
 
+  TeacherStatsSummaryModel copyWith({
+    int? totalStudents,
+    int? totalAssignments,
+    int? totalSubmissions,
+    int? pendingToGrade,
+    double? averageGrade,
+    int? highPerformanceCount,
+    int? mediumPerformanceCount,
+    int? riskCount,
+    double? highPerformancePercentage,
+    double? mediumPerformancePercentage,
+    double? riskPercentage,
+    List<TeacherStudentStatsModel>? students,
+  }) {
+    return TeacherStatsSummaryModel(
+      totalStudents: totalStudents ?? this.totalStudents,
+      totalAssignments: totalAssignments ?? this.totalAssignments,
+      totalSubmissions: totalSubmissions ?? this.totalSubmissions,
+      pendingToGrade: pendingToGrade ?? this.pendingToGrade,
+      averageGrade: averageGrade ?? this.averageGrade,
+      highPerformanceCount: highPerformanceCount ?? this.highPerformanceCount,
+      mediumPerformanceCount: mediumPerformanceCount ?? this.mediumPerformanceCount,
+      riskCount: riskCount ?? this.riskCount,
+      highPerformancePercentage: highPerformancePercentage ?? this.highPerformancePercentage,
+      mediumPerformancePercentage: mediumPerformancePercentage ?? this.mediumPerformancePercentage,
+      riskPercentage: riskPercentage ?? this.riskPercentage,
+      students: students ?? this.students,
+    );
+  }
+
   factory TeacherStatsSummaryModel.empty() {
     return TeacherStatsSummaryModel(
       totalStudents: 0,
       totalAssignments: 0,
       totalSubmissions: 0,
       pendingToGrade: 0,
-      averageGrade: 0.0,
+      averageGrade: null,
       highPerformanceCount: 0,
       mediumPerformanceCount: 0,
       riskCount: 0,
