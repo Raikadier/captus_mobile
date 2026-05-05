@@ -555,6 +555,46 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
     }
   }
 
+  // ── Delete course ────────────────────────────────────────────────────────
+
+  Future<void> _deleteCourse(Map<String, dynamic> course) async {
+    final name = course['name'] as String? ?? 'este curso';
+    final count = course['enrollments_count'] ?? 0;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: const Text('Eliminar curso'),
+        content: Text(
+          count > 0
+              ? '¿Eliminar "$name"? Se desinscribirán $count estudiante(s). Esta acción no se puede deshacer.'
+              : '¿Eliminar "$name"? Esta acción no se puede deshacer.',
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(dialogCtx, false),
+              child: const Text('Cancelar')),
+          TextButton(
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              onPressed: () => Navigator.pop(dialogCtx, true),
+              child: const Text('Eliminar')),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await AdminService.instance.deleteCourse(course['id'].toString());
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Curso "$name" eliminado')));
+        _load();
+      }
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+    }
+  }
+
   // ── Build ────────────────────────────────────────────────────────────────
 
   @override
@@ -652,25 +692,35 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                   if (action == 'edit') _showCourseForm(existing: c);
                                   if (action == 'students') _showStudents(c);
                                   if (action == 'enroll') _showBulkEnroll(c);
+                                  if (action == 'delete') _deleteCourse(c);
                                 },
-                                itemBuilder: (_) => const [
-                                  PopupMenuItem(
+                                itemBuilder: (_) => [
+                                  const PopupMenuItem(
                                       value: 'edit',
                                       child: ListTile(
                                           leading: Icon(Icons.edit_outlined),
                                           title: Text('Editar curso'),
                                           contentPadding: EdgeInsets.zero)),
-                                  PopupMenuItem(
+                                  const PopupMenuItem(
                                       value: 'students',
                                       child: ListTile(
                                           leading: Icon(Icons.people_outlined),
                                           title: Text('Ver estudiantes'),
                                           contentPadding: EdgeInsets.zero)),
-                                  PopupMenuItem(
+                                  const PopupMenuItem(
                                       value: 'enroll',
                                       child: ListTile(
                                           leading: Icon(Icons.person_add_outlined),
                                           title: Text('Inscribir estudiantes'),
+                                          contentPadding: EdgeInsets.zero)),
+                                  const PopupMenuDivider(),
+                                  const PopupMenuItem(
+                                      value: 'delete',
+                                      child: ListTile(
+                                          leading: Icon(Icons.delete_outline,
+                                              color: Colors.red),
+                                          title: Text('Eliminar curso',
+                                              style: TextStyle(color: Colors.red)),
                                           contentPadding: EdgeInsets.zero)),
                                 ],
                               ),
