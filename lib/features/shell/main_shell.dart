@@ -11,7 +11,9 @@ class MainShell extends ConsumerWidget {
 
   int _selectedIndex(BuildContext context, String role) {
     final location = GoRouterState.of(context).uri.toString();
-    if (location.startsWith('/tasks')) return 1;
+    if (location.startsWith('/tasks') ||
+        location.startsWith('/teacher/assignments') ||
+        location.startsWith('/student/assignments')) return 1;
     if (location.startsWith('/calendar')) return 2;
     if (role == 'teacher') {
       if (location.startsWith('/teacher/statistics')) return 3;
@@ -32,7 +34,12 @@ class MainShell extends ConsumerWidget {
         }
         break;
       case 1:
-        context.go('/tasks');
+        if (role == 'teacher') {
+          context.go('/teacher/assignments');
+        } else {
+          // El estudiante navega a su nuevo módulo de asignaciones
+          context.go('/student/assignments');
+        }
         break;
       case 2:
         context.go('/calendar');

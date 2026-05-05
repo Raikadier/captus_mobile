@@ -176,6 +176,16 @@ GoRouter createRouter(WidgetRef ref) {
             name: 'statistics_teacher',
             builder: (_, __) => const StatisticsTeacherScreen(),
           ),
+          GoRoute(
+            path: '/teacher/assignments',
+            name: 'teacher_assignments_list',
+            builder: (_, __) => const TeacherAssignmentsListScreen(),
+          ),
+          GoRoute(
+            path: '/student/assignments',
+            name: 'student_assignments_list',
+            builder: (_, __) => const StudentAssignmentsScreen(),
+          ),
         ],
       ),
 
@@ -286,11 +296,6 @@ GoRouter createRouter(WidgetRef ref) {
         ),
       ),
       GoRoute(
-        path: '/teacher/assignments',
-        name: 'teacher_assignments_list',
-        builder: (_, __) => const TeacherAssignmentsListScreen(),
-      ),
-      GoRoute(
         path: '/teacher/assignments/create',
         name: 'teacher_assignment_create',
         builder: (_, __) => const TeacherAssignmentCreateScreen(),
@@ -300,11 +305,6 @@ GoRouter createRouter(WidgetRef ref) {
         name: 'assignment_review',
         builder: (_, state) =>
             AssignmentReviewScreen(assignmentId: state.pathParameters['id']!),
-      ),
-      GoRoute(
-        path: '/student/assignments',
-        name: 'student_assignments_list',
-        builder: (_, __) => const StudentAssignmentsScreen(),
       ),
       GoRoute(
         path: '/student/assignments/:id/submit',

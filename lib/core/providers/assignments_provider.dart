@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/assignments/repositories/assignments_repository.dart';
 import '../../features/assignments/repositories/local_assignments_repository.dart';
@@ -15,8 +16,58 @@ final assignmentsRepositoryProvider = Provider<AssignmentsRepository>((ref) {
   if (Env.hasSupabase) {
     return SupabaseAssignmentsRepository();
   }
+  if (kIsWeb) {
+    // Para web sin Supabase, evitamos llamar SQLite devolviendo el repositorio local
+    // pero el repositorio local debería manejar el caso web o usamos uno mock.
+    // Como LocalAssignmentsRepository usa DatabaseService (sqlite), fallará.
+    return _EmptyAssignmentsRepository();
+  }
   return LocalAssignmentsRepository();
 });
+
+/// Repositorio vacío para evitar bloqueos en web cuando no hay Supabase.
+class _EmptyAssignmentsRepository implements AssignmentsRepository {
+  @override
+  Future<AssignmentModel> createAssignment(AssignmentModel assignment) async =>
+      assignment;
+  @override
+  Future<AssignmentModel> updateAssignment(AssignmentModel assignment) async =>
+      assignment;
+  @override
+  Future<void> deleteAssignment(String assignmentId) async {}
+  @override
+  Future<List<AssignmentModel>> getAssignmentsByTeacher(String teacherId) async =>
+      [];
+  @override
+  Future<List<AssignmentModel>> getAssignmentsForStudent(
+          String studentId) async =>
+      [];
+  @override
+  Future<void> assignToGroup(String assignmentId, String groupId) async {}
+  @override
+  Future<void> assignToStudent(String assignmentId, String studentId) async {}
+  @override
+  Future<SubmissionModel> createSubmission(SubmissionModel submission) async =>
+      submission;
+  @override
+  Future<SubmissionModel> updateSubmission(SubmissionModel submission) async =>
+      submission;
+  @override
+  Future<List<SubmissionModel>> getSubmissionsByAssignment(
+          String assignmentId) async =>
+      [];
+  @override
+  Future<void> gradeSubmission(
+          String submissionId, double grade, String feedback) async {}
+  @override
+  Future<Map<String, dynamic>> getTeacherStats(String teacherId) async =>
+      {'totalAssignments': 0, 'pendingToGrade': 0};
+  @override
+  Future<List<Map<String, dynamic>>> getRecentSubmissionsByTeacher(
+          String teacherId,
+          {int limit = 5}) async =>
+      [];
+}
 
 // -----------------------------------------------------------------------------
 // 1. TeacherAssignmentsNotifier
