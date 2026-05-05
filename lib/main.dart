@@ -28,6 +28,8 @@ Future<void> main() async {
         url: Env.supabaseUrl,
         anonKey: Env.supabaseAnonKey,
       );
+      await Supabase.instance.client.auth.signOut();
+      
       debugPrint('Supabase initialized successfully.');
     } catch (e) {
       debugPrint('Error initializing Supabase: $e');
