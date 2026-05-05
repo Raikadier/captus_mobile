@@ -47,19 +47,28 @@ dependencies:
   image_picker: ^1.1.2
   speech_to_text: ^7.3.0
   cupertino_icons: ^1.0.8
+  geolocator: ^14.0.2
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  flutter_local_notifications: ^19.5.0
+  timezone: ^0.10.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
   flutter_lints: ^6.0.0
-  
+
   # Testing dependencies
   mockito: ^5.4.4
   build_runner: ^2.4.9
   golden_toolkit: ^0.15.0
   network_image_mock: ^2.1.1
+
   integration_test:
     sdk: flutter
+
   flutter_launcher_icons: ^0.14.4
 
 flutter:
@@ -74,6 +83,5 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/captus.jpeg"
-
+  image_path: assets/images/captus.jpeg
 
