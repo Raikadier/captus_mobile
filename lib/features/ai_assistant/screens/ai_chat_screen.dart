@@ -32,6 +32,7 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
     _controller.clear();
+    _focusNode.unfocus();          // hide keyboard on send
     ref.read(aiChatProvider.notifier).send(text);
     _scrollToBottom();
   }
@@ -113,6 +114,7 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
               focusNode: _focusNode,
               isLoading: chatState.isLoading,
               onSend: _send,
+              onStop: () => ref.read(aiChatProvider.notifier).stop(),
             ),
           ],
         ),
@@ -647,12 +649,14 @@ class _InputBar extends StatelessWidget {
   final FocusNode focusNode;
   final bool isLoading;
   final VoidCallback onSend;
+  final VoidCallback onStop;
 
   const _InputBar({
     required this.controller,
     required this.focusNode,
     required this.isLoading,
     required this.onSend,
+    required this.onStop,
   });
 
   @override
@@ -711,40 +715,64 @@ class _InputBar extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 180),
+            transitionBuilder: (child, anim) =>
+                ScaleTransition(scale: anim, child: child),
             child: isLoading
-                ? Container(
-                    key: const ValueKey('loading'),
-                    height: 44,
-                    width: 44,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withAlpha(30),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: CircularProgressIndicator(
-                          strokeWidth: 2, color: AppColors.primary),
-                    ),
-                  )
-                : Container(
-                    key: const ValueKey('send'),
-                    height: 44,
-                    width: 44,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.send_rounded,
-                          color: Colors.white, size: 18),
-                      onPressed: onSend,
-                      padding: EdgeInsets.zero,
-                    ),
-                  ),
+                ? _StopButton(key: const ValueKey('stop'), onStop: onStop)
+                : _SendButton(key: const ValueKey('send'), onSend: onSend),
           ),
         ],
       ),
     );
   }
+}
+
+// ── Send / Stop action buttons ────────────────────────────────────────────────
+
+class _SendButton extends StatelessWidget {
+  final VoidCallback onSend;
+  const _SendButton({super.key, required this.onSend});
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+        height: 44,
+        width: 44,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
+            onPressed: onSend,
+            padding: EdgeInsets.zero,
+          ),
+        ),
+      );
+}
+
+class _StopButton extends StatelessWidget {
+  final VoidCallback onStop;
+  const _StopButton({super.key, required this.onStop});
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+        height: 44,
+        width: 44,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: Colors.red.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.red.shade200),
+          ),
+          child: IconButton(
+            icon: Icon(Icons.stop_rounded,
+                color: Colors.red.shade600, size: 20),
+            onPressed: onStop,
+            padding: EdgeInsets.zero,
+            tooltip: 'Detener',
+          ),
+        ),
+      );
 }
