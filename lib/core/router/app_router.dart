@@ -6,6 +6,7 @@ import '../../features/auth/screens/splash_screen.dart';
 import '../../features/auth/screens/onboarding_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
+import '../../features/auth/screens/registration_success_screen.dart';
 import '../../features/auth/screens/register_academic_profile_screen.dart';
 import '../../features/auth/screens/register_notifications_screen.dart';
 import '../../features/auth/screens/forgot_password_screen.dart';
@@ -149,6 +150,13 @@ GoRouter createRouter(WidgetRef ref) {
         path: '/register',
         name: 'register',
         builder: (_, __) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/register/success',
+        name: 'register_success',
+        builder: (_, state) => RegistrationSuccessScreen(
+          email: state.extra as String? ?? '',
+        ),
       ),
       GoRoute(
         path: '/register/profile',

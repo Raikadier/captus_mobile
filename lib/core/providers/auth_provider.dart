@@ -226,6 +226,20 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     }
   }
 
+  Future<String?> resendConfirmation(String email) async {
+    try {
+      await SupabaseService.auth.resend(
+        type: OtpType.signup,
+        email: email,
+      );
+      return null;
+    } on AuthException catch (e) {
+      return _mapAuthError(e.message);
+    } catch (_) {
+      return 'Error de conexión';
+    }
+  }
+
   Future<void> signOut() async {
     await SupabaseService.auth.signOut();
     state = const AsyncData(AuthState.unauthenticated());
@@ -250,18 +264,28 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
   }
 
   String _mapAuthError(String message) {
-    if (message.contains('Invalid login credentials') ||
-        message.contains('invalid_credentials')) {
+    final lower = message.toLowerCase();
+    if (lower.contains('invalid login credentials') ||
+        lower.contains('invalid_credentials')) {
       return 'Correo o contraseña incorrectos';
     }
-    if (message.contains('already registered') || message.contains('already been registered')) {
+    if (lower.contains('already registered') ||
+        lower.contains('already been registered') ||
+        lower.contains('user already registered')) {
       return 'Este correo ya está registrado';
     }
-    if (message.contains('Email not confirmed')) {
+    if (lower.contains('email not confirmed') ||
+        lower.contains('email_not_confirmed')) {
       return 'Confirma tu correo antes de iniciar sesión';
     }
-    if (message.contains('Password should be')) {
-      return 'La contraseña debe tener al menos 6 caracteres';
+    if (lower.contains('password')) {
+      return 'La contraseña no cumple los requisitos de seguridad';
+    }
+    if (lower.contains('rate limit') || lower.contains('too many requests')) {
+      return 'Demasiados intentos. Intenta más tarde';
+    }
+    if (lower.contains('invalid email') || lower.contains('email address is invalid')) {
+      return 'El formato del correo no es válido';
     }
     return message;
   }

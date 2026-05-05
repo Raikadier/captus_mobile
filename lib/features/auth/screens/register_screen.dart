@@ -19,9 +19,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _passwordCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   bool _isLoading = false;
   String? _errorMessage;
   int _selectedRole = 0;
+
+  static final _emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+  static final _passwordRegex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$');
 
   static const _taglines = [
     'Tu academia, tu ritmo',
@@ -71,8 +75,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
-    // Go to login so user can sign in with new account
-    context.go('/login');
+    // Navigate to success screen with email for confirmation instructions
+    context.go('/register/success', extra: _emailCtrl.text.trim());
   }
 
   @override
@@ -165,22 +169,30 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   decoration: const InputDecoration(
                     labelText: 'Nombre completo',
                     prefixIcon: Icon(Icons.person_outline_rounded),
+                    hintText: 'Ej. Juan Pérez',
                   ),
-                  validator: (v) =>
-                      v != null && v.length > 3 ? null : 'Ingresa tu nombre',
+                  validator: (v) {
+                    if (v == null || v.trim().length < 4) {
+                      return 'El nombre debe tener al menos 4 caracteres';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _emailCtrl,
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
-                    labelText: 'Correo institucional',
+                    labelText: 'Correo electrónico',
                     prefixIcon: Icon(Icons.email_outlined),
-                    hintText: 'usuario@unicesar.edu.co',
+                    hintText: 'usuario@ejemplo.com',
                   ),
-                  validator: (v) => v != null && v.contains('@')
-                      ? null
-                      : 'Ingresa un correo válido',
+                  validator: (v) {
+                    if (v == null || !_emailRegex.hasMatch(v.trim())) {
+                      return 'Ingresa un correo válido (ej. usuario@ejemplo.com)';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -196,21 +208,40 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       onPressed: () =>
                           setState(() => _obscurePassword = !_obscurePassword),
                     ),
+                    helperText: 'Mín. 8 caracteres, mayúscula, minúscula y número',
+                    helperStyle: TextStyle(fontSize: 11, color: AppColors.textSecondary),
                   ),
-                  validator: (v) =>
-                      v != null && v.length >= 6 ? null : 'Mínimo 6 caracteres',
+                  validator: (v) {
+                    if (v == null || !_passwordRegex.hasMatch(v)) {
+                      return 'Mínimo 8 caracteres, una mayúscula, una minúscula y un número';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _confirmCtrl,
-                  obscureText: true,
-                  decoration: const InputDecoration(
+                  obscureText: _obscureConfirmPassword,
+                  decoration: InputDecoration(
                     labelText: 'Confirmar contraseña',
-                    prefixIcon: Icon(Icons.lock_outline_rounded),
+                    prefixIcon: const Icon(Icons.lock_outline_rounded),
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscureConfirmPassword
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined),
+                      onPressed: () => setState(
+                          () => _obscureConfirmPassword = !_obscureConfirmPassword),
+                    ),
                   ),
-                  validator: (v) => v == _passwordCtrl.text
-                      ? null
-                      : 'Las contraseñas no coinciden',
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      return 'Confirma tu contraseña';
+                    }
+                    if (v != _passwordCtrl.text) {
+                      return 'Las contraseñas no coinciden';
+                    }
+                    return null;
+                  },
                 ),
                 if (_errorMessage != null) ...[
                   const SizedBox(height: 12),
