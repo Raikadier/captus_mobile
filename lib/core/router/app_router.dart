@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../providers/auth_provider.dart';
 import '../../features/auth/screens/splash_screen.dart';
 import '../../features/auth/screens/onboarding_screen.dart';
@@ -51,8 +52,6 @@ import '../../features/admin/screens/admin_dashboard_screen.dart';
 import '../../features/admin/screens/admin_users_screen.dart';
 import '../../features/admin/screens/admin_courses_screen.dart';
 import '../../features/admin/screens/admin_institution_screen.dart';
-import '../../features/admin/screens/admin_grading_scales_screen.dart';
-import '../../features/admin/screens/admin_periods_screen.dart';
 import '../../features/superadmin/screens/superadmin_shell_screen.dart';
 import '../../features/superadmin/screens/superadmin_dashboard_screen.dart';
 import '../../features/superadmin/screens/superadmin_institutions_screen.dart';
@@ -62,7 +61,6 @@ import '../../features/superadmin/screens/superadmin_audit_screen.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
-/// Routes that are accessible without authentication.
 const _publicRoutes = {
   '/splash',
   '/onboarding',
@@ -72,29 +70,22 @@ const _publicRoutes = {
   '/join',
 };
 
-/// Creates the GoRouter with a Riverpod [ref] so the [redirect] callback
-/// can read the live [authProvider] state.
 GoRouter createRouter(WidgetRef ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/splash',
+    initialLocation: '/home',
     debugLogDiagnostics: true,
-
-    // ── Auth redirect guard ──────────────────────────────────────────────────
     redirect: (context, state) {
       final authAsync = ref.read(authProvider);
 
-      // While the auth state is loading, stay on splash.
       if (authAsync.isLoading) return '/splash';
 
       final authState = authAsync.asData?.value;
       final isAuthenticated = authState?.isAuthenticated ?? false;
       final isPublic = _publicRoutes.contains(state.matchedLocation);
 
-      // Not authenticated and trying to access a protected route → login.
       if (!isAuthenticated && !isPublic) return '/login';
 
-      // Authenticated and trying to access a public/auth route → dashboard.
       if (isAuthenticated &&
           isPublic &&
           state.matchedLocation != '/splash' &&
@@ -105,31 +96,29 @@ GoRouter createRouter(WidgetRef ref) {
         return role == 'teacher' ? '/home/teacher' : '/home';
       }
 
-      // Superadmin should not reach student/teacher/admin routes
       if (isAuthenticated) {
         final role = authState?.role ?? 'student';
-        final loc  = state.matchedLocation;
+        final loc = state.matchedLocation;
         final isCommon = _publicRoutes.contains(loc) ||
-            loc == '/settings' || loc == '/profile' || loc == '/notifications';
+            loc == '/settings' ||
+            loc == '/profile' ||
+            loc == '/notifications';
 
-        if (role == 'superadmin' && !loc.startsWith('/superadmin') && !isCommon) {
+        if (role == 'superadmin' &&
+            !loc.startsWith('/superadmin') &&
+            !isCommon) {
           return '/superadmin/dashboard';
         }
 
-        // Admin users should not reach student/teacher routes
         if (role == 'admin' && !loc.startsWith('/admin') && !isCommon) {
           return '/admin/dashboard';
         }
       }
 
-      return null; // No redirect needed.
+      return null;
     },
-
-    // Refresh the router whenever auth state changes.
     refreshListenable: _AuthChangeNotifier(ref),
-
     routes: [
-      // ── Auth ───────────────────────────────────────────────────────────────
       GoRoute(
         path: '/splash',
         name: 'splash',
@@ -167,10 +156,9 @@ GoRouter createRouter(WidgetRef ref) {
       ),
       GoRoute(
         path: '/evidences',
-        builder: (context, state) => const EvidenceScreen(),
-      ), 
+        builder: (_, __) => const EvidenceScreen(),
+      ),
 
-      // ── Main shell with bottom nav ─────────────────────────────────────────
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) => MainShell(child: child),
@@ -208,7 +196,6 @@ GoRouter createRouter(WidgetRef ref) {
         ],
       ),
 
-      // ── Admin shell ───────────────────────────────────────────────────────
       ShellRoute(
         builder: (context, state, child) => AdminShellScreen(child: child),
         routes: [
@@ -227,27 +214,15 @@ GoRouter createRouter(WidgetRef ref) {
             name: 'admin_courses',
             builder: (_, __) => const AdminCoursesScreen(),
           ),
-          GoRoute(
-            path: '/admin/grading-scales',
-            name: 'admin_grading_scales',
-            builder: (_, __) => const AdminGradingScalesScreen(),
-          ),
-          GoRoute(
-            path: '/admin/periods',
-            name: 'admin_periods',
-            builder: (_, __) => const AdminPeriodsScreen(),
-          ),
         ],
       ),
 
-      // ── Admin detail routes (outside shell) ───────────────────────────────
       GoRoute(
         path: '/admin/institution',
         name: 'admin_institution',
         builder: (_, __) => const AdminInstitutionScreen(),
       ),
 
-      // ── Superadmin shell ──────────────────────────────────────────────────
       ShellRoute(
         builder: (context, state, child) =>
             SuperAdminShellScreen(child: child),
@@ -277,12 +252,6 @@ GoRouter createRouter(WidgetRef ref) {
 
       // ── Tasks ──────────────────────────────────────────────────────────────
       GoRoute(
-        path: '/tasks/:id',
-        name: 'task_detail',
-        builder: (_, state) =>
-            TaskDetailScreen(taskId: state.pathParameters['id']!),
-      ),
-      GoRoute(
         path: '/tasks/create',
         name: 'task_create',
         builder: (_, state) => TaskCreateScreen(
@@ -298,12 +267,18 @@ GoRouter createRouter(WidgetRef ref) {
         ),
       ),
       GoRoute(
+        path: '/tasks/:id',
+        name: 'task_detail',
+        builder: (_, state) => TaskDetailScreen(
+          taskId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
         path: '/search',
         name: 'global_search',
         builder: (_, __) => const GlobalSearchScreen(),
       ),
 
-      // ── Calendar ───────────────────────────────────────────────────────────
       GoRoute(
         path: '/calendar/agenda',
         name: 'calendar_agenda',
@@ -324,7 +299,6 @@ GoRouter createRouter(WidgetRef ref) {
         ),
       ),
 
-      // ── AI ─────────────────────────────────────────────────────────────────
       GoRoute(
         path: '/ai/history',
         name: 'ai_chat_history',
@@ -336,7 +310,6 @@ GoRouter createRouter(WidgetRef ref) {
         builder: (_, __) => const AiSettingsScreen(),
       ),
 
-      // ── Courses ────────────────────────────────────────────────────────────
       GoRoute(
         path: '/courses',
         name: 'courses_list',
@@ -410,7 +383,6 @@ GoRouter createRouter(WidgetRef ref) {
         ),
       ),
 
-      // ── Groups ─────────────────────────────────────────────────────────────
       GoRoute(
         path: '/groups/:id',
         name: 'group_detail',
@@ -424,7 +396,6 @@ GoRouter createRouter(WidgetRef ref) {
             GroupSettingsScreen(groupId: state.pathParameters['id']!),
       ),
 
-      // ── Notifications ──────────────────────────────────────────────────────
       GoRoute(
         path: '/notifications',
         name: 'notifications',
@@ -436,7 +407,6 @@ GoRouter createRouter(WidgetRef ref) {
         builder: (_, __) => const NotificationsSettingsScreen(),
       ),
 
-      // ── Statistics ─────────────────────────────────────────────────────────
       GoRoute(
         path: '/statistics',
         name: 'statistics',
@@ -459,7 +429,6 @@ GoRouter createRouter(WidgetRef ref) {
             StudentProfileViewScreen(studentId: state.pathParameters['id']!),
       ),
 
-      // ── Profile ────────────────────────────────────────────────────────────
       GoRoute(
         path: '/profile',
         name: 'profile',
@@ -496,10 +465,6 @@ GoRouter createRouter(WidgetRef ref) {
   );
 }
 
-// ── Auth change notifier ──────────────────────────────────────────────────────
-
-/// Bridges Riverpod → GoRouter: notifies the router to re-evaluate [redirect]
-/// every time [authProvider] emits a new value.
 class _AuthChangeNotifier extends ChangeNotifier {
   _AuthChangeNotifier(WidgetRef ref) {
     ref.listen(authProvider, (_, __) => notifyListeners());
