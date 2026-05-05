@@ -166,6 +166,16 @@ GoRouter createRouter(WidgetRef ref) {
             name: 'groups_list',
             builder: (_, __) => const GroupsListScreen(),
           ),
+          GoRoute(
+            path: '/statistics',
+            name: 'statistics',
+            builder: (_, __) => const StatisticsScreen(),
+          ),
+          GoRoute(
+            path: '/teacher/statistics',
+            name: 'statistics_teacher',
+            builder: (_, __) => const StatisticsTeacherScreen(),
+          ),
         ],
       ),
 
@@ -331,20 +341,11 @@ GoRouter createRouter(WidgetRef ref) {
 
       // ── Statistics ─────────────────────────────────────────────────────────
       GoRoute(
-        path: '/statistics',
-        name: 'statistics',
-        builder: (_, __) => const StatisticsScreen(),
-      ),
-      GoRoute(
         path: '/statistics/achievements',
         name: 'achievements',
         builder: (_, __) => const AchievementsScreen(),
       ),
-      GoRoute(
-        path: '/teacher/statistics',
-        name: 'statistics_teacher',
-        builder: (_, __) => const StatisticsTeacherScreen(),
-      ),
+
       GoRoute(
         path: '/teacher/student/:id',
         name: 'student_profile_view',
