@@ -18,14 +18,46 @@ class _Badge {
 }
 
 const _badges = [
-  _Badge(emoji: '🔥', title: 'En racha', description: '7 días consecutivos', unlocked: true),
-  _Badge(emoji: '🏆', title: 'Primero en llegar', description: 'Entrega 3 días antes', unlocked: true),
-  _Badge(emoji: '📚', title: 'Estudioso', description: '10 tareas completadas', unlocked: true),
-  _Badge(emoji: '⚡', title: 'Velocista', description: 'Completa 5 tareas en un día', unlocked: false),
-  _Badge(emoji: '🌟', title: 'Perfeccionista', description: '100% a tiempo en una semana', unlocked: false),
-  _Badge(emoji: '👑', title: 'Leyenda', description: '30 días consecutivos', unlocked: false),
-  _Badge(emoji: '🎯', title: 'Enfocado', description: 'Sin tareas vencidas por 2 semanas', unlocked: false),
-  _Badge(emoji: '💪', title: 'Constante', description: '50 tareas completadas', unlocked: false),
+  _Badge(
+      emoji: '🔥',
+      title: 'En racha',
+      description: '7 días consecutivos',
+      unlocked: true),
+  _Badge(
+      emoji: '🏆',
+      title: 'Primero en llegar',
+      description: 'Entrega 3 días antes',
+      unlocked: true),
+  _Badge(
+      emoji: '📚',
+      title: 'Estudioso',
+      description: '10 tareas completadas',
+      unlocked: true),
+  _Badge(
+      emoji: '⚡',
+      title: 'Velocista',
+      description: 'Completa 5 tareas en un día',
+      unlocked: false),
+  _Badge(
+      emoji: '🌟',
+      title: 'Perfeccionista',
+      description: '100% a tiempo en una semana',
+      unlocked: false),
+  _Badge(
+      emoji: '👑',
+      title: 'Leyenda',
+      description: '30 días consecutivos',
+      unlocked: false),
+  _Badge(
+      emoji: '🎯',
+      title: 'Enfocado',
+      description: 'Sin tareas vencidas por 2 semanas',
+      unlocked: false),
+  _Badge(
+      emoji: '💪',
+      title: 'Constante',
+      description: '50 tareas completadas',
+      unlocked: false),
 ];
 
 class AchievementsScreen extends StatelessWidget {
@@ -203,8 +235,8 @@ class _BadgeTile extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               badge.title,
-              style: GoogleFonts.inter(
-                  fontSize: 20, fontWeight: FontWeight.bold),
+              style:
+                  GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(

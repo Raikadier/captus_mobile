@@ -60,8 +60,7 @@ class _CourseDetailStudentScreenState extends State<CourseDetailStudentScreen>
                     colors: [color, color.withOpacity(0.7)],
                   ),
                 ),
-                padding:
-                    const EdgeInsets.fromLTRB(16, 80, 16, 16),
+                padding: const EdgeInsets.fromLTRB(16, 80, 16, 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -114,8 +113,7 @@ class _CourseDetailStudentScreenState extends State<CourseDetailStudentScreen>
                   indicatorWeight: 2,
                   labelStyle: GoogleFonts.inter(
                       fontSize: 13, fontWeight: FontWeight.w600),
-                  unselectedLabelStyle:
-                      GoogleFonts.inter(fontSize: 13),
+                  unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
                   tabs: const [
                     Tab(text: 'Actividades'),
                     Tab(text: 'Recursos'),
@@ -201,8 +199,7 @@ class _ActivityTile extends StatelessWidget {
     final daysLeft = activity.dueDate.difference(DateTime.now()).inDays;
 
     return GestureDetector(
-      onTap: () =>
-          context.push('/courses/$courseId/activity/${activity.id}'),
+      onTap: () => context.push('/courses/$courseId/activity/${activity.id}'),
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
@@ -259,8 +256,7 @@ class _ActivityTile extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: chipColor.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(8),

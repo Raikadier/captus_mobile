@@ -9,38 +9,65 @@ class MainShell extends ConsumerWidget {
   final Widget child;
   const MainShell({super.key, required this.child});
 
-  int _selectedIndex(BuildContext context) {
+  int _selectedIndex(BuildContext context, String role) {
     final location = GoRouterState.of(context).uri.toString();
-    if (location.startsWith('/tasks')) return 1;
+    if (location.startsWith('/tasks') ||
+        location.startsWith('/teacher/assignments') ||
+        location.startsWith('/student/assignments')) return 1;
     if (location.startsWith('/calendar')) return 2;
-    if (location.startsWith('/ai')) return 3;
+    if (role == 'teacher') {
+      if (location.startsWith('/teacher/statistics')) return 3;
+    } else {
+      if (location.startsWith('/ai')) return 3;
+    }
     if (location.startsWith('/groups')) return 4;
     return 0;
   }
 
-  void _onTabTap(BuildContext context, WidgetRef ref, int index) {
-    final role = ref.read(userRoleProvider);
+  void _onTabTap(BuildContext context, int index, String role) {
     switch (index) {
       case 0:
-        context.go(role == 'teacher' ? '/home/teacher' : '/home');
+        if (role == 'teacher') {
+          context.go('/home/teacher');
+        } else {
+          context.go('/home');
+        }
+        break;
       case 1:
-        context.go('/tasks');
+        if (role == 'teacher') {
+          context.go('/teacher/assignments');
+        } else {
+          // El estudiante navega a su nuevo módulo de asignaciones
+          context.go('/student/assignments');
+        }
+        break;
       case 2:
         context.go('/calendar');
+        break;
       case 3:
-        context.go('/ai');
+        if (role == 'teacher') {
+          context.go('/teacher/statistics');
+        } else {
+          context.go('/ai');
+        }
+        break;
       case 4:
         context.go('/groups');
+        break;
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final role = ref.watch(userRoleProvider);
+    final selectedIndex = _selectedIndex(context, role);
+
     return Scaffold(
       body: child,
       bottomNavigationBar: _CaptusBottomNav(
-        selectedIndex: _selectedIndex(context),
-        onTap: (i) => _onTabTap(context, ref, i),
+        selectedIndex: selectedIndex,
+        role: role,
+        onTap: (i) => _onTabTap(context, i, role),
       ),
     );
   }
@@ -48,26 +75,27 @@ class MainShell extends ConsumerWidget {
 
 class _CaptusBottomNav extends StatelessWidget {
   final int selectedIndex;
+  final String role;
   final ValueChanged<int> onTap;
 
   const _CaptusBottomNav({
     required this.selectedIndex,
+    required this.role,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isTeacher = role == 'teacher';
+
     return Container(
       decoration: const BoxDecoration(
-        color: AppColors.surface,
-        border: Border(
-          top: BorderSide(color: AppColors.border, width: 1),
-        ),
+        color: Color(0xFF1A1A1A),
+        border: Border(top: BorderSide(color: AppColors.border, width: 0.5)),
       ),
       child: SafeArea(
-        top: false,
-        child: SizedBox(
-          height: 60,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -83,7 +111,6 @@ class _CaptusBottomNav extends StatelessWidget {
                 activeIcon: Icons.check_box_rounded,
                 label: 'Tareas',
                 isSelected: selectedIndex == 1,
-                badge: 3,
                 onTap: () => onTap(1),
               ),
               _NavItem(
@@ -93,17 +120,26 @@ class _CaptusBottomNav extends StatelessWidget {
                 isSelected: selectedIndex == 2,
                 onTap: () => onTap(2),
               ),
+              if (isTeacher)
+                _NavItem(
+                  icon: Icons.bar_chart_outlined,
+                  activeIcon: Icons.bar_chart_rounded,
+                  label: 'Estadísticas',
+                  isSelected: selectedIndex == 3,
+                  onTap: () => onTap(3),
+                )
+              else
+                _NavItem(
+                  icon: Icons.auto_awesome_outlined,
+                  activeIcon: Icons.auto_awesome_rounded,
+                  label: 'IA',
+                  isSelected: selectedIndex == 3,
+                  onTap: () => onTap(3),
+                ),
               _NavItem(
-                icon: Icons.auto_awesome_outlined,
-                activeIcon: Icons.auto_awesome_rounded,
-                label: 'IA',
-                isSelected: selectedIndex == 3,
-                onTap: () => onTap(3),
-              ),
-              _NavItem(
-                icon: Icons.grid_view_outlined,
-                activeIcon: Icons.grid_view_rounded,
-                label: 'Más',
+                icon: Icons.group_outlined,
+                activeIcon: Icons.group_rounded,
+                label: 'Grupos',
                 isSelected: selectedIndex == 4,
                 onTap: () => onTap(4),
               ),
@@ -120,7 +156,6 @@ class _NavItem extends StatelessWidget {
   final IconData activeIcon;
   final String label;
   final bool isSelected;
-  final int? badge;
   final VoidCallback onTap;
 
   const _NavItem({
@@ -129,7 +164,6 @@ class _NavItem extends StatelessWidget {
     required this.label,
     required this.isSelected,
     required this.onTap,
-    this.badge,
   });
 
   @override
@@ -138,61 +172,43 @@ class _NavItem extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
-        width: 64,
+        width: 72, // Slightly wider to accommodate "Estadísticas"
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Stack(
               clipBehavior: Clip.none,
               children: [
-                Icon(
-                  isSelected ? activeIcon : icon,
-                  size: 24,
-                  color:
-                      isSelected ? AppColors.primary : AppColors.textSecondary,
-                ),
-                if (badge != null && badge! > 0)
-                  Positioned(
-                    top: -4,
-                    right: -6,
-                    child: Container(
-                      width: 15,
-                      height: 15,
-                      decoration: const BoxDecoration(
-                        color: AppColors.error,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Text(
-                          '$badge',
-                          style: const TextStyle(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.primary.withAlpha(25)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(16),
                   ),
+                  child: Icon(
+                    isSelected ? activeIcon : icon,
+                    size: 24,
+                    color: isSelected
+                        ? AppColors.primary
+                        : AppColors.textSecondary,
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 4),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width: isSelected ? 4 : 0,
-              height: isSelected ? 4 : 0,
-              decoration: const BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
+            const SizedBox(height: 2),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                  color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                ),
               ),
             ),
           ],
@@ -201,3 +217,4 @@ class _NavItem extends StatelessWidget {
     );
   }
 }
+

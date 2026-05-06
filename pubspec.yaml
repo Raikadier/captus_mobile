@@ -11,6 +11,11 @@ dependencies:
   flutter:
     sdk: flutter
 
+  sqflite_common_ffi: ^2.3.0
+  sqflite: ^2.3.3
+  path: ^1.9.0
+  uuid: ^4.0.0
+
   # Navigation
   go_router: ^17.2.2
 

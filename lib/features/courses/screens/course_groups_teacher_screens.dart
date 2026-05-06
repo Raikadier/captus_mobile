@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/course_groups_provider.dart';
-import '../../../core/providers/courses_provider.dart';
 
 class CourseGroupsTab extends ConsumerWidget {
   final int courseId;
