@@ -93,8 +93,7 @@ class StudentProfileViewScreen extends StatelessWidget {
                         children: [
                           Text(s['title']!,
                               style: GoogleFonts.inter(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600)),
+                                  fontSize: 13, fontWeight: FontWeight.w600)),
                           Text(s['date']!,
                               style: GoogleFonts.inter(
                                   fontSize: 11,
@@ -131,9 +130,21 @@ class StudentProfileViewScreen extends StatelessWidget {
   }
 
   static const _submissions = [
-    {'title': 'Taller 1 — Árboles', 'date': 'Entregado hace 5 días', 'status': 'Entregada'},
-    {'title': 'Taller 2 — Grafos', 'date': 'Venció hace 2 días', 'status': 'Pendiente'},
-    {'title': 'Parcial 1', 'date': 'Entregado hace 2 semanas', 'status': 'Entregada'},
+    {
+      'title': 'Taller 1 — Árboles',
+      'date': 'Entregado hace 5 días',
+      'status': 'Entregada'
+    },
+    {
+      'title': 'Taller 2 — Grafos',
+      'date': 'Venció hace 2 días',
+      'status': 'Pendiente'
+    },
+    {
+      'title': 'Parcial 1',
+      'date': 'Entregado hace 2 semanas',
+      'status': 'Entregada'
+    },
   ];
 }
 

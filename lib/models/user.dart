@@ -28,11 +28,9 @@ class UserModel {
   });
 
   String get firstName {
-    final trimmed = name.trim();
-    if (trimmed.isEmpty) return 'Usuario';
-    final first = trimmed.split(RegExp(r'\s+')).first;
-    if (first.isEmpty) return 'Usuario';
-    return first[0].toUpperCase() + first.substring(1).toLowerCase();
+    final parts = name.split(' ');
+    if (parts.isEmpty) return '';
+    return parts[0][0].toUpperCase() + parts[0].substring(1).toLowerCase();
   }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -54,6 +52,20 @@ class UserModel {
       updatedAt: json['updatedAt'] != null
           ? DateTime.tryParse(json['updatedAt'].toString())
           : null,
+    );
+  }
+
+  factory UserModel.fromLocalUser(dynamic authUser) {
+    return UserModel(
+      id: authUser.id ?? '',
+      name: authUser.name ?? '',
+      email: authUser.email ?? '',
+      role: UserRole.student, // o lógica si tienes roles
+      career: '',
+      bio: '',
+      university: '',
+      semester: 0,
+      avatarUrl: null,
     );
   }
 
@@ -98,30 +110,6 @@ class UserModel {
       bio: bio ?? this.bio,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
-
-  // Also need to import auth_provider.dart? No — use a plain nullable LocalUser param.
-  static UserModel fromLocalUser(dynamic localUser) {
-    if (localUser == null) {
-      return const UserModel(
-        id: '',
-        name: 'Usuario',
-        email: '',
-        role: UserRole.student,
-      );
-    }
-    return UserModel(
-      id: localUser.id ?? '',
-      name: localUser.name ?? '',
-      email: localUser.email ?? '',
-      role: localUser.role == 'teacher' ? UserRole.teacher : UserRole.student,
-      university: localUser.university,
-      career: localUser.career,
-      semester: localUser.semester,
-      avatarUrl: localUser.avatarUrl,
-      bio: localUser.bio,
-      createdAt: DateTime.now(),
     );
   }
 

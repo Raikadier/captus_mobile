@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/api_client.dart';
 
@@ -66,8 +65,6 @@ class AiChatState {
         error: error,
       );
 }
-
-// ── Notifier ──────────────────────────────────────────────────────────────────
 
 class AiChatNotifier extends Notifier<AiChatState> {
   static const _welcomeText =
@@ -236,6 +233,7 @@ class AiChatNotifier extends Notifier<AiChatState> {
   }
 
   void clear() {
+    LocalStorageService.clearChatMessages();
     state = AiChatState(
       messages: [
         ChatMessage(text: _welcomeText, isUser: false, time: DateTime.now()),

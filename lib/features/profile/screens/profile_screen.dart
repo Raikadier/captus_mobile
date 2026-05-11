@@ -4,8 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/auth_provider.dart';
-import '../../../core/providers/user_profile_provider.dart';
-import '../../../core/providers/statistics_provider.dart';
 import '../../../models/user.dart';
 import '../../../shared/widgets/streak_badge.dart';
 
@@ -14,11 +12,8 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileAsync = ref.watch(userProfileProvider);
-    final user = profileAsync.asData?.value ??
-        UserModel.fromLocalUser(ref.watch(currentUserProvider));
-    final statsAsync = ref.watch(statisticsProvider);
-    final avatarUrl = user.avatarUrl?.trim() ?? '';
+    final user =
+        UserModel.mock; // TODO: replace with real user from authProvider
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -52,18 +47,14 @@ class ProfileScreen extends ConsumerWidget {
                     CircleAvatar(
                       radius: 44,
                       backgroundColor: AppColors.primaryDark,
-                      backgroundImage:
-                          avatarUrl.isNotEmpty ? NetworkImage(avatarUrl) : null,
-                      child: avatarUrl.isEmpty
-                          ? Text(
-                              user.firstName[0],
-                              style: GoogleFonts.inter(
-                                fontSize: 36,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
-                              ),
-                            )
-                          : null,
+                      child: Text(
+                        user.firstName[0],
+                        style: GoogleFonts.inter(
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      ),
                     ),
                     Positioned(
                       bottom: 0,
@@ -101,7 +92,7 @@ class ProfileScreen extends ConsumerWidget {
                       fontSize: 13, color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: 16),
-                StreakBadge(days: statsAsync.asData?.value.currentStreak ?? 0, size: StreakSize.mini),
+                StreakBadge(days: 0, size: StreakSize.mini),
               ],
             ),
           ),
@@ -138,9 +129,7 @@ class ProfileScreen extends ConsumerWidget {
                   _InfoRow(
                     icon: Icons.layers_rounded,
                     label: 'Semestre',
-                    value: user.semester == null
-                        ? 'Sin registrar'
-                        : '${user.semester} semestre',
+                    value: '${user.semester}° semestre',
                     isLast: true,
                   ),
                 ]),
@@ -163,19 +152,19 @@ class ProfileScreen extends ConsumerWidget {
                     _StatTile(
                         icon: Icons.check_circle_rounded,
                         label: 'Completadas',
-                        value: '${statsAsync.asData?.value.completedTasks ?? 0}',
+                        value: '42',
                         color: AppColors.primary),
                     const SizedBox(width: 8),
                     _StatTile(
                         icon: Icons.local_fire_department_rounded,
                         label: 'Racha',
-                        value: '${statsAsync.asData?.value.currentStreak ?? 0}d',
+                        value: '0d',
                         color: AppColors.warning),
                     const SizedBox(width: 8),
                     _StatTile(
-                        icon: Icons.school_rounded,
-                        label: 'Materias',
-                        value: '${statsAsync.asData?.value.activeCourses ?? 0}',
+                        icon: Icons.emoji_events_rounded,
+                        label: 'Logros',
+                        value: '3',
                         color: const Color(0xFFAB47BC)),
                   ],
                 ),

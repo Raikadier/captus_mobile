@@ -158,14 +158,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: 16),
           Text(title,
-              style: GoogleFonts.inter(
-                  fontSize: 16, fontWeight: FontWeight.bold)),
+              style:
+                  GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           ...options.map((opt) => ListTile(
                 title: Text(opt, style: GoogleFonts.inter(fontSize: 14)),
                 trailing: opt == current
-                    ? const Icon(Icons.check_rounded,
-                        color: AppColors.primary)
+                    ? const Icon(Icons.check_rounded, color: AppColors.primary)
                     : null,
                 onTap: () {
                   onSelect(opt);
@@ -199,8 +198,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Navigator.pop(context);
               context.go('/login');
             },
-            child: Text('Eliminar',
-                style: TextStyle(color: AppColors.error)),
+            child: Text('Eliminar', style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
@@ -354,8 +352,8 @@ class _LinkRow extends StatelessWidget {
             Icon(icon, size: 18, color: c),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(label,
-                  style: GoogleFonts.inter(fontSize: 13, color: c)),
+              child:
+                  Text(label, style: GoogleFonts.inter(fontSize: 13, color: c)),
             ),
             const Icon(Icons.chevron_right_rounded,
                 size: 16, color: AppColors.textSecondary),

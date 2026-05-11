@@ -52,8 +52,7 @@ class _SettingsSecurityScreenState extends State<SettingsSecurityScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.primary.withAlpha(25),
                     shape: BoxShape.circle,
-                    border:
-                        Border.all(color: AppColors.primary.withAlpha(76)),
+                    border: Border.all(color: AppColors.primary.withAlpha(76)),
                   ),
                   child: const Icon(Icons.shield_rounded,
                       color: AppColors.primary, size: 26),
@@ -172,11 +171,9 @@ class _SettingsSecurityScreenState extends State<SettingsSecurityScreen> {
                 style: GoogleFonts.inter(
                     fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
-            _PasswordField(
-                controller: currentCtrl, label: 'Contraseña actual'),
+            _PasswordField(controller: currentCtrl, label: 'Contraseña actual'),
             const SizedBox(height: 12),
-            _PasswordField(
-                controller: newCtrl, label: 'Nueva contraseña'),
+            _PasswordField(controller: newCtrl, label: 'Nueva contraseña'),
             const SizedBox(height: 12),
             _PasswordField(
                 controller: confirmCtrl, label: 'Confirmar contraseña'),
@@ -193,8 +190,7 @@ class _SettingsSecurityScreenState extends State<SettingsSecurityScreen> {
                 ),
                 child: Text('Actualizar',
                     style: GoogleFonts.inter(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600)),
+                        color: Colors.black, fontWeight: FontWeight.w600)),
               ),
             ),
           ],
@@ -359,8 +355,7 @@ class _SessionRow extends StatelessWidget {
           ),
           if (isCurrent)
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
                 color: AppColors.primary.withAlpha(25),
                 borderRadius: BorderRadius.circular(6),
@@ -379,8 +374,8 @@ class _SessionRow extends StatelessWidget {
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap),
               child: Text('Revocar',
-                  style: GoogleFonts.inter(
-                      fontSize: 12, color: AppColors.error)),
+                  style:
+                      GoogleFonts.inter(fontSize: 12, color: AppColors.error)),
             ),
         ],
       ),
