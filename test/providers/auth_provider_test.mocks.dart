@@ -106,6 +106,7 @@ class MockApiClient extends _i1.Mock implements _i4.ApiClient {
     String? path, {
     dynamic data,
     _i2.Options? options,
+    _i2.CancelToken? cancelToken,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -114,6 +115,7 @@ class MockApiClient extends _i1.Mock implements _i4.ApiClient {
           {
             #data: data,
             #options: options,
+            #cancelToken: cancelToken,
           },
         ),
         returnValue: _i5.Future<_i2.Response<T>>.value(_FakeResponse_1<T>(
@@ -124,6 +126,7 @@ class MockApiClient extends _i1.Mock implements _i4.ApiClient {
             {
               #data: data,
               #options: options,
+              #cancelToken: cancelToken,
             },
           ),
         )),

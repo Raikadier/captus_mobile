@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/auth_provider.dart';
-import '../../../models/user.dart';
 import '../../../shared/widgets/streak_badge.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -12,8 +11,16 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user =
-        UserModel.mock; // TODO: replace with real user from authProvider
+    final user = ref.watch(currentUserProvider);
+
+    if (user == null) {
+      return const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final initial = user.name.isNotEmpty ? user.name[0].toUpperCase() : '?';
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -48,7 +55,7 @@ class ProfileScreen extends ConsumerWidget {
                       radius: 44,
                       backgroundColor: AppColors.primaryDark,
                       child: Text(
-                        user.firstName[0],
+                        initial,
                         style: GoogleFonts.inter(
                           fontSize: 36,
                           fontWeight: FontWeight.bold,
@@ -91,6 +98,14 @@ class ProfileScreen extends ConsumerWidget {
                   style: GoogleFonts.inter(
                       fontSize: 13, color: AppColors.textSecondary),
                 ),
+                const SizedBox(height: 4),
+                Text(
+                  user.role == 'teacher' ? 'Docente' : 'Estudiante',
+                  style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 16),
                 StreakBadge(days: 0, size: StreakSize.mini),
               ],
@@ -119,17 +134,19 @@ class ProfileScreen extends ConsumerWidget {
                   _InfoRow(
                     icon: Icons.school_rounded,
                     label: 'Universidad',
-                    value: user.university ?? '',
+                    value: user.university ?? 'No especificada',
                   ),
                   _InfoRow(
                     icon: Icons.laptop_rounded,
                     label: 'Carrera',
-                    value: user.career ?? '',
+                    value: user.career ?? 'No especificada',
                   ),
                   _InfoRow(
                     icon: Icons.layers_rounded,
                     label: 'Semestre',
-                    value: '${user.semester}° semestre',
+                    value: user.semester != null
+                        ? '${user.semester}° semestre'
+                        : 'No especificado',
                     isLast: true,
                   ),
                 ]),
