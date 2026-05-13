@@ -16,7 +16,7 @@ dependencies:
   uuid: ^4.0.0
 
   # Navigation
-  go_router: ^17.2.2
+  go_router: ^16.2.0
 
   # State management
   flutter_riverpod: ^3.3.1
