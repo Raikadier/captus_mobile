@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/providers/auth_provider.dart';
+import '../../core/services/inactivity_service.dart';
 import '../../shared/widgets/offline_banner.dart';
 
 class MainShell extends ConsumerWidget {
@@ -62,17 +63,19 @@ class MainShell extends ConsumerWidget {
     final role = ref.watch(userRoleProvider);
     final selectedIndex = _selectedIndex(context, role);
 
-    return Scaffold(
-      body: Column(
-        children: [
-          const OfflineBanner(),
-          Expanded(child: child),
-        ],
-      ),
-      bottomNavigationBar: _CaptusBottomNav(
-        selectedIndex: selectedIndex,
-        role: role,
-        onTap: (i) => _onTabTap(context, i, role),
+    return InactivityDetector(
+      child: Scaffold(
+        body: Column(
+          children: [
+            const OfflineBanner(),
+            Expanded(child: child),
+          ],
+        ),
+        bottomNavigationBar: _CaptusBottomNav(
+          selectedIndex: selectedIndex,
+          role: role,
+          onTap: (i) => _onTabTap(context, i, role),
+        ),
       ),
     );
   }
