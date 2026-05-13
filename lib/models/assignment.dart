@@ -13,6 +13,8 @@ class AssignmentModel {
   final bool isGroupAssignment;
   final DateTime? updatedAt;
 
+  final String? fileUrl;
+
   const AssignmentModel({
     required this.id,
     required this.courseId,
@@ -27,6 +29,7 @@ class AssignmentModel {
     this.requiresFile = true,
     this.isGroupAssignment = false,
     this.updatedAt,
+    this.fileUrl,
   });
 
   factory AssignmentModel.fromJson(Map<String, dynamic> json) {
@@ -58,6 +61,7 @@ class AssignmentModel {
       updatedAt: json['updated_at'] != null
           ? DateTime.tryParse(json['updated_at'].toString())
           : null,
+      fileUrl: (json['file_url'] ?? json['fileUrl'])?.toString(),
     );
   }
 
@@ -68,11 +72,8 @@ class AssignmentModel {
         'title': title,
         'description': description,
         'due_date': dueDate.toIso8601String(),
-        // 'teacher_id': not a column in course_assignments
-        // 'start_date': not a column in course_assignments
-        // 'created_at': managed by Supabase defaults
-        // 'type': not a column in course_assignments
         'is_group_assignment': isGroupAssignment,
+        'file_url': fileUrl,
         if (updatedAt != null) 'updated_at': updatedAt!.toIso8601String(),
       };
 
@@ -90,6 +91,7 @@ class AssignmentModel {
     bool? requiresFile,
     bool? isGroupAssignment,
     DateTime? updatedAt,
+    String? fileUrl,
   }) {
     return AssignmentModel(
       id: id ?? this.id,
@@ -105,6 +107,7 @@ class AssignmentModel {
       requiresFile: requiresFile ?? this.requiresFile,
       isGroupAssignment: isGroupAssignment ?? this.isGroupAssignment,
       updatedAt: updatedAt ?? this.updatedAt,
+      fileUrl: fileUrl ?? this.fileUrl,
     );
   }
 }
