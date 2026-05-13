@@ -289,6 +289,11 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/tasks/personal/create'),
+        backgroundColor: AppColors.primary,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
     );
   }
 
