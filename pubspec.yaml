@@ -22,7 +22,7 @@ dependencies:
   flutter_riverpod: ^3.3.1
 
   # UI
-  google_fonts: ^8.0.2
+  google_fonts: ^6.2.1
   flutter_svg: ^2.0.10+1
   shimmer: ^3.0.0
   lottie: ^3.1.2
