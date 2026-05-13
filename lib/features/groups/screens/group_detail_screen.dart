@@ -165,10 +165,10 @@ class _TasksTab extends StatelessWidget {
       separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
         final task = tasks[index];
-        final isDone = checkedTasks.contains(task.id) ||
+        final isDone = checkedTasks.contains(task.id.toString()) ||
             task.status == TaskStatus.completed;
         return GestureDetector(
-          onTap: () => onToggle(task.id),
+          onTap: () => onToggle(task.id.toString()),
           child: Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(

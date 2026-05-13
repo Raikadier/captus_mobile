@@ -20,6 +20,8 @@ import '../../features/tasks/screens/task_create_screen.dart';
 import '../../features/tasks/screens/global_search_screen.dart';
 import '../../features/tasks/screens/categories_management_screen.dart';
 import '../../features/tasks/screens/personal_tasks_screen.dart';
+import '../../features/tasks/screens/personal_task_create_screen.dart';
+import '../../features/tasks/screens/personal_task_detail_screen.dart';
 import '../../features/calendar/screens/calendar_screen.dart';
 import '../../features/calendar/screens/calendar_agenda_screen.dart';
 import '../../features/calendar/screens/calendar_event_create_screen.dart';
@@ -265,6 +267,27 @@ GoRouter createRouter(WidgetRef ref) {
         path: '/tasks/personal',
         name: 'personal_tasks',
         builder: (_, __) => const PersonalTasksScreen(),
+      ),
+      GoRoute(
+        path: '/tasks/personal/create',
+        name: 'personal_task_create',
+        builder: (_, state) => PersonalTaskCreateScreen(
+          parentTaskId: state.uri.queryParameters['parentTaskId'],
+        ),
+      ),
+      GoRoute(
+        path: '/tasks/personal/:id',
+        name: 'personal_task_detail',
+        builder: (_, state) => PersonalTaskDetailScreen(
+          taskId: int.parse(state.pathParameters['id']!),
+        ),
+      ),
+      GoRoute(
+        path: '/tasks/personal/:id/edit',
+        name: 'personal_task_edit',
+        builder: (_, state) => PersonalTaskCreateScreen(
+          taskId: int.parse(state.pathParameters['id']!),
+        ),
       ),
       GoRoute(
         path: '/tasks/categories',
