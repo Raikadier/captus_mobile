@@ -93,6 +93,10 @@ class AdminService {
     return res.data ?? {};
   }
 
+  Future<void> deleteCourse(String courseId) async {
+    await ApiClient.instance.delete<void>('$_base/courses/$courseId');
+  }
+
   Future<List<dynamic>> getCourseStudents(String courseId) async {
     final res = await ApiClient.instance
         .get<List<dynamic>>('$_base/courses/$courseId/students');

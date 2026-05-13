@@ -1,12 +1,21 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/api_client.dart';
 
-// Gemini 2.5 Pro puede tardar hasta 40s en razonamiento complejo.
-// Este override se aplica solo a las llamadas de IA.
-final _aiRequestOptions = Options(receiveTimeout: const Duration(seconds: 90));
+final _aiReceiveOptions = Options(receiveTimeout: const Duration(seconds: 90));
 
 // ── Data models ───────────────────────────────────────────────────────────────
+
+class AiStep {
+  final String name;    // tool name
+  final bool success;
+
+  const AiStep({required this.name, required this.success});
+
+  factory AiStep.fromJson(Map<String, dynamic> json) => AiStep(
+        name:    json['name'] as String? ?? 'tool',
+        success: json['success'] as bool? ?? true,
+      );
+}
 
 class ChatMessage {
   final String text;
@@ -14,6 +23,7 @@ class ChatMessage {
   final DateTime time;
   final String? actionPerformed;
   final Map<String, dynamic>? data;
+  final List<AiStep> steps;
 
   const ChatMessage({
     required this.text,
@@ -21,6 +31,7 @@ class ChatMessage {
     required this.time,
     this.actionPerformed,
     this.data,
+    this.steps = const [],
   });
 }
 
@@ -28,12 +39,14 @@ class AiChatState {
   final List<ChatMessage> messages;
   final bool isLoading;
   final String? conversationId;
+  final String? conversationTitle;
   final String? error;
 
   const AiChatState({
     this.messages = const [],
     this.isLoading = false,
     this.conversationId,
+    this.conversationTitle,
     this.error,
   });
 
@@ -41,39 +54,73 @@ class AiChatState {
     List<ChatMessage>? messages,
     bool? isLoading,
     String? conversationId,
+    String? conversationTitle,
     String? error,
   }) =>
       AiChatState(
         messages: messages ?? this.messages,
         isLoading: isLoading ?? this.isLoading,
         conversationId: conversationId ?? this.conversationId,
+        conversationTitle: conversationTitle ?? this.conversationTitle,
         error: error,
       );
 }
-
-// ── Notifier ──────────────────────────────────────────────────────────────────
 
 class AiChatNotifier extends Notifier<AiChatState> {
   static const _welcomeText =
       '¡Hola! Soy Captus IA. Tengo acceso a tus tareas, calendario y cursos. ¿En qué te puedo ayudar hoy?';
 
+  CancelToken _cancelToken = CancelToken();
+
   @override
   AiChatState build() {
+    // Resume most recent conversation after first frame (silent, non-blocking)
+    Future.microtask(_loadLatestConversation);
     return AiChatState(
       messages: [
-        ChatMessage(
-          text: _welcomeText,
-          isUser: false,
-          time: DateTime.now(),
-        )
+        ChatMessage(text: _welcomeText, isUser: false, time: DateTime.now()),
       ],
     );
+  }
+
+  /// Cancels the in-flight AI request immediately.
+  void stop() {
+    _cancelToken.cancel('Usuario detuvo la respuesta');
+    _cancelToken = CancelToken();
+    state = state.copyWith(
+      isLoading: false,
+      messages: [
+        ...state.messages,
+        ChatMessage(
+          text: '_Respuesta detenida._',
+          isUser: false,
+          time: DateTime.now(),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _loadLatestConversation() async {
+    try {
+      final res = await ApiClient.instance.get<List<dynamic>>('/ai/conversations');
+      final list = res.data;
+      if (list == null || list.isEmpty) return;
+      final latest = list.first as Map<String, dynamic>;
+      final id    = latest['id']?.toString();
+      final title = (latest['title'] as String?)?.trim();
+      if (id == null) return;
+      await loadConversation(id, title: title);
+    } catch (_) {
+      // Silently ignore — fresh conversation on error
+    }
   }
 
   Future<void> send(String text) async {
     if (text.trim().isEmpty) return;
 
-    // 1. Append user message immediately
+    // Ensure fresh cancel token for each request
+    _cancelToken = CancelToken();
+
     final userMsg = ChatMessage(text: text.trim(), isUser: true, time: DateTime.now());
     state = state.copyWith(
       messages: [...state.messages, userMsg],
@@ -82,23 +129,27 @@ class AiChatNotifier extends Notifier<AiChatState> {
     );
 
     try {
-      // 2. Call backend
       final res = await ApiClient.instance.post<Map<String, dynamic>>(
         '/ai/chat',
         data: {
           'message': text.trim(),
           if (state.conversationId != null) 'conversationId': state.conversationId,
         },
-        options: _aiRequestOptions,
+        options: _aiReceiveOptions,
+        cancelToken: _cancelToken,
       );
 
       final body = res.data is Map<String, dynamic> ? res.data as Map<String, dynamic> : <String, dynamic>{};
-      final reply = (body['result'] as String?) ?? 'Sin respuesta.';
+      final reply  = (body['result'] as String?) ?? 'Sin respuesta.';
       final convId = body['conversationId']?.toString();
       final action = body['actionPerformed'] as String?;
       final rawData = body['data'];
-      final toolData =
-          rawData is Map<String, dynamic> ? rawData : null;
+      final toolData = rawData is Map<String, dynamic> ? rawData : null;
+      final rawSteps = body['steps'] as List<dynamic>? ?? [];
+      final steps = rawSteps
+          .whereType<Map<String, dynamic>>()
+          .map(AiStep.fromJson)
+          .toList();
 
       final botMsg = ChatMessage(
         text: reply,
@@ -106,18 +157,24 @@ class AiChatNotifier extends Notifier<AiChatState> {
         time: DateTime.now(),
         actionPerformed: action,
         data: toolData,
+        steps: steps,
       );
+
+      // Use first user message as conversation title (truncated)
+      final newTitle = state.conversationTitle ??
+          (text.length > 50 ? '${text.substring(0, 50)}…' : text);
 
       state = state.copyWith(
         messages: [...state.messages, botMsg],
         isLoading: false,
         conversationId: convId ?? state.conversationId,
+        conversationTitle: newTitle,
       );
-    } catch (e) {
-      final errMsg = e.toString().replaceFirst('Exception: ', '');
+    } on DioException catch (e) {
+      // Cancelled by the user — stop() already updated state
+      if (e.type == DioExceptionType.cancel) return;
       state = state.copyWith(
         isLoading: false,
-        error: errMsg,
         messages: [
           ...state.messages,
           ChatMessage(
@@ -127,13 +184,27 @@ class AiChatNotifier extends Notifier<AiChatState> {
           ),
         ],
       );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        messages: [
+          ...state.messages,
+          ChatMessage(
+            text: 'Error inesperado. Intenta de nuevo.',
+            isUser: false,
+            time: DateTime.now(),
+          ),
+        ],
+      );
     }
   }
 
-  /// Loads an existing conversation from the backend by ID.
-  /// Replaces the current state with the fetched messages.
-  Future<void> loadConversation(String conversationId) async {
-    state = state.copyWith(isLoading: true, conversationId: conversationId);
+  Future<void> loadConversation(String conversationId, {String? title}) async {
+    state = state.copyWith(
+      isLoading: true,
+      conversationId: conversationId,
+      conversationTitle: title,
+    );
     try {
       final res = await ApiClient.instance
           .get<List<dynamic>>('/ai/conversations/$conversationId/messages');
@@ -154,6 +225,7 @@ class AiChatNotifier extends Notifier<AiChatState> {
             : loaded,
         isLoading: false,
         conversationId: conversationId,
+        conversationTitle: title,
       );
     } on Exception {
       state = state.copyWith(isLoading: false);
@@ -161,14 +233,12 @@ class AiChatNotifier extends Notifier<AiChatState> {
   }
 
   void clear() {
+    LocalStorageService.clearChatMessages();
     state = AiChatState(
       messages: [
-        ChatMessage(
-          text: _welcomeText,
-          isUser: false,
-          time: DateTime.now(),
-        )
+        ChatMessage(text: _welcomeText, isUser: false, time: DateTime.now()),
       ],
+      // Reset title — new conversation has none until first send
     );
   }
 }

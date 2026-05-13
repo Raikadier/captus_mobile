@@ -54,8 +54,9 @@ class ApiClient {
     String path, {
     dynamic data,
     Options? options,
+    CancelToken? cancelToken,
   }) =>
-      _dio.post<T>(path, data: data, options: options);
+      _dio.post<T>(path, data: data, options: options, cancelToken: cancelToken);
 
   Future<Response<T>> put<T>(
     String path, {

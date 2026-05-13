@@ -1,47 +1,59 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'core/router/app_router.dart';
-import 'core/env/env.dart';
 import 'core/services/local_storage_service.dart';
-import 'core/services/supabase_service.dart';
 import 'core/theme/app_theme.dart';
-import 'features/evidence/services/evidence_local_service.dart';
-import 'core/services/local_notification_service.dart';
+import 'core/env/env.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  await LocalNotificationService.instance.init();
-  // 1. Load environment variables from .env
-  await Env.load();
 
-  // 2. Initialize Supabase
-  await SupabaseService.initialize();
+  // SQLite FFI solo en desktop. NO en web.
+  if (!kIsWeb) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
 
-  // 3. Initialize local storage
   await LocalStorageService.initialize();
 
-  // 4. Spanish locale data for date formatting.
+  await Env.load();
+
+  if (Env.hasSupabase) {
+    try {
+      await Supabase.initialize(
+        url: Env.supabaseUrl,
+        anonKey: Env.supabaseAnonKey,
+      );
+
+      debugPrint('Supabase initialized successfully.');
+    } catch (e) {
+      debugPrint('Error initializing Supabase: $e');
+    }
+  } else {
+    debugPrint('Running in offline/mock mode (Supabase credentials missing).');
+  }
+
   await initializeDateFormatting('es');
-  
-  await EvidenceLocalService().init();
- 
-  
+
   runApp(const ProviderScope(child: CaptusApp()));
 }
 
-/// Root widget. Wraps itself in a [ConsumerWidget] so [createRouter] can
-/// receive the Riverpod [ref] and attach the auth-refresh listener.
 class CaptusApp extends ConsumerWidget {
   const CaptusApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = createRouter(ref);
+
     return MaterialApp.router(
-      title: 'Captus',
+      title: 'Captus_mobile',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
+      theme: AppTheme.dark,
       routerConfig: router,
     );
   }
