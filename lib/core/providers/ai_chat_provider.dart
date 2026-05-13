@@ -1,21 +1,25 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../services/api_client.dart';
 
 final _aiReceiveOptions = Options(receiveTimeout: const Duration(seconds: 90));
 
-// ── Data models ───────────────────────────────────────────────────────────────
-
 class AiStep {
-  final String name;    // tool name
+  final String name;
   final bool success;
 
-  const AiStep({required this.name, required this.success});
+  const AiStep({
+    required this.name,
+    required this.success,
+  });
 
-  factory AiStep.fromJson(Map<String, dynamic> json) => AiStep(
-        name:    json['name'] as String? ?? 'tool',
-        success: json['success'] as bool? ?? true,
-      );
+  factory AiStep.fromJson(Map<String, dynamic> json) {
+    return AiStep(
+      name: json['name'] as String? ?? 'tool',
+      success: json['success'] as bool? ?? true,
+    );
+  }
 }
 
 class ChatMessage {
@@ -57,14 +61,16 @@ class AiChatState {
     String? conversationId,
     String? conversationTitle,
     String? error,
-  }) =>
-      AiChatState(
-        messages: messages ?? this.messages,
-        isLoading: isLoading ?? this.isLoading,
-        conversationId: conversationId ?? this.conversationId,
-        conversationTitle: conversationTitle ?? this.conversationTitle,
-        error: error,
-      );
+    bool clearError = false,
+  }) {
+    return AiChatState(
+      messages: messages ?? this.messages,
+      isLoading: isLoading ?? this.isLoading,
+      conversationId: conversationId ?? this.conversationId,
+      conversationTitle: conversationTitle ?? this.conversationTitle,
+      error: clearError ? null : error ?? this.error,
+    );
+  }
 }
 
 class AiChatNotifier extends Notifier<AiChatState> {
@@ -75,19 +81,23 @@ class AiChatNotifier extends Notifier<AiChatState> {
 
   @override
   AiChatState build() {
-    // Resume most recent conversation after first frame (silent, non-blocking)
     Future.microtask(_loadLatestConversation);
+
     return AiChatState(
       messages: [
-        ChatMessage(text: _welcomeText, isUser: false, time: DateTime.now()),
+        ChatMessage(
+          text: _welcomeText,
+          isUser: false,
+          time: DateTime.now(),
+        ),
       ],
     );
   }
 
-  /// Cancels the in-flight AI request immediately.
   void stop() {
     _cancelToken.cancel('Usuario detuvo la respuesta');
     _cancelToken = CancelToken();
+
     state = state.copyWith(
       isLoading: false,
       messages: [
@@ -103,49 +113,66 @@ class AiChatNotifier extends Notifier<AiChatState> {
 
   Future<void> _loadLatestConversation() async {
     try {
-      final res = await ApiClient.instance.get<List<dynamic>>('/ai/conversations');
+      final res =
+          await ApiClient.instance.get<List<dynamic>>('/ai/conversations');
+
       final list = res.data;
       if (list == null || list.isEmpty) return;
+
       final latest = list.first as Map<String, dynamic>;
-      final id    = latest['id']?.toString();
-      final title = (latest['title'] as String?)?.trim();
-      if (id == null) return;
-      await loadConversation(id, title: title);
+      final id = latest['id']?.toString();
+      final title = latest['title']?.toString().trim();
+
+      if (id == null || id.isEmpty) return;
+
+      await loadConversation(
+        id,
+        title: title == null || title.isEmpty ? null : title,
+      );
     } catch (_) {
-      // Silently ignore — fresh conversation on error
+      // Si falla, la conversación inicia limpia.
     }
   }
 
   Future<void> send(String text) async {
-    if (text.trim().isEmpty) return;
+    final cleanText = text.trim();
+    if (cleanText.isEmpty) return;
 
-    // Ensure fresh cancel token for each request
     _cancelToken = CancelToken();
 
-    final userMsg = ChatMessage(text: text.trim(), isUser: true, time: DateTime.now());
+    final userMsg = ChatMessage(
+      text: cleanText,
+      isUser: true,
+      time: DateTime.now(),
+    );
+
     state = state.copyWith(
       messages: [...state.messages, userMsg],
       isLoading: true,
-      error: null,
+      clearError: true,
     );
 
     try {
       final res = await ApiClient.instance.post<Map<String, dynamic>>(
         '/ai/chat',
         data: {
-          'message': text.trim(),
-          if (state.conversationId != null) 'conversationId': state.conversationId,
+          'message': cleanText,
+          if (state.conversationId != null)
+            'conversationId': state.conversationId,
         },
         options: _aiReceiveOptions,
         cancelToken: _cancelToken,
       );
 
-      final body = res.data is Map<String, dynamic> ? res.data as Map<String, dynamic> : <String, dynamic>{};
-      final reply  = (body['result'] as String?) ?? 'Sin respuesta.';
+      final body = res.data ?? <String, dynamic>{};
+
+      final reply = body['result'] as String? ?? 'Sin respuesta.';
       final convId = body['conversationId']?.toString();
       final action = body['actionPerformed'] as String?;
+
       final rawData = body['data'];
       final toolData = rawData is Map<String, dynamic> ? rawData : null;
+
       final rawSteps = body['steps'] as List<dynamic>? ?? [];
       final steps = rawSteps
           .whereType<Map<String, dynamic>>()
@@ -161,21 +188,24 @@ class AiChatNotifier extends Notifier<AiChatState> {
         steps: steps,
       );
 
-      // Use first user message as conversation title (truncated)
       final newTitle = state.conversationTitle ??
-          (text.length > 50 ? '${text.substring(0, 50)}…' : text);
+          (cleanText.length > 50
+              ? '${cleanText.substring(0, 50)}…'
+              : cleanText);
 
       state = state.copyWith(
         messages: [...state.messages, botMsg],
         isLoading: false,
         conversationId: convId ?? state.conversationId,
         conversationTitle: newTitle,
+        clearError: true,
       );
     } on DioException catch (e) {
-      // Cancelled by the user — stop() already updated state
       if (e.type == DioExceptionType.cancel) return;
+
       state = state.copyWith(
         isLoading: false,
+        error: 'No pude conectar con el asistente. Intenta de nuevo.',
         messages: [
           ...state.messages,
           ChatMessage(
@@ -185,9 +215,10 @@ class AiChatNotifier extends Notifier<AiChatState> {
           ),
         ],
       );
-    } catch (e) {
+    } catch (_) {
       state = state.copyWith(
         isLoading: false,
+        error: 'Error inesperado. Intenta de nuevo.',
         messages: [
           ...state.messages,
           ChatMessage(
@@ -200,20 +231,26 @@ class AiChatNotifier extends Notifier<AiChatState> {
     }
   }
 
-  Future<void> loadConversation(String conversationId, {String? title}) async {
+  Future<void> loadConversation(
+    String conversationId, {
+    String? title,
+  }) async {
     state = state.copyWith(
       isLoading: true,
       conversationId: conversationId,
       conversationTitle: title,
+      clearError: true,
     );
+
     try {
       final res = await ApiClient.instance
           .get<List<dynamic>>('/ai/conversations/$conversationId/messages');
-      final raw = res.data is List ? res.data as List<dynamic> : <dynamic>[];
-      final loaded = raw.map((m) {
-        final map = m as Map<String, dynamic>;
+
+      final raw = res.data ?? <dynamic>[];
+
+      final loaded = raw.whereType<Map<String, dynamic>>().map((map) {
         return ChatMessage(
-          text: (map['content'] as String?) ?? '',
+          text: map['content'] as String? ?? '',
           isUser: map['role'] == 'user',
           time: DateTime.tryParse(map['createdAt'] as String? ?? '') ??
               DateTime.now(),
@@ -222,23 +259,38 @@ class AiChatNotifier extends Notifier<AiChatState> {
 
       state = AiChatState(
         messages: loaded.isEmpty
-            ? [ChatMessage(text: _welcomeText, isUser: false, time: DateTime.now())]
+            ? [
+                ChatMessage(
+                  text: _welcomeText,
+                  isUser: false,
+                  time: DateTime.now(),
+                ),
+              ]
             : loaded,
         isLoading: false,
         conversationId: conversationId,
         conversationTitle: title,
       );
-    } on Exception {
-      state = state.copyWith(isLoading: false);
+    } catch (_) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'No se pudo cargar la conversación.',
+      );
     }
   }
 
   void clear() {
+    _cancelToken.cancel('Nueva conversación');
+    _cancelToken = CancelToken();
+
     state = AiChatState(
       messages: [
-        ChatMessage(text: _welcomeText, isUser: false, time: DateTime.now()),
+        ChatMessage(
+          text: _welcomeText,
+          isUser: false,
+          time: DateTime.now(),
+        ),
       ],
-      // Reset title — new conversation has none until first send
     );
   }
 }

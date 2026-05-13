@@ -2,19 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../core/constants/app_colors.dart';
-import '../providers/teacher_stats_provider.dart';
-import '../../../models/teacher_stats_model.dart';
 import '../../../core/providers/courses_provider.dart';
+import '../../../models/teacher_stats_model.dart';
+import '../providers/teacher_stats_provider.dart';
 
 class StatisticsFilterNotifier extends Notifier<TeacherStudentRiskLevel?> {
   @override
   TeacherStudentRiskLevel? build() => null;
-  
+
   void setFilter(TeacherStudentRiskLevel? value) => state = value;
 }
 
-final statisticsFilterProvider = NotifierProvider<StatisticsFilterNotifier, TeacherStudentRiskLevel?>(StatisticsFilterNotifier.new);
+final statisticsFilterProvider =
+    NotifierProvider<StatisticsFilterNotifier, TeacherStudentRiskLevel?>(
+  StatisticsFilterNotifier.new,
+);
 
 class StatisticsTeacherScreen extends ConsumerWidget {
   const StatisticsTeacherScreen({super.key});
@@ -28,170 +32,167 @@ class StatisticsTeacherScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Stack(
-        children: [
-          // Background Decorative Elements
-          Positioned(
-            top: -100,
-            left: -100,
-            child: _buildBlurCircle(300, AppColors.primary.withAlpha(15)),
-          ),
-          Positioned(
-            bottom: 200,
-            right: -150,
-            child: _buildBlurCircle(400, AppColors.info.withAlpha(10)),
-          ),
-          
-          statsAsync.when(
-            data: (stats) => RefreshIndicator(
-              onRefresh: () async => ref.refresh(teacherStatsSummaryProvider),
-              color: AppColors.primary,
-              backgroundColor: AppColors.surface,
-              child: CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  _buildAppBar(context, ref),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                      child: _buildCourseSelector(ref, coursesAsync, selectedCourseId),
-                    ),
+      body: statsAsync.when(
+        data: (stats) => RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(teacherStatsSummaryProvider);
+            await Future<void>.delayed(const Duration(milliseconds: 300));
+          },
+          color: AppColors.primary,
+          backgroundColor: AppColors.surface,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              _buildAppBar(context, ref),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: _buildCourseSelector(
+                    ref,
+                    coursesAsync,
+                    selectedCourseId,
                   ),
-                  if (stats.totalStudents == 0)
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: _buildEmptyState(
-                        title: 'No hay estudiantes asociados',
-                        message: 'No hay estudiantes asociados a tus cursos todavía.',
-                        icon: Icons.people_outline_rounded,
-                      ),
-                    )
-                  else ...[
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: _buildSummaryGrid(stats),
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _buildPerformanceChart(stats),
-                      ),
-                    ),
-                    if (stats.totalStudents > 0 && stats.averageGrade == null)
-                      SliverToBoxAdapter(
-                        child: Container(
-                          margin: const EdgeInsets.all(16),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: AppColors.info.withAlpha(20),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: AppColors.info.withAlpha(40)),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.lightbulb_outline_rounded, color: AppColors.info),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  'Ya tienes estudiantes. Crea tareas y califica entregas para activar métricas completas.',
-                                  style: GoogleFonts.inter(
-                                    color: AppColors.info,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                ),
+              ),
+              if (stats.totalStudents == 0)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _buildEmptyState(
+                    title: 'No hay estudiantes asociados',
+                    message:
+                        'No hay estudiantes asociados a tus cursos todavía.',
+                    icon: Icons.people_outline_rounded,
+                  ),
+                )
+              else ...[
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: _buildSummaryGrid(context, stats),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: _buildPerformanceChart(stats),
+                  ),
+                ),
+                if (stats.averageGrade == null)
+                  SliverToBoxAdapter(
+                    child: Container(
+                      margin: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.info.withAlpha(20),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppColors.info.withAlpha(40),
                         ),
                       ),
-                    SliverPersistentHeader(
-                      pinned: true,
-                      delegate: _SliverHeaderDelegate(
-                        child: _buildFilters(ref, activeFilter),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.lightbulb_outline_rounded,
+                            color: AppColors.info,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Ya tienes estudiantes. Crea tareas y califica entregas para activar métricas completas.',
+                              style: GoogleFonts.inter(
+                                color: AppColors.info,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    _buildStudentList(context, stats, activeFilter),
-                    const SliverToBoxAdapter(child: SizedBox(height: 100)),
-                  ],
-                ],
-              ),
-            ),
-            loading: () => const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(color: AppColors.primary),
-                  SizedBox(height: 16),
-                  Text(
-                    'Cargando estadísticas...',
-                    style: TextStyle(color: AppColors.textSecondary),
                   ),
-                ],
-              ),
-            ),
-            error: (err, stack) => _buildErrorState(ref, err),
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _SliverHeaderDelegate(
+                    child: _buildFilters(ref, activeFilter),
+                  ),
+                ),
+                _buildStudentList(context, stats, activeFilter),
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              ],
+            ],
           ),
-        ],
+        ),
+        loading: () => const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(color: AppColors.primary),
+              SizedBox(height: 16),
+              Text(
+                'Cargando estadísticas...',
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
+            ],
+          ),
+        ),
+        error: (err, _) => _buildErrorState(ref, err),
       ),
     );
   }
 
   Widget _buildAppBar(BuildContext context, WidgetRef ref) {
+    final canPop = GoRouter.of(context).canPop();
+
     return SliverAppBar(
-      expandedHeight: 140,
+      expandedHeight: 120,
       floating: false,
       pinned: true,
-      backgroundColor: AppColors.background.withAlpha(230),
+      backgroundColor: AppColors.background.withAlpha(240),
       elevation: 0,
       centerTitle: false,
+      leading: canPop
+          ? IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: AppColors.textPrimary,
+                size: 20,
+              ),
+              onPressed: () => context.pop(),
+            )
+          : null,
       flexibleSpace: FlexibleSpaceBar(
         titlePadding: EdgeInsets.zero,
-        background: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.primary.withAlpha(40),
-                    AppColors.background,
-                  ],
-                ),
-              ),
+        background: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.primary.withAlpha(30),
+                AppColors.background,
+              ],
             ),
-            // Decorative shapes
-            Positioned(
-              top: -20,
-              right: -20,
-              child: Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.primary.withAlpha(10),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
         title: LayoutBuilder(
           builder: (context, constraints) {
-            final isExpanded = constraints.maxHeight > 100;
+            final isExpanded = constraints.maxHeight > 80;
+
             return Padding(
               padding: EdgeInsets.only(
-                left: 16,
-                bottom: isExpanded ? 20 : 14,
+                left: canPop ? 48 : 16,
+                bottom: isExpanded ? 16 : 14,
+                right: 72,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Estadísticas docentes',
+                    'Estadísticas',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.outfit(
                       fontSize: isExpanded ? 24 : 18,
                       fontWeight: FontWeight.bold,
@@ -200,12 +201,13 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                   ),
                   if (isExpanded)
                     Text(
-                      'Seguimiento de rendimiento estudiantil',
+                      'Rendimiento académico',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.inter(
-                        fontSize: 12,
+                        fontSize: 11,
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w400,
-                        letterSpacing: 0.5,
                       ),
                     ),
                 ],
@@ -216,16 +218,20 @@ class StatisticsTeacherScreen extends ConsumerWidget {
       ),
       actions: [
         Padding(
-          padding: const EdgeInsets.only(right: 8.0),
+          padding: const EdgeInsets.only(right: 8),
           child: IconButton(
             icon: Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
-              child: const Icon(Icons.refresh_rounded, color: AppColors.primary, size: 20),
+              child: const Icon(
+                Icons.refresh_rounded,
+                color: AppColors.primary,
+                size: 18,
+              ),
             ),
             onPressed: () => ref.invalidate(teacherStatsSummaryProvider),
           ),
@@ -234,22 +240,19 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBlurCircle(double size, Color color) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: color,
-      ),
-      child: const SizedBox.shrink(),
-    );
-  }
-
-  Widget _buildCourseSelector(WidgetRef ref, AsyncValue coursesAsync, String? selectedId) {
+  Widget _buildCourseSelector(
+    WidgetRef ref,
+    AsyncValue<dynamic> coursesAsync,
+    String? selectedId,
+  ) {
     return coursesAsync.when(
       data: (courses) {
-        if (courses.isEmpty) return const SizedBox.shrink();
+        if (courses == null || courses.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        final dropdownValue = selectedId ?? 'all';
+
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
@@ -258,26 +261,47 @@ class StatisticsTeacherScreen extends ConsumerWidget {
             border: Border.all(color: AppColors.border, width: 0.5),
           ),
           child: DropdownButtonHideUnderline(
-            child: DropdownButton<String?>(
-              value: selectedId,
-              hint: Text('Todos los cursos', style: GoogleFonts.inter(color: AppColors.textSecondary, fontSize: 14)),
+            child: DropdownButton<String>(
+              value: dropdownValue,
+              hint: Text(
+                'Todos los cursos',
+                style: GoogleFonts.inter(
+                  color: AppColors.textSecondary,
+                  fontSize: 14,
+                ),
+              ),
               dropdownColor: AppColors.surface,
-              icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.primary, size: 24),
+              icon: const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: AppColors.primary,
+                size: 24,
+              ),
               isExpanded: true,
-              style: GoogleFonts.inter(color: AppColors.textPrimary, fontSize: 14),
+              style: GoogleFonts.inter(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+              ),
               borderRadius: BorderRadius.circular(16),
               items: [
-                const DropdownMenuItem<String?>(
-                  value: null,
+                const DropdownMenuItem<String>(
+                  value: 'all',
                   child: Text('Todos los cursos'),
                 ),
-                ...courses.map((c) => DropdownMenuItem(
-                  value: c.id,
-                  child: Text(c.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-                )),
+                ...courses.map<DropdownMenuItem<String>>(
+                  (c) => DropdownMenuItem<String>(
+                    value: c.id.toString(),
+                    child: Text(
+                      c.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
               ],
-              onChanged: (val) {
-                ref.read(selectedCourseForStatsProvider.notifier).select(val);
+              onChanged: (value) {
+                ref
+                    .read(selectedCourseForStatsProvider.notifier)
+                    .select(value == 'all' ? null : value);
               },
             ),
           ),
@@ -289,41 +313,56 @@ class StatisticsTeacherScreen extends ConsumerWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Center(child: SizedBox(width: 20, height: 2, child: LinearProgressIndicator())),
+        child: const Center(
+          child: SizedBox(
+            width: 80,
+            height: 2,
+            child: LinearProgressIndicator(),
+          ),
+        ),
       ),
       error: (_, __) => const SizedBox.shrink(),
     );
   }
 
-  Widget _buildSummaryGrid(TeacherStatsSummaryModel stats) {
+  Widget _buildSummaryGrid(
+    BuildContext context,
+    TeacherStatsSummaryModel stats,
+  ) {
+    final width = MediaQuery.of(context).size.width;
+    final crossAxisCount = width > 600 ? 4 : 2;
+    final aspectRatio = width < 400 ? 1.4 : 1.6;
+
     return GridView.count(
-      crossAxisCount: 2,
+      crossAxisCount: crossAxisCount,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
-      childAspectRatio: 1.6,
+      childAspectRatio: aspectRatio,
       children: [
         _buildStatCard(
-          'Total estudiantes',
+          'Estudiantes',
           stats.totalStudents.toString(),
           Icons.people_alt_rounded,
           AppColors.info,
         ),
         _buildStatCard(
-          'Promedio general',
-          stats.averageGrade == null ? '—' : stats.averageGrade!.toStringAsFixed(1),
+          'Promedio',
+          stats.averageGrade == null
+              ? '—'
+              : stats.averageGrade!.toStringAsFixed(1),
           Icons.auto_graph_rounded,
           AppColors.primary,
         ),
         _buildStatCard(
-          'Entregas calificadas',
+          'Calificadas',
           (stats.totalSubmissions - stats.pendingToGrade).toString(),
           Icons.check_circle_outline_rounded,
           AppColors.success,
         ),
         _buildStatCard(
-          'Pendientes por calificar',
+          'Pendientes',
           stats.pendingToGrade.toString(),
           Icons.hourglass_bottom_rounded,
           AppColors.warning,
@@ -332,54 +371,44 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatCard(String label, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.border, width: 0.5),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.surface,
-            AppColors.surface.withAlpha(180),
-          ],
-        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(40),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withAlpha(20),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: color.withAlpha(20),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: color, size: 20),
-          ),
+          Icon(icon, color: color, size: 18),
           const Spacer(),
           Text(
             value,
             style: GoogleFonts.outfit(
-              fontSize: 24,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             label,
             style: GoogleFonts.inter(
-              fontSize: 11,
+              fontSize: 10,
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
             ),
@@ -393,24 +422,16 @@ class StatisticsTeacherScreen extends ConsumerWidget {
 
   Widget _buildPerformanceChart(TeacherStatsSummaryModel stats) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppColors.border, width: 0.5),
-        gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [
-            AppColors.surface,
-            AppColors.surface2.withAlpha(150),
-          ],
-        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(50),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withAlpha(30),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -419,37 +440,50 @@ class StatisticsTeacherScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withAlpha(20),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(Icons.analytics_rounded, color: AppColors.primary, size: 18),
+              const Icon(
+                Icons.analytics_rounded,
+                color: AppColors.primary,
+                size: 18,
               ),
-              const SizedBox(width: 12),
-              Text(
-                'Distribución académica',
-                style: GoogleFonts.outfit(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Distribución',
+                  style: GoogleFonts.outfit(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 28),
-          _buildResponsiveBar('Alto rendimiento', stats.highPerformancePercentage, AppColors.success),
-          const SizedBox(height: 22),
-          _buildResponsiveBar('Rendimiento medio', stats.mediumPerformancePercentage, AppColors.warning),
-          const SizedBox(height: 22),
-          _buildResponsiveBar('En riesgo / seguimiento', stats.riskPercentage, AppColors.error),
+          const SizedBox(height: 20),
+          _buildResponsiveBar(
+            'Alto',
+            stats.highPerformancePercentage,
+            AppColors.success,
+          ),
+          const SizedBox(height: 16),
+          _buildResponsiveBar(
+            'Medio',
+            stats.mediumPerformancePercentage,
+            AppColors.warning,
+          ),
+          const SizedBox(height: 16),
+          _buildResponsiveBar(
+            'Riesgo',
+            stats.riskPercentage,
+            AppColors.error,
+          ),
         ],
       ),
     );
   }
 
   Widget _buildResponsiveBar(String label, double percentage, Color color) {
+    final safePercentage = percentage.clamp(0.0, 1.0);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -465,7 +499,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
             ),
             const Spacer(),
             Text(
-              '${(percentage * 100).toInt()}%',
+              '${(safePercentage * 100).toInt()}%',
               style: GoogleFonts.outfit(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -491,7 +525,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                   duration: const Duration(milliseconds: 1200),
                   curve: Curves.elasticOut,
                   height: 12,
-                  width: constraints.maxWidth * percentage.clamp(0.0, 1.0),
+                  width: constraints.maxWidth * safePercentage,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.centerLeft,
@@ -519,12 +553,15 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFilters(WidgetRef ref, TeacherStudentRiskLevel? activeFilter) {
-    final filters = [
-      (null, 'Todos'),
-      (TeacherStudentRiskLevel.high, 'Alto'),
-      (TeacherStudentRiskLevel.medium, 'Medio'),
-      (TeacherStudentRiskLevel.risk, 'Riesgo'),
+  Widget _buildFilters(
+    WidgetRef ref,
+    TeacherStudentRiskLevel? activeFilter,
+  ) {
+    final filters = <({TeacherStudentRiskLevel? value, String label})>[
+      (value: null, label: 'Todos'),
+      (value: TeacherStudentRiskLevel.high, label: 'Alto'),
+      (value: TeacherStudentRiskLevel.medium, label: 'Medio'),
+      (value: TeacherStudentRiskLevel.risk, label: 'Riesgo'),
     ];
 
     return Container(
@@ -538,19 +575,23 @@ class StatisticsTeacherScreen extends ConsumerWidget {
           itemCount: filters.length,
           itemBuilder: (context, index) {
             final filter = filters[index];
-            final isSelected = activeFilter == filter.$1;
+            final isSelected = activeFilter == filter.value;
+
             return Padding(
               padding: const EdgeInsets.only(right: 12),
               child: ChoiceChip(
-                label: Text(filter.$2),
+                label: Text(filter.label),
                 selected: isSelected,
-                onSelected: (_) => ref.read(statisticsFilterProvider.notifier).setFilter(filter.$1),
+                onSelected: (_) => ref
+                    .read(statisticsFilterProvider.notifier)
+                    .setFilter(filter.value),
                 backgroundColor: AppColors.surface,
                 selectedColor: AppColors.primary,
                 labelStyle: GoogleFonts.inter(
                   fontSize: 13,
                   color: isSelected ? Colors.black : AppColors.textSecondary,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                  fontWeight:
+                      isSelected ? FontWeight.bold : FontWeight.w500,
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -569,23 +610,37 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStudentList(BuildContext context, TeacherStatsSummaryModel stats, TeacherStudentRiskLevel? filter) {
+  Widget _buildStudentList(
+    BuildContext context,
+    TeacherStatsSummaryModel stats,
+    TeacherStudentRiskLevel? filter,
+  ) {
     if (filter != null) {
-      final filteredStudents = stats.students.where((s) => s.riskLevel == filter).toList();
+      final filteredStudents =
+          stats.students.where((s) => s.riskLevel == filter).toList();
+
       if (filteredStudents.isEmpty) return _buildNoResultsInFilter();
-      
+
       return SliverList(
         delegate: SliverChildBuilderDelegate(
-          (context, index) => _buildStudentCard(context, filteredStudents[index]),
+          (context, index) => _buildStudentCard(
+            context,
+            filteredStudents[index],
+          ),
           childCount: filteredStudents.length,
         ),
       );
     }
 
-    // Default view: Grouped by category
-    final highStudents = stats.students.where((s) => s.riskLevel == TeacherStudentRiskLevel.high).toList();
-    final mediumStudents = stats.students.where((s) => s.riskLevel == TeacherStudentRiskLevel.medium).toList();
-    final riskStudents = stats.students.where((s) => s.riskLevel == TeacherStudentRiskLevel.risk).toList();
+    final highStudents = stats.students
+        .where((s) => s.riskLevel == TeacherStudentRiskLevel.high)
+        .toList();
+    final mediumStudents = stats.students
+        .where((s) => s.riskLevel == TeacherStudentRiskLevel.medium)
+        .toList();
+    final riskStudents = stats.students
+        .where((s) => s.riskLevel == TeacherStudentRiskLevel.risk)
+        .toList();
 
     return SliverList(
       delegate: SliverChildListDelegate([
@@ -610,15 +665,24 @@ class StatisticsTeacherScreen extends ConsumerWidget {
       padding: const EdgeInsets.fromLTRB(20, 24, 16, 8),
       child: Row(
         children: [
-          Container(width: 4, height: 16, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(2))),
+          Container(
+            width: 4,
+            height: 16,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
           const SizedBox(width: 8),
-          Text(
-            title.toUpperCase(),
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textSecondary,
-              letterSpacing: 1.0,
+          Expanded(
+            child: Text(
+              title.toUpperCase(),
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textSecondary,
+                letterSpacing: 1,
+              ),
             ),
           ),
         ],
@@ -632,12 +696,19 @@ class StatisticsTeacherScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(48),
         child: Column(
           children: [
-            Icon(Icons.search_off_rounded, size: 48, color: AppColors.textDisabled),
+            const Icon(
+              Icons.search_off_rounded,
+              size: 48,
+              color: AppColors.textDisabled,
+            ),
             const SizedBox(height: 16),
             Text(
               'No hay estudiantes en esta categoría.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: AppColors.textSecondary, fontSize: 14),
+              style: GoogleFonts.inter(
+                color: AppColors.textSecondary,
+                fontSize: 14,
+              ),
             ),
           ],
         ),
@@ -645,11 +716,14 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStudentCard(BuildContext context, TeacherStudentStatsModel student) {
+  Widget _buildStudentCard(
+    BuildContext context,
+    TeacherStudentStatsModel student,
+  ) {
     final hasGrades = student.gradedSubmissions > 0;
-    Color statusColor;
-    String statusLabel;
-    
+    late final Color statusColor;
+    late final String statusLabel;
+
     switch (student.riskLevel) {
       case TeacherStudentRiskLevel.high:
         statusColor = AppColors.success;
@@ -666,31 +740,16 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.border, width: 0.5),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.surface,
-            AppColors.surface2.withAlpha(100),
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(20),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
           onTap: () {
             try {
               context.push('/teacher/student/${student.studentId}');
@@ -705,11 +764,11 @@ class StatisticsTeacherScreen extends ConsumerWidget {
             }
           },
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             child: Row(
               children: [
                 _buildAvatar(student.studentName, statusColor),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -717,70 +776,70 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                       Text(
                         student.studentName,
                         style: GoogleFonts.outfit(
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 8),
-                      Row(
+                      const SizedBox(height: 4),
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        runSpacing: 4,
                         children: [
                           _buildMiniBadge(
-                            hasGrades && student.averageGrade != null 
-                                ? student.averageGrade!.toStringAsFixed(1) 
-                                : 'S/N',
+                            hasGrades && student.averageGrade != null
+                                ? student.averageGrade!.toStringAsFixed(1)
+                                : '—',
                             hasGrades ? statusColor : AppColors.textDisabled,
                             Icons.star_rounded,
                             filled: hasGrades,
                           ),
-                          const SizedBox(width: 12),
-                          _buildMiniBadge(
-                            '${(student.completionRate * 100).toInt()}% cumpl.',
-                            AppColors.textSecondary,
-                            Icons.task_alt_rounded,
+                          Text(
+                            '${(student.completionRate * 100).toInt()}% ent.',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ],
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: statusColor.withAlpha(30),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: statusColor.withAlpha(50), width: 0.5),
+                        color: statusColor.withAlpha(20),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         statusLabel,
                         style: GoogleFonts.inter(
                           color: statusColor,
-                          fontSize: 10,
+                          fontSize: 9,
                           fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        const Icon(Icons.assignment_turned_in_outlined, size: 12, color: AppColors.textDisabled),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${student.submittedAssignments}/${student.totalAssignments}',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 6),
+                    Text(
+                      '${student.submittedAssignments}/${student.totalAssignments}',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -793,13 +852,17 @@ class StatisticsTeacherScreen extends ConsumerWidget {
   }
 
   Widget _buildAvatar(String name, Color color) {
-    final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
+    final initial = name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : '?';
+
     return Container(
       width: 52,
       height: 52,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [color.withAlpha(60), color.withAlpha(20)],
+          colors: [
+            color.withAlpha(60),
+            color.withAlpha(20),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -819,7 +882,12 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMiniBadge(String text, Color color, IconData icon, {bool filled = false}) {
+  Widget _buildMiniBadge(
+    String text,
+    Color color,
+    IconData icon, {
+    bool filled = false,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -848,10 +916,14 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmptyState({required String title, required String message, required IconData icon}) {
+  Widget _buildEmptyState({
+    required String title,
+    required String message,
+    required IconData icon,
+  }) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(40.0),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -869,7 +941,11 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              child: Icon(icon, size: 80, color: AppColors.primary.withAlpha(100)),
+              child: Icon(
+                icon,
+                size: 80,
+                color: AppColors.primary.withAlpha(100),
+              ),
             ),
             const SizedBox(height: 32),
             Text(
@@ -901,7 +977,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
   Widget _buildErrorState(WidgetRef ref, Object error) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -911,18 +987,29 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                 color: AppColors.error.withAlpha(20),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.error_outline_rounded, size: 64, color: AppColors.error),
+              child: const Icon(
+                Icons.error_outline_rounded,
+                size: 64,
+                color: AppColors.error,
+              ),
             ),
             const SizedBox(height: 24),
             Text(
               'Error al cargar estadísticas',
-              style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+              style: GoogleFonts.outfit(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
             ),
             const SizedBox(height: 12),
             Text(
               'No se pudo conectar con el servidor. Por favor, verifica tu conexión.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: AppColors.textSecondary, fontSize: 14),
+              style: GoogleFonts.inter(
+                color: AppColors.textSecondary,
+                fontSize: 14,
+              ),
             ),
             const SizedBox(height: 32),
             ElevatedButton.icon(
@@ -932,8 +1019,13 @@ class StatisticsTeacherScreen extends ConsumerWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 elevation: 4,
               ),
             ),
@@ -950,12 +1042,17 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
   _SliverHeaderDelegate({required this.child});
 
   @override
-  double get minExtent => 62.0;
-  @override
-  double get maxExtent => 62.0;
+  double get minExtent => 62;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  double get maxExtent => 62;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return Container(
       color: AppColors.background,
       child: child,

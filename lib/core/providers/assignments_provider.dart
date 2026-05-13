@@ -67,6 +67,9 @@ class _EmptyAssignmentsRepository implements AssignmentsRepository {
           String teacherId,
           {int limit = 5}) async =>
       [];
+
+  @override
+  Future<String?> uploadFile(dynamic file, String fileName) async => null;
 }
 
 // -----------------------------------------------------------------------------

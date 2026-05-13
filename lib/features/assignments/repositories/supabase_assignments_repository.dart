@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../models/assignment.dart';
 import '../../../models/submission.dart';
@@ -224,6 +225,19 @@ class SupabaseAssignmentsRepository implements AssignmentsRepository {
       }));
     } catch (e) {
       return [];
+    }
+  }
+
+  @override
+  Future<String?> uploadFile(dynamic file, String fileName) async {
+    try {
+      final path = 'assignments/$fileName';
+      await _client.storage.from('assignments').uploadBinary(path, file);
+      final url = _client.storage.from('assignments').getPublicUrl(path);
+      return url;
+    } catch (e) {
+      debugPrint('Error uploading file: $e');
+      return null;
     }
   }
 }

@@ -109,14 +109,12 @@ class AiChatHistoryScreen extends ConsumerWidget {
                     style: GoogleFonts.inter(
                         fontSize: 11, color: AppColors.textSecondary)),
                 onTap: () async {
-                  // loadConversation ya no existe en el notifier actual.
-                  // Se deshabilita temporalmente con un mensaje.
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Carga de conversaciones no disponible temporalmente'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
+                  await ref
+                      .read(aiChatProvider.notifier)
+                      .loadConversation(conv.id);
+                  if (context.mounted) {
+                    context.go('/ai');
+                  }
                 },
                 contentPadding: EdgeInsets.zero,
               );

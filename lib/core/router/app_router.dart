@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../providers/auth_provider.dart';
 import '../../features/auth/screens/splash_screen.dart';
@@ -59,11 +60,17 @@ import '../../features/superadmin/screens/superadmin_dashboard_screen.dart';
 import '../../features/superadmin/screens/superadmin_institutions_screen.dart';
 import '../../features/superadmin/screens/superadmin_users_screen.dart';
 import '../../features/superadmin/screens/superadmin_audit_screen.dart';
+import '../../features/assignments/screens/student_assignments_screen.dart';
+import '../../features/assignments/screens/teacher_assignments_list_screen.dart';
+import '../../features/assignments/screens/teacher_assignment_create_screen.dart';
+import '../../features/assignments/screens/assignment_review_screen.dart';
+import '../../features/assignments/screens/student_submission_create_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 const _publicRoutes = {
+  '/',
   '/splash',
   '/onboarding',
   '/login',
@@ -80,47 +87,51 @@ GoRouter createRouter(WidgetRef ref) {
     redirect: (context, state) {
       final authAsync = ref.read(authProvider);
 
+      // 1. Mostrar Splash mientras carga la sesión
       if (authAsync.isLoading) return '/splash';
 
       final authState = authAsync.asData?.value;
       final isAuthenticated = authState?.isAuthenticated ?? false;
-      final isPublic = _publicRoutes.contains(state.matchedLocation);
+      final location = state.matchedLocation;
+      final isPublic = _publicRoutes.contains(location);
 
-      if (!isAuthenticated && !isPublic) return '/login';
+      // 2. Si NO está autenticado y la ruta NO es pública -> Login
+      if (!isAuthenticated && !isPublic) {
+        return '/login';
+      }
 
+      // 3. Si ESTÁ autenticado e intenta ir a una ruta pública o raíz -> Redirigir a su Home
+      // Excepción: /join permite que usuarios logueados se unan a cursos
       if (isAuthenticated &&
-          isPublic &&
-          state.matchedLocation != '/splash' &&
-          state.matchedLocation != '/join') {
+          (isPublic || location == '/') &&
+          location != '/join') {
         final role = authState?.role ?? 'student';
         if (role == 'superadmin') return '/superadmin/dashboard';
         if (role == 'admin') return '/admin/dashboard';
         return role == 'teacher' ? '/home/teacher' : '/home';
       }
 
+      // 4. Si está autenticado pero intenta entrar a una zona que no le corresponde (opcional/mejorado)
       if (isAuthenticated) {
         final role = authState?.role ?? 'student';
-        final loc = state.matchedLocation;
-        final isCommon = _publicRoutes.contains(loc) ||
-            loc == '/settings' ||
-            loc == '/profile' ||
-            loc == '/notifications';
-
-        if (role == 'superadmin' &&
-            !loc.startsWith('/superadmin') &&
-            !isCommon) {
-          return '/superadmin/dashboard';
+        if (role == 'student' && location.startsWith('/teacher')) {
+          return '/home';
         }
-
-        if (role == 'admin' && !loc.startsWith('/admin') && !isCommon) {
-          return '/admin/dashboard';
+        if (role == 'teacher' && location.startsWith('/student')) {
+          return '/home/teacher';
         }
       }
 
       return null;
     },
+    errorBuilder: (context, state) =>
+        NotFoundScreen(location: state.uri.toString()),
     refreshListenable: _AuthChangeNotifier(ref),
     routes: [
+      GoRoute(
+        path: '/',
+        redirect: (_, __) => '/splash',
+      ),
       GoRoute(
         path: '/splash',
         name: 'splash',
@@ -179,6 +190,16 @@ GoRouter createRouter(WidgetRef ref) {
             path: '/tasks',
             name: 'tasks_list',
             builder: (_, __) => const TasksListScreen(),
+          ),
+          GoRoute(
+            path: '/teacher/assignments',
+            name: 'teacher_assignments',
+            builder: (_, __) => const TeacherAssignmentsListScreen(),
+          ),
+          GoRoute(
+            path: '/student/assignments',
+            name: 'student_assignments',
+            builder: (_, __) => const StudentAssignmentsScreen(),
           ),
           GoRoute(
             path: '/calendar',
@@ -440,6 +461,25 @@ GoRouter createRouter(WidgetRef ref) {
         builder: (_, state) =>
             StudentProfileViewScreen(studentId: state.pathParameters['id']!),
       ),
+      GoRoute(
+        path: '/teacher/assignments/create',
+        name: 'teacher_assignment_create',
+        builder: (_, __) => const TeacherAssignmentCreateScreen(),
+      ),
+      GoRoute(
+        path: '/teacher/assignments/:id/review',
+        name: 'assignment_review',
+        builder: (_, state) => AssignmentReviewScreen(
+          assignmentId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: '/student/assignments/:id/submit',
+        name: 'student_submission_create',
+        builder: (_, state) => StudentSubmissionCreateScreen(
+          assignmentId: state.pathParameters['id']!,
+        ),
+      ),
 
       GoRoute(
         path: '/profile',
@@ -480,5 +520,81 @@ GoRouter createRouter(WidgetRef ref) {
 class _AuthChangeNotifier extends ChangeNotifier {
   _AuthChangeNotifier(WidgetRef ref) {
     ref.listen(authProvider, (_, __) => notifyListeners());
+  }
+}
+
+class NotFoundScreen extends ConsumerWidget {
+  final String location;
+  const NotFoundScreen({super.key, required this.location});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider).asData?.value;
+    final role = authState?.role ?? 'student';
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.search_off_rounded,
+                  size: 80, color: Colors.orange),
+              const SizedBox(height: 24),
+              Text(
+                'Página no encontrada',
+                style: GoogleFonts.inter(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'No pudimos encontrar la ruta: $location',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  color: Colors.black54,
+                ),
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: () {
+                  if (authState == null || !authState.isAuthenticated) {
+                    context.go('/login');
+                  } else {
+                    if (role == 'teacher') {
+                      context.go('/home/teacher');
+                    } else if (role == 'admin') {
+                      context.go('/admin/dashboard');
+                    } else if (role == 'superadmin') {
+                      context.go('/superadmin/dashboard');
+                    } else {
+                      context.go('/home');
+                    }
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  'Ir al inicio',
+                  style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
