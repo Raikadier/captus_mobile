@@ -37,8 +37,7 @@ class MainShell extends ConsumerWidget {
         if (role == 'teacher') {
           context.go('/teacher/assignments');
         } else {
-          // El estudiante navega a su nuevo módulo de asignaciones
-          context.go('/student/assignments');
+          context.go('/tasks');
         }
         break;
       case 2:
