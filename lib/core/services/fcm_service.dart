@@ -1,70 +1,49 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'api_client.dart';
+import 'router_service.dart';
 
-// ─── Background handler (must be top-level, not a class method) ──────────────
-// Called when the app is terminated or in background.
+// ── Background handler (top-level, required by Firebase) ─────────────────────
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // Firebase is already initialised by this point.
+  // Firebase is already initialised at this point.
   debugPrint('[FCM] Background message: ${message.messageId}');
-  // Optionally: parse message.data and update local state/DB here.
 }
 
-// ─── FCM Service ─────────────────────────────────────────────────────────────
+// ── FCM Service ───────────────────────────────────────────────────────────────
 
-/// Manages Firebase Cloud Messaging: permission, token registration,
-/// and incoming message routing.
 abstract class FcmService {
   static final _messaging = FirebaseMessaging.instance;
-  static final _apiClient = ApiClient.instance;
 
-  /// Call once after [Firebase.initializeApp] — wires up everything.
+  /// Wires up FCM after [Firebase.initializeApp].
   static Future<void> initialize() async {
-    // 1. Register background handler.
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-    // 2. Request permission (Android 13+ / iOS).
     final settings = await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-      provisional: false,
+      alert: true, badge: true, sound: true, provisional: false,
     );
-    debugPrint('[FCM] Permission: ${settings.authorizationStatus}');
 
-    if (settings.authorizationStatus == AuthorizationStatus.denied) {
-      debugPrint('[FCM] Notifications denied by user.');
-      return;
-    }
+    if (settings.authorizationStatus == AuthorizationStatus.denied) return;
 
-    // 3. iOS foreground presentation options.
     await _messaging.setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
+      alert: true, badge: true, sound: true,
     );
 
-    // 4. Get & register current token.
     await _registerToken();
 
-    // 5. Listen for token refreshes (token can rotate over time).
-    _messaging.onTokenRefresh.listen((newToken) {
-      debugPrint('[FCM] Token refreshed');
-      _sendTokenToBackend(newToken);
-    });
+    _messaging.onTokenRefresh.listen(_sendTokenToBackend);
 
-    // 6. Handle messages when app is in the foreground.
+    // Foreground → show in-app banner
     FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
-    // 7. Handle notification tap when app was in background (not terminated).
+    // Background tap → navigate
     FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationOpen);
 
-    // 8. Check if app was launched from a notification (terminated state).
-    final initialMessage = await _messaging.getInitialMessage();
-    if (initialMessage != null) {
-      _handleNotificationOpen(initialMessage);
-    }
+    // Terminated tap → navigate
+    final initial = await _messaging.getInitialMessage();
+    if (initial != null) _handleNotificationOpen(initial);
   }
 
   // ── Token management ───────────────────────────────────────────────────────
@@ -72,10 +51,7 @@ abstract class FcmService {
   static Future<void> _registerToken() async {
     try {
       final token = await _messaging.getToken();
-      if (token != null) {
-        debugPrint('[FCM] Token: ${token.substring(0, 20)}...');
-        await _sendTokenToBackend(token);
-      }
+      if (token != null) await _sendTokenToBackend(token);
     } catch (e) {
       debugPrint('[FCM] Failed to get token: $e');
     }
@@ -83,14 +59,12 @@ abstract class FcmService {
 
   static Future<void> _sendTokenToBackend(String token) async {
     try {
-      await _apiClient.post(
+      await ApiClient.instance.post(
         '/notifications/device-token',
         data: {'token': token, 'platform': _platform},
       );
-      debugPrint('[FCM] Token registered with backend');
-    } catch (e) {
-      // Non-fatal: token will be retried on next refresh
-      debugPrint('[FCM] Failed to register token: $e');
+    } catch (_) {
+      // Non-fatal — will retry on next token refresh
     }
   }
 
@@ -100,29 +74,146 @@ abstract class FcmService {
     return 'unknown';
   }
 
+  static Future<void> deleteToken() async {
+    try { await _messaging.deleteToken(); } catch (_) {}
+  }
+
   // ── Message handlers ───────────────────────────────────────────────────────
 
+  /// Shows a dismissible banner at the top of the screen when the app is
+  /// open and a push arrives.
   static void _handleForegroundMessage(RemoteMessage message) {
-    debugPrint('[FCM] Foreground message: ${message.notification?.title}');
+    final ctx = RouterService.navigator?.context;
+    if (ctx == null) return;
 
-    // e.g. ref.read(inAppNotificationProvider.notifier).show(message)
+    final title = message.notification?.title ?? 'Captus';
+    final body  = message.notification?.body  ?? '';
+    final route = message.data['route'] as String?;
+
+    final overlay = Overlay.of(ctx);
+    late OverlayEntry entry;
+
+    entry = OverlayEntry(
+      builder: (_) => _InAppBanner(
+        title: title,
+        body:  body,
+        onTap: () {
+          entry.remove();
+          if (route != null) _navigate(ctx, route);
+        },
+        onDismiss: () => entry.remove(),
+      ),
+    );
+
+    overlay.insert(entry);
+
+    // Auto-dismiss after 4 s
+    Future.delayed(const Duration(seconds: 4), () {
+      if (entry.mounted) entry.remove();
+    });
   }
 
+  /// Navigates to the route embedded in the notification data payload.
   static void _handleNotificationOpen(RemoteMessage message) {
-    debugPrint('[FCM] Notification opened: ${message.data}');
-
-    // e.g. router.push(message.data['route'] ?? '/notifications')
+    final ctx   = RouterService.navigator?.context;
+    final route = message.data['route'] as String?;
+    if (ctx != null && route != null) _navigate(ctx, route);
   }
 
-  // ── Public helpers ─────────────────────────────────────────────────────────
-
-  /// Deletes the FCM token (call on logout so the user stops receiving pushes).
-  static Future<void> deleteToken() async {
+  static void _navigate(BuildContext ctx, String route) {
     try {
-      await _messaging.deleteToken();
-      debugPrint('[FCM] Token deleted');
-    } catch (e) {
-      debugPrint('[FCM] Failed to delete token: $e');
+      GoRouter.of(ctx).push(route);
+    } catch (_) {
+      // GoRouter not mounted yet — fall back to /notifications
+      GoRouter.of(ctx).go('/notifications');
     }
+  }
+}
+
+// ── In-app notification banner ────────────────────────────────────────────────
+
+class _InAppBanner extends StatelessWidget {
+  final String title;
+  final String body;
+  final VoidCallback onTap;
+  final VoidCallback onDismiss;
+
+  const _InAppBanner({
+    required this.title,
+    required this.body,
+    required this.onTap,
+    required this.onDismiss,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final top = MediaQuery.of(context).padding.top;
+    return Positioned(
+      top: top + 8,
+      left: 12,
+      right: 12,
+      child: Material(
+        color: Colors.transparent,
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E1E1E),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFF00C853).withAlpha(80)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withAlpha(100),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 36, height: 36,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF00C853),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.notifications_rounded,
+                      size: 18, color: Colors.black),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(title,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis),
+                      if (body.isNotEmpty)
+                        Text(body,
+                            style: const TextStyle(
+                                fontSize: 12, color: Color(0xFFAAAAAA)),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: onDismiss,
+                  child: const Icon(Icons.close_rounded,
+                      size: 16, color: Color(0xFFAAAAAA)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

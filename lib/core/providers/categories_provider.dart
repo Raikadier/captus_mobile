@@ -14,7 +14,7 @@ class CategoriesService {
         .order('name', ascending: true);
 
     return (response as List)
-        .map((json) => CategoryModel.fromJson(json as Map<String, dynamic>))
+        .map((json) => CategoryModel.fromJson(json ))
         .toList();
   }
 
@@ -28,7 +28,7 @@ class CategoriesService {
         .select()
         .single();
 
-    return CategoryModel.fromJson(response as Map<String, dynamic>);
+    return CategoryModel.fromJson(response );
   }
 
   Future<CategoryModel> updateCategory(int id, String name) async {
@@ -39,7 +39,7 @@ class CategoriesService {
         .select()
         .single();
 
-    return CategoryModel.fromJson(response as Map<String, dynamic>);
+    return CategoryModel.fromJson(response );
   }
 
   Future<void> delete(int id) async {
@@ -58,7 +58,7 @@ class CategoriesService {
         .maybeSingle();
 
     if (response == null) return null;
-    return CategoryModel.fromJson(response as Map<String, dynamic>);
+    return CategoryModel.fromJson(response );
   }
 
   Future<void> createGeneralCategory(String userId) async {

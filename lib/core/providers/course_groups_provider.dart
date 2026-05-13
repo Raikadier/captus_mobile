@@ -158,8 +158,20 @@ final courseStudentsProvider =
     FutureProvider.autoDispose.family<List<EnrolledStudent>, int>(
   (ref, courseId) async {
     try {
-      // Placeholder logic to return an empty list safely
-      return <EnrolledStudent>[];
+      final res = await _supabase
+          .from('course_enrollments')
+          .select('student_id, users(id, name, email, avatarUrl)')
+          .eq('course_id', courseId);
+
+      return (res as List).map((row) {
+        final user = row['users'] as Map<String, dynamic>;
+        return EnrolledStudent(
+          id: user['id']?.toString() ?? '',
+          name: user['name']?.toString() ?? 'Estudiante',
+          email: user['email']?.toString() ?? '',
+          avatarUrl: user['avatarUrl']?.toString(),
+        );
+      }).toList();
     } catch (e) {
       return <EnrolledStudent>[];
     }

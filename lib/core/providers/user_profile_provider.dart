@@ -1,39 +1,45 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth_provider.dart';
 import '../../models/user.dart';
 
-import '../database/database_service.dart';
-
-class UserProfileNotifier extends AsyncNotifier<UserModel> {
+class UserProfileNotifier extends AsyncNotifier<UserModel?> {
   @override
-  Future<UserModel> build() => _fetch();
+  Future<UserModel?> build() => _fetch();
 
-  Future<UserModel> _fetch() async {
-    final authUser = ref.read(currentUserProvider);
-    if (authUser == null) return UserModel.mock;
+  Future<UserModel?> _fetch() async {
+    final authState = ref.watch(authProvider).asData?.value;
+    if (authState == null || !authState.isAuthenticated || authState.user == null) {
+      return null;
+    }
 
-    final raw = await DatabaseService.query(
-      'users',
-      where: 'id = ?',
-      whereArgs: [authUser.id],
-    );
+    final authUser = authState.user!;
 
-    if (raw.isEmpty) return UserModel.fromLocalUser(authUser);
+    try {
+      final res = await Supabase.instance.client
+          .from('profiles')
+          .select()
+          .eq('id', authUser.id)
+          .maybeSingle();
 
-    final d = raw.first;
-    return UserModel(
-      id: d['id']?.toString() ?? '',
-      name: d['name']?.toString() ?? '',
-      email: d['email']?.toString() ?? '',
-      role: (d['role']?.toString() == 'teacher')
-          ? UserRole.teacher
-          : UserRole.student,
-      career: d['career']?.toString(),
-      bio: d['bio']?.toString(),
-      university: d['university']?.toString(),
-      semester: d['semester'] as int?,
-      avatarUrl: d['avatarUrl']?.toString(),
-    );
+      if (res == null) return null;
+
+      return UserModel(
+        id: res['id']?.toString() ?? '',
+        name: res['full_name']?.toString() ?? 'Usuario',
+        email: authUser.email,
+        role: res['role']?.toString() == 'teacher'
+            ? UserRole.teacher
+            : UserRole.student,
+        career: res['career']?.toString(),
+        bio: res['bio']?.toString(),
+        university: res['university']?.toString(),
+        semester: res['semester'] as int?,
+        avatarUrl: res['avatar_url']?.toString(),
+      );
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<void> refresh() async {
@@ -42,24 +48,22 @@ class UserProfileNotifier extends AsyncNotifier<UserModel> {
   }
 
   Future<void> updateProfile(Map<String, dynamic> updates) async {
-    final userId = state.value?.id;
-    if (userId == null) return;
+    final user = state.value;
+    if (user == null) return;
 
-    await DatabaseService.update(
-      'users',
-      updates,
-      where: 'id = ?',
-      whereArgs: [userId],
-    );
+    await Supabase.instance.client
+        .from('profiles')
+        .update(updates)
+        .eq('id', user.id);
 
     state = await AsyncValue.guard(_fetch);
-
-    // Also update current user in auth provider if needed
-    // (This might require a method in currentUserProvider notifier)
+    
+    // Invalidate auth provider to sync local user if needed
+    ref.invalidate(authProvider);
   }
 }
 
 final userProfileProvider =
-    AsyncNotifierProvider<UserProfileNotifier, UserModel>(
+    AsyncNotifierProvider<UserProfileNotifier, UserModel?>(
   UserProfileNotifier.new,
 );

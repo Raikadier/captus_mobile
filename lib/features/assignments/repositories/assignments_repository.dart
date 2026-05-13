@@ -24,4 +24,6 @@ abstract class AssignmentsRepository {
   Future<List<Map<String, dynamic>>> getRecentSubmissionsByTeacher(
       String teacherId,
       {int limit = 5});
+
+  Future<String?> uploadFile(dynamic file, String fileName);
 }

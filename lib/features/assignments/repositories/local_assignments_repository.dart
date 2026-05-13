@@ -175,4 +175,9 @@ class LocalAssignmentsRepository implements AssignmentsRepository {
 
     return result;
   }
+
+  @override
+  Future<String?> uploadFile(dynamic file, String fileName) async {
+    return null; // No local storage implementation
+  }
 }
