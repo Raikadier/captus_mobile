@@ -1,7 +1,9 @@
+import 'dart:async' show unawaited;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/local_storage_service.dart';
+import '../services/monitoring_service.dart';
 import '../services/sample_data.dart';
 import '../../models/statistics.dart';
 import '../env/env.dart';
@@ -197,6 +199,12 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
           final authState =
               await _fetchProfile(res.user!.id, res.user!.email ?? email);
           state = AsyncData(authState);
+          // Identify user in Crashlytics + Analytics
+          unawaited(MonitoringService.setUser(
+            res.user!.id,
+            role: authState.user?.role,
+          ));
+          unawaited(MonitoringService.logLogin(method: 'email'));
           return null;
         }
         state = const AsyncData(
@@ -345,6 +353,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       } catch (_) {}
     }
     await LocalStorageService.clearCurrentUser();
+    unawaited(MonitoringService.clearUser());
     state = const AsyncData(AuthState.unauthenticated());
   }
 
