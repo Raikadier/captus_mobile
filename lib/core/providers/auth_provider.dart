@@ -5,6 +5,7 @@ import '../services/local_storage_service.dart';
 import '../services/sample_data.dart';
 import '../../models/statistics.dart';
 import '../env/env.dart';
+import 'categories_provider.dart';
 
 enum AuthStatus { loading, authenticated, unauthenticated }
 
@@ -154,21 +155,25 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
   Future<AuthState> _fetchProfile(String uid, String email) async {
     try {
       final res = await Supabase.instance.client
-          .from('profiles')
+          .from('users')
           .select()
           .eq('id', uid)
           .maybeSingle();
       if (res != null) {
         final user = LocalUser(
           id: uid,
-          email: email,
-          // profiles uses full_name, not name
-          name: res['full_name']?.toString() ?? 'Usuario',
+          email: res['email']?.toString() ?? email,
+          name: res['name']?.toString() ?? 'Usuario',
           role: res['role']?.toString() ?? 'student',
+          university: res['university']?.toString(),
+          career: res['career']?.toString(),
+          semester: res['semester'] as int?,
+          bio: res['bio']?.toString(),
+          avatarUrl: res['avatarUrl']?.toString(),
         );
         return AuthState.authenticated(user);
       }
-      // Profile doesn't exist yet — safe fallback (student by default)
+      // User doesn't exist in users table — safe fallback (student by default)
       final fallbackUser =
           LocalUser(id: uid, email: email, name: 'Usuario', role: 'student');
       return AuthState.authenticated(fallbackUser);
@@ -245,14 +250,22 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
         );
         if (res.user != null) {
           try {
-            // Insert into 'profiles' using the real column names
-            await Supabase.instance.client.from('profiles').upsert({
+            // Insert into 'users' table with correct column names
+            await Supabase.instance.client.from('users').upsert({
               'id': res.user!.id,
-              'full_name': name,
+              'email': email,
+              'name': name,
               'role': role,
             });
-          } catch (profileErr) {
-            debugPrint('Profile insert warning: $profileErr');
+
+            // Create default "General" category
+            await Supabase.instance.client.from('categories').insert({
+              'name': 'General',
+              'user_id': res.user!.id,
+            });
+          } catch (userErr) {
+            debugPrint('User insert error: $userErr');
+            return 'Error al guardar datos del usuario. Por favor, intenta de nuevo.';
           }
 
           final authState = await _fetchProfile(res.user!.id, email);
@@ -282,6 +295,9 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
 
         await LocalStorageService.addUser(newUser);
 
+        // Create default "General" category (local storage)
+        await ref.read(categoriesServiceProvider).create('General', userId);
+
         final stats = StatisticsModel.createNew(userId);
         await LocalStorageService.setUserStatistics(stats.toJson());
 
@@ -300,6 +316,11 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
   }
 
   Future<String?> sendPasswordReset(String email) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return null;
+  }
+
+  Future<String?> resendConfirmation(String email) async {
     await Future.delayed(const Duration(milliseconds: 300));
     return null;
   }
