@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/auth_provider.dart';
+import '../services/router_service.dart';
 import '../../features/auth/screens/splash_screen.dart';
 import '../../features/auth/screens/onboarding_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
@@ -60,7 +61,8 @@ import '../../features/superadmin/screens/superadmin_institutions_screen.dart';
 import '../../features/superadmin/screens/superadmin_users_screen.dart';
 import '../../features/superadmin/screens/superadmin_audit_screen.dart';
 
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
+// Use the shared key so FCM / deep-link code can navigate imperatively
+final _rootNavigatorKey  = RouterService.navigatorKey;
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 const _publicRoutes = {
