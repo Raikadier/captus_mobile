@@ -1,5 +1,26 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/local_storage_service.dart';
+
+import '../services/api_client.dart';
+
+final _aiReceiveOptions = Options(receiveTimeout: const Duration(seconds: 90));
+
+class AiStep {
+  final String name;
+  final bool success;
+
+  const AiStep({
+    required this.name,
+    required this.success,
+  });
+
+  factory AiStep.fromJson(Map<String, dynamic> json) {
+    return AiStep(
+      name: json['name'] as String? ?? 'tool',
+      success: json['success'] as bool? ?? true,
+    );
+  }
+}
 
 class ChatMessage {
   final String text;
@@ -7,6 +28,7 @@ class ChatMessage {
   final DateTime time;
   final String? actionPerformed;
   final Map<String, dynamic>? data;
+  final List<AiStep> steps;
 
   const ChatMessage({
     required this.text,
@@ -14,6 +36,7 @@ class ChatMessage {
     required this.time,
     this.actionPerformed,
     this.data,
+    this.steps = const [],
   });
 }
 
@@ -21,12 +44,14 @@ class AiChatState {
   final List<ChatMessage> messages;
   final bool isLoading;
   final String? conversationId;
+  final String? conversationTitle;
   final String? error;
 
   const AiChatState({
     this.messages = const [],
     this.isLoading = false,
     this.conversationId,
+    this.conversationTitle,
     this.error,
   });
 
@@ -34,36 +59,29 @@ class AiChatState {
     List<ChatMessage>? messages,
     bool? isLoading,
     String? conversationId,
+    String? conversationTitle,
     String? error,
-  }) =>
-      AiChatState(
-        messages: messages ?? this.messages,
-        isLoading: isLoading ?? this.isLoading,
-        conversationId: conversationId ?? this.conversationId,
-        error: error,
-      );
+    bool clearError = false,
+  }) {
+    return AiChatState(
+      messages: messages ?? this.messages,
+      isLoading: isLoading ?? this.isLoading,
+      conversationId: conversationId ?? this.conversationId,
+      conversationTitle: conversationTitle ?? this.conversationTitle,
+      error: clearError ? null : error ?? this.error,
+    );
+  }
 }
 
 class AiChatNotifier extends Notifier<AiChatState> {
   static const _welcomeText =
       '¡Hola! Soy Captus IA. Tengo acceso a tus tareas, calendario y cursos. ¿En qué te puedo ayudar hoy?';
 
+  CancelToken _cancelToken = CancelToken();
+
   @override
   AiChatState build() {
-    final storedMessages = LocalStorageService.chatMessages;
-    if (storedMessages.isNotEmpty) {
-      final messages = storedMessages
-          .map((m) => ChatMessage(
-                text: m['text']?.toString() ?? '',
-                isUser: m['isUser'] as bool? ?? false,
-                time: DateTime.tryParse(m['time']?.toString() ?? '') ??
-                    DateTime.now(),
-                actionPerformed: m['actionPerformed']?.toString(),
-                data: m['data'] as Map<String, dynamic>?,
-              ))
-          .toList();
-      return AiChatState(messages: messages);
-    }
+    Future.microtask(_loadLatestConversation);
 
     return AiChatState(
       messages: [
@@ -71,121 +89,207 @@ class AiChatNotifier extends Notifier<AiChatState> {
           text: _welcomeText,
           isUser: false,
           time: DateTime.now(),
-        )
+        ),
       ],
     );
   }
 
-  Future<void> send(String text) async {
-    if (text.trim().isEmpty) return;
+  void stop() {
+    _cancelToken.cancel('Usuario detuvo la respuesta');
+    _cancelToken = CancelToken();
 
-    final userMsg =
-        ChatMessage(text: text.trim(), isUser: true, time: DateTime.now());
     state = state.copyWith(
-      messages: [...state.messages, userMsg],
-      isLoading: true,
-      error: null,
+      isLoading: false,
+      messages: [
+        ...state.messages,
+        ChatMessage(
+          text: '_Respuesta detenida._',
+          isUser: false,
+          time: DateTime.now(),
+        ),
+      ],
     );
+  }
 
-    await Future.delayed(const Duration(milliseconds: 800));
+  Future<void> _loadLatestConversation() async {
+    try {
+      final res =
+          await ApiClient.instance.get<List<dynamic>>('/ai/conversations');
 
-    final reply = _generateMockResponse(text.trim());
+      final list = res.data;
+      if (list == null || list.isEmpty) return;
 
-    final botMsg = ChatMessage(
-      text: reply,
-      isUser: false,
+      final latest = list.first as Map<String, dynamic>;
+      final id = latest['id']?.toString();
+      final title = latest['title']?.toString().trim();
+
+      if (id == null || id.isEmpty) return;
+
+      await loadConversation(
+        id,
+        title: title == null || title.isEmpty ? null : title,
+      );
+    } catch (_) {
+      // Si falla, la conversación inicia limpia.
+    }
+  }
+
+  Future<void> send(String text) async {
+    final cleanText = text.trim();
+    if (cleanText.isEmpty) return;
+
+    _cancelToken = CancelToken();
+
+    final userMsg = ChatMessage(
+      text: cleanText,
+      isUser: true,
       time: DateTime.now(),
     );
 
-    final newMessages = [...state.messages, botMsg];
     state = state.copyWith(
-      messages: newMessages,
-      isLoading: false,
+      messages: [...state.messages, userMsg],
+      isLoading: true,
+      clearError: true,
     );
 
-    await LocalStorageService.clearChatMessages();
-    for (final msg in newMessages) {
-      await LocalStorageService.addChatMessage({
-        'text': msg.text,
-        'isUser': msg.isUser,
-        'time': msg.time.toIso8601String(),
-        'actionPerformed': msg.actionPerformed,
-        'data': msg.data,
-      });
+    try {
+      final res = await ApiClient.instance.post<Map<String, dynamic>>(
+        '/ai/chat',
+        data: {
+          'message': cleanText,
+          if (state.conversationId != null)
+            'conversationId': state.conversationId,
+        },
+        options: _aiReceiveOptions,
+        cancelToken: _cancelToken,
+      );
+
+      final body = res.data ?? <String, dynamic>{};
+
+      final reply = body['result'] as String? ?? 'Sin respuesta.';
+      final convId = body['conversationId']?.toString();
+      final action = body['actionPerformed'] as String?;
+
+      final rawData = body['data'];
+      final toolData = rawData is Map<String, dynamic> ? rawData : null;
+
+      final rawSteps = body['steps'] as List<dynamic>? ?? [];
+      final steps = rawSteps
+          .whereType<Map<String, dynamic>>()
+          .map(AiStep.fromJson)
+          .toList();
+
+      final botMsg = ChatMessage(
+        text: reply,
+        isUser: false,
+        time: DateTime.now(),
+        actionPerformed: action,
+        data: toolData,
+        steps: steps,
+      );
+
+      final newTitle = state.conversationTitle ??
+          (cleanText.length > 50
+              ? '${cleanText.substring(0, 50)}…'
+              : cleanText);
+
+      state = state.copyWith(
+        messages: [...state.messages, botMsg],
+        isLoading: false,
+        conversationId: convId ?? state.conversationId,
+        conversationTitle: newTitle,
+        clearError: true,
+      );
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.cancel) return;
+
+      state = state.copyWith(
+        isLoading: false,
+        error: 'No pude conectar con el asistente. Intenta de nuevo.',
+        messages: [
+          ...state.messages,
+          ChatMessage(
+            text: 'No pude conectar con el asistente. Intenta de nuevo.',
+            isUser: false,
+            time: DateTime.now(),
+          ),
+        ],
+      );
+    } catch (_) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Error inesperado. Intenta de nuevo.',
+        messages: [
+          ...state.messages,
+          ChatMessage(
+            text: 'Error inesperado. Intenta de nuevo.',
+            isUser: false,
+            time: DateTime.now(),
+          ),
+        ],
+      );
     }
   }
 
-  String _generateMockResponse(String input) {
-    final lower = input.toLowerCase();
-
-    if (lower.contains('tarea') || lower.contains('tareas')) {
-      return 'Tienes 5 tareas pendientes. Las más urgentes son:\n\n'
-          '• Taller Árboles Binarios - mañana\n'
-          '• Práctica Shell Scripting - en 1 día\n'
-          '• Parcial Cálculo II - en 7 días';
-    }
-
-    if (lower.contains('curso') || lower.contains('cursos')) {
-      return 'Estás inscrito en 4 cursos:\n\n'
-          '• Estructuras de Datos - 65% completado\n'
-          '• Cálculo II - 40% completado\n'
-          '• Ingeniería de Software I - 80% completado\n'
-          '• Sistemas Operativos - 55% completado';
-    }
-
-    if (lower.contains('calendario') || lower.contains('evento')) {
-      return 'Tienes los siguientes eventos próximos:\n\n'
-          '• Parcial Cálculo II - en 7 días\n'
-          '• Entrega Proyecto IS - en 14 días\n'
-          '• Clase Extra EDD - en 5 días';
-    }
-
-    if (lower.contains('ayuda') || lower.contains('help')) {
-      return 'Puedo ayudarte con:\n\n'
-          '📝 Ver tus tareas pendientes\n'
-          '📚 Info de tus cursos\n'
-          '📅 Ver eventos del calendario\n'
-          '📊 Tu progreso académico\n'
-          '❓ Responder preguntas generales';
-    }
-
-    if (lower.contains('progreso') || lower.contains('estadística')) {
-      return 'Tu progreso esta semana:\n\n'
-          '✅ 2 tareas completadas\n'
-          '🔥 Racha: 7 días\n'
-          '📚 Promedio: 72%\n\n'
-          '¡Sigue así! 💪';
-    }
-
-    return 'Entendido: "$input"\n\n'
-        'Como asistente local, puedo mostrarte información sobre tus tareas, '
-        'cursos y calendario. ¿Qué te gustaría saber?';
-  }
-
-  Future<void> loadConversation(String conversationId) async {
+  Future<void> loadConversation(
+    String conversationId, {
+    String? title,
+  }) async {
     state = state.copyWith(
       isLoading: true,
-      error: null,
       conversationId: conversationId,
+      conversationTitle: title,
+      clearError: true,
     );
 
-    // Simular carga de datos remotos
-    await Future.delayed(const Duration(milliseconds: 600));
+    try {
+      final res = await ApiClient.instance
+          .get<List<dynamic>>('/ai/conversations/$conversationId/messages');
 
-    // Por ahora mantenemos los mensajes actuales o podríamos cargar mocks específicos.
-    // Lo importante es que el estado refleje el ID de la conversación.
-    state = state.copyWith(isLoading: false);
+      final raw = res.data ?? <dynamic>[];
+
+      final loaded = raw.whereType<Map<String, dynamic>>().map((map) {
+        return ChatMessage(
+          text: map['content'] as String? ?? '',
+          isUser: map['role'] == 'user',
+          time: DateTime.tryParse(map['createdAt'] as String? ?? '') ??
+              DateTime.now(),
+        );
+      }).toList();
+
+      state = AiChatState(
+        messages: loaded.isEmpty
+            ? [
+                ChatMessage(
+                  text: _welcomeText,
+                  isUser: false,
+                  time: DateTime.now(),
+                ),
+              ]
+            : loaded,
+        isLoading: false,
+        conversationId: conversationId,
+        conversationTitle: title,
+      );
+    } catch (_) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'No se pudo cargar la conversación.',
+      );
+    }
   }
 
   void clear() {
-    LocalStorageService.clearChatMessages();
+    _cancelToken.cancel('Nueva conversación');
+    _cancelToken = CancelToken();
+
     state = AiChatState(
       messages: [
         ChatMessage(
           text: _welcomeText,
           isUser: false,
           time: DateTime.now(),
-        )
+        ),
       ],
     );
   }

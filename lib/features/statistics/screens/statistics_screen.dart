@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../models/user.dart';
+import '../../../core/providers/statistics_provider.dart';
 import '../../../shared/widgets/streak_badge.dart';
 
-class StatisticsScreen extends StatefulWidget {
+class StatisticsScreen extends ConsumerStatefulWidget {
   const StatisticsScreen({super.key});
 
   @override
-  State<StatisticsScreen> createState() => _StatisticsScreenState();
+  ConsumerState<StatisticsScreen> createState() => _StatisticsScreenState();
 }
 
-class _StatisticsScreenState extends State<StatisticsScreen> {
+class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
   int _periodIndex = 0;
   final _periods = ['7D', '30D', 'Semestre'];
-  final user = UserModel.mock;
 
   @override
   Widget build(BuildContext context) {
+    final statsAsync = ref.watch(statisticsProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -42,11 +44,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   onTap: () => setState(() => _periodIndex = e.key),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 150),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color:
-                          isSelected ? AppColors.primary : Colors.transparent,
+                      color: isSelected ? AppColors.primary : Colors.transparent,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(
@@ -54,8 +54,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color:
-                            isSelected ? Colors.black : AppColors.textSecondary,
+                        color: isSelected ? Colors.black : AppColors.textSecondary,
                       ),
                     ),
                   ),
@@ -65,153 +64,166 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // Streak hero
-          StreakBadge(days: 0, size: StreakSize.hero),
-          const SizedBox(height: 8),
-          Center(
-            child: Text(
-              'Mejor racha: 12 días',
-              style: GoogleFonts.inter(
-                  fontSize: 13, color: AppColors.textSecondary),
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Metrics grid
-          GridView.count(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            childAspectRatio: 1.4,
+      body: statsAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              _MetricCard(
-                  label: 'Tareas completadas',
-                  value: '18',
-                  trend: '+3',
-                  trendPositive: true),
-              _MetricCard(
-                  label: 'Entregadas a tiempo',
-                  value: '85%',
-                  trend: '+5%',
-                  trendPositive: true),
-              _MetricCard(
-                  label: 'Días de antelación',
-                  value: '1.4d',
-                  trend: '-0.2',
-                  trendPositive: false),
-              _MetricCard(
-                  label: 'Materias activas',
-                  value: '4',
-                  trend: '=',
-                  trendPositive: true),
+              const Icon(Icons.error_outline, color: AppColors.error, size: 48),
+              const SizedBox(height: 12),
+              Text('No se pudo cargar el progreso',
+                  style: GoogleFonts.inter(color: AppColors.textSecondary)),
+              const SizedBox(height: 12),
+              TextButton(
+                onPressed: () => ref.invalidate(statisticsProvider),
+                child: const Text('Reintentar'),
+              ),
             ],
           ),
-          const SizedBox(height: 24),
-
-          // Activity chart (simple bar)
-          Text(
-            'ACTIVIDAD SEMANAL',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textSecondary,
-              letterSpacing: 0.8,
-            ),
-          ),
-          const SizedBox(height: 12),
-          _WeekBarChart(),
-          const SizedBox(height: 24),
-
-          // Distribution
-          Text(
-            'DISTRIBUCIÓN POR MATERIA',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textSecondary,
-              letterSpacing: 0.8,
-            ),
-          ),
-          const SizedBox(height: 12),
-          _SubjectDistribution(),
-          const SizedBox(height: 24),
-
-          // Heat map placeholder
-          Text(
-            'MAPA DE ACTIVIDAD',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textSecondary,
-              letterSpacing: 0.8,
-            ),
-          ),
-          const SizedBox(height: 12),
-          _HeatMap(),
-          const SizedBox(height: 24),
-
-          // Achievements preview
-          Row(
+        ),
+        data: (stats) => RefreshIndicator(
+          onRefresh: () async => ref.invalidate(statisticsProvider),
+          child: ListView(
+            padding: const EdgeInsets.all(16),
             children: [
-              Text(
-                'LOGROS RECIENTES',
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textSecondary,
-                  letterSpacing: 0.8,
+              // Streak hero
+              StreakBadge(days: stats.currentStreak, size: StreakSize.hero),
+              const SizedBox(height: 8),
+              Center(
+                child: Text(
+                  'Mejor racha: ${stats.bestStreak} días',
+                  style: GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary),
                 ),
               ),
-              const Spacer(),
-              TextButton(
-                onPressed: () => context.push('/statistics/achievements'),
-                style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero, minimumSize: Size.zero),
-                child: const Text('Ver todos', style: TextStyle(fontSize: 12)),
+              const SizedBox(height: 24),
+
+              // Metrics grid
+              GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                childAspectRatio: 1.4,
+                children: [
+                  _MetricCard(
+                    label: 'Tareas completadas',
+                    value: '${stats.completedTasks}',
+                    icon: Icons.check_circle_rounded,
+                    color: AppColors.primary,
+                  ),
+                  _MetricCard(
+                    label: 'Tareas totales',
+                    value: '${stats.totalTasks}',
+                    icon: Icons.assignment_rounded,
+                    color: AppColors.info,
+                  ),
+                  _MetricCard(
+                    label: 'Materias activas',
+                    value: '${stats.activeCourses}',
+                    icon: Icons.school_rounded,
+                    color: AppColors.warning,
+                  ),
+                  _MetricCard(
+                    label: '% completado',
+                    value: stats.totalTasks > 0
+                        ? '${((stats.completedTasks / stats.totalTasks) * 100).toInt()}%'
+                        : '—',
+                    icon: Icons.pie_chart_rounded,
+                    color: const Color(0xFFAB47BC),
+                  ),
+                ],
               ),
+              const SizedBox(height: 24),
+
+              // Activity chart
+              _SectionTitle('ACTIVIDAD SEMANAL'),
+              const SizedBox(height: 12),
+              _WeekBarChart(values: stats.weeklyActivity),
+              const SizedBox(height: 24),
+
+              // Subject distribution
+              if (stats.subjects.isNotEmpty) ...[
+                _SectionTitle('DISTRIBUCIÓN POR MATERIA'),
+                const SizedBox(height: 12),
+                _SubjectDistribution(subjects: stats.subjects),
+                const SizedBox(height: 24),
+              ],
+
+              // Activity heat map
+              _SectionTitle('MAPA DE ACTIVIDAD'),
+              const SizedBox(height: 12),
+              _HeatMap(weeklyActivity: stats.weeklyActivity),
+              const SizedBox(height: 24),
+
+              // Achievements link
+              Row(
+                children: [
+                  _SectionTitle('LOGROS RECIENTES'),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: () => context.push('/statistics/achievements'),
+                    style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero, minimumSize: Size.zero),
+                    child: const Text('Ver todos', style: TextStyle(fontSize: 12)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: ['🏆', '🔥', '📚', '⚡']
+                    .map((e) => Container(
+                          margin: const EdgeInsets.only(right: 12),
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: AppColors.warning.withAlpha(25),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColors.warning.withAlpha(76)),
+                          ),
+                          child: Center(child: Text(e, style: const TextStyle(fontSize: 26))),
+                        ))
+                    .toList(),
+              ),
+              const SizedBox(height: 32),
             ],
           ),
-          const SizedBox(height: 8),
-          Row(
-            children: ['🏆', '🔥', '📚', '⚡']
-                .map((e) => Container(
-                      margin: const EdgeInsets.only(right: 12),
-                      width: 56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        color: AppColors.warning.withAlpha(25),
-                        shape: BoxShape.circle,
-                        border:
-                            Border.all(color: AppColors.warning.withAlpha(76)),
-                      ),
-                      child: Center(
-                          child: Text(e, style: const TextStyle(fontSize: 26))),
-                    ))
-                .toList(),
-          ),
-          const SizedBox(height: 32),
-        ],
+        ),
       ),
     );
   }
 }
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+class _SectionTitle extends StatelessWidget {
+  final String text;
+  const _SectionTitle(this.text);
+
+  @override
+  Widget build(BuildContext context) => Text(
+        text,
+        style: GoogleFonts.inter(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: AppColors.textSecondary,
+          letterSpacing: 0.8,
+        ),
+      );
+}
+
 class _MetricCard extends StatelessWidget {
   final String label;
   final String value;
-  final String trend;
-  final bool trendPositive;
+  final IconData icon;
+  final Color color;
 
   const _MetricCard({
     required this.label,
     required this.value,
-    required this.trend,
-    required this.trendPositive,
+    required this.icon,
+    required this.color,
   });
 
   @override
@@ -227,44 +239,26 @@ class _MetricCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style:
-                GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary),
-            maxLines: 2,
-          ),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                value,
-                style: GoogleFonts.inter(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+              Icon(icon, size: 16, color: color),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  label,
+                  style: GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary),
+                  maxLines: 2,
                 ),
               ),
-              const Spacer(),
-              if (trend != '=')
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: (trendPositive ? AppColors.primary : AppColors.error)
-                        .withAlpha(25),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    trend,
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color:
-                          trendPositive ? AppColors.primary : AppColors.error,
-                    ),
-                  ),
-                ),
             ],
+          ),
+          Text(
+            value,
+            style: GoogleFonts.inter(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
           ),
         ],
       ),
@@ -273,12 +267,16 @@ class _MetricCard extends StatelessWidget {
 }
 
 class _WeekBarChart extends StatelessWidget {
-  final _days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
-  final _values = [3, 1, 4, 2, 5, 0, 1];
+  final List<int> values;
+  const _WeekBarChart({required this.values});
+
+  static const _days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
   @override
   Widget build(BuildContext context) {
-    final maxVal = _values.reduce((a, b) => a > b ? a : b).toDouble();
+    final maxVal = values.isEmpty ? 1.0 : values.reduce((a, b) => a > b ? a : b).toDouble();
+    final safeMax = maxVal == 0 ? 1.0 : maxVal;
+
     return Container(
       height: 100,
       padding: const EdgeInsets.all(12),
@@ -290,7 +288,8 @@ class _WeekBarChart extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: List.generate(_days.length, (i) {
-          final pct = maxVal > 0 ? _values[i] / maxVal : 0.0;
+          final v = i < values.length ? values[i] : 0;
+          final pct = v / safeMax;
           final isToday = i == DateTime.now().weekday - 1;
           return Expanded(
             child: Padding(
@@ -301,9 +300,7 @@ class _WeekBarChart extends StatelessWidget {
                   Container(
                     height: 60 * pct,
                     decoration: BoxDecoration(
-                      color: isToday
-                          ? AppColors.primary
-                          : AppColors.primary.withAlpha(76),
+                      color: isToday ? AppColors.primary : AppColors.primary.withAlpha(76),
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -312,8 +309,7 @@ class _WeekBarChart extends StatelessWidget {
                     _days[i],
                     style: GoogleFonts.inter(
                       fontSize: 10,
-                      color:
-                          isToday ? AppColors.primary : AppColors.textSecondary,
+                      color: isToday ? AppColors.primary : AppColors.textSecondary,
                       fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
@@ -328,12 +324,8 @@ class _WeekBarChart extends StatelessWidget {
 }
 
 class _SubjectDistribution extends StatelessWidget {
-  final _subjects = [
-    ('Estructuras de Datos', 0.35, 0),
-    ('Cálculo II', 0.25, 1),
-    ('Ing. Software I', 0.25, 2),
-    ('S. Operativos', 0.15, 3),
-  ];
+  final List<SubjectStat> subjects;
+  const _SubjectDistribution({required this.subjects});
 
   @override
   Widget build(BuildContext context) {
@@ -345,24 +337,22 @@ class _SubjectDistribution extends StatelessWidget {
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Column(
-        children: _subjects.map((s) {
-          final color = AppColors.courseColor(s.$3);
+        children: subjects.map((s) {
+          final color = AppColors.courseColor(s.colorIndex);
           return Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: Row(
               children: [
                 Container(
-                    width: 10,
-                    height: 10,
-                    decoration:
-                        BoxDecoration(color: color, shape: BoxShape.circle)),
+                  width: 10, height: 10,
+                  decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                ),
                 const SizedBox(width: 8),
-                Expanded(
-                    child: Text(s.$1, style: GoogleFonts.inter(fontSize: 12))),
+                Expanded(child: Text(s.name, style: GoogleFonts.inter(fontSize: 12))),
                 SizedBox(
                   width: 120,
                   child: LinearProgressIndicator(
-                    value: s.$2,
+                    value: s.progress,
                     color: color,
                     backgroundColor: color.withAlpha(38),
                     minHeight: 6,
@@ -370,9 +360,10 @@ class _SubjectDistribution extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text('${(s.$2 * 100).toInt()}%',
-                    style: GoogleFonts.inter(
-                        fontSize: 11, color: AppColors.textSecondary)),
+                Text(
+                  '${(s.progress * 100).toInt()}%',
+                  style: GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary),
+                ),
               ],
             ),
           );
@@ -383,6 +374,9 @@ class _SubjectDistribution extends StatelessWidget {
 }
 
 class _HeatMap extends StatelessWidget {
+  final List<int> weeklyActivity;
+  const _HeatMap({required this.weeklyActivity});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -396,10 +390,14 @@ class _HeatMap extends StatelessWidget {
         spacing: 3,
         runSpacing: 3,
         children: List.generate(84, (i) {
-          final intensity = [0, 0, 1, 2, 3, 1, 0][i % 7];
+          final dayOfWeek = i % 7;
+          final val = dayOfWeek < weeklyActivity.length ? weeklyActivity[dayOfWeek] : 0;
+          final maxVal = weeklyActivity.isEmpty
+              ? 1
+              : weeklyActivity.reduce((a, b) => a > b ? a : b);
+          final intensity = maxVal == 0 ? 0 : ((val / maxVal) * 3).round();
           return Container(
-            width: 12,
-            height: 12,
+            width: 12, height: 12,
             decoration: BoxDecoration(
               color: intensity == 0
                   ? AppColors.surface2

@@ -18,6 +18,8 @@ import '../../features/tasks/screens/tasks_list_screen.dart';
 import '../../features/tasks/screens/task_detail_screen.dart';
 import '../../features/tasks/screens/task_create_screen.dart';
 import '../../features/tasks/screens/global_search_screen.dart';
+import '../../features/tasks/screens/categories_management_screen.dart';
+import '../../features/tasks/screens/personal_tasks_screen.dart';
 import '../../features/calendar/screens/calendar_screen.dart';
 import '../../features/calendar/screens/calendar_agenda_screen.dart';
 import '../../features/calendar/screens/calendar_event_create_screen.dart';
@@ -272,6 +274,16 @@ GoRouter createRouter(WidgetRef ref) {
       ),
 
       // ── Tasks ──────────────────────────────────────────────────────────────
+      GoRoute(
+        path: '/tasks/personal',
+        name: 'personal_tasks',
+        builder: (_, __) => const PersonalTasksScreen(),
+      ),
+      GoRoute(
+        path: '/tasks/categories',
+        name: 'categories_management',
+        builder: (_, __) => const CategoriesManagementScreen(),
+      ),
       GoRoute(
         path: '/tasks/create',
         name: 'task_create',

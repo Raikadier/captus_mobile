@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/tasks_provider.dart';
 import '../../../models/task.dart';
 import '../../../models/course.dart';
 import '../../../models/user.dart';
@@ -33,18 +34,30 @@ class HomeDashboardScreen extends ConsumerWidget {
           )
         : UserModel.mock;
 
-    final tasks = TaskModel.mockList;
     final courses = CourseModel.mockList;
     final streakDays = 7;
 
-    final pendingTasks =
-        tasks.where((t) => t.status != TaskStatus.completed).toList();
+    final pendingTasksAsync = ref.watch(pendingTasksProvider);
+    final overdueTasksAsync = ref.watch(overdueTasksProvider);
+
+    final pendingTasks = pendingTasksAsync.when(
+      data: (tasks) => tasks,
+      loading: () => <TaskModel>[],
+      error: (_, __) => <TaskModel>[],
+    );
+
+    final overdueCount = overdueTasksAsync.when(
+      data: (tasks) => tasks.length,
+      loading: () => 0,
+      error: (_, __) => 0,
+    );
+
     final todayTasks = pendingTasks.where((t) {
       if (t.dueDate == null) return false;
       final diff = t.dueDate!.difference(DateTime.now());
       return diff.inHours < 24 && t.dueDate!.isAfter(DateTime.now());
     }).toList();
-    final overdueCount = tasks.where((t) => t.isOverdue).length;
+
     final upcomingTasks = pendingTasks.where((t) {
       if (t.dueDate == null) return false;
       final diff = t.dueDate!.difference(DateTime.now());
