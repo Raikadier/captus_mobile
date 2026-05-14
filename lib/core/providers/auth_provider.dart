@@ -325,6 +325,19 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     return null;
   }
 
+  /// Re-fetches the user profile from the backend and updates local state.
+  /// Call this after a successful profile update via the API.
+  Future<void> refreshProfile() async {
+    final current = state.value?.user;
+    if (current == null) return;
+    try {
+      final fresh = await _fetchProfile(current.id, current.email);
+      state = AsyncData(fresh);
+    } catch (_) {
+      // Silently ignore — stale data is acceptable here
+    }
+  }
+
   Future<void> signOut() async {
     if (Env.hasSupabase) {
       try {
