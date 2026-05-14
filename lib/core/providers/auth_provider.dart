@@ -21,6 +21,8 @@ class LocalUser {
   final int? semester;
   final String? bio;
   final String? avatarUrl;
+  final String? institutionId;
+  final String? institutionName;
 
   const LocalUser({
     required this.id,
@@ -32,6 +34,8 @@ class LocalUser {
     this.semester,
     this.bio,
     this.avatarUrl,
+    this.institutionId,
+    this.institutionName,
   });
 
   Map<String, dynamic> toJson() => {
@@ -44,6 +48,8 @@ class LocalUser {
         'semester': semester,
         'bio': bio,
         'avatarUrl': avatarUrl ?? '',
+        'institutionId': institutionId,
+        'institutionName': institutionName,
       };
 
   factory LocalUser.fromJson(Map<String, dynamic> json) => LocalUser(
@@ -56,6 +62,8 @@ class LocalUser {
         semester: json['semester'] as int?,
         bio: json['bio']?.toString(),
         avatarUrl: json['avatarUrl']?.toString(),
+        institutionId: json['institutionId']?.toString(),
+        institutionName: json['institutionName']?.toString(),
       );
 
   factory LocalUser.fromSupabase(User user) {
@@ -86,6 +94,8 @@ class LocalUser {
     int? semester,
     String? bio,
     String? avatarUrl,
+    String? institutionId,
+    String? institutionName,
   }) {
     return LocalUser(
       id: id ?? this.id,
@@ -97,6 +107,8 @@ class LocalUser {
       semester: semester ?? this.semester,
       bio: bio ?? this.bio,
       avatarUrl: avatarUrl ?? this.avatarUrl,
+      institutionId: institutionId ?? this.institutionId,
+      institutionName: institutionName ?? this.institutionName,
     );
   }
 }
@@ -161,23 +173,47 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
           .select()
           .eq('id', uid)
           .maybeSingle();
+
       if (res != null) {
+        debugPrint('[fetchProfile] Raw user data: $res');
+        
+        String? institutionName;
+        if (res['institution_id'] != null) {
+          try {
+            final instRes = await Supabase.instance.client
+                .from('institutions')
+                .select('name')
+                .eq('id', res['institution_id'])
+                .maybeSingle();
+            institutionName = instRes?['name']?.toString();
+          } catch (e) {
+            debugPrint('Error fetching institution: $e');
+          }
+        }
+
         final user = LocalUser(
           id: uid,
           email: res['email']?.toString() ?? email,
           name: res['name']?.toString() ?? 'Usuario',
           role: res['role']?.toString() ?? 'student',
           university: res['university']?.toString(),
-          career: res['career']?.toString(),
+          career: res['carrer']?.toString(),
           semester: res['semester'] as int?,
           bio: res['bio']?.toString(),
           avatarUrl: res['avatarUrl']?.toString(),
+          institutionId: res['institution_id']?.toString(),
+          institutionName: institutionName,
         );
         return AuthState.authenticated(user);
       }
-      // User doesn't exist in users table — safe fallback (student by default)
-      final fallbackUser =
-          LocalUser(id: uid, email: email, name: 'Usuario', role: 'student');
+      final fallbackUser = LocalUser(
+          id: uid,
+          email: email,
+          name: 'Usuario',
+          role: 'student',
+          institutionId: null,
+          institutionName: null,
+        );
       return AuthState.authenticated(fallbackUser);
     } catch (e) {
       debugPrint('Error fetching profile: $e');
@@ -375,19 +411,28 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
         final updateData = <String, dynamic>{};
         if (data.containsKey('name')) updateData['name'] = data['name'];
         if (data.containsKey('university')) updateData['university'] = data['university'];
-        if (data.containsKey('career')) updateData['career'] = data['career'];
+        if (data.containsKey('career')) updateData['carrer'] = data['career'];
         if (data.containsKey('semester')) updateData['semester'] = data['semester'];
         if (data.containsKey('bio')) updateData['bio'] = data['bio'];
         if (data.containsKey('avatarUrl')) updateData['avatarUrl'] = data['avatarUrl'];
 
+        debugPrint('[updateProfile] Sending to Supabase: $updateData');
+
         if (updateData.isNotEmpty) {
-          await Supabase.instance.client
+          final response = await Supabase.instance.client
               .from('users')
               .update(updateData)
               .eq('id', currentUser.id);
+          
+          debugPrint('[updateProfile] Supabase response: $response');
+          
+          await refreshProfile();
+          debugPrint('[updateProfile] Profile refreshed from DB');
         }
-      } catch (e) {
-        debugPrint('Error updating profile in Supabase: $e');
+      } catch (e, stack) {
+        debugPrint('[updateProfile] Error updating profile in Supabase: $e');
+        debugPrint('[updateProfile] Stack: $stack');
+        rethrow;
       }
     }
 

@@ -20,6 +20,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
   late final TextEditingController _nameCtrl;
   late final TextEditingController _universityCtrl;
   late final TextEditingController _careerCtrl;
+  late final TextEditingController _bioCtrl;
   late int _semester;
   bool _saving = false;
   String? _error;
@@ -27,6 +28,8 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
   Uint8List? _selectedAvatarBytes;
   String? _currentAvatarUrl;
   bool _uploadingAvatar = false;
+  String? _institutionId;
+  String? _institutionName;
 
   @override
   void initState() {
@@ -35,8 +38,11 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     _nameCtrl       = TextEditingController(text: user?.name ?? '');
     _universityCtrl = TextEditingController(text: user?.university ?? '');
     _careerCtrl     = TextEditingController(text: user?.career ?? '');
+    _bioCtrl        = TextEditingController(text: user?.bio ?? '');
     _semester       = user?.semester ?? 1;
     _currentAvatarUrl = user?.avatarUrl;
+    _institutionId = user?.institutionId;
+    _institutionName = user?.institutionName;
   }
 
   Future<void> _pickAvatar(ImageSource source) async {
@@ -146,6 +152,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     _nameCtrl.dispose();
     _universityCtrl.dispose();
     _careerCtrl.dispose();
+    _bioCtrl.dispose();
     super.dispose();
   }
 
@@ -168,8 +175,9 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       final updates = <String, dynamic>{
         'name': _nameCtrl.text.trim(),
         'university': _universityCtrl.text.trim(),
-        'career': _careerCtrl.text.trim(),
+        'career': _careerCtrl.text.trim(), // El key del mapa se envía como 'career' y se convierte a 'carrer' en el provider
         'semester': _semester,
+        'bio': _bioCtrl.text.trim(),
       };
       
       if (newAvatarUrl != null) {
@@ -180,11 +188,12 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
 
       await ref.read(authProvider.notifier).updateProfile(updates);
 
-      if (mounted) context.pop();
+      if (mounted) context.go('/profile');
     } catch (e) {
+      debugPrint('[ProfileEditScreen] Error saving: $e');
       setState(() {
         _saving = false;
-        _error = 'No se pudo guardar. Intenta de nuevo.';
+        _error = 'Error al guardar: $e';
       });
     }
   }
@@ -317,12 +326,21 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
               _SectionLabel(text: 'INFORMACIÓN ACADÉMICA'),
               const SizedBox(height: 8),
               _FieldCard(children: [
-                _FormField(
-                  controller: _universityCtrl,
-                  label: 'Universidad',
-                  icon: Icons.school_rounded,
-                ),
-                const Divider(height: 0, color: AppColors.border, thickness: 0.5),
+                if (_institutionId != null && _institutionName != null) ...[
+                  _ReadOnlyField(
+                    label: 'Institución',
+                    value: _institutionName!,
+                    icon: Icons.business_rounded,
+                  ),
+                  const Divider(height: 0, color: AppColors.border, thickness: 0.5),
+                ] else ...[
+                  _FormField(
+                    controller: _universityCtrl,
+                    label: 'Universidad',
+                    icon: Icons.school_rounded,
+                  ),
+                  const Divider(height: 0, color: AppColors.border, thickness: 0.5),
+                ],
                 _FormField(
                   controller: _careerCtrl,
                   label: 'Carrera',
@@ -352,6 +370,13 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                       ),
                     ],
                   ),
+                ),
+                const Divider(height: 0, color: AppColors.border, thickness: 0.5),
+                _FormField(
+                  controller: _bioCtrl,
+                  label: 'Biografía',
+                  icon: Icons.edit_note_rounded,
+                  maxLines: 3,
                 ),
               ]),
               const SizedBox(height: 32),
@@ -414,25 +439,32 @@ class _FormField extends StatelessWidget {
   final String label;
   final IconData icon;
   final String? Function(String?)? validator;
+  final int maxLines;
 
   const _FormField({
     required this.controller,
     required this.label,
     required this.icon,
     this.validator,
+    this.maxLines = 1,
   });
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: maxLines > 1 ? 12 : 4),
         child: Row(
+          crossAxisAlignment: maxLines > 1 ? CrossAxisAlignment.start : CrossAxisAlignment.center,
           children: [
-            Icon(icon, size: 18, color: AppColors.textSecondary),
+            Padding(
+              padding: EdgeInsets.only(top: maxLines > 1 ? 2 : 0),
+              child: Icon(icon, size: 18, color: AppColors.textSecondary),
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: TextFormField(
                 controller: controller,
                 validator: validator,
+                maxLines: maxLines,
                 style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary),
                 decoration: InputDecoration(
                   labelText: label,
@@ -441,7 +473,49 @@ class _FormField extends StatelessWidget {
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
+                  contentPadding: EdgeInsets.zero,
                 ),
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+class _ReadOnlyField extends StatelessWidget {
+  final String label;
+  final String value;
+  final IconData icon;
+
+  const _ReadOnlyField({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Icon(icon, size: 18, color: AppColors.textSecondary),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: GoogleFonts.inter(
+                        fontSize: 11, color: AppColors.textSecondary),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    value,
+                    style: GoogleFonts.inter(
+                        fontSize: 13, color: AppColors.textPrimary),
+                  ),
+                ],
               ),
             ),
           ],

@@ -138,11 +138,18 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 _InfoCard(children: [
-                  _InfoRow(
-                    icon: Icons.school_rounded,
-                    label: 'Universidad',
-                    value: user.university ?? 'No especificada',
-                  ),
+                  if (user.institutionName != null)
+                    _InfoRow(
+                      icon: Icons.business_rounded,
+                      label: 'Institución',
+                      value: user.institutionName!,
+                    )
+                  else
+                    _InfoRow(
+                      icon: Icons.school_rounded,
+                      label: 'Universidad',
+                      value: user.university ?? 'No especificada',
+                    ),
                   _InfoRow(
                     icon: Icons.laptop_rounded,
                     label: 'Carrera',
@@ -154,6 +161,13 @@ class ProfileScreen extends ConsumerWidget {
                     value: user.semester != null
                         ? '${user.semester}° semestre'
                         : 'No especificado',
+                  ),
+                  _InfoRow(
+                    icon: Icons.edit_note_rounded,
+                    label: 'Biografía',
+                    value: user.bio?.isNotEmpty == true
+                        ? user.bio!
+                        : 'No especificada',
                     isLast: true,
                   ),
                 ]),
