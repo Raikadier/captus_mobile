@@ -448,16 +448,29 @@ class _StatCard extends StatelessWidget {
 
 // ── Racha semanal ──────────────────────────────────────────────────────────────
 
-class _WeeklyStreak extends StatelessWidget {
+class _WeeklyStreak extends ConsumerWidget {
   const _WeeklyStreak();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final now = DateTime.now();
-    // L M M J V S D
-    final days = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
-    // weekday: Mon=1 ... Sun=7
-    final completedUpTo = now.weekday; // días con racha hasta hoy
+    const days = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+    // weekday: Mon=1 … Sun=7 → índice 0-6
+    final todayIndex = now.weekday - 1;
+
+    final statsAsync = ref.watch(userStatisticsProvider);
+    // weeklyDailyCompletions[i] = tareas completadas ese día (0 = sin completar)
+    final weeklyData = statsAsync.value?.weeklyDailyCompletions ??
+        List.filled(7, 0);
+    final streak = statsAsync.value?.currentStreak ?? 0;
+
+    final activeDays = weeklyData.where((c) => c > 0).length;
+    final label = activeDays == 0
+        ? 'Completa tareas para iniciar tu racha'
+        : activeDays == 1
+            ? '1 día productivo esta semana'
+            : '$activeDays días productivos esta semana'
+              '${streak > 0 ? ' · Racha: $streak 🔥' : ''}';
 
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -472,18 +485,16 @@ class _WeeklyStreak extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(7, (i) {
-              final isActive = i < completedUpTo;
-              final isToday = i == completedUpTo - 1;
               return _DayDot(
                 label: days[i],
-                isActive: isActive,
-                isToday: isToday,
+                isActive: weeklyData[i] > 0,
+                isToday: i == todayIndex,
               );
             }),
           ),
           const SizedBox(height: 10),
           Text(
-            '7 días productivos seguidos',
+            label,
             style: GoogleFonts.inter(
               fontSize: 12,
               color: AppColors.textSecondary,
