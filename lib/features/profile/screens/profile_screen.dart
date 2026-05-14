@@ -51,16 +51,23 @@ class ProfileScreen extends ConsumerWidget {
               children: [
                 Stack(
                   children: [
-                    CircleAvatar(
-                      radius: 44,
-                      backgroundColor: AppColors.primaryDark,
-                      child: Text(
-                        initial,
-                        style: GoogleFonts.inter(
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
+                    Container(
+                      width: 88,
+                      height: 88,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.primaryDark,
+                      ),
+                      child: ClipOval(
+                        child: user.avatarUrl != null && user.avatarUrl!.isNotEmpty
+                            ? Image.network(
+                                user.avatarUrl!,
+                                fit: BoxFit.cover,
+                                width: 88,
+                                height: 88,
+                                errorBuilder: (_, __, ___) => _buildAvatarInitial(initial),
+                              )
+                            : _buildAvatarInitial(initial),
                       ),
                     ),
                     Positioned(
@@ -131,11 +138,18 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 _InfoCard(children: [
-                  _InfoRow(
-                    icon: Icons.school_rounded,
-                    label: 'Universidad',
-                    value: user.university ?? 'No especificada',
-                  ),
+                  if (user.institutionName != null)
+                    _InfoRow(
+                      icon: Icons.business_rounded,
+                      label: 'Institución',
+                      value: user.institutionName!,
+                    )
+                  else
+                    _InfoRow(
+                      icon: Icons.school_rounded,
+                      label: 'Universidad',
+                      value: user.university ?? 'No especificada',
+                    ),
                   _InfoRow(
                     icon: Icons.laptop_rounded,
                     label: 'Carrera',
@@ -147,6 +161,13 @@ class ProfileScreen extends ConsumerWidget {
                     value: user.semester != null
                         ? '${user.semester}° semestre'
                         : 'No especificado',
+                  ),
+                  _InfoRow(
+                    icon: Icons.edit_note_rounded,
+                    label: 'Biografía',
+                    value: user.bio?.isNotEmpty == true
+                        ? user.bio!
+                        : 'No especificada',
                     isLast: true,
                   ),
                 ]),
@@ -430,4 +451,17 @@ class _StatTile extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _buildAvatarInitial(String initial) {
+  return Center(
+    child: Text(
+      initial,
+      style: GoogleFonts.inter(
+        fontSize: 36,
+        fontWeight: FontWeight.bold,
+        color: AppColors.primary,
+      ),
+    ),
+  );
 }
