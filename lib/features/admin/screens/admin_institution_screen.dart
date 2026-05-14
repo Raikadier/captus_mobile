@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/utils/app_errors.dart';
 import '../services/admin_service.dart';
 
 class AdminInstitutionScreen extends StatefulWidget {
@@ -91,7 +92,7 @@ class _AdminInstitutionScreenState extends State<AdminInstitutionScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')));
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo guardar. Intenta de nuevo.'))));
       }
     } finally {
       if (mounted) setState(() => _saving = false);

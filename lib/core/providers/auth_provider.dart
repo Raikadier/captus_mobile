@@ -181,7 +181,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       return AuthState.authenticated(fallbackUser);
     } catch (e) {
       debugPrint('Error fetching profile: $e');
-      return AuthState.unauthenticated('Error fetching profile: $e');
+      return AuthState.unauthenticated('No se pudo cargar tu perfil.');
     }
   }
 

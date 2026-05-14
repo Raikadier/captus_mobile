@@ -21,7 +21,7 @@ class SupabaseAssignmentsRepository implements AssignmentsRepository {
           .single();
       return AssignmentModel.fromJson(response);
     } catch (e) {
-      throw Exception('Error al crear tarea en Supabase: $e');
+      throw Exception('No se pudo crear la actividad.');
     }
   }
 

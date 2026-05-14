@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/utils/app_errors.dart';
 import '../services/admin_service.dart';
 
 class AdminCoursesScreen extends StatefulWidget {
@@ -203,7 +204,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
       _load();
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo guardar el curso. Intenta de nuevo.')), backgroundColor: Colors.red));
     }
   }
 
@@ -357,7 +358,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                         } catch (e) {
                                           if (mounted) ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
-                                                  content: Text('Error: $e'),
+                                                  content: Text(friendlyError(e, fallback: 'No se pudo desinscribir al estudiante. Intenta de nuevo.')),
                                                   backgroundColor: Colors.red));
                                         }
                                       },
@@ -453,7 +454,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
       }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo inscribir a los estudiantes. Intenta de nuevo.')), backgroundColor: Colors.red));
     }
   }
 
@@ -551,7 +552,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
           SnackBar(content: Text(res['message'] as String? ?? 'Enviado')));
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo enviar la notificación. Intenta de nuevo.')), backgroundColor: Colors.red));
     }
   }
 
@@ -591,7 +592,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
       }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo eliminar el curso. Intenta de nuevo.')), backgroundColor: Colors.red));
     }
   }
 

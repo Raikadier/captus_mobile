@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/tasks_provider.dart';
+import '../../../core/utils/app_errors.dart';
 import '../../../models/task.dart';
 
 class PersonalTaskDetailScreen extends ConsumerStatefulWidget {
@@ -71,7 +72,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: AppColors.error),
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo completar la tarea. Intenta de nuevo.')), backgroundColor: AppColors.error),
         );
       }
     }
@@ -120,7 +121,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e'), backgroundColor: AppColors.error),
+            SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo eliminar la tarea. Intenta de nuevo.')), backgroundColor: AppColors.error),
           );
         }
       }
@@ -138,7 +139,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: AppColors.error),
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo actualizar la subtarea. Intenta de nuevo.')), backgroundColor: AppColors.error),
         );
       }
     }

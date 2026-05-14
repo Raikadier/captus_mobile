@@ -11,6 +11,7 @@ import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/assignments_provider.dart';
 import '../../../core/providers/courses_provider.dart';
 import '../../../core/providers/course_groups_provider.dart';
+import '../../../core/utils/app_errors.dart';
 import '../../../models/assignment.dart';
 
 class TeacherAssignmentCreateScreen extends ConsumerStatefulWidget {
@@ -148,7 +149,7 @@ class _TeacherAssignmentCreateScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al crear tarea: $e')),
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo crear la tarea. Intenta de nuevo.'))),
         );
       }
     } finally {
@@ -183,7 +184,7 @@ class _TeacherAssignmentCreateScreenState
       ),
       body: coursesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Error: $err')),
+        error: (err, _) => Center(child: Text(friendlyError(err, fallback: 'No se pudieron cargar los cursos. Intenta de nuevo.'))),
         data: (courses) {
           if (courses.isEmpty) {
             return _buildEmptyCoursesState();

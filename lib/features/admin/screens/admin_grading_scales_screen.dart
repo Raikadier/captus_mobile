@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/utils/app_errors.dart';
 import '../services/admin_service.dart';
 
 class AdminGradingScalesScreen extends StatefulWidget {
@@ -138,7 +139,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo guardar la escala. Intenta de nuevo.')), backgroundColor: Colors.red),
         );
       }
     }
@@ -153,7 +154,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo actualizar la escala predeterminada. Intenta de nuevo.')), backgroundColor: Colors.red),
         );
       }
     }
@@ -186,7 +187,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo eliminar la escala. Intenta de nuevo.')), backgroundColor: Colors.red),
         );
       }
     }

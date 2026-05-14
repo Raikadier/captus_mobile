@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/services/local_notification_service.dart';
+import '../../../core/utils/app_errors.dart';
 import '../../../models/task.dart';
 
 enum AcademicItemType {
@@ -104,7 +105,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No se pudieron cargar tus materias: $e')),
+        SnackBar(content: Text(friendlyError(e, fallback: 'No se pudieron cargar las materias. Intenta de nuevo.'))),
       );
     } finally {
       if (mounted) setState(() => _isLoadingCourses = false);
@@ -172,7 +173,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No se pudieron cargar los grupos: $e')),
+        SnackBar(content: Text(friendlyError(e, fallback: 'No se pudieron cargar los grupos. Intenta de nuevo.'))),
       );
     } finally {
       if (mounted) setState(() => _isLoadingGroups = false);
@@ -559,7 +560,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al guardar: $e')),
+        SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo guardar. Intenta de nuevo.'))),
       );
     } finally {
       if (mounted) setState(() => _isSaving = false);

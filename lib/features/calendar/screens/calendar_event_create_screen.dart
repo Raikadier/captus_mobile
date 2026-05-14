@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/events_provider.dart';
+import '../../../core/utils/app_errors.dart';
 
 class CalendarEventCreateScreen extends ConsumerStatefulWidget {
   final String? date;
@@ -128,7 +129,7 @@ class _CalendarEventCreateScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al guardar: $e')),
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo guardar. Intenta de nuevo.'))),
         );
       }
     } finally {

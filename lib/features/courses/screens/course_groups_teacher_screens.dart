@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/course_groups_provider.dart';
+import '../../../core/utils/app_errors.dart';
 
 class CourseGroupsTab extends ConsumerWidget {
   final int courseId;
@@ -194,7 +195,7 @@ class _CreateCourseGroupScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content:
-              Text('No se pudo crear el grupo: $e', style: GoogleFonts.inter()),
+              Text(friendlyError(e, fallback: 'No se pudo crear el grupo. Intenta de nuevo.'), style: GoogleFonts.inter()),
           backgroundColor: Colors.red.shade700,
         ),
       );
@@ -634,7 +635,7 @@ class _GeneralAdminTab extends ConsumerWidget {
       data: (assignments) => membersAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, __) =>
-            const _EmptyInfo(text: 'No se pudo cargar informacion'),
+            const _EmptyInfo(text: 'No se pudo cargar información'),
         data: (members) => ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -1000,18 +1001,18 @@ Future<void> _showAssignTaskSheet({
                   ],
                 ),
                 Text(
-                  'Se asignara a todos los miembros del grupo.',
+                  'Se asignará a todos los miembros del grupo.',
                   style: GoogleFonts.inter(color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: 18),
                 TextFormField(
                   controller: titleCtrl,
                   decoration: const InputDecoration(
-                    labelText: 'Titulo de la tarea',
-                    hintText: 'Ej: Ejercicios del capitulo 5',
+                    labelText: 'Título de la tarea',
+                    hintText: 'Ej: Ejercicios del capítulo 5',
                   ),
                   validator: (value) => value == null || value.trim().isEmpty
-                      ? 'El titulo es requerido'
+                      ? 'El título es requerido'
                       : null,
                   onChanged: (_) => setSheetState(() {}),
                 ),
@@ -1020,13 +1021,13 @@ Future<void> _showAssignTaskSheet({
                   controller: descCtrl,
                   maxLines: 3,
                   decoration: const InputDecoration(
-                    labelText: 'Descripcion',
+                    labelText: 'Descripción',
                     hintText: 'Instrucciones detalladas para el grupo...',
                   ),
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Fecha limite',
+                  'Fecha límite',
                   style: GoogleFonts.inter(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 6),
@@ -1108,7 +1109,7 @@ Future<void> _showAssignTaskSheet({
                                   setSheetState(() => saving = false);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text('No se pudo asignar: $e'),
+                                      content: Text(friendlyError(e, fallback: 'No se pudo asignar la tarea. Intenta de nuevo.')),
                                       backgroundColor: Colors.red.shade700,
                                     ),
                                   );
@@ -1191,7 +1192,7 @@ class _GroupAssignmentsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (assignments.isEmpty) {
-      return const _EmptyInfo(text: 'Aun no hay tareas asignadas al grupo');
+      return const _EmptyInfo(text: 'Aún no hay tareas asignadas al grupo');
     }
 
     return Column(

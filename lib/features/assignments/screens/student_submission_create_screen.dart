@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/assignments_provider.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/utils/app_errors.dart';
 import '../../../models/submission.dart';
 
 class StudentSubmissionCreateScreen extends ConsumerStatefulWidget {
@@ -27,7 +28,7 @@ class _StudentSubmissionCreateScreenState
     setState(() => _isLoading = true);
     try {
       final user = ref.read(currentUserProvider);
-      if (user == null) throw Exception('No autenticado');
+      if (user == null) throw Exception('Tu sesión expiró. Inicia sesión de nuevo.');
 
       final submission = SubmissionModel(
         id: '',
@@ -50,7 +51,7 @@ class _StudentSubmissionCreateScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+            .showSnackBar(SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo enviar la solución. Intenta de nuevo.'))));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

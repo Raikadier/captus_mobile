@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/utils/app_errors.dart';
 import '../services/admin_service.dart';
 
 class AdminPeriodsScreen extends StatefulWidget {
@@ -160,7 +161,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo guardar el período. Intenta de nuevo.')), backgroundColor: Colors.red),
         );
       }
     }
@@ -175,7 +176,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo activar el período. Intenta de nuevo.')), backgroundColor: Colors.red),
         );
       }
     }
@@ -208,7 +209,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo eliminar el período. Intenta de nuevo.')), backgroundColor: Colors.red),
         );
       }
     }

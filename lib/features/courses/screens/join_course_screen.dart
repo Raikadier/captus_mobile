@@ -143,15 +143,15 @@ class JoinCourseScreen extends ConsumerWidget {
                 children: [
                   CircularProgressIndicator(),
                   SizedBox(height: 20),
-                  Text('Procesando invitacion...'),
+                  Text('Procesando invitación...'),
                 ],
               ),
             ),
             error: (e, _) => _ResultView(
               icon: Icons.error_outline,
               iconColor: Colors.red,
-              title: 'Algo salio mal',
-              subtitle: 'No pudimos procesar la invitacion.\n$e',
+              title: 'Algo salió mal',
+              subtitle: 'No pudimos procesar la invitación.\n$e',
               buttonLabel: 'Volver al inicio',
               onButton: () => context.go('/home'),
             ),
@@ -161,17 +161,17 @@ class JoinCourseScreen extends ConsumerWidget {
                   return _ResultView(
                     icon: Icons.lock_outline,
                     iconColor: AppColors.primary,
-                    title: 'Inicia sesion primero',
+                    title: 'Inicia sesión primero',
                     subtitle: 'Debes tener una cuenta en Captus para unirte a un curso.',
-                    buttonLabel: 'Ir a iniciar sesion',
+                    buttonLabel: 'Ir a iniciar sesión',
                     onButton: () => context.go('/login'),
                   );
                 case _JoinStatus.notFound:
                   return _ResultView(
                     icon: Icons.search_off_outlined,
                     iconColor: AppColors.warning,
-                    title: 'Codigo invalido',
-                    subtitle: 'No encontramos ningun curso con el codigo "$inviteCode".',
+                    title: 'Código inválido',
+                    subtitle: 'No encontramos ningún curso con el código "$inviteCode".',
                     buttonLabel: 'Volver al inicio',
                     onButton: () => context.go('/home'),
                   );
@@ -179,9 +179,9 @@ class JoinCourseScreen extends ConsumerWidget {
                   return _ResultView(
                     icon: Icons.error_outline,
                     iconColor: Colors.red,
-                    title: 'Algo salio mal',
+                    title: 'Algo salió mal',
                     subtitle:
-                        result.message ?? 'No pudimos procesar la invitacion.\nIntenta de nuevo.',
+                        result.message ?? 'No pudimos procesar la invitación.\nIntenta de nuevo.',
                     buttonLabel: 'Volver al inicio',
                     onButton: () => context.go('/home'),
                   );
@@ -189,7 +189,7 @@ class JoinCourseScreen extends ConsumerWidget {
                   return _ResultView(
                     icon: Icons.check_circle_outline,
                     iconColor: Colors.green,
-                    title: 'Ya estas inscrito',
+                    title: 'Ya estás inscrito',
                     subtitle: 'Ya eres estudiante de "${result.message}".',
                     buttonLabel: 'Ver mis cursos',
                     onButton: () => context.go('/courses'),

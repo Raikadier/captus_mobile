@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/utils/app_errors.dart';
 import '../services/admin_service.dart';
 
 class AdminUsersScreen extends StatefulWidget {
@@ -105,7 +106,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                     } catch (e) {
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error: $e')));
+                          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo invitar al usuario. Intenta de nuevo.'))));
                       }
                     }
                   },
@@ -145,7 +146,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo remover al usuario. Intenta de nuevo.'))));
         }
       }
     }
