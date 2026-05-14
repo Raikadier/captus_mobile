@@ -54,6 +54,7 @@ import '../../features/profile/screens/profile_edit_screen.dart';
 import '../../features/profile/screens/settings_screen.dart';
 import '../../features/profile/screens/settings_security_screen.dart';
 import '../../features/evidence/screens/evidence_screen.dart';
+import '../../features/notes/screens/notes_screen.dart';
 import '../../features/admin/screens/admin_shell_screen.dart';
 import '../../features/admin/screens/admin_dashboard_screen.dart';
 import '../../features/admin/screens/admin_users_screen.dart';
@@ -227,6 +228,11 @@ GoRouter createRouter(WidgetRef ref) {
             path: '/groups',
             name: 'groups_list',
             builder: (_, __) => const GroupsListScreen(),
+          ),
+          GoRoute(
+            path: '/notes',
+            name: 'notes',
+            builder: (_, __) => const NotesScreen(),
           ),
         ],
       ),
