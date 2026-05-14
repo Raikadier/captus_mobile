@@ -1,4 +1,4 @@
-package com.example.captus_mobile
+package com.captus.app
 
 import io.flutter.embedding.android.FlutterActivity
 

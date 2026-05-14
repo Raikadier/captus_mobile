@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:250122353409:android:865aee74c362aae8bf3900",
+        "android_client_info": {
+          "package_name": "com.captus.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQh855-ypTW0o37Nqi_pl-2dRgVRR2ACA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:250122353409:android:25f48df6905e8211bf3900",
         "android_client_info": {
           "package_name": "com.example.captus_mobile"
