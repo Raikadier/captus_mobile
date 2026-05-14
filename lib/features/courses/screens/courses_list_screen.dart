@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../models/course.dart';
+import '../../../shared/widgets/captus_fab.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../../shared/widgets/staggered_list.dart';
 
 class CoursesListScreen extends StatelessWidget {
   const CoursesListScreen({super.key});
@@ -39,26 +41,26 @@ class CoursesListScreen extends StatelessWidget {
               subtitle: 'Aún no tienes cursos matriculados.',
               actionLabel: 'Agregar curso',
             )
-          : Padding(
-              padding: const EdgeInsets.all(16),
-              child: GridView.builder(
-                itemCount: courses.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.82,
-                ),
-                itemBuilder: (context, index) {
-                  final course = courses[index];
-                  return _CourseCard(course: course, index: index);
-                },
+          : StaggeredGridView.builder(
+              itemCount: courses.length,
+              staggerMs: 60,
+              durationMs: 250,
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.85,
               ),
+              itemBuilder: (context, index) {
+                final course = courses[index];
+                return _CourseCard(course: course, index: index);
+              },
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add_rounded, color: AppColors.textOnPrimary),
+      floatingActionButton: CaptusFab(
+        onPressed: () => context.push('/join'),
+        icon: Icons.add_rounded,
+        tooltip: 'Unirse a un curso',
       ),
     );
   }

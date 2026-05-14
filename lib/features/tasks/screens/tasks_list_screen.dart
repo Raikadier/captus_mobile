@@ -5,9 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_animations.dart';
-import '../../../shared/widgets/captus_dialog.dart';
-import '../../../shared/widgets/loading_shimmer.dart';
+import '../../../shared/widgets/cactus_refresh.dart';
+import '../../../shared/widgets/captus_fab.dart';
 
 class TasksListScreen extends ConsumerStatefulWidget {
   const TasksListScreen({super.key});
@@ -177,14 +176,8 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
                     child: TaskListShimmer(count: 5),
                   )
                 : _tasks.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No hay tareas de cursos',
-                          style: GoogleFonts.inter(
-                              color: AppColors.textSecondary),
-                        ),
-                      )
-                    : RefreshIndicator(
+                    ? const Center(child: Text('No hay tareas'))
+                    : CactusRefresh(
                         onRefresh: _fetchTasks,
                         color: AppColors.primary,
                         child: ListView.builder(
@@ -219,115 +212,9 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: CaptusFab(
         onPressed: () => context.push('/tasks/create'),
-        child: const Icon(Icons.add_rounded),
-      ),
-    );
-  }
-}
-
-// ─── Swipeable task card ──────────────────────────────────────────────────────
-
-class _SwipeableTaskCard extends StatelessWidget {
-  final String id;
-  final String title;
-  final String description;
-  final String type;
-  final VoidCallback? onTap;
-  final VoidCallback onComplete;
-  final VoidCallback onDelete;
-
-  const _SwipeableTaskCard({
-    super.key,
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.type,
-    this.onTap,
-    required this.onComplete,
-    required this.onDelete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Dismissible(
-      key: ValueKey('dismissible_$id'),
-      // ── Complete: swipe left ──────────────────────────────────────────────
-      secondaryBackground: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        decoration: BoxDecoration(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 24),
-        child: const Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.check_circle_rounded,
-                color: AppColors.textOnPrimary, size: 28),
-            SizedBox(height: 4),
-            Text('Completar',
-                style: TextStyle(
-                    color: AppColors.textOnPrimary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600)),
-          ],
-        ),
-      ),
-      // ── Delete: swipe right ───────────────────────────────────────────────
-      background: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        decoration: BoxDecoration(
-          color: AppColors.error,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.only(left: 24),
-        child: const Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.delete_rounded,
-                color: AppColors.textOnPrimary, size: 28),
-            SizedBox(height: 4),
-            Text('Eliminar',
-                style: TextStyle(
-                    color: AppColors.textOnPrimary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600)),
-          ],
-        ),
-      ),
-      confirmDismiss: (direction) async {
-        if (direction == DismissDirection.endToStart) {
-          // Swipe left = complete (no confirmation needed)
-          return true;
-        }
-        // Swipe right = delete (needs confirmation)
-        return CaptusDialog.confirm(
-          context: context,
-          title: 'Eliminar tarea',
-          message: '¿Eliminar "$title"? Esta acción no se puede deshacer.',
-          confirmLabel: 'Eliminar',
-          isDangerous: true,
-        );
-      },
-      onDismissed: (direction) {
-        if (direction == DismissDirection.endToStart) {
-          onComplete();
-        } else {
-          HapticFeedback.mediumImpact();
-          onDelete();
-        }
-      },
-      resizeDuration: AppDurations.fast,
-      movementDuration: AppDurations.standard,
-      child: _TaskCardContent(
-        title: title,
-        description: description,
-        type: type,
-        onTap: onTap,
+        tooltip: 'Nueva tarea',
       ),
     );
   }
