@@ -316,6 +316,12 @@ class _MessageBubble extends StatelessWidget {
               ),
             ],
           ),
+          // Reasoning steps (collapsible)
+          if (!isUser && message.steps.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(left: 34, top: 4),
+              child: _ThinkingSteps(steps: message.steps),
+            ),
           // Action chip (tool was invoked)
           if (!isUser && message.actionPerformed != null) ...[
             const SizedBox(height: 4),
@@ -635,6 +641,149 @@ class _SuggestionChip extends StatelessWidget {
                 fontSize: 12,
                 color: AppColors.primary,
                 fontWeight: FontWeight.w500)),
+      ),
+    );
+  }
+}
+
+// ── Thinking steps (collapsible) ─────────────────────────────────────────────
+
+class _ThinkingSteps extends StatefulWidget {
+  final List<AiStep> steps;
+  const _ThinkingSteps({required this.steps});
+
+  @override
+  State<_ThinkingSteps> createState() => _ThinkingStepsState();
+}
+
+class _ThinkingStepsState extends State<_ThinkingSteps> {
+  bool _expanded = false;
+
+  static const _toolIcons = <String, IconData>{
+    'create_task':            Icons.add_task_rounded,
+    'complete_task':          Icons.task_alt_rounded,
+    'update_task':            Icons.edit_note_rounded,
+    'delete_task':            Icons.delete_outline_rounded,
+    'list_tasks':             Icons.checklist_rounded,
+    'create_note':            Icons.note_add_outlined,
+    'update_note':            Icons.edit_outlined,
+    'delete_note':            Icons.delete_outline_rounded,
+    'list_notes':             Icons.notes_rounded,
+    'create_event':           Icons.event_rounded,
+    'update_event':           Icons.edit_calendar_rounded,
+    'delete_event':           Icons.event_busy_rounded,
+    'list_events':            Icons.calendar_month_rounded,
+    'get_teacher_courses':    Icons.school_rounded,
+    'get_course_analytics':   Icons.bar_chart_rounded,
+    'get_at_risk_students':   Icons.warning_amber_rounded,
+    'generate_grade_report':  Icons.grading_rounded,
+    'generate_question_bank': Icons.quiz_outlined,
+    'generate_rubric':        Icons.rule_rounded,
+    'study_document':         Icons.menu_book_rounded,
+  };
+
+  IconData _iconFor(String name) =>
+      _toolIcons[name] ?? Icons.settings_suggest_rounded;
+
+  String _labelFor(String name) =>
+      name.replaceAll('_', ' ').replaceFirstMapped(
+          RegExp(r'^.'), (m) => m.group(0)!.toUpperCase());
+
+  @override
+  Widget build(BuildContext context) {
+    final count = widget.steps.length;
+    final allOk = widget.steps.every((s) => s.success);
+
+    return GestureDetector(
+      onTap: () => setState(() => _expanded = !_expanded),
+      child: AnimatedSize(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeInOut,
+        alignment: Alignment.topLeft,
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.primary.withAlpha(8),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppColors.primary.withAlpha(35)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header row
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      allOk ? Icons.psychology_rounded : Icons.psychology_alt_rounded,
+                      size: 14,
+                      color: allOk ? AppColors.primary : Colors.orange,
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      '$count ${count == 1 ? 'paso' : 'pasos'} de razonamiento',
+                      style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      _expanded
+                          ? Icons.keyboard_arrow_up_rounded
+                          : Icons.keyboard_arrow_down_rounded,
+                      size: 14,
+                      color: AppColors.primary,
+                    ),
+                  ],
+                ),
+              ),
+              // Step list (visible when expanded)
+              if (_expanded) ...[
+                Divider(
+                    height: 1,
+                    color: AppColors.primary.withAlpha(30),
+                    indent: 10,
+                    endIndent: 10),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 6, 10, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: widget.steps.asMap().entries.map((e) {
+                      final idx  = e.key;
+                      final step = e.value;
+                      return Padding(
+                        padding: EdgeInsets.only(top: idx == 0 ? 0 : 5),
+                        child: Row(
+                          children: [
+                            Icon(
+                              step.success
+                                  ? Icons.check_circle_rounded
+                                  : Icons.cancel_rounded,
+                              size: 12,
+                              color: step.success ? Colors.green : Colors.red,
+                            ),
+                            const SizedBox(width: 5),
+                            Icon(_iconFor(step.name),
+                                size: 13, color: AppColors.textSecondary),
+                            const SizedBox(width: 5),
+                            Text(
+                              _labelFor(step.name),
+                              style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  color: AppColors.textSecondary),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -8,12 +8,25 @@ final _aiRequestOptions = Options(receiveTimeout: const Duration(seconds: 90));
 
 // ── Data models ───────────────────────────────────────────────────────────────
 
+class AiStep {
+  final String name;    // tool name
+  final bool success;
+
+  const AiStep({required this.name, required this.success});
+
+  factory AiStep.fromJson(Map<String, dynamic> json) => AiStep(
+        name:    json['name'] as String? ?? 'tool',
+        success: json['success'] as bool? ?? true,
+      );
+}
+
 class ChatMessage {
   final String text;
   final bool isUser;
   final DateTime time;
   final String? actionPerformed;
   final Map<String, dynamic>? data;
+  final List<AiStep> steps;
 
   const ChatMessage({
     required this.text,
@@ -21,6 +34,7 @@ class ChatMessage {
     required this.time,
     this.actionPerformed,
     this.data,
+    this.steps = const [],
   });
 }
 
@@ -93,12 +107,16 @@ class AiChatNotifier extends Notifier<AiChatState> {
       );
 
       final body = res.data is Map<String, dynamic> ? res.data as Map<String, dynamic> : <String, dynamic>{};
-      final reply = (body['result'] as String?) ?? 'Sin respuesta.';
+      final reply  = (body['result'] as String?) ?? 'Sin respuesta.';
       final convId = body['conversationId']?.toString();
       final action = body['actionPerformed'] as String?;
       final rawData = body['data'];
-      final toolData =
-          rawData is Map<String, dynamic> ? rawData : null;
+      final toolData = rawData is Map<String, dynamic> ? rawData : null;
+      final rawSteps = body['steps'] as List<dynamic>? ?? [];
+      final steps = rawSteps
+          .whereType<Map<String, dynamic>>()
+          .map(AiStep.fromJson)
+          .toList();
 
       final botMsg = ChatMessage(
         text: reply,
@@ -106,6 +124,7 @@ class AiChatNotifier extends Notifier<AiChatState> {
         time: DateTime.now(),
         actionPerformed: action,
         data: toolData,
+        steps: steps,
       );
 
       state = state.copyWith(
