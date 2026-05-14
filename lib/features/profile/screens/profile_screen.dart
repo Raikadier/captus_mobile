@@ -5,7 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../statistics/providers/user_statistics_provider.dart';
+import '../../statistics/providers/achievements_provider.dart';
 import '../../statistics/utils/streak_messages.dart';
+import '../../../models/achievement.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -208,10 +210,22 @@ class ProfileScreen extends ConsumerWidget {
                     label: 'Mis estadísticas',
                     onTap: () => context.push('/statistics'),
                   ),
-                  _LinkRow(
-                    icon: Icons.emoji_events_rounded,
-                    label: 'Mis logros',
-                    onTap: () => context.push('/statistics/achievements'),
+                  Consumer(
+                    builder: (context, ref, _) {
+                      final label = ref
+                          .watch(achievementsProvider)
+                          .maybeWhen(
+                            data: (s) => '${s.totalUnlocked}/$kTotalAchievements',
+                            orElse: () => '',
+                          );
+                      return _LinkRow(
+                        icon: Icons.emoji_events_rounded,
+                        label: 'Mis logros',
+                        trailingLabel: label,
+                        onTap: () =>
+                            context.push('/statistics/achievements'),
+                      );
+                    },
                   ),
                   _LinkRow(
                     icon: Icons.notifications_outlined,
@@ -551,6 +565,7 @@ class _LinkRow extends StatelessWidget {
   final VoidCallback onTap;
   final bool isLast;
   final Color? color;
+  final String? trailingLabel;
 
   const _LinkRow({
     required this.icon,
@@ -558,6 +573,7 @@ class _LinkRow extends StatelessWidget {
     required this.onTap,
     this.isLast = false,
     this.color,
+    this.trailingLabel,
   });
 
   @override
@@ -578,6 +594,17 @@ class _LinkRow extends StatelessWidget {
                   child: Text(label,
                       style: GoogleFonts.inter(fontSize: 13, color: c)),
                 ),
+                if (trailingLabel != null && trailingLabel!.isNotEmpty) ...[
+                  Text(
+                    trailingLabel!,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                ],
                 Icon(Icons.chevron_right_rounded,
                     size: 18, color: AppColors.textSecondary),
               ],
