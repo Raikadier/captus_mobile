@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/router/app_router.dart';
 import 'core/services/local_storage_service.dart';
+import 'core/services/fcm_service.dart';
 import 'core/services/monitoring_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/env/env.dart';
@@ -20,6 +21,7 @@ Future<void> main() async {
   try {
     await Firebase.initializeApp();
     await MonitoringService.init();
+    await FcmService.initialize();
   } catch (e) {
     debugPrint('[Firebase] Initialization failed: $e');
   }

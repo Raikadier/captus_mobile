@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/providers/auth_provider.dart';
+import '../../shared/widgets/offline_banner.dart';
 
 class MainShell extends ConsumerWidget {
   final Widget child;
@@ -62,7 +63,12 @@ class MainShell extends ConsumerWidget {
     final selectedIndex = _selectedIndex(context, role);
 
     return Scaffold(
-      body: child,
+      body: Column(
+        children: [
+          const OfflineBanner(),
+          Expanded(child: child),
+        ],
+      ),
       bottomNavigationBar: _CaptusBottomNav(
         selectedIndex: selectedIndex,
         role: role,
