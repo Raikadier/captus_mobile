@@ -20,6 +20,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isLoading = false;
   String? _errorMessage;
 
+  static final _emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+
   @override
   void dispose() {
     _emailCtrl.dispose();
@@ -103,13 +105,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   keyboardType: TextInputType.emailAddress,
                   autocorrect: false,
                   decoration: const InputDecoration(
-                    labelText: 'Correo',
+                    labelText: 'Correo electrónico',
                     prefixIcon: Icon(Icons.email_outlined),
-                    hintText: 'usuario@email.com',
+                    hintText: 'usuario@ejemplo.com',
                   ),
-                  validator: (v) => v != null && v.contains('@')
-                      ? null
-                      : 'Ingresa un correo válido',
+                  validator: (v) {
+                    if (v == null || !_emailRegex.hasMatch(v.trim())) {
+                      return 'Ingresa un correo válido';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -126,9 +131,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           setState(() => _obscurePassword = !_obscurePassword),
                     ),
                   ),
-                  validator: (v) => v != null && v.length >= 6
-                      ? null
-                      : 'Mínimo 6 caracteres',
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      return 'Ingresa tu contraseña';
+                    }
+                    return null;
+                  },
                 ),
                 Align(
                   alignment: Alignment.centerRight,

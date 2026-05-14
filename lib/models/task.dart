@@ -47,16 +47,21 @@ class SubTask {
   SubTask copyWith({bool? isCompleted}) => SubTask(
       id: id, title: title, isCompleted: isCompleted ?? this.isCompleted);
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'completed': isCompleted,
+      };
+
   factory SubTask.fromJson(Map<String, dynamic> json) => SubTask(
         id: json['id_SubTask']?.toString() ?? json['id']?.toString() ?? '',
         title: json['title'] as String? ?? '',
-        isCompleted:
-            (json['state'] as bool?) ?? (json['completed'] as bool?) ?? false,
+        isCompleted: json['state'] as bool? ?? false,
       );
 }
 
 class TaskModel {
-  final String id;
+  final int? id;
   final String title;
   final String? description;
   final TaskPriority priority;
@@ -70,9 +75,12 @@ class TaskModel {
   final List<String> attachments;
   final DateTime createdAt;
   final bool completed;
+  final int? categoryId;
+  final String? categoryName;
+  final int? parentTaskId;
 
   const TaskModel({
-    required this.id,
+    this.id,
     required this.title,
     this.description,
     required this.priority,
@@ -86,6 +94,9 @@ class TaskModel {
     this.attachments = const [],
     required this.createdAt,
     this.completed = false,
+    this.categoryId,
+    this.categoryName,
+    this.parentTaskId,
   });
 
   int get completedSubtasks => subtasks.where((s) => s.isCompleted).length;
@@ -127,8 +138,10 @@ class TaskModel {
         .map((s) => SubTask.fromJson(s as Map<String, dynamic>))
         .toList();
 
+    final categoryData = json['category'] as Map<String, dynamic>?;
+
     return TaskModel(
-      id: json['id']?.toString() ?? '',
+      id: json['id'] as int? ?? int.tryParse(json['id']?.toString() ?? ''),
       title: json['title'] as String? ?? '',
       description: json['description'] as String?,
       priority: TaskPriorityX.fromBackend(
@@ -143,10 +156,21 @@ class TaskModel {
               (json['created_at'] ?? json['creationDate'] ?? '').toString()) ??
           DateTime.now(),
       completed: isCompleted,
+      categoryId: json['category_id'] as int?,
+      categoryName: categoryData?['name'] as String? ?? json['category_name'] as String?,
+      parentTaskId: json['parent_task_id'] as int?,
     );
   }
 
-  TaskModel copyWith({bool? completed, TaskStatus? status}) => TaskModel(
+  TaskModel copyWith({
+    bool? completed,
+    TaskStatus? status,
+    int? categoryId,
+    String? categoryName,
+    int? parentTaskId,
+    List<SubTask>? subtasks,
+  }) =>
+      TaskModel(
         id: id,
         title: title,
         description: description,
@@ -157,11 +181,35 @@ class TaskModel {
         courseName: courseName,
         subjectName: subjectName,
         groupId: groupId,
-        subtasks: subtasks,
+        subtasks: subtasks ?? this.subtasks,
         attachments: attachments,
         createdAt: createdAt,
         completed: completed ?? this.completed,
+        categoryId: categoryId ?? this.categoryId,
+        categoryName: categoryName ?? this.categoryName,
+        parentTaskId: parentTaskId ?? this.parentTaskId,
       );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'description': description,
+        'priority': priority.index + 1,
+        'priority_id': priority.index + 1,
+        'status': status.name,
+        'due_date': dueDate?.toIso8601String(),
+        'courseId': courseId,
+        'courseName': courseName,
+        'subjectName': subjectName,
+        'groupId': groupId,
+        'subtasks': subtasks.map((s) => s.toJson()).toList(),
+        'attachments': attachments,
+        'created_at': createdAt.toIso8601String(),
+        'completed': completed,
+        'category_id': categoryId,
+        'categoryName': categoryName,
+        'parent_task_id': parentTaskId,
+      };
 
   /// Temporary stub — screens that still reference mockList compile without
   /// errors while they are being migrated to provider-based data fetching.

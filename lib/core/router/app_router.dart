@@ -9,6 +9,7 @@ import '../../features/auth/screens/splash_screen.dart';
 import '../../features/auth/screens/onboarding_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
+import '../../features/auth/screens/registration_success_screen.dart';
 import '../../features/auth/screens/register_academic_profile_screen.dart';
 import '../../features/auth/screens/register_notifications_screen.dart';
 import '../../features/auth/screens/forgot_password_screen.dart';
@@ -21,6 +22,8 @@ import '../../features/tasks/screens/task_create_screen.dart';
 import '../../features/tasks/screens/global_search_screen.dart';
 import '../../features/tasks/screens/categories_management_screen.dart';
 import '../../features/tasks/screens/personal_tasks_screen.dart';
+import '../../features/tasks/screens/personal_task_create_screen.dart';
+import '../../features/tasks/screens/personal_task_detail_screen.dart';
 import '../../features/calendar/screens/calendar_screen.dart';
 import '../../features/calendar/screens/calendar_agenda_screen.dart';
 import '../../features/calendar/screens/calendar_event_create_screen.dart';
@@ -51,6 +54,7 @@ import '../../features/profile/screens/profile_edit_screen.dart';
 import '../../features/profile/screens/settings_screen.dart';
 import '../../features/profile/screens/settings_security_screen.dart';
 import '../../features/evidence/screens/evidence_screen.dart';
+import '../../features/notes/screens/notes_screen.dart';
 import '../../features/admin/screens/admin_shell_screen.dart';
 import '../../features/admin/screens/admin_dashboard_screen.dart';
 import '../../features/admin/screens/admin_users_screen.dart';
@@ -155,6 +159,13 @@ GoRouter createRouter(WidgetRef ref) {
         builder: (_, __) => const RegisterScreen(),
       ),
       GoRoute(
+        path: '/register/success',
+        name: 'register_success',
+        builder: (_, state) => RegistrationSuccessScreen(
+          email: state.extra as String? ?? '',
+        ),
+      ),
+      GoRoute(
         path: '/register/profile',
         name: 'register_academic_profile',
         builder: (_, __) => const RegisterAcademicProfileScreen(),
@@ -218,6 +229,11 @@ GoRouter createRouter(WidgetRef ref) {
             name: 'groups_list',
             builder: (_, __) => const GroupsListScreen(),
           ),
+          GoRoute(
+            path: '/notes',
+            name: 'notes',
+            builder: (_, __) => const NotesScreen(),
+          ),
         ],
       ),
 
@@ -280,6 +296,28 @@ GoRouter createRouter(WidgetRef ref) {
         path: '/tasks/personal',
         name: 'personal_tasks',
         builder: (_, __) => const PersonalTasksScreen(),
+      ),
+      GoRoute(
+        path: '/tasks/personal/create',
+        name: 'personal_task_create',
+        builder: (_, state) => PersonalTaskCreateScreen(
+          parentTaskId: state.uri.queryParameters['parentTaskId'],
+          initialDate: state.uri.queryParameters['date'],
+        ),
+      ),
+      GoRoute(
+        path: '/tasks/personal/:id',
+        name: 'personal_task_detail',
+        builder: (_, state) => PersonalTaskDetailScreen(
+          taskId: int.parse(state.pathParameters['id']!),
+        ),
+      ),
+      GoRoute(
+        path: '/tasks/personal/:id/edit',
+        name: 'personal_task_edit',
+        builder: (_, state) => PersonalTaskCreateScreen(
+          taskId: int.parse(state.pathParameters['id']!),
+        ),
       ),
       GoRoute(
         path: '/tasks/categories',
