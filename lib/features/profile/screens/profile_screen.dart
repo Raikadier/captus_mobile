@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/auth_provider.dart';
-import '../../../shared/widgets/streak_badge.dart';
+import '../../statistics/providers/user_statistics_provider.dart';
+import '../../statistics/utils/streak_messages.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -65,7 +66,8 @@ class ProfileScreen extends ConsumerWidget {
                                 fit: BoxFit.cover,
                                 width: 88,
                                 height: 88,
-                                errorBuilder: (_, __, ___) => _buildAvatarInitial(initial),
+                                errorBuilder: (_, __, ___) =>
+                                    _buildAvatarInitial(initial),
                               )
                             : _buildAvatarInitial(initial),
                       ),
@@ -114,7 +116,7 @@ class ProfileScreen extends ConsumerWidget {
                       fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 16),
-                StreakBadge(days: 0, size: StreakSize.mini),
+                _buildStreakSection(ref),
               ],
             ),
           ),
@@ -174,9 +176,9 @@ class ProfileScreen extends ConsumerWidget {
 
                 const SizedBox(height: 24),
 
-                // Stats
+                // Stats con datos reales
                 Text(
-                  'ESTADÍSTICAS',
+                  'MIS ESTADÍSTICAS',
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
@@ -185,27 +187,7 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Row(
-                  children: [
-                    _StatTile(
-                        icon: Icons.check_circle_rounded,
-                        label: 'Completadas',
-                        value: '42',
-                        color: AppColors.primary),
-                    const SizedBox(width: 8),
-                    _StatTile(
-                        icon: Icons.local_fire_department_rounded,
-                        label: 'Racha',
-                        value: '0d',
-                        color: AppColors.warning),
-                    const SizedBox(width: 8),
-                    _StatTile(
-                        icon: Icons.emoji_events_rounded,
-                        label: 'Logros',
-                        value: '3',
-                        color: const Color(0xFFAB47BC)),
-                  ],
-                ),
+                _buildRealStats(ref),
 
                 const SizedBox(height: 24),
 
@@ -223,7 +205,7 @@ class ProfileScreen extends ConsumerWidget {
                 _InfoCard(children: [
                   _LinkRow(
                     icon: Icons.bar_chart_rounded,
-                    label: 'Mi progreso',
+                    label: 'Mis estadísticas',
                     onTap: () => context.push('/statistics'),
                   ),
                   _LinkRow(
@@ -281,6 +263,205 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
+  /// Sección de racha compacta que aparece debajo del avatar.
+  Widget _buildStreakSection(WidgetRef ref) {
+    final statsAsync = ref.watch(userStatisticsProvider);
+
+    return statsAsync.when(
+      loading: () => const SizedBox(
+        height: 56,
+        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+      ),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (stats) {
+        final streak = stats.currentStreak;
+        final emoji = getStreakEmoji(streak);
+        final title = getStreakTitle(streak);
+        final message = getStreakMessage(streak);
+        final hasStreak = streak > 0;
+
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: hasStreak
+                  ? [
+                      AppColors.warning.withAlpha(30),
+                      AppColors.warning.withAlpha(10),
+                    ]
+                  : [AppColors.surface2, AppColors.surface2],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: hasStreak
+                  ? AppColors.warning.withAlpha(100)
+                  : AppColors.border,
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Text(emoji, style: const TextStyle(fontSize: 28)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          hasStreak ? '$streak días' : 'Sin racha',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: hasStreak
+                                ? AppColors.warning
+                                : AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: hasStreak
+                                ? AppColors.warning.withAlpha(25)
+                                : AppColors.surface3,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            title,
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: hasStreak
+                                  ? AppColors.warning
+                                  : AppColors.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      message,
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color: AppColors.textSecondary,
+                        fontStyle: FontStyle.italic,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              if (stats.bestStreak > 0) ...[
+                const SizedBox(width: 8),
+                Column(
+                  children: [
+                    const Icon(Icons.emoji_events_rounded,
+                        color: AppColors.warning, size: 16),
+                    Text(
+                      '${stats.bestStreak}',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.warning,
+                      ),
+                    ),
+                    Text(
+                      'mejor',
+                      style: GoogleFonts.inter(
+                        fontSize: 9,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// Tiles de estadísticas con datos reales del proveedor.
+  Widget _buildRealStats(WidgetRef ref) {
+    final statsAsync = ref.watch(userStatisticsProvider);
+
+    return statsAsync.when(
+      loading: () => Row(
+        children: [
+          _StatTile(
+              icon: Icons.check_circle_rounded,
+              label: 'Completadas',
+              value: '…',
+              color: AppColors.primary),
+          const SizedBox(width: 8),
+          _StatTile(
+              icon: Icons.local_fire_department_rounded,
+              label: 'Racha',
+              value: '…',
+              color: AppColors.warning),
+          const SizedBox(width: 8),
+          _StatTile(
+              icon: Icons.percent_rounded,
+              label: 'Éxito',
+              value: '…',
+              color: const Color(0xFFAB47BC)),
+        ],
+      ),
+      error: (_, __) => Row(
+        children: [
+          _StatTile(
+              icon: Icons.check_circle_rounded,
+              label: 'Completadas',
+              value: '-',
+              color: AppColors.primary),
+          const SizedBox(width: 8),
+          _StatTile(
+              icon: Icons.local_fire_department_rounded,
+              label: 'Racha',
+              value: '-',
+              color: AppColors.warning),
+          const SizedBox(width: 8),
+          _StatTile(
+              icon: Icons.percent_rounded,
+              label: 'Éxito',
+              value: '-',
+              color: const Color(0xFFAB47BC)),
+        ],
+      ),
+      data: (stats) => Row(
+        children: [
+          _StatTile(
+              icon: Icons.check_circle_rounded,
+              label: 'Completadas',
+              value: '${stats.completedTasks}',
+              color: AppColors.primary),
+          const SizedBox(width: 8),
+          _StatTile(
+              icon: Icons.local_fire_department_rounded,
+              label: 'Racha',
+              value: '${stats.currentStreak}d',
+              color: AppColors.warning),
+          const SizedBox(width: 8),
+          _StatTile(
+              icon: Icons.percent_rounded,
+              label: 'Éxito',
+              value:
+                  '${(stats.completionPercentage * 100).toInt()}%',
+              color: const Color(0xFFAB47BC)),
+        ],
+      ),
+    );
+  }
+
   void _confirmLogout(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
@@ -298,7 +479,6 @@ class ProfileScreen extends ConsumerWidget {
             onPressed: () {
               Navigator.pop(context);
               ref.read(authProvider.notifier).signOut();
-              // Router redirect handles navigation to /login automatically.
             },
             child: Text('Salir', style: TextStyle(color: AppColors.error)),
           ),
