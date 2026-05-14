@@ -41,7 +41,9 @@ jobs:
         run: flutter analyze --fatal-infos
 
       - name: Run unit tests
-        run: flutter test --coverage
+        # Exclude test/integration/ — those tests require a full running backend
+        # and Supabase instance (they are end-to-end, not unit tests).
+        run: flutter test test/unit test/models test/providers --coverage
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
