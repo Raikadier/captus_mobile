@@ -28,6 +28,7 @@ class ProfileScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: AppColors.surface,
         title: const Text('Mi Perfil'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
