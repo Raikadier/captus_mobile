@@ -75,8 +75,8 @@ class _SuperAdminInstitutionDetailScreenState
                 child: const Text('Cancelar')),
             ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white),
+                    backgroundColor: AppColors.error,
+                    foregroundColor: AppColors.textOnPrimary),
                 onPressed: () => Navigator.pop(context, true),
                 child: const Text('Deshabilitar')),
           ],
@@ -316,7 +316,7 @@ class _SuperAdminInstitutionDetailScreenState
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 3),
                         decoration: BoxDecoration(
-                          color: (isActive ? Colors.green : Colors.red)
+                          color: (isActive ? AppColors.success : AppColors.error)
                               .withAlpha(20),
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -325,7 +325,7 @@ class _SuperAdminInstitutionDetailScreenState
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: isActive ? Colors.green : Colors.red,
+                            color: isActive ? AppColors.success : AppColors.error,
                           ),
                         ),
                       ),

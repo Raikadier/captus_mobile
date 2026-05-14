@@ -111,7 +111,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
               child: const Text('Cancelar')),
           TextButton(
               onPressed: () => Navigator.pop(context, true),
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              style: TextButton.styleFrom(foregroundColor: AppColors.error),
               child: const Text('Eliminar')),
         ],
       ),
@@ -234,7 +234,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
               onPressed: _showEditDialog,
             ),
             IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              icon: const Icon(Icons.delete_outline, color: AppColors.error),
               onPressed: _deleteProject,
             ),
           ],
@@ -558,7 +558,7 @@ class _CommentsTab extends StatelessWidget {
                                           : Icons.favorite_border_rounded,
                                       size: 18,
                                       color: liked
-                                          ? Colors.red
+                                          ? AppColors.error
                                           : AppColors.textSecondary,
                                     ),
                                     const SizedBox(width: 4),
@@ -644,10 +644,10 @@ class _CommentsTab extends StatelessWidget {
                             width: 16,
                             height: 16,
                             child: CircularProgressIndicator(
-                                strokeWidth: 2, color: Colors.white),
+                                strokeWidth: 2, color: AppColors.textOnPrimary),
                           )
                         : const Icon(Icons.send_rounded,
-                            color: Colors.white, size: 18),
+                            color: AppColors.textOnPrimary, size: 18),
                     onPressed: submitting ? null : onSubmit,
                     padding: EdgeInsets.zero,
                   ),

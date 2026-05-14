@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
@@ -13,6 +14,13 @@ void main() {
     late ApiClient apiClient;
 
     setUp(() {
+      // flutter_dotenv must be initialised before ApiClient accesses Env.apiBaseUrl.
+      // testLoad() pre-populates the env map without reading a file.
+      dotenv.testLoad(mergeWith: {
+        'API_BASE_URL': 'http://localhost:3000/api',
+        'SUPABASE_URL': 'https://test.supabase.co',
+        'SUPABASE_ANON_KEY': 'test-anon-key',
+      });
       mockDio = MockDio();
       apiClient = ApiClient.instance;
     });

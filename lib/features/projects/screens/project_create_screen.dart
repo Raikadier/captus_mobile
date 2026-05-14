@@ -191,14 +191,14 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                            strokeWidth: 2, color: AppColors.textOnPrimary),
                       )
                     : Text(
                         'Crear proyecto',
                         style: GoogleFonts.inter(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
-                            color: Colors.white),
+                            color: AppColors.textOnPrimary),
                       ),
               ),
             ),

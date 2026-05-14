@@ -246,7 +246,7 @@ class _AiStudyScreenState extends ConsumerState<AiStudyScreen> {
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: selected
-                                  ? Colors.white
+                                  ? AppColors.textOnPrimary
                                   : AppColors.textPrimary,
                             ),
                           ),
@@ -374,17 +374,17 @@ class _AiStudyScreenState extends ConsumerState<AiStudyScreen> {
                               height: 18,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                color: Colors.white,
+                                color: AppColors.textOnPrimary,
                               ),
                             )
                           : const Icon(Icons.auto_awesome_rounded,
-                              color: Colors.white),
+                              color: AppColors.textOnPrimary),
                       label: Text(
                         _isLoading ? 'Generando…' : 'Generar',
                         style: GoogleFonts.inter(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: AppColors.textOnPrimary,
                         ),
                       ),
                     ),

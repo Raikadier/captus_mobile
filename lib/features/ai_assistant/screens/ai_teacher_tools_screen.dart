@@ -732,15 +732,15 @@ class _GenerateButton extends StatelessWidget {
                 width: 16,
                 height: 16,
                 child: CircularProgressIndicator(
-                    strokeWidth: 2, color: Colors.white),
+                    strokeWidth: 2, color: AppColors.textOnPrimary),
               )
-            : const Icon(Icons.auto_awesome_rounded, color: Colors.white),
+            : const Icon(Icons.auto_awesome_rounded, color: AppColors.textOnPrimary),
         label: Text(
           sending ? 'Generando…' : 'Generar con IA',
           style: GoogleFonts.inter(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.white),
+              color: AppColors.textOnPrimary),
         ),
       ),
     );

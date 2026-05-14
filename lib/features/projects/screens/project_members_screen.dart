@@ -215,7 +215,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
               child: const Text('Cancelar')),
           TextButton(
               onPressed: () => Navigator.pop(context, true),
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              style: TextButton.styleFrom(foregroundColor: AppColors.error),
               child: const Text('Remover')),
         ],
       ),
@@ -258,7 +258,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
         icon: const Icon(Icons.person_add_rounded),
         label: const Text('Agregar'),
         backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.textOnPrimary,
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -403,10 +403,10 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                                           child: ListTile(
                                             leading: Icon(
                                                 Icons.person_remove_outlined,
-                                                color: Colors.red),
+                                                color: AppColors.error),
                                             title: Text('Remover',
                                                 style: TextStyle(
-                                                    color: Colors.red)),
+                                                    color: AppColors.error)),
                                             contentPadding: EdgeInsets.zero,
                                           ),
                                         ),

@@ -73,7 +73,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
         icon: const Icon(Icons.add),
         label: const Text('Nuevo proyecto'),
         backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.textOnPrimary,
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -248,9 +248,9 @@ class _EmptyView extends StatelessWidget {
             style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primary),
             onPressed: onCreate,
-            icon: const Icon(Icons.add, color: Colors.white),
+            icon: const Icon(Icons.add, color: AppColors.textOnPrimary),
             label: Text('Crear proyecto',
-                style: GoogleFonts.inter(color: Colors.white)),
+                style: GoogleFonts.inter(color: AppColors.textOnPrimary)),
           ),
         ],
       ),
