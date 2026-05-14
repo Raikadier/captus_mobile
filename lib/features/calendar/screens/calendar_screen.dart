@@ -48,7 +48,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       builder: (context) => Container(
         margin: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -85,7 +85,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               subtitle: const Text('Tarea personal'),
               onTap: () {
                 Navigator.pop(context);
-                context.push('/tasks/personal/create');
+                final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDay);
+                context.push('/tasks/personal/create?date=$dateStr');
               },
             ),
             ListTile(
@@ -529,54 +530,56 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        'Seleccionar mes y año',
-        style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          DropdownButtonFormField<int>(
-            value: _selectedMonth,
-            decoration: const InputDecoration(
-              labelText: 'Mes',
-              border: OutlineInputBorder(),
-            ),
-            items: List.generate(12, (index) => DropdownMenuItem(
-              value: index + 1,
-              child: Text(_months[index]),
-            )),
-            onChanged: (value) {
-              if (value != null) {
-                setState(() => _selectedMonth = value);
-              }
-            },
-          ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<int>(
-            value: _selectedYear,
-            decoration: const InputDecoration(
-              labelText: 'Año',
-              border: OutlineInputBorder(),
-            ),
-            items: List.generate(11, (index) => DropdownMenuItem(
-              value: DateTime.now().year - 5 + index,
-              child: Text((DateTime.now().year - 5 + index).toString()),
-            )),
-            onChanged: (value) {
-              if (value != null) {
-                setState(() => _selectedYear = value);
-              }
-            },
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancelar'),
+    return Theme(
+      data: Theme.of(context).copyWith(dialogBackgroundColor: Colors.white),
+      child: AlertDialog(
+        title: Text(
+          'Seleccionar mes y año',
+          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
         ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DropdownButtonFormField<int>(
+              value: _selectedMonth,
+              decoration: const InputDecoration(
+                labelText: 'Mes',
+                border: OutlineInputBorder(),
+              ),
+              items: List.generate(12, (index) => DropdownMenuItem(
+                value: index + 1,
+                child: Text(_months[index]),
+              )),
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() => _selectedMonth = value);
+                }
+              },
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<int>(
+              value: _selectedYear,
+              decoration: const InputDecoration(
+                labelText: 'Año',
+                border: OutlineInputBorder(),
+              ),
+              items: List.generate(11, (index) => DropdownMenuItem(
+                value: DateTime.now().year - 5 + index,
+                child: Text((DateTime.now().year - 5 + index).toString()),
+              )),
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() => _selectedYear = value);
+                }
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
         ElevatedButton(
           onPressed: () {
             widget.onSelected(DateTime(_selectedYear, _selectedMonth));
@@ -584,6 +587,7 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
           child: const Text('Aceptar'),
         ),
       ],
+      ),
     );
   }
 }

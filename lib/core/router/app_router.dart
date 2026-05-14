@@ -302,6 +302,7 @@ GoRouter createRouter(WidgetRef ref) {
         name: 'personal_task_create',
         builder: (_, state) => PersonalTaskCreateScreen(
           parentTaskId: state.uri.queryParameters['parentTaskId'],
+          initialDate: state.uri.queryParameters['date'],
         ),
       ),
       GoRoute(

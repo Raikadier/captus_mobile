@@ -11,11 +11,13 @@ import '../../../models/task.dart';
 class PersonalTaskCreateScreen extends ConsumerStatefulWidget {
   final int? taskId;
   final String? parentTaskId;
+  final String? initialDate;
 
   const PersonalTaskCreateScreen({
     super.key,
     this.taskId,
     this.parentTaskId,
+    this.initialDate,
   });
 
   @override
@@ -42,6 +44,12 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
   @override
   void initState() {
     super.initState();
+    if (widget.initialDate != null && !_isEditing && !_isSubtask) {
+      final parsed = DateTime.tryParse(widget.initialDate!);
+      if (parsed != null) {
+        _dueDate = parsed;
+      }
+    }
     if (_isEditing || _isSubtask) {
       _loadTaskData();
     }
