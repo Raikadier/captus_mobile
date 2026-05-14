@@ -186,6 +186,18 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                       label: 'Editar institución',
                       onTap: () => context.push('/admin/institution'),
                     ),
+                    const SizedBox(height: 8),
+                    _QuickAction(
+                      icon: Icons.grading_rounded,
+                      label: 'Escalas de calificación',
+                      onTap: () => context.go('/admin/grading-scales'),
+                    ),
+                    const SizedBox(height: 8),
+                    _QuickAction(
+                      icon: Icons.date_range_rounded,
+                      label: 'Períodos académicos',
+                      onTap: () => context.go('/admin/periods'),
+                    ),
                   ]),
                 ),
               ),

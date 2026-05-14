@@ -299,6 +299,60 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
             ),
           ),
 
+          // ── Herramientas IA ──────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: GestureDetector(
+              onTap: () => context.push('/ai/teacher-tools'),
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withAlpha(40),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.auto_awesome_rounded,
+                          color: Colors.white, size: 22),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Herramientas IA Docente',
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            'Genera planes, rúbricas y bancos de preguntas',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: Colors.white.withAlpha(200),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.arrow_forward_ios_rounded,
+                        size: 14, color: Colors.white),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
             SliverToBoxAdapter(
               child: SizedBox(
                 height: 120 + MediaQuery.of(context).padding.bottom,

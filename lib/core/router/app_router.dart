@@ -61,6 +61,9 @@ import '../../features/admin/screens/admin_dashboard_screen.dart';
 import '../../features/admin/screens/admin_users_screen.dart';
 import '../../features/admin/screens/admin_courses_screen.dart';
 import '../../features/admin/screens/admin_institution_screen.dart';
+import '../../features/admin/screens/admin_grading_scales_screen.dart';
+import '../../features/admin/screens/admin_periods_screen.dart';
+import '../../features/superadmin/screens/superadmin_institution_detail_screen.dart';
 import '../../features/superadmin/screens/superadmin_shell_screen.dart';
 import '../../features/superadmin/screens/superadmin_dashboard_screen.dart';
 import '../../features/superadmin/screens/superadmin_institutions_screen.dart';
@@ -71,6 +74,12 @@ import '../../features/assignments/screens/teacher_assignments_list_screen.dart'
 import '../../features/assignments/screens/teacher_assignment_create_screen.dart';
 import '../../features/assignments/screens/assignment_review_screen.dart';
 import '../../features/assignments/screens/student_submission_create_screen.dart';
+import '../../features/ai_assistant/screens/ai_study_screen.dart';
+import '../../features/ai_assistant/screens/ai_teacher_tools_screen.dart';
+import '../../features/projects/screens/projects_list_screen.dart';
+import '../../features/projects/screens/project_create_screen.dart';
+import '../../features/projects/screens/project_detail_screen.dart';
+import '../../features/projects/screens/project_members_screen.dart';
 
 // Use the shared key so FCM / deep-link code can navigate imperatively
 final _rootNavigatorKey  = RouterService.navigatorKey;
@@ -235,6 +244,11 @@ GoRouter createRouter(WidgetRef ref) {
             name: 'notes',
             builder: (_, __) => const NotesScreen(),
           ),
+          GoRoute(
+            path: '/projects',
+            name: 'projects_list',
+            builder: (_, __) => const ProjectsListScreen(),
+          ),
           // ── Courses tabs (must be inside ShellRoute to show bottom nav) ──
           GoRoute(
             path: '/courses',
@@ -279,6 +293,16 @@ GoRouter createRouter(WidgetRef ref) {
             path: '/admin/courses',
             name: 'admin_courses',
             builder: (_, __) => const AdminCoursesScreen(),
+          ),
+          GoRoute(
+            path: '/admin/grading-scales',
+            name: 'admin_grading_scales',
+            builder: (_, __) => const AdminGradingScalesScreen(),
+          ),
+          GoRoute(
+            path: '/admin/periods',
+            name: 'admin_periods',
+            builder: (_, __) => const AdminPeriodsScreen(),
           ),
         ],
       ),
@@ -397,6 +421,25 @@ GoRouter createRouter(WidgetRef ref) {
         ),
       ),
 
+      GoRoute(
+        path: '/superadmin/institutions/:id',
+        name: 'superadmin_institution_detail',
+        builder: (_, state) => SuperAdminInstitutionDetailScreen(
+          institutionId: state.pathParameters['id']!,
+          institutionName: state.uri.queryParameters['name'] ?? '',
+        ),
+      ),
+
+      GoRoute(
+        path: '/ai/study',
+        name: 'ai_study',
+        builder: (_, __) => const AiStudyScreen(),
+      ),
+      GoRoute(
+        path: '/ai/teacher-tools',
+        name: 'ai_teacher_tools',
+        builder: (_, __) => const AiTeacherToolsScreen(),
+      ),
       GoRoute(
         path: '/ai/history',
         name: 'ai_chat_history',
@@ -567,6 +610,26 @@ GoRouter createRouter(WidgetRef ref) {
         path: '/scan-qr',
         name: 'scan_qr_join_course',
         builder: (_, __) => const ScanQRJoinCourseScreen(),
+      ),
+
+      GoRoute(
+        path: '/projects/create',
+        name: 'project_create',
+        builder: (_, __) => const ProjectCreateScreen(),
+      ),
+      GoRoute(
+        path: '/projects/:id/members',
+        name: 'project_members',
+        builder: (_, state) => ProjectMembersScreen(
+          projectId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: '/projects/:id',
+        name: 'project_detail',
+        builder: (_, state) => ProjectDetailScreen(
+          projectId: state.pathParameters['id']!,
+        ),
       ),
     ],
   );

@@ -116,6 +116,34 @@ class HomeDashboardScreen extends ConsumerWidget {
             ),
           ],
 
+          // ── Accesos rápidos ─────────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _QuickAccessCard(
+                      icon: Icons.folder_rounded,
+                      label: 'Proyectos',
+                      color: const Color(0xFF8B5CF6),
+                      onTap: () => context.push('/projects'),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _QuickAccessCard(
+                      icon: Icons.menu_book_rounded,
+                      label: 'Modo Estudio',
+                      color: AppColors.primary,
+                      onTap: () => context.push('/ai/study'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
           // ── Mis materias ────────────────────────────────────────────────────
           _SectionHeader(
             title: 'Mis materias',
@@ -553,6 +581,54 @@ class _DayDot extends StatelessWidget {
               : null,
         ),
       ],
+    );
+  }
+}
+
+// ── Quick access card ──────────────────────────────────────────────────────────
+
+class _QuickAccessCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _QuickAccessCard({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        decoration: BoxDecoration(
+          color: color.withAlpha(18),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: color.withAlpha(50)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 22),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                label,
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios_rounded, size: 12, color: color),
+          ],
+        ),
+      ),
     );
   }
 }

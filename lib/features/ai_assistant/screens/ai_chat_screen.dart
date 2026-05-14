@@ -144,6 +144,7 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
               child: chatState.messages.isEmpty
                   ? _EmptyState(
                       suggestions: suggestions,
+                      userRole: userRole,
                       onSuggestion: (s) {
                         ref.read(aiChatProvider.notifier).send(s);
                         _scrollToBottom();
@@ -224,6 +225,20 @@ class _Header extends ConsumerWidget {
               ],
             ),
           ),
+          if (userRole == 'teacher')
+            IconButton(
+              icon: const Icon(Icons.build_circle_outlined,
+                  color: AppColors.textSecondary),
+              tooltip: 'Herramientas IA',
+              onPressed: () => context.push('/ai/teacher-tools'),
+            )
+          else
+            IconButton(
+              icon: const Icon(Icons.menu_book_rounded,
+                  color: AppColors.textSecondary),
+              tooltip: 'Modo Estudio',
+              onPressed: () => context.push('/ai/study'),
+            ),
           IconButton(
             icon: const Icon(Icons.history_rounded,
                 color: AppColors.textSecondary),
@@ -610,8 +625,13 @@ class _TypingBubbleState extends State<_TypingBubble>
 class _EmptyState extends StatelessWidget {
   final List<String> suggestions;
   final void Function(String) onSuggestion;
+  final String userRole;
 
-  const _EmptyState({required this.suggestions, required this.onSuggestion});
+  const _EmptyState({
+    required this.suggestions,
+    required this.onSuggestion,
+    required this.userRole,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -673,6 +693,52 @@ class _EmptyState extends StatelessWidget {
                   ),
                 ),
               )),
+          const SizedBox(height: 8),
+          // ── Mode Study / Teacher Tools shortcut ─────────────────────────
+          Builder(
+            builder: (context) => InkWell(
+              onTap: () => context.push(
+                userRole == 'teacher' ? '/ai/teacher-tools' : '/ai/study',
+              ),
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withAlpha(10),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                      color: AppColors.primary.withAlpha(50)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      userRole == 'teacher'
+                          ? Icons.build_circle_outlined
+                          : Icons.menu_book_rounded,
+                      color: AppColors.primary,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        userRole == 'teacher'
+                            ? 'Herramientas IA Docente'
+                            : 'Modo Estudio IA',
+                        style: GoogleFonts.inter(
+                            fontSize: 14,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    const Icon(Icons.arrow_forward_ios_rounded,
+                        size: 14, color: AppColors.primary),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

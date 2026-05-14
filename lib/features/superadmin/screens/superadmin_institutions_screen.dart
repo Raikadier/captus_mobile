@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../services/superadmin_service.dart';
 
 class SuperAdminInstitutionsScreen extends StatefulWidget {
@@ -169,7 +170,9 @@ class _SuperAdminInstitutionsScreenState
                       value: active,
                       onChanged: (_) => _toggleActive(inst),
                     ),
-                    onTap: () => _showDetail(inst),
+                    onTap: () => context.push(
+                      '/superadmin/institutions/${inst['id']}?name=${Uri.encodeComponent(inst['name'] as String? ?? '')}',
+                    ),
                   );
                 },
               ),
@@ -179,109 +182,4 @@ class _SuperAdminInstitutionsScreenState
     );
   }
 
-  void _showDetail(Map<String, dynamic> inst) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => DraggableScrollableSheet(
-        expand: false,
-        initialChildSize: 0.6,
-        builder: (_, ctrl) => _InstitutionDetailSheet(
-          instId: inst['id'] as String,
-          svc: _svc,
-          scrollController: ctrl,
-        ),
-      ),
-    );
-  }
-}
-
-class _InstitutionDetailSheet extends StatefulWidget {
-  final String instId;
-  final SuperAdminService svc;
-  final ScrollController scrollController;
-
-  const _InstitutionDetailSheet({
-    required this.instId,
-    required this.svc,
-    required this.scrollController,
-  });
-
-  @override
-  State<_InstitutionDetailSheet> createState() =>
-      _InstitutionDetailSheetState();
-}
-
-class _InstitutionDetailSheetState extends State<_InstitutionDetailSheet> {
-  Map<String, dynamic>? _detail;
-  bool _loading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    try {
-      final d = await widget.svc.getInstitution(widget.instId);
-      setState(() { _detail = d; _loading = false; });
-    } catch (_) {
-      setState(() { _loading = false; });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_loading) return const Center(child: CircularProgressIndicator());
-    if (_detail == null) return const Center(child: Text('Error cargando detalles'));
-
-    final stats = _detail!['stats'] as Map<String, dynamic>? ?? {};
-    return ListView(
-      controller: widget.scrollController,
-      padding: const EdgeInsets.all(20),
-      children: [
-        Text(_detail!['name'] as String? ?? '',
-            style: Theme.of(context).textTheme.titleLarge),
-        if (_detail!['email'] != null) ...[
-          const SizedBox(height: 4),
-          Text(_detail!['email'] as String),
-        ],
-        const Divider(height: 24),
-        _StatRow('Miembros',    '${stats['members'] ?? 0}'),
-        _StatRow('Cursos',      '${stats['courses'] ?? 0}'),
-        _StatRow('Matrículas',  '${stats['enrollments'] ?? 0}'),
-        if ((stats['byRole'] as Map?) != null) ...[
-          const SizedBox(height: 8),
-          _StatRow('  Admins',   '${(stats['byRole'] as Map)['admin'] ?? 0}'),
-          _StatRow('  Docentes', '${(stats['byRole'] as Map)['teacher'] ?? 0}'),
-          _StatRow('  Alumnos',  '${(stats['byRole'] as Map)['student'] ?? 0}'),
-        ],
-        if (_detail!['disabled_reason'] != null) ...[
-          const Divider(height: 24),
-          Text('Motivo deshabilitación:',
-              style: Theme.of(context).textTheme.labelMedium),
-          Text(_detail!['disabled_reason'] as String),
-        ],
-      ],
-    );
-  }
-}
-
-class _StatRow extends StatelessWidget {
-  final String label;
-  final String value;
-  const _StatRow(this.label, this.value);
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(label),
-            Text(value,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-          ],
-        ),
-      );
 }
