@@ -41,7 +41,9 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
         debug {
-            applicationIdSuffix = ".debug"
+            // applicationIdSuffix = ".debug" — removed: google-services.json only
+            // registers com.captus.app; adding the suffix breaks processDebugGoogleServices.
+            // To re-enable, register com.captus.app.debug in Firebase Console first.
             versionNameSuffix = "-debug"
         }
     }
