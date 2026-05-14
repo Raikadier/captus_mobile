@@ -6,7 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/cactus_refresh.dart';
+import '../../../shared/widgets/captus_dialog.dart';
 import '../../../shared/widgets/captus_fab.dart';
+import '../../../shared/widgets/loading_shimmer.dart';
 
 class TasksListScreen extends ConsumerStatefulWidget {
   const TasksListScreen({super.key});
@@ -179,7 +181,6 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
                     ? const Center(child: Text('No hay tareas'))
                     : CactusRefresh(
                         onRefresh: _fetchTasks,
-                        color: AppColors.primary,
                         child: ListView.builder(
                           padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
                           itemCount: _tasks.length,
@@ -219,6 +220,96 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
     );
   }
 }
+
+// ── Swipeable task card ───────────────────────────────────────────────────────
+
+class _SwipeableTaskCard extends StatelessWidget {
+  final String id;
+  final String title;
+  final String description;
+  final String type;
+  final VoidCallback? onTap;
+  final VoidCallback onComplete;
+  final VoidCallback onDelete;
+
+  const _SwipeableTaskCard({
+    super.key,
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.type,
+    required this.onComplete,
+    required this.onDelete,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dismissible(
+      key: ValueKey(id),
+      // ← swipe left → complete (green)
+      background: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: AppColors.success,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.only(left: 20),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.check_circle_outline_rounded,
+                color: Colors.white, size: 22),
+            SizedBox(width: 8),
+            Text('Completar',
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w600)),
+          ],
+        ),
+      ),
+      // → swipe right → delete (red)
+      secondaryBackground: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: AppColors.error,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Text('Eliminar',
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w600)),
+            SizedBox(width: 8),
+            Icon(Icons.delete_outline_rounded,
+                color: Colors.white, size: 22),
+          ],
+        ),
+      ),
+      confirmDismiss: (direction) async {
+        if (direction == DismissDirection.startToEnd) {
+          onComplete();
+          return false; // handled manually
+        } else {
+          onDelete();
+          return false; // handled manually
+        }
+      },
+      child: _TaskCardContent(
+        title: title,
+        description: description,
+        type: type,
+        onTap: onTap,
+      ),
+    );
+  }
+}
+
+// ── Task card content ─────────────────────────────────────────────────────────
 
 class _TaskCardContent extends StatelessWidget {
   final String title;
