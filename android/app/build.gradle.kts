@@ -1,6 +1,6 @@
 plugins {
     id("com.android.application")
-    id("com.google.gms.google-services")   // FlutterFire / FCM
+    // id("com.google.gms.google-services")   // Disabled: needs google-services.json with com.captus.app
     id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
 }
@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId = "com.captus.app"
-        minSdk = 21            // Required by flutter_local_notifications
+        minSdk = flutter.minSdkVersion            // Required by flutter_local_notifications
         targetSdk = 34         // Android 14 — current stable target
         versionCode = flutter.versionCode
         versionName = flutter.versionName
