@@ -55,6 +55,7 @@ import '../../features/profile/screens/settings_screen.dart';
 import '../../features/profile/screens/settings_security_screen.dart';
 import '../../features/evidence/screens/evidence_screen.dart';
 import '../../features/notes/screens/notes_screen.dart';
+import '../../features/notes/screens/note_detail_screen.dart';
 import '../../features/admin/screens/admin_shell_screen.dart';
 import '../../features/admin/screens/admin_dashboard_screen.dart';
 import '../../features/admin/screens/admin_users_screen.dart';
@@ -235,6 +236,19 @@ GoRouter createRouter(WidgetRef ref) {
             builder: (_, __) => const NotesScreen(),
           ),
         ],
+      ),
+
+      GoRoute(
+        path: '/notes/new',
+        name: 'note_create',
+        builder: (_, __) => const NoteDetailScreen(),
+      ),
+      GoRoute(
+        path: '/notes/:id',
+        name: 'note_edit',
+        builder: (_, state) => NoteDetailScreen(
+          noteId: int.parse(state.pathParameters['id']!),
+        ),
       ),
 
       ShellRoute(
