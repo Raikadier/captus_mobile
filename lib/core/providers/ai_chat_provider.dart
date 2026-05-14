@@ -28,12 +28,14 @@ class AiChatState {
   final List<ChatMessage> messages;
   final bool isLoading;
   final String? conversationId;
+  final String? conversationTitle;
   final String? error;
 
   const AiChatState({
     this.messages = const [],
     this.isLoading = false,
     this.conversationId,
+    this.conversationTitle,
     this.error,
   });
 
@@ -41,12 +43,14 @@ class AiChatState {
     List<ChatMessage>? messages,
     bool? isLoading,
     String? conversationId,
+    String? conversationTitle,
     String? error,
   }) =>
       AiChatState(
         messages: messages ?? this.messages,
         isLoading: isLoading ?? this.isLoading,
         conversationId: conversationId ?? this.conversationId,
+        conversationTitle: conversationTitle ?? this.conversationTitle,
         error: error,
       );
 }
@@ -59,15 +63,28 @@ class AiChatNotifier extends Notifier<AiChatState> {
 
   @override
   AiChatState build() {
+    // Resume most recent conversation after first frame (silent, non-blocking)
+    Future.microtask(_loadLatestConversation);
     return AiChatState(
       messages: [
-        ChatMessage(
-          text: _welcomeText,
-          isUser: false,
-          time: DateTime.now(),
-        )
+        ChatMessage(text: _welcomeText, isUser: false, time: DateTime.now()),
       ],
     );
+  }
+
+  Future<void> _loadLatestConversation() async {
+    try {
+      final res = await ApiClient.instance.get<List<dynamic>>('/ai/conversations');
+      final list = res.data;
+      if (list == null || list.isEmpty) return;
+      final latest = list.first as Map<String, dynamic>;
+      final id    = latest['id']?.toString();
+      final title = (latest['title'] as String?)?.trim();
+      if (id == null) return;
+      await loadConversation(id, title: title);
+    } catch (_) {
+      // Silently ignore — fresh conversation on error
+    }
   }
 
   Future<void> send(String text) async {
@@ -108,10 +125,15 @@ class AiChatNotifier extends Notifier<AiChatState> {
         data: toolData,
       );
 
+      // Use first user message as conversation title (truncated)
+      final newTitle = state.conversationTitle ??
+          (text.length > 50 ? '${text.substring(0, 50)}…' : text);
+
       state = state.copyWith(
         messages: [...state.messages, botMsg],
         isLoading: false,
         conversationId: convId ?? state.conversationId,
+        conversationTitle: newTitle,
       );
     } catch (e) {
       final errMsg = e.toString().replaceFirst('Exception: ', '');
@@ -130,10 +152,12 @@ class AiChatNotifier extends Notifier<AiChatState> {
     }
   }
 
-  /// Loads an existing conversation from the backend by ID.
-  /// Replaces the current state with the fetched messages.
-  Future<void> loadConversation(String conversationId) async {
-    state = state.copyWith(isLoading: true, conversationId: conversationId);
+  Future<void> loadConversation(String conversationId, {String? title}) async {
+    state = state.copyWith(
+      isLoading: true,
+      conversationId: conversationId,
+      conversationTitle: title,
+    );
     try {
       final res = await ApiClient.instance
           .get<List<dynamic>>('/ai/conversations/$conversationId/messages');
@@ -154,6 +178,7 @@ class AiChatNotifier extends Notifier<AiChatState> {
             : loaded,
         isLoading: false,
         conversationId: conversationId,
+        conversationTitle: title,
       );
     } on Exception {
       state = state.copyWith(isLoading: false);
@@ -163,12 +188,9 @@ class AiChatNotifier extends Notifier<AiChatState> {
   void clear() {
     state = AiChatState(
       messages: [
-        ChatMessage(
-          text: _welcomeText,
-          isUser: false,
-          time: DateTime.now(),
-        )
+        ChatMessage(text: _welcomeText, isUser: false, time: DateTime.now()),
       ],
+      // Reset title — new conversation has none until first send
     );
   }
 }
