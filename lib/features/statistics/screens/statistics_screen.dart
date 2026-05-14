@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/widgets/count_up_text.dart';
 import '../providers/user_statistics_provider.dart';
 import '../providers/achievements_provider.dart';
 import '../../../models/achievement.dart';
@@ -139,8 +140,8 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '${stats.currentStreak}',
+                  CountUpText(
+                    value: stats.currentStreak,
                     style: GoogleFonts.inter(
                       fontSize: 56,
                       fontWeight: FontWeight.bold,
@@ -338,7 +339,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             icon: Icons.check_circle_rounded,
             iconColor: AppColors.primary,
             label: 'Completadas',
-            value: '${stats.completedTasks}',
+            value: stats.completedTasks,
             subtitle: 'en total',
           ),
         ),
@@ -348,7 +349,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             icon: Icons.assignment_rounded,
             iconColor: AppColors.info,
             label: 'Totales',
-            value: '${stats.totalTasks}',
+            value: stats.totalTasks,
             subtitle: 'creadas',
           ),
         ),
@@ -358,8 +359,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             icon: Icons.percent_rounded,
             iconColor: const Color(0xFFAB47BC),
             label: 'Éxito',
-            value: '${(stats.completionPercentage * 100).toInt()}%',
+            value: (stats.completionPercentage * 100).toInt(),
             subtitle: 'completado',
+            valueSuffix: '%',
           ),
         ),
       ],
@@ -1126,8 +1128,9 @@ class _StatCard extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
   final String label;
-  final String value;
+  final num value;
   final String subtitle;
+  final String valueSuffix;
 
   const _StatCard({
     required this.icon,
@@ -1135,6 +1138,7 @@ class _StatCard extends StatelessWidget {
     required this.label,
     required this.value,
     required this.subtitle,
+    this.valueSuffix = '',
   });
 
   @override
@@ -1150,8 +1154,9 @@ class _StatCard extends StatelessWidget {
         children: [
           Icon(icon, color: iconColor, size: 22),
           const SizedBox(height: 8),
-          Text(
-            value,
+          CountUpText(
+            value: value,
+            suffix: valueSuffix,
             style: GoogleFonts.inter(
               fontSize: 20,
               fontWeight: FontWeight.bold,
