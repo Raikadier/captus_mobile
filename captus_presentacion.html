@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Captus — Presentación Técnica</title>
+<style>
+  :root {
+    --green: #1DB954;
+    --green-dark: #17A148;
+    --green-light: #E6F9EE;
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --surface3: #252525;
+    --border: #2a2a2a;
+    --text: #f0f0f0;
+    --text-secondary: #999;
+    --error: #e53935;
+    --warning: #f57c00;
+    --info: #1565c0;
+    --purple: #7c4dff;
+    --amber: #ffd54f;
+    --radius: 12px;
+    --radius-lg: 20px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(13,13,13,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-logo {
+    font-size: 20px; font-weight: 800;
+    color: var(--green); letter-spacing: -0.5px;
+    margin-right: 16px; white-space: nowrap;
+  }
+  .nav-links {
+    display: flex; gap: 4px; overflow-x: auto;
+    scrollbar-width: none; flex: 1;
+  }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-links a {
+    color: var(--text-secondary); text-decoration: none;
+    font-size: 13px; padding: 6px 10px; border-radius: 6px;
+    white-space: nowrap; transition: all 0.15s;
+  }
+  .nav-links a:hover { color: var(--text); background: var(--surface2); }
+  .nav-links a.active { color: var(--green); background: rgba(29,185,84,0.12); }
+
+  /* ── SECTIONS ── */
+  section {
+    min-height: 100vh; padding: 80px 24px 60px;
+    max-width: 1100px; margin: 0 auto;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  section.compact { min-height: auto; padding: 60px 24px; }
+
+  .section-tag {
+    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--green);
+    margin-bottom: 12px;
+  }
+  h1 { font-size: clamp(36px,6vw,72px); font-weight: 800; line-height: 1.1; }
+  h2 { font-size: clamp(24px,4vw,42px); font-weight: 700; line-height: 1.2; margin-bottom: 16px; }
+  h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+  p { color: var(--text-secondary); font-size: 15px; max-width: 720px; }
+
+  .highlight { color: var(--green); }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px; margin-top: 32px;
+  }
+  .card-sm { padding: 18px; border-radius: 10px; }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600; padding: 4px 10px;
+    border-radius: 999px; white-space: nowrap;
+  }
+  .badge-green { background: rgba(29,185,84,0.15); color: var(--green); }
+  .badge-purple { background: rgba(124,77,255,0.15); color: var(--purple); }
+  .badge-amber { background: rgba(255,213,79,0.15); color: var(--amber); }
+  .badge-red { background: rgba(229,57,53,0.15); color: var(--error); }
+  .badge-blue { background: rgba(21,101,192,0.15); color: #5c9ce6; }
+  .badge-gray { background: var(--surface2); color: var(--text-secondary); }
+
+  /* ── CODE ── */
+  pre {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px; overflow-x: auto;
+    font-size: 13px; line-height: 1.7;
+    font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  }
+  code { font-family: inherit; }
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .str { color: #c3e88d; }
+  .cm { color: #546e7a; font-style: italic; }
+  .nu { color: #f78c6c; }
+  .ty { color: #ffcb6b; }
+  .prop { color: #80cbc4; }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow {
+    display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap; margin-top: 20px;
+  }
+  .flow-node {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 14px;
+    font-size: 13px; font-weight: 500; white-space: nowrap;
+  }
+  .flow-node.green { border-color: var(--green); color: var(--green); background: rgba(29,185,84,0.08); }
+  .flow-node.purple { border-color: var(--purple); color: var(--purple); background: rgba(124,77,255,0.08); }
+  .flow-node.amber { border-color: var(--amber); color: var(--amber); background: rgba(255,213,79,0.08); }
+  .flow-node.red { border-color: var(--error); color: var(--error); background: rgba(229,57,53,0.08); }
+  .flow-arrow { color: var(--text-secondary); font-size: 18px; }
+
+  /* ── TABLE ── */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 20px; }
+  th { background: var(--surface2); color: var(--text-secondary); font-size: 11px;
+       letter-spacing: 1px; text-transform: uppercase; padding: 10px 14px; text-align: left; }
+  td { padding: 10px 14px; border-top: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: var(--surface2); }
+
+  /* ── HERO ── */
+  .hero { text-align: center; }
+  .hero h1 { margin-bottom: 20px; }
+  .hero p { margin: 0 auto 32px; font-size: 17px; }
+  .badges-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+
+  .cactus-icon {
+    font-size: 80px; display: block; margin-bottom: 20px;
+    filter: drop-shadow(0 0 30px rgba(29,185,84,0.4));
+  }
+
+  /* ── ARCH DIAGRAM ── */
+  .arch-box {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px 20px; background: var(--surface);
+    position: relative;
+  }
+  .arch-box::before {
+    content: attr(data-label);
+    position: absolute; top: -10px; left: 12px;
+    background: var(--bg); padding: 0 8px;
+    font-size: 11px; color: var(--text-secondary);
+    font-weight: 600; letter-spacing: 0.5px;
+  }
+  .arch-box.green { border-color: var(--green); }
+  .arch-box.green::before { color: var(--green); }
+  .arch-box.purple { border-color: var(--purple); }
+  .arch-box.purple::before { color: var(--purple); }
+  .arch-box.amber { border-color: var(--amber); }
+  .arch-box.amber::before { color: var(--amber); }
+  .arch-box.blue { border-color: #5c9ce6; }
+  .arch-box.blue::before { color: #5c9ce6; }
+
+  .arch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 28px; }
+  @media(max-width:600px) { .arch-grid { grid-template-columns: 1fr; } }
+
+  .layer-stack {
+    display: flex; flex-direction: column; gap: 8px; margin-top: 20px;
+  }
+  .layer {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--surface2); border-radius: 8px; padding: 10px 16px;
+    border-left: 3px solid var(--border);
+  }
+  .layer.green { border-color: var(--green); }
+  .layer.blue { border-color: #5c9ce6; }
+  .layer.purple { border-color: var(--purple); }
+  .layer.amber { border-color: var(--amber); }
+  .layer.red { border-color: var(--error); }
+  .layer-icon { font-size: 18px; width: 28px; text-align: center; }
+  .layer-text { flex: 1; }
+  .layer-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .layer-detail { font-size: 11px; color: var(--text-secondary); }
+
+  /* ── MODULES GRID ── */
+  .module-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2); border-radius: 8px;
+    padding: 8px 12px; font-size: 13px;
+  }
+  .module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px; margin-top: 20px;
+  }
+
+  /* ── STATE DIAGRAM ── */
+  .state-box {
+    background: var(--surface2); border-radius: 8px; padding: 12px 16px;
+    border: 1px solid var(--border); font-size: 13px;
+  }
+  .state-box.active { border-color: var(--green); }
+  .state-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+  @media(max-width:500px) { .state-grid { grid-template-columns: 1fr; } }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none; border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  /* ── PILL STEPS ── */
+  .steps { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+  .step {
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  .step-num {
+    min-width: 28px; height: 28px;
+    background: rgba(29,185,84,0.15); color: var(--green);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; margin-top: 2px;
+  }
+  .step-content { flex: 1; }
+  .step-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .step-desc { font-size: 13px; color: var(--text-secondary); }
+
+  /* ── SECURITY ITEMS ── */
+  .sec-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .sec-item:last-child { border-bottom: none; }
+  .sec-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center; padding: 40px 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-secondary); font-size: 13px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width: 768px) {
+    nav { padding: 0 16px; }
+    section { padding: 72px 16px 48px; }
+    .card-grid { grid-template-columns: 1fr; }
+    h2 { font-size: 28px; }
+  }
+
+  /* ── SCROLL ANIMATION ── */
+  .fade-in {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .fade-in.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─────────────────────────────────────────────────────────────────── -->
+<nav>
+  <span class="nav-logo">🌵 Captus</span>
+  <div class="nav-links">
+    <a href="#overview" class="active">Inicio</a>
+    <a href="#stack">Stack</a>
+    <a href="#arquitectura">Arquitectura</a>
+    <a href="#estados">Estados</a>
+    <a href="#ai">IA</a>
+    <a href="#modulos">Módulos</a>
+    <a href="#codigo">Código</a>
+    <a href="#db">Base de datos</a>
+    <a href="#seguridad">Seguridad</a>
+    <a href="#cicd">CI/CD</a>
+  </div>
+</nav>
+
+<!-- ─── HERO ─────────────────────────────────────────────────────────────────── -->
+<section id="overview" class="hero">
+  <span class="cactus-icon">🌵</span>
+  <div class="section-tag">Proyecto Final — Ingeniería de Sistemas</div>
+  <h1>Captus <span class="highlight">Platform</span></h1>
+  <p>Plataforma académica inteligente para universidades latinoamericanas. Gestión de tareas, cursos, asignaciones, asistente con IA y administración institucional — todo en una app móvil Flutter + backend Node.js.</p>
+  <div class="badges-row">
+    <span class="badge badge-green">Flutter 3.32</span>
+    <span class="badge badge-blue">Node.js 20</span>
+    <span class="badge badge-purple">Supabase PostgreSQL</span>
+    <span class="badge badge-amber">Google Gemini AI</span>
+    <span class="badge badge-red">Firebase FCM</span>
+    <span class="badge badge-gray">Vercel Serverless</span>
+  </div>
+  <div style="margin-top:40px; display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; max-width:700px; margin-left:auto; margin-right:auto;">
+    <div class="card card-sm" style="text-align:center">
+      <div style="font-size:32px;font-weight:800;color:var(--green)">585</div>
+      <div style="font-size:12px;color:var(--text-secondary)">Usuarios seed</div>
+    </div>
+    <div class="card card-sm" style="text-align:center">
+      <div style="font-size:32px;font-weight:800;color:var(--purple)">78+</div>
+      <div style="font-size:12px;color:var(--text-secondary)">Pantallas Flutter</div>
+    </div>
+    <div class="card card-sm" style="text-align:center">
+      <div style="font-size:32px;font-weight:800;color:var(--amber)">529+</div>
+      <div style="font-size:12px;color:var(--text-secondary)">Tests backend</div>
+    </div>
+    <div class="card card-sm" style="text-align:center">
+      <div style="font-size:32px;font-weight:800;color:#5c9ce6">4</div>
+      <div style="font-size:12px;color:var(--text-secondary)">Roles de usuario</div>
+    </div>
+    <div class="card card-sm" style="text-align:center">
+      <div style="font-size:32px;font-weight:800;color:var(--green)">26</div>
+      <div style="font-size:12px;color:var(--text-secondary)">Rutas API REST</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── STACK ─────────────────────────────────────────────────────────────────── -->
+<section id="stack" class="compact fade-in">
+  <div class="section-tag">Tecnologías</div>
+  <h2>Stack <span class="highlight">Tecnológico</span></h2>
+  <p>Arquitectura full-stack moderna: cliente móvil Flutter, API REST en Node.js, base de datos PostgreSQL en Supabase, IA con Google Gemini, y notificaciones push con Firebase.</p>
+
+  <div class="arch-grid" style="grid-template-columns:1fr 1fr; margin-top:28px;">
+    <div class="arch-box green" data-label="MOBILE — Flutter">
+      <div class="layer-stack" style="margin-top:0">
+        <div class="layer green"><span class="layer-icon">📱</span><div class="layer-text"><div class="layer-name">Flutter 3.32 + Dart 3.5</div><div class="layer-detail">Framework UI multiplataforma</div></div></div>
+        <div class="layer blue"><span class="layer-icon">🔄</span><div class="layer-text"><div class="layer-name">Riverpod 3</div><div class="layer-detail">Gestión de estado reactiva</div></div></div>
+        <div class="layer purple"><span class="layer-icon">🧭</span><div class="layer-text"><div class="layer-name">GoRouter 16</div><div class="layer-detail">Navegación declarativa + guards</div></div></div>
+        <div class="layer amber"><span class="layer-icon">🌐</span><div class="layer-text"><div class="layer-name">Dio 5</div><div class="layer-detail">HTTP client con interceptors</div></div></div>
+        <div class="layer red"><span class="layer-icon">🔥</span><div class="layer-text"><div class="layer-name">Firebase (FCM + Crashlytics)</div><div class="layer-detail">Notificaciones + monitoreo</div></div></div>
+      </div>
+    </div>
+
+    <div class="arch-box blue" data-label="BACKEND — Node.js">
+      <div class="layer-stack" style="margin-top:0">
+        <div class="layer blue"><span class="layer-icon">⚡</span><div class="layer-text"><div class="layer-name">Express 5 (ES Modules)</div><div class="layer-detail">Framework HTTP REST</div></div></div>
+        <div class="layer purple"><span class="layer-icon">🗄️</span><div class="layer-text"><div class="layer-name">Supabase PostgreSQL 17</div><div class="layer-detail">DB + Auth JWT</div></div></div>
+        <div class="layer amber"><span class="layer-icon">🤖</span><div class="layer-text"><div class="layer-name">Google Gemini Flash/Pro</div><div class="layer-detail">LLM para asistente IA</div></div></div>
+        <div class="layer green"><span class="layer-icon">✅</span><div class="layer-text"><div class="layer-name">Zod + Winston + Sentry</div><div class="layer-detail">Validación + logging + errores</div></div></div>
+        <div class="layer red"><span class="layer-icon">☁️</span><div class="layer-text"><div class="layer-name">Vercel Serverless</div><div class="layer-detail">Deploy automático</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ARQUITECTURA ────────────────────────────────────────────────────────── -->
+<section id="arquitectura" class="compact fade-in">
+  <div class="section-tag">Diseño del sistema</div>
+  <h2>Arquitectura <span class="highlight">del Sistema</span></h2>
+
+  <div class="card" style="margin-top:28px">
+    <h3 style="margin-bottom:20px">Flujo de una petición completa</h3>
+    <div class="flow">
+      <div class="flow-node green">📱 App Flutter</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">ApiClient (Dio)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">HTTPS + JWT</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node green">Vercel Edge</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Express App</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Middleware chain</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Controller</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Service</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Repository</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node purple">Supabase DB</div>
+    </div>
+  </div>
+
+  <div class="arch-grid" style="margin-top:20px; grid-template-columns:1fr 1fr">
+    <div class="card">
+      <h3>📱 Flutter — Capas</h3>
+      <div class="layer-stack">
+        <div class="layer green"><span class="layer-icon">🖥️</span><div class="layer-text"><div class="layer-name">Screens (78+ pantallas)</div><div class="layer-detail">ConsumerWidget / ConsumerStatefulWidget</div></div></div>
+        <div class="layer blue"><span class="layer-icon">🔄</span><div class="layer-text"><div class="layer-name">Providers (Riverpod)</div><div class="layer-detail">NotifierProvider · FutureProvider · StreamProvider</div></div></div>
+        <div class="layer purple"><span class="layer-icon">⚙️</span><div class="layer-text"><div class="layer-name">Services</div><div class="layer-detail">ApiClient · FCM · Monitoring · Router</div></div></div>
+        <div class="layer amber"><span class="layer-icon">📦</span><div class="layer-text"><div class="layer-name">Models</div><div class="layer-detail">fromJson() / toJson() puro Dart</div></div></div>
+        <div class="layer red"><span class="layer-icon">💾</span><div class="layer-text"><div class="layer-name">Local Storage</div><div class="layer-detail">Hive + SharedPreferences + SQLite</div></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>⚙️ Backend — Capas</h3>
+      <div class="layer-stack">
+        <div class="layer red"><span class="layer-icon">🛡️</span><div class="layer-text"><div class="layer-name">Middleware Chain</div><div class="layer-detail">Helmet → CORS → Rate Limit → Auth → Zod</div></div></div>
+        <div class="layer blue"><span class="layer-icon">🎯</span><div class="layer-text"><div class="layer-name">Routes + Controllers</div><div class="layer-detail">26 archivos de ruta, 25 controllers</div></div></div>
+        <div class="layer green"><span class="layer-icon">🧠</span><div class="layer-text"><div class="layer-name">Services (29)</div><div class="layer-detail">Lógica de negocio pura</div></div></div>
+        <div class="layer purple"><span class="layer-icon">🗃️</span><div class="layer-text"><div class="layer-name">Repositories (33)</div><div class="layer-detail">Acceso a datos via Supabase SDK</div></div></div>
+        <div class="layer amber"><span class="layer-icon">📊</span><div class="layer-text"><div class="layer-name">Supabase PostgreSQL</div><div class="layer-detail">RLS policies + migrations</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h3>📡 Middleware Chain — Express</h3>
+    <div class="flow" style="margin-top:16px; gap:6px">
+      <div class="flow-node red">Helmet CSP</div><div class="flow-arrow">→</div>
+      <div class="flow-node">CORS</div><div class="flow-arrow">→</div>
+      <div class="flow-node">Gzip</div><div class="flow-arrow">→</div>
+      <div class="flow-node red">Rate Limit<br><small>200/min</small></div><div class="flow-arrow">→</div>
+      <div class="flow-node">Body 50KB</div><div class="flow-arrow">→</div>
+      <div class="flow-node">Morgan logs</div><div class="flow-arrow">→</div>
+      <div class="flow-node green">JWT Auth</div><div class="flow-arrow">→</div>
+      <div class="flow-node green">Role Check</div><div class="flow-arrow">→</div>
+      <div class="flow-node green">Zod Validate</div><div class="flow-arrow">→</div>
+      <div class="flow-node blue">Handler</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ESTADOS ─────────────────────────────────────────────────────────────── -->
+<section id="estados" class="compact fade-in">
+  <div class="section-tag">Flutter Riverpod</div>
+  <h2>Gestión de <span class="highlight">Estados</span></h2>
+  <p>Toda la lógica de negocio del cliente vive en providers Riverpod. Las pantallas son <strong>widgets puros</strong> que solo leen estado — nunca lo calculan.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <h3>🔄 NotifierProvider</h3>
+      <p style="font-size:13px">Estado mutable con acciones. Usado para lógica compleja con múltiples transiciones.</p>
+      <div class="state-grid">
+        <div class="state-box active"><strong style="color:var(--green)">aiChatProvider</strong><br><small>send() · stop() · clear()</small></div>
+        <div class="state-box active"><strong style="color:var(--green)">tasksProvider</strong><br><small>create · complete · delete</small></div>
+        <div class="state-box"><strong>authProvider</strong><br><small>signIn · signOut · refresh</small></div>
+        <div class="state-box"><strong>categoriesProvider</strong><br><small>CRUD categorías</small></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>⏳ FutureProvider</h3>
+      <p style="font-size:13px">Datos asíncronos de una sola carga. Se invalidan para refrescar.</p>
+      <div class="state-grid">
+        <div class="state-box"><strong>coursesProvider</strong><br><small>GET /api/courses</small></div>
+        <div class="state-box"><strong>statisticsProvider</strong><br><small>GET /api/statistics</small></div>
+        <div class="state-box"><strong>assignmentsProvider</strong><br><small>GET /api/assignments</small></div>
+        <div class="state-box"><strong>notificationsProvider</strong><br><small>GET /api/notifications</small></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>🌊 StreamProvider</h3>
+      <p style="font-size:13px">Estado reactivo que se actualiza automáticamente cuando el stream emite.</p>
+      <div class="state-grid">
+        <div class="state-box active"><strong style="color:var(--green)">connectivityProvider</strong><br><small>online/offline en tiempo real</small></div>
+        <div class="state-box"><strong>authStateProvider</strong><br><small>sesión Supabase</small></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>Ciclo de vida del estado — AiChatNotifier</h3>
+    <div class="flow" style="margin-top:16px; flex-wrap:wrap">
+      <div class="flow-node">Initial<br><small>1 mensaje bienvenida</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node green">send("msg")<br><small>isLoading = true</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node amber">awaiting AI<br><small>CancelToken activo</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node green">Response<br><small>steps + botMsg</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">isLoading = false</div>
+    </div>
+    <div class="flow" style="margin-top:12px">
+      <div class="flow-node red">stop()<br><small>cancela CancelToken</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">"Respuesta detenida"</div>
+      <div style="margin-left:24px; color:var(--text-secondary); font-size:13px">ó</div>
+      <div class="flow-node red" style="margin-left:24px">clear()</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Reset completo</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>Cómo una pantalla consume un provider</h3>
+    <pre><code><span class="cm">// 1. La pantalla extiende ConsumerWidget (sin setState)</span>
+<span class="kw">class</span> <span class="ty">HomeScreen</span> <span class="kw">extends</span> <span class="ty">ConsumerWidget</span> {
+  <span class="prop">@override</span>
+  <span class="ty">Widget</span> <span class="fn">build</span>(<span class="ty">BuildContext</span> ctx, <span class="ty">WidgetRef</span> ref) {
+
+    <span class="cm">// 2. ref.watch → reconstruye cuando cambia</span>
+    <span class="kw">final</span> tasksAsync = ref.<span class="fn">watch</span>(tasksProvider);
+
+    <span class="cm">// 3. .when() maneja loading / error / data automáticamente</span>
+    <span class="kw">return</span> tasksAsync.<span class="fn">when</span>(
+      loading: () =&gt; <span class="ty">TaskListShimmer</span>(),
+      error:   (e, _) =&gt; <span class="ty">ErrorState</span>(message: <span class="fn">friendlyError</span>(e)),
+      data:    (tasks) =&gt; <span class="ty">TaskList</span>(tasks: tasks),
+    );
+  }
+}</code></pre>
+  </div>
+</section>
+
+<!-- ─── IA ──────────────────────────────────────────────────────────────────── -->
+<section id="ai" class="compact fade-in">
+  <div class="section-tag">Módulo IA</div>
+  <h2>Pipeline del <span class="highlight">Asistente IA</span></h2>
+  <p>El asistente no es un chatbot genérico. Clasifica la intención del mensaje y ejecuta herramientas reales sobre la base de datos del usuario antes de responder.</p>
+
+  <div class="card" style="margin-top:28px">
+    <h3>Arquitectura del Pipeline — 6 archivos en <code style="color:var(--green)">src/ai/</code></h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">routerAgent.js — Clasificación de intención</div>
+          <div class="step-desc">Recibe el mensaje del usuario. Llama a Gemini Flash (modelo rápido y barato) con el prompt del sistema para clasificar el intent. Intents posibles: <span class="badge badge-green">task</span> <span class="badge badge-blue">note</span> <span class="badge badge-purple">course</span> <span class="badge badge-amber">assignment</span> <span class="badge badge-gray">general</span></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">context.js — RAG: contexto dinámico</div>
+          <div class="step-desc">Según el intent clasificado, hace queries específicas a Supabase para traer los datos relevantes del usuario (tareas pendientes, cursos activos, notas recientes, etc.) y los inyecta en el prompt.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">orchestrator.js — Ejecución de herramientas</div>
+          <div class="step-desc">Con el contexto inyectado, llama a Gemini Pro. Si el modelo decide ejecutar una herramienta (crear tarea, buscar curso, etc.), el orchestrator la ejecuta en la BD y retorna el resultado al modelo para que genere la respuesta final.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">toolRegistry.js — 20+ herramientas registradas</div>
+          <div class="step-desc">Cada herramienta tiene un schema JSON que el modelo usa para llamarla. Ejemplos: <code>create_task</code>, <code>list_pending_tasks</code>, <code>get_course_detail</code>, <code>create_note</code>, <code>mark_task_complete</code>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">Respuesta estructurada al cliente</div>
+          <div class="step-desc">El backend retorna <code>{ result, steps[], actionPerformed, conversationId }</code>. El cliente Flutter muestra los steps expandibles y persiste la conversación.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>Ejemplo de herramienta en toolRegistry.js</h3>
+    <pre><code><span class="cm">// Cada herramienta: schema para el modelo + handler que ejecuta la acción</span>
+{
+  <span class="prop">name</span>: <span class="str">'create_task'</span>,
+  <span class="prop">description</span>: <span class="str">'Crea una nueva tarea para el usuario'</span>,
+  <span class="prop">parameters</span>: {
+    <span class="prop">title</span>: { <span class="prop">type</span>: <span class="str">'string'</span>, <span class="prop">required</span>: <span class="kw">true</span> },
+    <span class="prop">due_date</span>: { <span class="prop">type</span>: <span class="str">'string'</span>, <span class="prop">format</span>: <span class="str">'ISO8601'</span> },
+    <span class="prop">priority</span>: { <span class="prop">type</span>: <span class="str">'string'</span>, <span class="prop">enum</span>: [<span class="str">'high'</span>, <span class="str">'medium'</span>, <span class="str">'low'</span>] }
+  },
+  <span class="prop">handler</span>: <span class="kw">async</span> (args, userId) =&gt; {
+    <span class="kw">const</span> task = <span class="kw">await</span> taskService.<span class="fn">create</span>({ ...args, userId });
+    <span class="kw">return</span> { <span class="prop">success</span>: <span class="kw">true</span>, <span class="prop">task</span> };
+  }
+}</code></pre>
+  </div>
+</section>
+
+<!-- ─── MÓDULOS ─────────────────────────────────────────────────────────────── -->
+<section id="modulos" class="compact fade-in">
+  <div class="section-tag">Estructura del proyecto</div>
+  <h2>Módulos y <span class="highlight">Estructura</span></h2>
+
+  <div class="arch-grid">
+    <div class="card">
+      <h3>📱 lib/features/ — 17 módulos Flutter</h3>
+      <div class="module-grid">
+        <div class="module-pill">🔐 auth</div>
+        <div class="module-pill">🏠 home</div>
+        <div class="module-pill">✅ tasks</div>
+        <div class="module-pill">🎓 courses</div>
+        <div class="module-pill">📝 assignments</div>
+        <div class="module-pill">🤖 ai_assistant</div>
+        <div class="module-pill">📅 calendar</div>
+        <div class="module-pill">📊 statistics</div>
+        <div class="module-pill">📓 notes</div>
+        <div class="module-pill">🔔 notifications</div>
+        <div class="module-pill">👥 groups</div>
+        <div class="module-pill">📷 evidence</div>
+        <div class="module-pill">👤 profile</div>
+        <div class="module-pill">🏛️ admin</div>
+        <div class="module-pill">🌐 superadmin</div>
+        <div class="module-pill">🧭 shell</div>
+        <div class="module-pill">📊 statistics_teacher</div>
+      </div>
+      <p style="margin-top:12px;font-size:12px">Cada módulo: <code>screens/</code> · <code>providers/</code> · <code>services/</code> · <code>repositories/</code></p>
+    </div>
+    <div class="card">
+      <h3>⚙️ src/ — Backend Node.js</h3>
+      <div class="module-grid">
+        <div class="module-pill">🤖 ai/</div>
+        <div class="module-pill">🎯 routes/</div>
+        <div class="module-pill">🎮 controllers/</div>
+        <div class="module-pill">🧠 services/</div>
+        <div class="module-pill">🗃️ repositories/</div>
+        <div class="module-pill">🛡️ middlewares/</div>
+        <div class="module-pill">📚 lib/</div>
+        <div class="module-pill">✅ shared/schemas</div>
+        <div class="module-pill">🧪 __tests__/</div>
+      </div>
+      <hr class="divider" style="margin:16px 0">
+      <h3>📡 Roles del sistema</h3>
+      <table>
+        <tr><th>Rol</th><th>Acceso</th></tr>
+        <tr><td><span class="badge badge-green">student</span></td><td>Tareas, cursos, IA, entregas</td></tr>
+        <tr><td><span class="badge badge-blue">teacher</span></td><td>+ Gestión cursos, calificación</td></tr>
+        <tr><td><span class="badge badge-amber">admin</span></td><td>+ Panel institución, usuarios</td></tr>
+        <tr><td><span class="badge badge-red">superadmin</span></td><td>+ Toda la plataforma, auditoría</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>Navegación por rol — GoRouter</h3>
+    <div class="flow" style="flex-direction:column; gap:10px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div class="flow-node">/splash</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">/onboarding</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">/login</div>
+        <div class="flow-arrow">→</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div class="flow-node green">/home <small>(student)</small></div>
+          <div class="flow-node blue">/home/teacher</div>
+          <div class="flow-node amber">/admin/dashboard</div>
+          <div class="flow-node red">/superadmin/dashboard</div>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:12px;font-size:13px">Los guards en <code>app_router.dart</code> verifican <code>authProvider</code> y <code>userRoleProvider</code> en cada cambio de ruta. Deep links: <code style="color:var(--green)">captus://join?code=XXXX</code></p>
+  </div>
+</section>
+
+<!-- ─── CÓDIGO ─────────────────────────────────────────────────────────────── -->
+<section id="codigo" class="compact fade-in">
+  <div class="section-tag">Líneas importantes</div>
+  <h2>Código <span class="highlight">Clave</span></h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <h3>1. Auth guard en GoRouter</h3>
+      <p style="font-size:12px;margin-bottom:12px">Redirige al login si no hay sesión, al rol correcto si la hay.</p>
+      <pre style="font-size:11px"><code><span class="fn">redirect</span>: (context, state) {
+  <span class="kw">final</span> auth = ref.<span class="fn">read</span>(authProvider);
+  <span class="kw">final</span> isAuth = auth.asData?.value.<span class="prop">isAuthenticated</span>;
+  <span class="kw">if</span> (isAuth != <span class="kw">true</span>) <span class="kw">return</span> <span class="str">'/login'</span>;
+
+  <span class="kw">final</span> role = ref.<span class="fn">read</span>(userRoleProvider);
+  <span class="kw">if</span> (role == <span class="str">'admin'</span>) <span class="kw">return</span> <span class="str">'/admin/dashboard'</span>;
+  <span class="kw">if</span> (role == <span class="str">'superadmin'</span>) <span class="kw">return</span> <span class="str">'/superadmin'</span>;
+  <span class="kw">return null</span>; <span class="cm">// permite continuar</span>
+}</code></pre>
+    </div>
+    <div class="card">
+      <h3>2. ApiClient — Interceptor JWT</h3>
+      <p style="font-size:12px;margin-bottom:12px">Inyecta el token de Supabase en cada petición automáticamente.</p>
+      <pre style="font-size:11px"><code>_dio.interceptors.<span class="fn">add</span>(<span class="ty">InterceptorsWrapper</span>(
+  onRequest: (options, handler) {
+    <span class="kw">final</span> token = <span class="ty">Supabase</span>.instance
+      .client.auth.currentSession?.<span class="prop">accessToken</span>;
+    <span class="kw">if</span> (token != <span class="kw">null</span>) {
+      options.headers[<span class="str">'Authorization'</span>]
+        = <span class="str">'Bearer $token'</span>;
+    }
+    <span class="kw">return</span> handler.<span class="fn">next</span>(options);
+  },
+));</code></pre>
+    </div>
+    <div class="card">
+      <h3>3. Validate Middleware — Zod</h3>
+      <p style="font-size:12px;margin-bottom:12px">Un middleware genérico que valida el body con cualquier schema Zod.</p>
+      <pre style="font-size:11px"><code><span class="cm">// Un middleware reutilizable para cualquier endpoint</span>
+<span class="kw">export const</span> <span class="fn">validate</span> = (schema) =&gt; (req, res, next) =&gt; {
+  <span class="kw">const</span> result = schema.<span class="fn">safeParse</span>(req.body);
+  <span class="kw">if</span> (!result.<span class="prop">success</span>) {
+    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="nu">400</span>).<span class="fn">json</span>({
+      <span class="prop">error</span>: { <span class="prop">code</span>: <span class="str">'VALIDATION_ERROR'</span>,
+               <span class="prop">details</span>: result.<span class="prop">error</span>.<span class="prop">issues</span> }
+    });
+  }
+  req.body = result.<span class="prop">data</span>; <span class="cm">// datos ya parseados</span>
+  <span class="kw">return</span> <span class="fn">next</span>();
+};</code></pre>
+    </div>
+    <div class="card">
+      <h3>4. friendlyError() — Errores en español</h3>
+      <p style="font-size:12px;margin-bottom:12px">Convierte cualquier excepción en un mensaje legible para el usuario.</p>
+      <pre style="font-size:11px"><code><span class="ty">String</span> <span class="fn">friendlyError</span>(<span class="ty">Object</span> e) {
+  <span class="kw">if</span> (e <span class="kw">is</span> <span class="ty">DioException</span>) {
+    <span class="kw">switch</span> (e.<span class="prop">type</span>) {
+      <span class="kw">case</span> <span class="ty">DioExceptionType</span>.<span class="prop">connectionTimeout</span>:
+        <span class="kw">return</span> <span class="str">'Conexión tardó demasiado.'</span>;
+      <span class="kw">case</span> <span class="ty">DioExceptionType</span>.<span class="prop">badResponse</span>:
+        <span class="kw">return</span> <span class="fn">_fromStatusCode</span>(e.response?.statusCode);
+    }
+  }
+  <span class="cm">// Nunca expone stack traces al usuario</span>
+  <span class="kw">return</span> <span class="str">'Algo salió mal. Intenta de nuevo.'</span>;
+}</code></pre>
+    </div>
+    <div class="card">
+      <h3>5. AiChatNotifier — send()</h3>
+      <p style="font-size:12px;margin-bottom:12px">La operación más compleja del cliente: envía mensaje, maneja cancelación y parsea la respuesta estructurada.</p>
+      <pre style="font-size:11px"><code><span class="ty">Future</span>&lt;<span class="ty">void</span>&gt; <span class="fn">send</span>(<span class="ty">String</span> text) <span class="kw">async</span> {
+  _cancelToken = <span class="ty">CancelToken</span>();
+  state = state.<span class="fn">copyWith</span>(isLoading: <span class="kw">true</span>);
+
+  <span class="kw">final</span> res = <span class="kw">await</span> <span class="ty">ApiClient</span>.instance.<span class="fn">post</span>(
+    <span class="str">'/ai/chat'</span>,
+    data: { <span class="str">'message'</span>: text },
+    cancelToken: _cancelToken, <span class="cm">// ← cancelable</span>
+  );
+
+  <span class="kw">final</span> steps = (res.data[<span class="str">'steps'</span>] <span class="kw">as</span> <span class="ty">List</span>)
+    .map(<span class="ty">AiStep</span>.fromJson).toList();
+
+  state = state.<span class="fn">copyWith</span>(
+    messages: [...state.messages, botMsg],
+    steps: steps, isLoading: <span class="kw">false</span>,
+  );
+}</code></pre>
+    </div>
+    <div class="card">
+      <h3>6. connectivityProvider — Stream reactivo</h3>
+      <p style="font-size:12px;margin-bottom:12px">Detecta cambios de red en tiempo real. El banner offline se actualiza automáticamente.</p>
+      <pre style="font-size:11px"><code><span class="cm">// Emite true/false cada vez que cambia la conectividad</span>
+<span class="kw">final</span> connectivityProvider =
+  <span class="ty">StreamProvider</span>&lt;<span class="kw">bool</span>&gt;((ref) {
+    <span class="kw">return</span> <span class="ty">Connectivity</span>()
+      .onConnectivityChanged
+      .map((results) =&gt; results.<span class="fn">any</span>(
+        (r) =&gt; r != <span class="ty">ConnectivityResult</span>.none
+      ));
+  });
+
+<span class="cm">// El widget OfflineBanner lo lee sin setState()</span>
+<span class="kw">final</span> isOnline = ref.<span class="fn">watch</span>(isOnlineProvider);</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ─── DB ────────────────────────────────────────────────────────────────── -->
+<section id="db" class="compact fade-in">
+  <div class="section-tag">Supabase PostgreSQL</div>
+  <h2>Base de <span class="highlight">Datos</span></h2>
+  <p>PostgreSQL 17 en Supabase. Autenticación JWT nativa. Row Level Security (RLS) en tablas críticas.</p>
+
+  <div class="card" style="margin-top:28px; overflow-x:auto">
+    <h3 style="margin-bottom:16px">Tablas principales</h3>
+    <table>
+      <thead><tr><th>Tabla</th><th>Filas actuales</th><th>Descripción</th><th>RLS</th></tr></thead>
+      <tbody>
+        <tr><td><code>users</code></td><td>585</td><td>Perfiles, roles, institución</td><td><span class="badge badge-amber">Pendiente</span></td></tr>
+        <tr><td><code>tasks</code></td><td>98</td><td>Tareas con prioridad, categoría, subtareas</td><td><span class="badge badge-green">Activo</span></td></tr>
+        <tr><td><code>courses</code></td><td>21</td><td>Cursos con invite_code QR</td><td><span class="badge badge-amber">Pendiente</span></td></tr>
+        <tr><td><code>course_assignments</code></td><td>51</td><td>Actividades de curso, tipo tarea/evaluación</td><td><span class="badge badge-amber">Pendiente</span></td></tr>
+        <tr><td><code>assignment_submissions</code></td><td>408</td><td>Entregas de estudiantes con calificación</td><td><span class="badge badge-green">Activo</span></td></tr>
+        <tr><td><code>conversations</code></td><td>86</td><td>Conversaciones del asistente IA</td><td><span class="badge badge-green">Activo</span></td></tr>
+        <tr><td><code>messages</code></td><td>179</td><td>Mensajes de cada conversación IA</td><td><span class="badge badge-green">Activo</span></td></tr>
+        <tr><td><code>statistics</code></td><td>—</td><td>Racha, tareas completadas, goal diario</td><td><span class="badge badge-green">Activo</span></td></tr>
+        <tr><td><code>device_tokens</code></td><td>—</td><td>Tokens FCM para notificaciones push</td><td><span class="badge badge-green">Activo</span></td></tr>
+        <tr><td><code>institutions</code></td><td>7</td><td>Instituciones registradas en la plataforma</td><td><span class="badge badge-green">Activo</span></td></tr>
+        <tr><td><code>notifications</code></td><td>—</td><td>Cola de notificaciones in-app</td><td><span class="badge badge-green">Activo</span></td></tr>
+        <tr><td><code>userAchievements</code></td><td>19</td><td>Logros y progreso de cada usuario</td><td><span class="badge badge-green">Activo</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>Relaciones clave</h3>
+    <div class="flow" style="flex-wrap:wrap; gap:10px">
+      <div class="flow-node purple">users</div>
+      <div class="flow-arrow">1:N</div>
+      <div class="flow-node">tasks, notes, events</div>
+      <div style="width:100%;height:0"></div>
+      <div class="flow-node purple">users</div>
+      <div class="flow-arrow">M:N vía</div>
+      <div class="flow-node green">course_enrollments</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">courses</div>
+      <div style="width:100%;height:0"></div>
+      <div class="flow-node">courses</div>
+      <div class="flow-arrow">1:N</div>
+      <div class="flow-node amber">course_assignments</div>
+      <div class="flow-arrow">1:N</div>
+      <div class="flow-node">assignment_submissions</div>
+      <div style="width:100%;height:0"></div>
+      <div class="flow-node purple">users</div>
+      <div class="flow-arrow">1:N</div>
+      <div class="flow-node blue">conversations</div>
+      <div class="flow-arrow">1:N</div>
+      <div class="flow-node">messages</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SEGURIDAD ─────────────────────────────────────────────────────────── -->
+<section id="seguridad" class="compact fade-in">
+  <div class="section-tag">Seguridad</div>
+  <h2>Capas de <span class="highlight">Seguridad</span></h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <h3>🛡️ Backend</h3>
+      <div class="sec-item"><div class="sec-dot"></div><span><strong>Helmet</strong> — 14 headers de seguridad HTTP, Content Security Policy</span></div>
+      <div class="sec-item"><div class="sec-dot"></div><span><strong>Rate Limiting</strong> — 200 req/min general, 30 req/min en /ai/chat</span></div>
+      <div class="sec-item"><div class="sec-dot"></div><span><strong>JWT Supabase</strong> — cada endpoint verifica el token antes de ejecutar</span></div>
+      <div class="sec-item"><div class="sec-dot"></div><span><strong>Zod validation</strong> — body sanitizado y tipado antes del handler</span></div>
+      <div class="sec-item"><div class="sec-dot"></div><span><strong>Payload limit</strong> — máximo 50KB por request (anti DDoS)</span></div>
+      <div class="sec-item"><div class="sec-dot"></div><span><strong>Sentry</strong> — captura y alerta de errores 5xx en producción</span></div>
+      <div class="sec-item"><div class="sec-dot"></div><span><strong>Errores genéricos</strong> — en producción, los 500 retornan mensaje genérico (no expone stack)</span></div>
+    </div>
+    <div class="card">
+      <h3>📱 Mobile</h3>
+      <div class="sec-item"><div class="sec-dot"></div><span><strong>flutter_secure_storage</strong> — tokens JWT en el keychain del sistema operativo</span></div>
+      <div class="sec-item"><div class="sec-dot"></div><span><strong>ProGuard</strong> — minificación y ofuscación en release build</span></div>
+      <div class="sec-item"><div class="sec-dot"></div><span><strong>usesCleartextTraffic: false</strong> — solo HTTPS en Android</span></div>
+      <div class="sec-item"><div class="sec-dot"></div><span><strong>Inactivity logout</strong> — cierre automático de sesión por inactividad</span></div>
+      <div class="sec-item"><div class="sec-dot"></div><span><strong>Crashlytics</strong> — captura errores en Flutter y errores nativos</span></div>
+      <div class="sec-item"><div class="sec-dot"></div><span><strong>friendlyError()</strong> — nunca se exponen mensajes técnicos al usuario</span></div>
+      <div class="sec-item"><div class="sec-dot"></div><span><strong>CancelToken</strong> — peticiones IA cancelables, evita respuestas huérfanas</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CI/CD ──────────────────────────────────────────────────────────────── -->
+<section id="cicd" class="compact fade-in">
+  <div class="section-tag">DevOps</div>
+  <h2>CI/CD y <span class="highlight">Calidad</span></h2>
+
+  <div class="arch-grid">
+    <div class="card">
+      <h3>⚙️ GitHub Actions — Backend</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Lint (ESLint — 0 warnings policy)</div>
+            <div class="step-desc">Cualquier warning rompe el pipeline</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Tests + Coverage (Jest)</div>
+            <div class="step-desc">529 tests, upload a Codecov</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Startup Verification</div>
+            <div class="step-desc">Verifica que app.js carga sin errores de runtime</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Deploy automático a Vercel</div>
+            <div class="step-desc">Serverless function con edge en US-East-1</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>📱 GitHub Actions — Flutter</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">dart analyze --fatal-infos</div>
+            <div class="step-desc">Zero-warning policy en todo el código Dart</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">flutter test --coverage</div>
+            <div class="step-desc">Tests unitarios + integración + widget tests</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Build APK debug (solo en push a master)</div>
+            <div class="step-desc">Artifact 7 días, smoke test de compilación</div>
+          </div>
+        </div>
+      </div>
+      <hr class="divider">
+      <h3>📦 Git Strategy</h3>
+      <p style="font-size:13px">Ramas: <code>feat/*</code> · <code>fix/*</code> · <code>test/*</code> · <code>design/*</code><br>Commits: <a href="https://www.conventionalcommits.org" style="color:var(--green)">Conventional Commits</a><br>PRs con template, review obligatorio antes de merge a master</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>📊 Métricas del proyecto</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:16px">
+      <div style="text-align:center;padding:16px;background:var(--surface2);border-radius:10px">
+        <div style="font-size:28px;font-weight:800;color:var(--green)">529+</div>
+        <div style="font-size:12px;color:var(--text-secondary)">Tests backend</div>
+      </div>
+      <div style="text-align:center;padding:16px;background:var(--surface2);border-radius:10px">
+        <div style="font-size:28px;font-weight:800;color:var(--purple)">30</div>
+        <div style="font-size:12px;color:var(--text-secondary)">Tests Flutter</div>
+      </div>
+      <div style="text-align:center;padding:16px;background:var(--surface2);border-radius:10px">
+        <div style="font-size:28px;font-weight:800;color:var(--amber)">39+</div>
+        <div style="font-size:12px;color:var(--text-secondary)">Pull Requests</div>
+      </div>
+      <div style="text-align:center;padding:16px;background:var(--surface2);border-radius:10px">
+        <div style="font-size:28px;font-weight:800;color:#5c9ce6">2</div>
+        <div style="font-size:12px;color:var(--text-secondary)">Repos GitHub</div>
+      </div>
+      <div style="text-align:center;padding:16px;background:var(--surface2);border-radius:10px">
+        <div style="font-size:28px;font-weight:800;color:var(--green)">100%</div>
+        <div style="font-size:12px;color:var(--text-secondary)">CI automático</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div style="font-size:40px;margin-bottom:12px">🌵</div>
+  <div style="font-size:18px;font-weight:700;margin-bottom:8px">Captus Platform</div>
+  <div>Ingeniería de Sistemas — 6º Semestre · 2026</div>
+  <div style="margin-top:8px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+    <a href="https://github.com/Raikadier/captus_mobile" style="color:var(--green);text-decoration:none">📱 captus_mobile</a>
+    <a href="https://github.com/Raikadier/captus-backend" style="color:var(--green);text-decoration:none">⚙️ captus-backend</a>
+    <a href="https://captus-backend.vercel.app/api-docs" style="color:var(--green);text-decoration:none">📡 API Docs</a>
+  </div>
+</footer>
+
+<script>
+  // ── Active nav highlight on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('.nav-links a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+        if (active) {
+          active.classList.add('active');
+          active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // ── Fade-in on scroll
+  const fadeEls = document.querySelectorAll('.fade-in');
+  const fadeObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+
+  fadeEls.forEach(el => fadeObs.observe(el));
+</script>
+</body>
+</html>
