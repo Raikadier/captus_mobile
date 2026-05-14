@@ -188,7 +188,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
 
       await ref.read(authProvider.notifier).updateProfile(updates);
 
-      if (mounted) context.go('/profile');
+      if (mounted) context.go('/');
     } catch (e) {
       debugPrint('[ProfileEditScreen] Error saving: $e');
       setState(() {
