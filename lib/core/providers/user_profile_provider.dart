@@ -17,7 +17,7 @@ class UserProfileNotifier extends AsyncNotifier<UserModel?> {
 
     try {
       final res = await Supabase.instance.client
-          .from('profiles')
+          .from('users')
           .select()
           .eq('id', authUser.id)
           .maybeSingle();
@@ -26,8 +26,8 @@ class UserProfileNotifier extends AsyncNotifier<UserModel?> {
 
       return UserModel(
         id: res['id']?.toString() ?? '',
-        name: res['full_name']?.toString() ?? 'Usuario',
-        email: authUser.email,
+        name: res['name']?.toString() ?? 'Usuario',
+        email: res['email']?.toString() ?? authUser.email,
         role: res['role']?.toString() == 'teacher'
             ? UserRole.teacher
             : UserRole.student,
@@ -35,7 +35,7 @@ class UserProfileNotifier extends AsyncNotifier<UserModel?> {
         bio: res['bio']?.toString(),
         university: res['university']?.toString(),
         semester: res['semester'] as int?,
-        avatarUrl: res['avatar_url']?.toString(),
+        avatarUrl: res['avatarUrl']?.toString(),
       );
     } catch (e) {
       return null;
@@ -52,7 +52,7 @@ class UserProfileNotifier extends AsyncNotifier<UserModel?> {
     if (user == null) return;
 
     await Supabase.instance.client
-        .from('profiles')
+        .from('users')
         .update(updates)
         .eq('id', user.id);
 

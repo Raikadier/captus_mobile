@@ -370,6 +370,27 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
       avatarUrl: data['avatarUrl'] ?? currentUser.avatarUrl,
     );
 
+    if (Env.hasSupabase) {
+      try {
+        final updateData = <String, dynamic>{};
+        if (data.containsKey('name')) updateData['name'] = data['name'];
+        if (data.containsKey('university')) updateData['university'] = data['university'];
+        if (data.containsKey('career')) updateData['career'] = data['career'];
+        if (data.containsKey('semester')) updateData['semester'] = data['semester'];
+        if (data.containsKey('bio')) updateData['bio'] = data['bio'];
+        if (data.containsKey('avatarUrl')) updateData['avatarUrl'] = data['avatarUrl'];
+
+        if (updateData.isNotEmpty) {
+          await Supabase.instance.client
+              .from('users')
+              .update(updateData)
+              .eq('id', currentUser.id);
+        }
+      } catch (e) {
+        debugPrint('Error updating profile in Supabase: $e');
+      }
+    }
+
     await LocalStorageService.setCurrentUserData(updatedUser.toJson());
     state = AsyncData(AuthState.authenticated(updatedUser));
   }

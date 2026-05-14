@@ -51,16 +51,23 @@ class ProfileScreen extends ConsumerWidget {
               children: [
                 Stack(
                   children: [
-                    CircleAvatar(
-                      radius: 44,
-                      backgroundColor: AppColors.primaryDark,
-                      child: Text(
-                        initial,
-                        style: GoogleFonts.inter(
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
+                    Container(
+                      width: 88,
+                      height: 88,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.primaryDark,
+                      ),
+                      child: ClipOval(
+                        child: user.avatarUrl != null && user.avatarUrl!.isNotEmpty
+                            ? Image.network(
+                                user.avatarUrl!,
+                                fit: BoxFit.cover,
+                                width: 88,
+                                height: 88,
+                                errorBuilder: (_, __, ___) => _buildAvatarInitial(initial),
+                              )
+                            : _buildAvatarInitial(initial),
                       ),
                     ),
                     Positioned(
@@ -430,4 +437,17 @@ class _StatTile extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _buildAvatarInitial(String initial) {
+  return Center(
+    child: Text(
+      initial,
+      style: GoogleFonts.inter(
+        fontSize: 36,
+        fontWeight: FontWeight.bold,
+        color: AppColors.primary,
+      ),
+    ),
+  );
 }
