@@ -2,9 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/api_client.dart';
 
-// Gemini 2.5 Pro puede tardar hasta 40s en razonamiento complejo.
-// Este override se aplica solo a las llamadas de IA.
-final _aiRequestOptions = Options(receiveTimeout: const Duration(seconds: 90));
+final _aiReceiveOptions = Options(receiveTimeout: const Duration(seconds: 90));
 
 // ── Data models ───────────────────────────────────────────────────────────────
 
@@ -57,15 +55,30 @@ class AiChatNotifier extends Notifier<AiChatState> {
   static const _welcomeText =
       '¡Hola! Soy Captus IA. Tengo acceso a tus tareas, calendario y cursos. ¿En qué te puedo ayudar hoy?';
 
+  CancelToken _cancelToken = CancelToken();
+
   @override
   AiChatState build() {
     return AiChatState(
       messages: [
+        ChatMessage(text: _welcomeText, isUser: false, time: DateTime.now()),
+      ],
+    );
+  }
+
+  /// Cancels the in-flight AI request immediately.
+  void stop() {
+    _cancelToken.cancel('Usuario detuvo la respuesta');
+    _cancelToken = CancelToken();
+    state = state.copyWith(
+      isLoading: false,
+      messages: [
+        ...state.messages,
         ChatMessage(
-          text: _welcomeText,
+          text: '_Respuesta detenida._',
           isUser: false,
           time: DateTime.now(),
-        )
+        ),
       ],
     );
   }
@@ -73,7 +86,9 @@ class AiChatNotifier extends Notifier<AiChatState> {
   Future<void> send(String text) async {
     if (text.trim().isEmpty) return;
 
-    // 1. Append user message immediately
+    // Ensure fresh cancel token for each request
+    _cancelToken = CancelToken();
+
     final userMsg = ChatMessage(text: text.trim(), isUser: true, time: DateTime.now());
     state = state.copyWith(
       messages: [...state.messages, userMsg],
@@ -82,14 +97,14 @@ class AiChatNotifier extends Notifier<AiChatState> {
     );
 
     try {
-      // 2. Call backend
       final res = await ApiClient.instance.post<Map<String, dynamic>>(
         '/ai/chat',
         data: {
           'message': text.trim(),
           if (state.conversationId != null) 'conversationId': state.conversationId,
         },
-        options: _aiRequestOptions,
+        options: _aiReceiveOptions,
+        cancelToken: _cancelToken,
       );
 
       final body = res.data is Map<String, dynamic> ? res.data as Map<String, dynamic> : <String, dynamic>{};
@@ -113,15 +128,27 @@ class AiChatNotifier extends Notifier<AiChatState> {
         isLoading: false,
         conversationId: convId ?? state.conversationId,
       );
-    } catch (e) {
-      final errMsg = e.toString().replaceFirst('Exception: ', '');
+    } on DioException catch (e) {
+      // Cancelled by the user — stop() already updated state
+      if (e.type == DioExceptionType.cancel) return;
       state = state.copyWith(
         isLoading: false,
-        error: errMsg,
         messages: [
           ...state.messages,
           ChatMessage(
             text: 'No pude conectar con el asistente. Intenta de nuevo.',
+            isUser: false,
+            time: DateTime.now(),
+          ),
+        ],
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        messages: [
+          ...state.messages,
+          ChatMessage(
+            text: 'Error inesperado. Intenta de nuevo.',
             isUser: false,
             time: DateTime.now(),
           ),
