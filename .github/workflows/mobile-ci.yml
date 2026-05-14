@@ -43,7 +43,7 @@ jobs:
       - name: Run unit tests
         # Exclude test/integration/ — those tests require a full running backend
         # and Supabase instance (they are end-to-end, not unit tests).
-        run: flutter test test/unit test/models test/providers --coverage
+        run: flutter test test/models test/providers test/widgets --coverage
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
