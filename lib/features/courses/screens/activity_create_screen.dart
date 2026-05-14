@@ -140,7 +140,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
                         const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
                       color: selected
-                          ? AppColors.primary.withOpacity(0.15)
+                          ? AppColors.primary.withAlpha(AppAlpha.a15)
                           : AppColors.surface,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(

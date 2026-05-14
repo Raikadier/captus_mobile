@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../models/course.dart';
+import '../../../shared/widgets/captus_fab.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../../shared/widgets/staggered_list.dart';
 
 class CoursesListScreen extends StatelessWidget {
   const CoursesListScreen({super.key});
@@ -15,7 +17,7 @@ class CoursesListScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         title: Text(
           'Mis Cursos',
@@ -39,26 +41,26 @@ class CoursesListScreen extends StatelessWidget {
               subtitle: 'Aún no tienes cursos matriculados.',
               actionLabel: 'Agregar curso',
             )
-          : Padding(
-              padding: const EdgeInsets.all(16),
-              child: GridView.builder(
-                itemCount: courses.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.82,
-                ),
-                itemBuilder: (context, index) {
-                  final course = courses[index];
-                  return _CourseCard(course: course, index: index);
-                },
+          : StaggeredGridView.builder(
+              itemCount: courses.length,
+              staggerMs: 60,
+              durationMs: 250,
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.85,
               ),
+              itemBuilder: (context, index) {
+                final course = courses[index];
+                return _CourseCard(course: course, index: index);
+              },
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.black),
+      floatingActionButton: CaptusFab(
+        onPressed: () => context.push('/join'),
+        icon: Icons.add_rounded,
+        tooltip: 'Unirse a un curso',
       ),
     );
   }
@@ -101,7 +103,7 @@ class _CourseCard extends StatelessWidget {
                           width: 36,
                           height: 36,
                           decoration: BoxDecoration(
-                            color: color.withOpacity(0.15),
+                            color: color.withAlpha(AppAlpha.a15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(Icons.school, color: color, size: 20),
@@ -112,7 +114,7 @@ class _CourseCard extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: AppColors.warning.withOpacity(0.15),
+                              color: AppColors.warning.withAlpha(AppAlpha.a15),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(

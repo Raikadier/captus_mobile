@@ -241,7 +241,7 @@ class _ResultView extends StatelessWidget {
           width: 88,
           height: 88,
           decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.12),
+            color: iconColor.withAlpha(AppAlpha.a10),
             shape: BoxShape.circle,
           ),
           child: Icon(icon, size: 44, color: iconColor),

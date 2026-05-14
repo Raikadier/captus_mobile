@@ -106,10 +106,10 @@ class _ActivityDetailStudentScreenState
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: isOverdue
-                      ? AppColors.error.withOpacity(0.15)
+                      ? AppColors.error.withAlpha(AppAlpha.a15)
                       : dueDiff.inHours < 24
-                          ? AppColors.warning.withOpacity(0.15)
-                          : color.withOpacity(0.12),
+                          ? AppColors.warning.withAlpha(AppAlpha.a15)
+                          : color.withAlpha(AppAlpha.a10),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -244,7 +244,7 @@ class _GradedView extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+        border: Border.all(color: AppColors.primary.withAlpha(AppAlpha.a30)),
       ),
       child: Column(
         children: [
@@ -327,9 +327,9 @@ class _SubmittedView extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.info.withOpacity(0.08),
+        color: AppColors.info.withAlpha(AppAlpha.a10),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.info.withOpacity(0.3)),
+        border: Border.all(color: AppColors.info.withAlpha(AppAlpha.a30)),
       ),
       child: Row(
         children: [
@@ -499,7 +499,7 @@ class _BottomBar extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
               side: showAiButton
-                  ? BorderSide(color: AppColors.primary.withOpacity(0.5))
+                  ? BorderSide(color: AppColors.primary.withAlpha(AppAlpha.a50))
                   : BorderSide.none,
             ),
           ),

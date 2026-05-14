@@ -300,7 +300,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 calendarStyle: CalendarStyle(
                   outsideDaysVisible: false,
                   todayDecoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.18),
+                    color: AppColors.primary.withAlpha(AppAlpha.a20),
                     shape: BoxShape.circle,
                   ),
                   todayTextStyle: TextStyle(
