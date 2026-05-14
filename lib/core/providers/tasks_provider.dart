@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/task.dart';
 import 'auth_provider.dart';
+import '../../features/statistics/providers/user_statistics_provider.dart';
 
 class TasksService {
   final SupabaseClient _client = Supabase.instance.client;
@@ -218,11 +219,20 @@ class TasksNotifier extends AsyncNotifier<List<TaskModel>> {
       );
 
       state = state.whenData((tasks) => [task, ...tasks]);
+      _updateStatisticsOnCreate();
       return task;
     } catch (e) {
       await refresh();
       rethrow;
     }
+  }
+
+  void _updateStatisticsOnCreate() {
+    Future.microtask(() {
+      try {
+        ref.read(userStatisticsProvider.notifier).onTaskCreated();
+      } catch (_) {}
+    });
   }
 
   Future<void> updateTask(int taskId, Map<String, dynamic> updates) async {
@@ -267,10 +277,19 @@ class TasksNotifier extends AsyncNotifier<List<TaskModel>> {
 
     try {
       await ref.read(tasksServiceProvider).completeWithSubtasks(taskId);
+      _updateStatisticsOnComplete();
     } catch (e) {
       await refresh();
       rethrow;
     }
+  }
+
+  void _updateStatisticsOnComplete() {
+    Future.microtask(() {
+      try {
+        ref.read(userStatisticsProvider.notifier).onTaskCompleted();
+      } catch (_) {}
+    });
   }
 
   Future<void> completeSubtask(int taskId, int subtaskId, bool completed) async {

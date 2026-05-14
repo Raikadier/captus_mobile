@@ -11,6 +11,7 @@ import '../../../models/course.dart';
 import '../../../models/user.dart';
 import '../../../shared/widgets/task_card.dart';
 import '../../../shared/widgets/course_card.dart';
+import '../../statistics/providers/user_statistics_provider.dart';
 
 class HomeDashboardScreen extends ConsumerWidget {
   const HomeDashboardScreen({super.key});
@@ -35,7 +36,7 @@ class HomeDashboardScreen extends ConsumerWidget {
         : UserModel.mock;
 
     final courses = CourseModel.mockList;
-    final streakDays = 7;
+    final streakDays = ref.watch(userStatisticsProvider).value?.currentStreak ?? 0;
 
     final pendingTasksAsync = ref.watch(pendingTasksProvider);
     final overdueTasksAsync = ref.watch(overdueTasksProvider);
