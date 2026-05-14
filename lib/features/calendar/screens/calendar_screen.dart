@@ -7,6 +7,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/tasks_provider.dart';
+import '../../../core/providers/events_provider.dart';
 import '../../../models/task.dart';
 import '../../../shared/widgets/empty_state.dart';
 
@@ -22,23 +23,70 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
 
-  List<TaskModel> _getEventsForDay(DateTime day) {
+  List<dynamic> _getEventsForDay(DateTime day) {
     final tasksAsync = ref.watch(tasksNotifierProvider);
-    return tasksAsync.maybeWhen(
-      data: (tasks) {
-        return tasks.where((task) {
-          if (task.dueDate == null) return false;
-          final taskDate = DateTime(
-            task.dueDate!.year,
-            task.dueDate!.month,
-            task.dueDate!.day,
-          );
-          final targetDate = DateTime(day.year, day.month, day.day);
-          return taskDate.isAtSameMomentAs(targetDate);
-        }).toList();
-      },
-      orElse: () => [],
-    );
+    final eventsAsync = ref.watch(eventsNotifierProvider);
+
+    final targetDate = DateTime(day.year, day.month, day.day);
+    final List<dynamic> dayItems = [];
+
+    tasksAsync.whenData((tasks) {
+      for (final task in tasks) {
+        if (task.dueDate == null) continue;
+        final taskDate = DateTime(
+          task.dueDate!.year,
+          task.dueDate!.month,
+          task.dueDate!.day,
+        );
+        if (taskDate.isAtSameMomentAs(targetDate)) {
+          dayItems.add({'type': 'task', 'data': task});
+        }
+      }
+    });
+
+    eventsAsync.whenData((events) {
+      for (final event in events) {
+        final eventDate = DateTime(
+          event.startDate.year,
+          event.startDate.month,
+          event.startDate.day,
+        );
+        if (eventDate.isAtSameMomentAs(targetDate)) {
+          dayItems.add({'type': 'event', 'data': event});
+        }
+      }
+    });
+
+    return dayItems;
+  }
+
+  Color _getEventColor(CalendarEvent event) {
+    switch (event.type.toLowerCase()) {
+      case 'personal':
+        return AppColors.info;
+      case 'examen':
+        return AppColors.error;
+      case 'clase':
+        return AppColors.primary;
+      case 'entrega':
+        return AppColors.warning;
+      case 'reunión':
+      case 'reunion':
+        return Colors.purple;
+      default:
+        return AppColors.primary;
+    }
+  }
+
+  Color _getPriorityColor(TaskPriority priority) {
+    switch (priority) {
+      case TaskPriority.high:
+        return AppColors.priorityHigh;
+      case TaskPriority.medium:
+        return AppColors.priorityMedium;
+      case TaskPriority.low:
+        return AppColors.priorityLow;
+    }
   }
 
   void _showCreateMenu() {
@@ -127,17 +175,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         },
       ),
     );
-  }
-
-  Color _getPriorityColor(TaskPriority priority) {
-    switch (priority) {
-      case TaskPriority.high:
-        return AppColors.priorityHigh;
-      case TaskPriority.medium:
-        return AppColors.priorityMedium;
-      case TaskPriority.low:
-        return AppColors.priorityLow;
-    }
   }
 
   @override
@@ -245,7 +282,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: Colors.grey.shade200),
               ),
-              child: TableCalendar<TaskModel>(
+              child: TableCalendar<dynamic>(
                 focusedDay: _focusedDay,
                 firstDay: DateTime.utc(2020, 1, 1),
                 lastDay: DateTime.utc(2030, 12, 31),
@@ -286,27 +323,33 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 calendarBuilders: CalendarBuilders(
                   markerBuilder: (context, date, events) {
                     if (events.isEmpty) return const SizedBox.shrink();
-                    
-                    final sortedEvents = List<TaskModel>.from(events)
-                      ..sort((a, b) => a.priority.index.compareTo(b.priority.index));
-                    
-                    final displayEvents = sortedEvents.take(2).toList();
+
+                    final displayEvents = events.take(2).toList();
                     final extraCount = events.length - 2;
-                    
+
                     return Positioned(
                       bottom: 1,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          ...displayEvents.map((task) => Container(
-                            width: 6,
-                            height: 6,
-                            margin: const EdgeInsets.symmetric(horizontal: 1),
-                            decoration: BoxDecoration(
-                              color: _getPriorityColor(task.priority),
-                              shape: BoxShape.circle,
-                            ),
-                          )),
+                          ...displayEvents.map((item) {
+                            final eventType = item['type'] as String;
+                            Color color;
+                            if (eventType == 'task') {
+                              color = _getPriorityColor((item['data'] as TaskModel).priority);
+                            } else {
+                              color = _getEventColor(item['data'] as CalendarEvent);
+                            }
+                            return Container(
+                              width: 6,
+                              height: 6,
+                              margin: const EdgeInsets.symmetric(horizontal: 1),
+                              decoration: BoxDecoration(
+                                color: color,
+                                shape: BoxShape.circle,
+                              ),
+                            );
+                          }),
                           if (extraCount > 0)
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
@@ -337,7 +380,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Tareas del ${DateFormat('d MMM', 'es').format(_selectedDay)}',
+                    'Actividades del ${DateFormat('d MMM', 'es').format(_selectedDay)}',
                     style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -345,7 +388,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   ),
                   if (dayEvents.isNotEmpty)
                     Text(
-                      '${dayEvents.length} tarea${dayEvents.length > 1 ? 's' : ''}',
+                      '${dayEvents.length} actividad${dayEvents.length > 1 ? 'es' : ''}',
                       style: GoogleFonts.inter(
                         fontSize: 14,
                         color: AppColors.textSecondary,
@@ -359,94 +402,175 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               child: tasksAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, _) => Center(
-                  child: Text('Error al cargar tareas: $error'),
+                  child: Text('Error al cargar: $error'),
                 ),
                 data: (_) {
                   if (dayEvents.isEmpty) {
                     return EmptyState(
-                      icon: Icons.assignment_outlined,
-                      title: 'Sin tareas',
-                      subtitle: 'No hay tareas programadas para este día',
+                      icon: Icons.event_outlined,
+                      title: 'Sin actividades',
+                      subtitle: 'No hay tareas ni eventos para este día',
                     );
                   }
                   return ListView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: dayEvents.length,
                     itemBuilder: (context, index) {
-                      final task = dayEvents[index];
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: Colors.grey.shade200),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 4,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: _getPriorityColor(task.priority),
-                                borderRadius: BorderRadius.circular(2),
+                      final item = dayEvents[index];
+                      final eventType = item['type'] as String;
+
+                      if (eventType == 'task') {
+                        final task = item['data'] as TaskModel;
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: Colors.grey.shade200),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 4,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: _getPriorityColor(task.priority),
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    task.title,
-                                    style: GoogleFonts.inter(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 2,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: _getPriorityColor(task.priority).withAlpha(25),
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        child: Text(
-                                          task.priority.label,
-                                          style: GoogleFonts.inter(
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w600,
-                                            color: _getPriorityColor(task.priority),
-                                          ),
-                                        ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      task.title,
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 15,
                                       ),
-                                      if (task.courseName != null) ...[
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          task.courseName!,
-                                          style: GoogleFonts.inter(
-                                            fontSize: 12,
-                                            color: AppColors.textSecondary,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: _getPriorityColor(task.priority).withAlpha(25),
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                          child: Text(
+                                            task.priority.label,
+                                            style: GoogleFonts.inter(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600,
+                                              color: _getPriorityColor(task.priority),
+                                            ),
                                           ),
                                         ),
+                                        if (task.courseName != null) ...[
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            task.courseName!,
+                                            style: GoogleFonts.inter(
+                                              fontSize: 12,
+                                              color: AppColors.textSecondary,
+                                            ),
+                                          ),
+                                        ],
                                       ],
-                                    ],
-                                  ),
-                                ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            Icon(
-                              Icons.chevron_right_rounded,
-                              color: AppColors.textSecondary,
-                            ),
-                          ],
-                        ),
-                      );
+                              Icon(
+                                Icons.chevron_right_rounded,
+                                color: AppColors.textSecondary,
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        final event = item['data'] as CalendarEvent;
+                        final eventColor = _getEventColor(event);
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: Colors.grey.shade200),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 4,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: eventColor,
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      event.title,
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: eventColor.withAlpha(25),
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                          child: Text(
+                                            event.type,
+                                            style: GoogleFonts.inter(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600,
+                                              color: eventColor,
+                                            ),
+                                          ),
+                                        ),
+                                        if (event.endDate != null) ...[
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            '${DateFormat('h:mm a', 'es').format(event.startDate)} - ${DateFormat('h:mm a', 'es').format(event.endDate!)}',
+                                            style: GoogleFonts.inter(
+                                              fontSize: 12,
+                                              color: AppColors.textSecondary,
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right_rounded,
+                                color: AppColors.textSecondary,
+                              ),
+                            ],
+                          ),
+                        );
+                      }
                     },
                   );
                 },
