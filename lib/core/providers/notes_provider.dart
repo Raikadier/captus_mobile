@@ -194,6 +194,13 @@ final pinnedNotesProvider = Provider.autoDispose<AsyncValue<List<NoteModel>>>((r
   );
 });
 
+final unpinnedNotesProvider = Provider.autoDispose<AsyncValue<List<NoteModel>>>((ref) {
+  final notesAsync = ref.watch(notesNotifierProvider);
+  return notesAsync.whenData(
+    (notes) => notes.where((n) => !n.isPinned).toList(),
+  );
+});
+
 class NoteSearchNotifier extends Notifier<String> {
   @override
   String build() => '';

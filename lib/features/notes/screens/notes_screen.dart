@@ -30,7 +30,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final notesAsync = ref.watch(filteredNotesProvider);
+    final notesAsync = ref.watch(unpinnedNotesProvider);
     final pinnedAsync = ref.watch(pinnedNotesProvider);
 
     return Scaffold(
@@ -132,9 +132,9 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                   padding: const EdgeInsets.all(16),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 0.85,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 1.0,
                   ),
                   itemCount: notes.length,
                   itemBuilder: (context, index) {
@@ -235,7 +235,7 @@ class _NoteCard extends StatelessWidget {
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -245,7 +245,7 @@ class _NoteCard extends StatelessWidget {
                     child: Text(
                       note.title,
                       style: GoogleFonts.inter(
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
                       ),
@@ -255,35 +255,35 @@ class _NoteCard extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: onTogglePin,
-                    child: Icon(
-                      note.isPinned ? Icons.push_pin : Icons.push_pin_outlined,
-                      size: 18,
-                      color: note.isPinned ? AppColors.primary : AppColors.textSecondary,
+                    child: const Icon(
+                      Icons.push_pin_outlined,
+                      size: 16,
+                      color: AppColors.textSecondary,
                     ),
                   ),
                 ],
               ),
               if (note.content != null && note.content!.isNotEmpty) ...[
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Expanded(
                   child: Text(
                     note.content!,
                     style: GoogleFonts.inter(
-                      fontSize: 12,
+                      fontSize: 11,
                       color: AppColors.textSecondary,
                     ),
-                    maxLines: 4,
+                    maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ] else
                 const Spacer(),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               Row(
                 children: [
                   if (note.subject != null && note.subject!.isNotEmpty) ...[
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                       decoration: BoxDecoration(
                         color: note.accentColor.withAlpha(38),
                         borderRadius: BorderRadius.circular(4),
@@ -291,7 +291,7 @@ class _NoteCard extends StatelessWidget {
                       child: Text(
                         note.subject!,
                         style: GoogleFonts.inter(
-                          fontSize: 10,
+                          
                           color: note.accentColor,
                           fontWeight: FontWeight.w500,
                         ),
@@ -305,7 +305,7 @@ class _NoteCard extends StatelessWidget {
                   Text(
                     note.updateAt != null ? formatDate(note.updateAt!) : formatDate(note.createdAt),
                     style: GoogleFonts.inter(
-                      fontSize: 10,
+                      fontSize: 9,
                       color: AppColors.textDisabled,
                     ),
                   ),
