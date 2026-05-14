@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/widgets/cactus_refresh.dart';
 import '../../../shared/widgets/count_up_text.dart';
 import '../providers/user_statistics_provider.dart';
 import '../providers/achievements_provider.dart';
@@ -48,7 +49,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       body: statsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => _buildError(e.toString()),
-        data: (stats) => RefreshIndicator(
+        data: (stats) => CactusRefresh(
           onRefresh: () async => ref.invalidate(userStatisticsProvider),
           child: ListView(
             padding: const EdgeInsets.all(16),

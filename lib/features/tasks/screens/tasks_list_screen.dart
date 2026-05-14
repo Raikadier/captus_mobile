@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/widgets/cactus_refresh.dart';
 import '../../../shared/widgets/captus_fab.dart';
 
 class TasksListScreen extends ConsumerStatefulWidget {
@@ -125,7 +126,7 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : _tasks.isEmpty
                     ? const Center(child: Text('No hay tareas'))
-                    : RefreshIndicator(
+                    : CactusRefresh(
                         onRefresh: _fetchTasks,
                         child: ListView.builder(
                           padding: const EdgeInsets.all(16),
