@@ -168,7 +168,7 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.12),
+                  color: AppColors.primary.withAlpha(AppAlpha.a10),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(Icons.group_add,
@@ -198,7 +198,7 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: AppColors.info.withOpacity(0.12),
+                  color: AppColors.info.withAlpha(AppAlpha.a10),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(Icons.qr_code,
@@ -304,7 +304,7 @@ class _GroupCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border.withOpacity(0.4)),
+          border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a40)),
         ),
         child: Row(
           children: [
@@ -356,7 +356,7 @@ class _GroupCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.warning.withOpacity(0.15),
+                  color: AppColors.warning.withAlpha(AppAlpha.a15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(

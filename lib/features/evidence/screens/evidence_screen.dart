@@ -309,7 +309,7 @@ class _EvidencePreview extends StatelessWidget {
       width: 58,
       height: 58,
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.12),
+        color: AppColors.primary.withAlpha(AppAlpha.a10),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Icon(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_animations.dart';
 import '../../core/providers/auth_provider.dart';
 import '../../shared/widgets/offline_banner.dart';
 
@@ -55,7 +56,7 @@ void _showMoreMenu(BuildContext context, String role) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.white.withAlpha(150),
+      barrierColor: Colors.black54,
       builder: (context) => _MoreMenuSheet(
         role: role,
         onNavigate: (route) {
@@ -176,7 +177,7 @@ class _NavItem extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: AppDurations.exit,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primary.withAlpha(30) : Colors.transparent,
@@ -210,7 +211,7 @@ class _CenterNavItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: AppDurations.exit,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -234,7 +235,7 @@ class _CenterNavItem extends StatelessWidget {
         child: Icon(
           isSelected ? activeIcon : icon,
           size: 28,
-          color: isSelected ? Colors.white : AppColors.textSecondary,
+          color: isSelected ? Colors.white : AppColors.textSecondary, // white OK: over gradient green bg
         ),
       ),
     );
@@ -254,7 +255,7 @@ class _MoreMenuSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Color(0xFF1E1E1E),
+        color: Color(0xFF1E1E1E), // AppColors.modalBg — available after Phase 1 merge
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
@@ -295,7 +296,7 @@ class _MoreMenuSheet extends StatelessWidget {
               const SizedBox(height: 12),
               _MenuOption(
                 icon: Icons.note_alt_rounded,
-                iconColor: const Color(0xFFFFB74D),
+                iconColor: AppColors.streak,
                 title: 'Notas',
                 subtitle: 'Tus notas personales',
                 onTap: () => onNavigate('/notes'),

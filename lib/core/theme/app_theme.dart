@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
+import '../constants/app_animations.dart';
 
 class AppTheme {
   AppTheme._();
@@ -13,13 +14,13 @@ class AppTheme {
       colorScheme: const ColorScheme.dark(
         brightness: Brightness.dark,
         primary: AppColors.primary,
-        onPrimary: Colors.black,
+        onPrimary: AppColors.textOnPrimary,
         secondary: AppColors.primaryLight,
-        onSecondary: Colors.black,
+        onSecondary: AppColors.textPrimary,
         surface: AppColors.surface,
         onSurface: AppColors.textPrimary,
         error: AppColors.error,
-        onError: Colors.white,
+        onError: AppColors.textOnPrimary,
       ),
       textTheme: _textTheme,
       appBarTheme: _appBarTheme,
@@ -40,7 +41,7 @@ class AppTheme {
           if (states.contains(WidgetState.selected)) return AppColors.primary;
           return Colors.transparent;
         }),
-        checkColor: WidgetStateProperty.all(Colors.black),
+        checkColor: WidgetStateProperty.all(AppColors.textOnPrimary),
         side: const BorderSide(color: AppColors.border, width: 2),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       ),
@@ -156,7 +157,7 @@ class AppTheme {
 
   static BottomNavigationBarThemeData get _bottomNavTheme =>
       const BottomNavigationBarThemeData(
-        backgroundColor: Color(0xFF1A1A1A),
+        backgroundColor: AppColors.bottomNavBg,
         selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.textSecondary,
         type: BottomNavigationBarType.fixed,
@@ -180,13 +181,14 @@ class AppTheme {
       ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
-          foregroundColor: Colors.black,
+          foregroundColor: AppColors.textOnPrimary,
           minimumSize: const Size(double.infinity, 48),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           textStyle:
               GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
           elevation: 0,
+          animationDuration: AppDurations.instant,
         ),
       );
 
@@ -257,7 +259,7 @@ class AppTheme {
   static FloatingActionButtonThemeData get _fabTheme =>
       const FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
-        foregroundColor: Colors.black,
+        foregroundColor: AppColors.textOnPrimary,
         elevation: 6,
         shape: CircleBorder(),
       );

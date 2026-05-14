@@ -235,6 +235,17 @@ GoRouter createRouter(WidgetRef ref) {
             name: 'notes',
             builder: (_, __) => const NotesScreen(),
           ),
+          // ── Courses tabs (must be inside ShellRoute to show bottom nav) ──
+          GoRoute(
+            path: '/courses',
+            name: 'courses_list',
+            builder: (_, __) => const CoursesListScreen(),
+          ),
+          GoRoute(
+            path: '/teacher/courses',
+            name: 'courses_list_teacher',
+            builder: (_, __) => const CoursesListTeacherScreen(),
+          ),
         ],
       ),
 
@@ -398,11 +409,6 @@ GoRouter createRouter(WidgetRef ref) {
       ),
 
       GoRoute(
-        path: '/courses',
-        name: 'courses_list',
-        builder: (_, __) => const CoursesListScreen(),
-      ),
-      GoRoute(
         path: '/courses/:id',
         name: 'course_detail_student',
         builder: (_, state) =>
@@ -415,11 +421,6 @@ GoRouter createRouter(WidgetRef ref) {
           courseId: state.pathParameters['courseId']!,
           activityId: state.pathParameters['activityId']!,
         ),
-      ),
-      GoRoute(
-        path: '/teacher/courses',
-        name: 'courses_list_teacher',
-        builder: (_, __) => const CoursesListTeacherScreen(),
       ),
       GoRoute(
         path: '/teacher/courses/new',
