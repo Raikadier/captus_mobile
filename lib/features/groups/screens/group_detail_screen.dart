@@ -329,7 +329,7 @@ class _MembersTab extends StatelessWidget {
                                 horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color:
-                                  AppColors.primary.withOpacity(0.12),
+                                  AppColors.primary.withAlpha(AppAlpha.a10),
                               borderRadius:
                                   BorderRadius.circular(6),
                             ),

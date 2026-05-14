@@ -216,10 +216,10 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16, vertical: 10),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withAlpha(AppAlpha.a10),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                        color: AppColors.primary.withOpacity(0.3)),
+                        color: AppColors.primary.withAlpha(AppAlpha.a30)),
                   ),
                   child: Text(
                     _group.inviteCode,
@@ -307,7 +307,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
             ),
             style: OutlinedButton.styleFrom(
               side: BorderSide(
-                  color: AppColors.warning.withOpacity(0.5)),
+                  color: AppColors.warning.withAlpha(AppAlpha.a50)),
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
@@ -473,7 +473,7 @@ class _MemberTileState extends State<_MemberTile> {
               padding: const EdgeInsets.symmetric(
                   horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.12),
+                color: AppColors.primary.withAlpha(AppAlpha.a10),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(

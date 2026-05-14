@@ -32,6 +32,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: AppColors.surface,
         title: const Text('Mis Estadísticas'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
