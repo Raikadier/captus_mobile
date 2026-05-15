@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../shared/widgets/cactus_refresh.dart';
 import '../services/superadmin_service.dart';
 
 class SuperAdminInstitutionDetailScreen extends StatefulWidget {
@@ -40,9 +41,19 @@ class _SuperAdminInstitutionDetailScreenState
     });
     try {
       final d = await _svc.getInstitution(widget.institutionId);
-      if (mounted) setState(() { _detail = d; _loading = false; });
+      if (mounted) {
+        setState(() {
+          _detail = d;
+          _loading = false;
+        });
+      }
     } catch (e) {
-      if (mounted) setState(() { _error = e.toString(); _loading = false; });
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _loading = false;
+        });
+      }
     }
   }
 
@@ -51,35 +62,112 @@ class _SuperAdminInstitutionDetailScreenState
     final isActive = _detail!['is_active'] as bool? ?? true;
 
     if (isActive) {
-      // Ask for reason before disabling
       final reasonCtrl = TextEditingController();
-      final confirmed = await showDialog<bool>(
+      final confirmed = await showModalBottomSheet<bool>(
         context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('Deshabilitar institución'),
-          content: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text('Deshabilitarás "${_detail!['name']}". Escribe el motivo:'),
-            const SizedBox(height: 12),
-            TextField(
-              controller: reasonCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Motivo',
-                border: OutlineInputBorder(),
+        isScrollControlled: true,
+        backgroundColor: AppColors.surface,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (ctx) => Padding(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 20,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.border,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
               ),
-              maxLines: 2,
-            ),
-          ]),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancelar')),
-            ElevatedButton(
-                style: ElevatedButton.styleFrom(
+              const SizedBox(height: 20),
+              Text(
+                'Deshabilitar institución',
+                style: GoogleFonts.inter(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Deshabilitarás "${_detail!['name']}". Escribe el motivo:',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Motivo',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 6),
+              TextField(
+                controller: reasonCtrl,
+                maxLines: 3,
+                style: GoogleFonts.inter(
+                    fontSize: 14, color: AppColors.textPrimary),
+                decoration: InputDecoration(
+                  hintText: 'Describe el motivo de deshabilitación…',
+                  hintStyle: GoogleFonts.inter(
+                      fontSize: 14, color: AppColors.textSecondary),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                        color: AppColors.primary, width: 1.5),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
                     backgroundColor: AppColors.error,
-                    foregroundColor: AppColors.textOnPrimary),
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Deshabilitar')),
-          ],
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () => Navigator.pop(ctx, true),
+                  child: Text(
+                    'Deshabilitar',
+                    style: GoogleFonts.inter(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textOnPrimary,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       );
       if (confirmed != true || reasonCtrl.text.trim().isEmpty) return;
@@ -125,7 +213,7 @@ class _SuperAdminInstitutionDetailScreenState
         padding: EdgeInsets.only(
           left: 24,
           right: 24,
-          top: 24,
+          top: 20,
           bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
         ),
         child: Form(
@@ -134,6 +222,17 @@ class _SuperAdminInstitutionDetailScreenState
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.border,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
               Text(
                 'Editar institución',
                 style: GoogleFonts.inter(
@@ -142,34 +241,103 @@ class _SuperAdminInstitutionDetailScreenState
                   color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+              Text(
+                'Nombre',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 6),
               TextFormField(
                 controller: nameCtrl,
-                decoration: const InputDecoration(
-                    labelText: 'Nombre', border: OutlineInputBorder()),
+                style: GoogleFonts.inter(
+                    fontSize: 14, color: AppColors.textPrimary),
+                decoration: InputDecoration(
+                  hintText: 'Nombre de la institución',
+                  hintStyle: GoogleFonts.inter(
+                      fontSize: 14, color: AppColors.textSecondary),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                        color: AppColors.primary, width: 1.5),
+                  ),
+                ),
                 validator: (v) =>
                     (v == null || v.trim().isEmpty) ? 'Requerido' : null,
               ),
               const SizedBox(height: 12),
+              Text(
+                'Email de contacto',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 6),
               TextFormField(
                 controller: emailCtrl,
-                decoration: const InputDecoration(
-                    labelText: 'Email de contacto',
-                    border: OutlineInputBorder()),
                 keyboardType: TextInputType.emailAddress,
+                style: GoogleFonts.inter(
+                    fontSize: 14, color: AppColors.textPrimary),
+                decoration: InputDecoration(
+                  hintText: 'contacto@institucion.edu',
+                  hintStyle: GoogleFonts.inter(
+                      fontSize: 14, color: AppColors.textSecondary),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                        color: AppColors.primary, width: 1.5),
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
                   style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.primary),
+                    backgroundColor: AppColors.primary,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
                       Navigator.pop(ctx, true);
                     }
                   },
-                  child: const Text('Guardar'),
+                  child: Text(
+                    'Guardar',
+                    style: GoogleFonts.inter(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textOnPrimary,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -206,12 +374,16 @@ class _SuperAdminInstitutionDetailScreenState
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
+        elevation: 0,
         title: Text(
           widget.institutionName.isNotEmpty
               ? widget.institutionName
               : 'Detalle de institución',
           style: GoogleFonts.inter(
-              fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
         ),
         actions: [
           if (!_loading && _detail != null)
@@ -220,33 +392,54 @@ class _SuperAdminInstitutionDetailScreenState
               tooltip: 'Editar',
               onPressed: _showEditDialog,
             ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _load,
-          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            )
           : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.error_outline,
-                          size: 48, color: AppColors.error),
-                      const SizedBox(height: 12),
-                      Text(_error!,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.inter(
-                              color: AppColors.textSecondary)),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                          onPressed: _load, child: const Text('Reintentar')),
-                    ],
-                  ),
-                )
+              ? _buildError()
               : _buildBody(),
+    );
+  }
+
+  Widget _buildError() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.error_outline, size: 56, color: AppColors.error),
+          const SizedBox(height: 12),
+          Text(
+            'Error al cargar institución',
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            _error!,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
+            onPressed: _load,
+            child: Text(
+              'Reintentar',
+              style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -266,17 +459,17 @@ class _SuperAdminInstitutionDetailScreenState
       }
     }
 
-    return RefreshIndicator(
+    return CactusRefresh(
       onRefresh: _load,
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // ── Status card ──────────────────────────────────────────────────
+          // ── Status card ────────────────────────────────────────────────
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: isActive ? AppColors.success : AppColors.error,
                 width: 1.5,
@@ -285,20 +478,20 @@ class _SuperAdminInstitutionDetailScreenState
             child: Row(
               children: [
                 Container(
-                  width: 56,
-                  height: 56,
+                  width: 44,
+                  height: 44,
                   decoration: BoxDecoration(
                     color: (isActive ? AppColors.success : AppColors.error)
-                        .withAlpha(20),
-                    borderRadius: BorderRadius.circular(14),
+                        .withAlpha(AppAlpha.a10),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     Icons.business_rounded,
                     color: isActive ? AppColors.success : AppColors.error,
-                    size: 28,
+                    size: 22,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -306,26 +499,30 @@ class _SuperAdminInstitutionDetailScreenState
                       Text(
                         d['name'] as String? ?? '',
                         style: GoogleFonts.inter(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 3),
+                            horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: (isActive ? AppColors.success : AppColors.error)
-                              .withAlpha(20),
+                          color: (isActive
+                                  ? AppColors.success
+                                  : AppColors.error)
+                              .withAlpha(AppAlpha.a10),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           isActive ? 'Activa' : 'Deshabilitada',
                           style: GoogleFonts.inter(
-                            fontSize: 12,
+                            fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: isActive ? AppColors.success : AppColors.error,
+                            color: isActive
+                                ? AppColors.success
+                                : AppColors.error,
                           ),
                         ),
                       ),
@@ -336,7 +533,10 @@ class _SuperAdminInstitutionDetailScreenState
                     ? const SizedBox(
                         width: 24,
                         height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.primary,
+                        ),
                       )
                     : Switch(
                         value: isActive,
@@ -347,9 +547,9 @@ class _SuperAdminInstitutionDetailScreenState
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
 
-          // ── Info card ────────────────────────────────────────────────────
+          // ── Info card ──────────────────────────────────────────────────
           _InfoCard(children: [
             if (d['email'] != null)
               _InfoRow(
@@ -378,33 +578,37 @@ class _SuperAdminInstitutionDetailScreenState
               ),
           ]),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
 
-          // ── Stats card ───────────────────────────────────────────────────
+          // ── Stats card ─────────────────────────────────────────────────
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.border),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.border, width: 0.5),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Estadísticas',
-                  style: GoogleFonts.inter(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                Padding(
+                  padding:
+                      const EdgeInsets.fromLTRB(0, 0, 0, 12),
+                  child: Text(
+                    'ESTADÍSTICAS',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondary,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 16),
                 Row(
                   children: [
                     _StatTile(
                       icon: Icons.people_rounded,
-                      color: const Color(0xFF3B82F6),
+                      color: AppColors.info,
                       label: 'Miembros',
                       value: '${stats['members'] ?? 0}',
                     ),
@@ -418,7 +622,7 @@ class _SuperAdminInstitutionDetailScreenState
                     const SizedBox(width: 12),
                     _StatTile(
                       icon: Icons.how_to_reg_rounded,
-                      color: const Color(0xFF8B5CF6),
+                      color: AppColors.accentPurple,
                       label: 'Matrículas',
                       value: '${stats['enrollments'] ?? 0}',
                     ),
@@ -426,25 +630,30 @@ class _SuperAdminInstitutionDetailScreenState
                 ),
                 if (byRole.isNotEmpty) ...[
                   const SizedBox(height: 16),
-                  const Divider(height: 1),
+                  const Divider(height: 1, color: AppColors.border),
                   const SizedBox(height: 12),
                   Text(
                     'Por rol',
                     style: GoogleFonts.inter(
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textSecondary,
+                      letterSpacing: 0.5,
                     ),
                   ),
                   const SizedBox(height: 8),
                   _RoleRow(
-                      label: 'Administradores',
-                      count: '${byRole['admin'] ?? 0}'),
+                    label: 'Administradores',
+                    count: '${byRole['admin'] ?? 0}',
+                  ),
                   _RoleRow(
-                      label: 'Docentes', count: '${byRole['teacher'] ?? 0}'),
+                    label: 'Docentes',
+                    count: '${byRole['teacher'] ?? 0}',
+                  ),
                   _RoleRow(
-                      label: 'Estudiantes',
-                      count: '${byRole['student'] ?? 0}'),
+                    label: 'Estudiantes',
+                    count: '${byRole['student'] ?? 0}',
+                  ),
                 ],
               ],
             ),
@@ -467,21 +676,22 @@ class _InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     if (children.isEmpty) return const SizedBox.shrink();
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Información',
+            'INFORMACIÓN',
             style: GoogleFonts.inter(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+              letterSpacing: 0.5,
             ),
           ),
           const SizedBox(height: 12),
@@ -518,14 +728,21 @@ class _InfoRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
-                    style: GoogleFonts.inter(
-                        fontSize: 11, color: AppColors.textSecondary)),
-                Text(value,
-                    style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: valueColor ?? AppColors.textPrimary)),
+                Text(
+                  label,
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: valueColor ?? AppColors.textPrimary,
+                  ),
+                ),
               ],
             ),
           ),
@@ -554,7 +771,7 @@ class _StatTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: color.withAlpha(15),
+          color: color.withAlpha(AppAlpha.a10),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -572,7 +789,9 @@ class _StatTile extends StatelessWidget {
             Text(
               label,
               style: GoogleFonts.inter(
-                  fontSize: 10, color: AppColors.textSecondary),
+                fontSize: 10,
+                color: AppColors.textSecondary,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -594,14 +813,21 @@ class _RoleRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style: GoogleFonts.inter(
-                  fontSize: 13, color: AppColors.textSecondary)),
-          Text(count,
-              style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary)),
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          Text(
+            count,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
         ],
       ),
     );

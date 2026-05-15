@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/services/api_client.dart';
+import '../../../shared/widgets/captus_fab.dart';
+import '../../../shared/widgets/cactus_refresh.dart';
 
 class ProjectsListScreen extends StatefulWidget {
   const ProjectsListScreen({super.key});
@@ -43,7 +45,12 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
         });
       }
     } catch (e) {
-      if (mounted) setState(() { _error = e.toString(); _loading = false; });
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _loading = false;
+        });
+      }
     }
   }
 
@@ -53,40 +60,34 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
+        elevation: 0,
         title: Text(
           'Proyectos',
           style: GoogleFonts.inter(
-              fontWeight: FontWeight.w700, color: AppColors.textPrimary),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _load,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
           ),
-        ],
+        ),
+        actions: const [SizedBox(width: 8)],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: CaptusFab(
         onPressed: () async {
           await context.push('/projects/create');
           _load();
         },
-        icon: const Icon(Icons.add),
-        label: const Text('Nuevo proyecto'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.textOnPrimary,
+        icon: Icons.add_rounded,
+        tooltip: 'Nuevo proyecto',
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            )
           : _error != null
-              ? _ErrorView(error: _error!, onRetry: _load)
+              ? _buildError()
               : _projects.isEmpty
-                  ? _EmptyView(
-                      onCreate: () async {
-                        await context.push('/projects/create');
-                        _load();
-                      },
-                    )
-                  : RefreshIndicator(
+                  ? _buildEmpty()
+                  : CactusRefresh(
                       onRefresh: _load,
                       child: ListView.builder(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
@@ -100,6 +101,93 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
                         },
                       ),
                     ),
+    );
+  }
+
+  Widget _buildError() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.error_outline, size: 56, color: AppColors.error),
+          const SizedBox(height: 12),
+          Text(
+            'Error al cargar proyectos',
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            _error!,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.primary,
+            ),
+            onPressed: _load,
+            child: Text(
+              'Reintentar',
+              style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmpty() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.folder_open_rounded,
+            size: 56,
+            color: AppColors.textSecondary,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Sin proyectos',
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Crea tu primer proyecto colaborativo',
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 24),
+          FilledButton.icon(
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.primary,
+            ),
+            onPressed: () async {
+              await context.push('/projects/create');
+              _load();
+            },
+            icon: const Icon(Icons.add_rounded, color: AppColors.textOnPrimary),
+            label: Text(
+              'Crear proyecto',
+              style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -128,21 +216,24 @@ class _ProjectCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: Row(
           children: [
             Container(
-              width: 48,
-              height: 48,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
-                color: AppColors.primary.withAlpha(20),
+                color: AppColors.primary.withAlpha(AppAlpha.a10),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.folder_rounded,
-                  color: AppColors.primary, size: 24),
+              child: const Icon(
+                Icons.folder_rounded,
+                color: AppColors.primary,
+                size: 22,
+              ),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,18 +244,21 @@ class _ProjectCard extends StatelessWidget {
                         child: Text(
                           project['title'] as String? ?? 'Sin título',
                           style: GoogleFonts.inter(
-                            fontSize: 14,
+                            fontSize: 15,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
                           ),
                         ),
                       ),
+                      const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: isOwner
-                              ? AppColors.primary.withAlpha(20)
+                              ? AppColors.primary.withAlpha(AppAlpha.a10)
                               : AppColors.surface2,
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -187,7 +281,9 @@ class _ProjectCard extends StatelessWidget {
                     Text(
                       project['description'] as String,
                       style: GoogleFonts.inter(
-                          fontSize: 12, color: AppColors.textSecondary),
+                        fontSize: 13,
+                        color: AppColors.textSecondary,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -195,89 +291,32 @@ class _ProjectCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      const Icon(Icons.people_outline,
-                          size: 13, color: AppColors.textSecondary),
+                      const Icon(
+                        Icons.people_outline,
+                        size: 13,
+                        color: AppColors.textSecondary,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         '$memberCount ${memberCount == 1 ? 'miembro' : 'miembros'}',
                         style: GoogleFonts.inter(
-                            fontSize: 12, color: AppColors.textSecondary),
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded,
-                color: AppColors.textSecondary, size: 20),
+            const SizedBox(width: 8),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.textSecondary,
+              size: 20,
+            ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _EmptyView extends StatelessWidget {
-  final VoidCallback onCreate;
-  const _EmptyView({required this.onCreate});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.folder_open_rounded,
-              size: 72, color: AppColors.textSecondary),
-          const SizedBox(height: 16),
-          Text(
-            'Sin proyectos',
-            style: GoogleFonts.inter(
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Crea tu primer proyecto colaborativo',
-            style: GoogleFonts.inter(
-                fontSize: 13, color: AppColors.textSecondary),
-          ),
-          const SizedBox(height: 24),
-          FilledButton.icon(
-            style: FilledButton.styleFrom(
-                backgroundColor: AppColors.primary),
-            onPressed: onCreate,
-            icon: const Icon(Icons.add, color: AppColors.textOnPrimary),
-            label: Text('Crear proyecto',
-                style: GoogleFonts.inter(color: AppColors.textOnPrimary)),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ErrorView extends StatelessWidget {
-  final String error;
-  final VoidCallback onRetry;
-  const _ErrorView({required this.error, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.error_outline, size: 48, color: AppColors.error),
-          const SizedBox(height: 12),
-          Text(error,
-              textAlign: TextAlign.center,
-              style:
-                  GoogleFonts.inter(color: AppColors.textSecondary)),
-          const SizedBox(height: 16),
-          ElevatedButton(onPressed: onRetry, child: const Text('Reintentar')),
-        ],
       ),
     );
   }

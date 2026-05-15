@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId = "com.captus.app"
-        minSdk = 23   // firebase_analytics requires minSdk 23 (flutter.minSdkVersion=21 is too low)
+        minSdk = 23   // firebase_analytics requires minSdk 23; flutter.minSdkVersion (21) is too low
         targetSdk = 34         // Android 14 — current stable target
         versionCode = flutter.versionCode
         versionName = flutter.versionName

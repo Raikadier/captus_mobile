@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/services/api_client.dart';
+import '../../../shared/widgets/captus_dialog.dart';
 
 class ProjectDetailScreen extends StatefulWidget {
   final String projectId;
@@ -23,7 +24,6 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
   bool _loading = true;
   String? _error;
 
-  // Comment input
   final _commentCtrl = TextEditingController();
   bool _submittingComment = false;
 
@@ -46,7 +46,8 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
       _error = null;
     });
     try {
-      final res = await ApiClient.instance.get('/projects/${widget.projectId}');
+      final res =
+          await ApiClient.instance.get('/projects/${widget.projectId}');
       final data = res.data as Map<String, dynamic>;
       final membersRaw = data['members'] as List<dynamic>? ?? [];
       final commentsRaw = data['comments'] as List<dynamic>? ?? [];
@@ -60,7 +61,12 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
         });
       }
     } catch (e) {
-      if (mounted) setState(() { _error = e.toString(); _loading = false; });
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _loading = false;
+        });
+      }
     }
   }
 
@@ -99,24 +105,15 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
   }
 
   Future<void> _deleteProject() async {
-    final ok = await showDialog<bool>(
+    final ok = await CaptusDialog.confirm(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Eliminar proyecto'),
-        content: const Text(
-            'Esta acción eliminará el proyecto permanentemente. ¿Continuar?'),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancelar')),
-          TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              style: TextButton.styleFrom(foregroundColor: AppColors.error),
-              child: const Text('Eliminar')),
-        ],
-      ),
+      title: 'Eliminar proyecto',
+      message:
+          'Esta acción eliminará el proyecto permanentemente. ¿Continuar?',
+      confirmLabel: 'Eliminar',
+      isDangerous: true,
     );
-    if (ok != true) return;
+    if (!ok) return;
     try {
       await ApiClient.instance.delete('/projects/${widget.projectId}');
       if (mounted) context.pop();
@@ -129,8 +126,8 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
     if (_project == null) return;
     final titleCtrl =
         TextEditingController(text: _project!['title'] as String? ?? '');
-    final descCtrl = TextEditingController(
-        text: _project!['description'] as String? ?? '');
+    final descCtrl =
+        TextEditingController(text: _project!['description'] as String? ?? '');
     final formKey = GlobalKey<FormState>();
 
     final confirmed = await showModalBottomSheet<bool>(
@@ -144,7 +141,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
         padding: EdgeInsets.only(
           left: 24,
           right: 24,
-          top: 24,
+          top: 20,
           bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
         ),
         child: Form(
@@ -153,41 +150,122 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.border,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
               Text(
                 'Editar proyecto',
                 style: GoogleFonts.inter(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
               ),
               const SizedBox(height: 16),
+              Text(
+                'Título *',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 6),
               TextFormField(
                 controller: titleCtrl,
-                decoration: const InputDecoration(
-                    labelText: 'Título *', border: OutlineInputBorder()),
+                style: GoogleFonts.inter(
+                    fontSize: 14, color: AppColors.textPrimary),
+                decoration: InputDecoration(
+                  hintText: 'Nombre del proyecto',
+                  hintStyle: GoogleFonts.inter(
+                      fontSize: 14, color: AppColors.textSecondary),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                        color: AppColors.primary, width: 1.5),
+                  ),
+                ),
                 validator: (v) =>
                     (v == null || v.trim().isEmpty) ? 'Requerido' : null,
               ),
               const SizedBox(height: 12),
+              Text(
+                'Descripción (opcional)',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 6),
               TextFormField(
                 controller: descCtrl,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                    labelText: 'Descripción',
-                    border: OutlineInputBorder()),
+                style: GoogleFonts.inter(
+                    fontSize: 14, color: AppColors.textPrimary),
+                decoration: InputDecoration(
+                  hintText: '¿De qué trata el proyecto?',
+                  hintStyle: GoogleFonts.inter(
+                      fontSize: 14, color: AppColors.textSecondary),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                        color: AppColors.primary, width: 1.5),
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
                   style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.primary),
+                    backgroundColor: AppColors.primary,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
                       Navigator.pop(ctx, true);
                     }
                   },
-                  child: const Text('Guardar'),
+                  child: Text(
+                    'Guardar',
+                    style: GoogleFonts.inter(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textOnPrimary,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -200,7 +278,8 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
     try {
       await ApiClient.instance.put('/projects/${widget.projectId}', data: {
         'title': titleCtrl.text.trim(),
-        if (descCtrl.text.trim().isNotEmpty) 'description': descCtrl.text.trim(),
+        if (descCtrl.text.trim().isNotEmpty)
+          'description': descCtrl.text.trim(),
       });
       await _load();
     } catch (e) {
@@ -222,10 +301,14 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
+        elevation: 0,
         title: Text(
           _project?['title'] as String? ?? 'Proyecto',
           style: GoogleFonts.inter(
-              fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
         ),
         actions: [
           if (_isOwner) ...[
@@ -238,13 +321,17 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
               onPressed: _deleteProject,
             ),
           ],
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _load),
+          const SizedBox(width: 8),
         ],
         bottom: TabBar(
           controller: _tabCtrl,
           labelColor: AppColors.primary,
           unselectedLabelColor: AppColors.textSecondary,
           indicatorColor: AppColors.primary,
+          indicatorWeight: 2,
+          labelStyle:
+              GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
+          unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
           tabs: const [
             Tab(text: 'Miembros'),
             Tab(text: 'Comentarios'),
@@ -252,25 +339,11 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
         ),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            )
           : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.error_outline,
-                          size: 48, color: AppColors.error),
-                      const SizedBox(height: 12),
-                      Text(_error!,
-                          style: GoogleFonts.inter(
-                              color: AppColors.textSecondary)),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                          onPressed: _load,
-                          child: const Text('Reintentar')),
-                    ],
-                  ),
-                )
+              ? _buildError()
               : TabBarView(
                   controller: _tabCtrl,
                   children: [
@@ -291,6 +364,44 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                     ),
                   ],
                 ),
+    );
+  }
+
+  Widget _buildError() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.error_outline, size: 56, color: AppColors.error),
+          const SizedBox(height: 12),
+          Text(
+            'Error al cargar el proyecto',
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            _error!,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
+            onPressed: _load,
+            child: Text(
+              'Reintentar',
+              style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -323,16 +434,20 @@ class _MembersTab extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: AppColors.primary),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 onPressed: onManage,
                 icon: const Icon(Icons.manage_accounts_outlined,
                     color: AppColors.primary),
-                label: Text('Gestionar miembros',
-                    style: GoogleFonts.inter(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w600)),
+                label: Text(
+                  'Gestionar miembros',
+                  style: GoogleFonts.inter(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
           ),
@@ -342,13 +457,28 @@ class _MembersTab extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.group_outlined,
-                          size: 48, color: AppColors.textSecondary),
+                      const Icon(
+                        Icons.group_outlined,
+                        size: 56,
+                        color: AppColors.textSecondary,
+                      ),
                       const SizedBox(height: 12),
-                      Text('Sin miembros',
-                          style: GoogleFonts.inter(
-                              color: AppColors.textSecondary,
-                              fontSize: 15)),
+                      Text(
+                        'Sin miembros',
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Gestiona miembros con el botón de arriba',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                     ],
                   ),
                 )
@@ -356,66 +486,95 @@ class _MembersTab extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   itemCount: members.length,
                   separatorBuilder: (_, __) =>
-                      const Divider(height: 1, color: AppColors.border),
+                      const SizedBox(height: 8),
                   itemBuilder: (_, i) {
                     final m = members[i] as Map<String, dynamic>;
-                    final user =
-                        m['user'] as Map<String, dynamic>? ?? m;
+                    final user = m['user'] as Map<String, dynamic>? ?? m;
                     final role = m['role'] as String? ?? 'member';
-                    return ListTile(
-                      contentPadding:
-                          const EdgeInsets.symmetric(vertical: 4),
-                      leading: CircleAvatar(
-                        radius: 20,
-                        backgroundColor: AppColors.primary.withAlpha(20),
-                        backgroundImage:
-                            user['avatar_url'] != null &&
-                                    (user['avatar_url'] as String)
-                                        .isNotEmpty
-                                ? NetworkImage(user['avatar_url'] as String)
+                    final isOwnerRole = role == 'owner';
+                    final name =
+                        user['name'] as String? ?? user['email'] as String? ?? '';
+                    final email = user['email'] as String? ?? '';
+                    final avatarUrl = user['avatar_url'] as String?;
+                    final initial = name.isNotEmpty
+                        ? name[0].toUpperCase()
+                        : 'U';
+
+                    return Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                            color: AppColors.border, width: 0.5),
+                      ),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 20,
+                            backgroundColor:
+                                AppColors.primary.withAlpha(AppAlpha.a10),
+                            backgroundImage: avatarUrl != null &&
+                                    avatarUrl.isNotEmpty
+                                ? NetworkImage(avatarUrl)
                                 : null,
-                        child: user['avatar_url'] == null ||
-                                (user['avatar_url'] as String).isEmpty
-                            ? Text(
-                                ((user['name'] as String? ?? 'U')[0])
-                                    .toUpperCase(),
-                                style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.primary),
-                              )
-                            : null,
-                      ),
-                      title: Text(
-                        user['name'] as String? ?? user['email'] as String? ?? '',
-                        style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textPrimary),
-                      ),
-                      subtitle: Text(
-                        user['email'] as String? ?? '',
-                        style: GoogleFonts.inter(
-                            fontSize: 12, color: AppColors.textSecondary),
-                      ),
-                      trailing: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: role == 'owner'
-                              ? AppColors.primary.withAlpha(20)
-                              : AppColors.surface2,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          _roleLabel(role),
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: role == 'owner'
-                                ? AppColors.primary
-                                : AppColors.textSecondary,
+                            child: avatarUrl == null || avatarUrl.isEmpty
+                                ? Text(
+                                    initial,
+                                    style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.primary,
+                                    ),
+                                  )
+                                : null,
                           ),
-                        ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  name,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                if (email.isNotEmpty)
+                                  Text(
+                                    email,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 13,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: isOwnerRole
+                                  ? AppColors.primary
+                                      .withAlpha(AppAlpha.a10)
+                                  : AppColors.surface2,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              _roleLabel(role),
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: isOwnerRole
+                                    ? AppColors.primary
+                                    : AppColors.textSecondary,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },
@@ -464,18 +623,28 @@ class _CommentsTab extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.chat_bubble_outline,
-                          size: 48, color: AppColors.textSecondary),
+                      const Icon(
+                        Icons.chat_bubble_outline,
+                        size: 56,
+                        color: AppColors.textSecondary,
+                      ),
                       const SizedBox(height: 12),
-                      Text('Sin comentarios aún',
-                          style: GoogleFonts.inter(
-                              color: AppColors.textSecondary,
-                              fontSize: 15)),
-                      const SizedBox(height: 4),
-                      Text('Sé el primero en comentar',
-                          style: GoogleFonts.inter(
-                              color: AppColors.textSecondary,
-                              fontSize: 12)),
+                      Text(
+                        'Sin comentarios aún',
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Sé el primero en comentar',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                     ],
                   ),
                 )
@@ -493,14 +662,21 @@ class _CommentsTab extends StatelessWidget {
                         0;
                     final liked = c['isLiked'] as bool? ?? false;
                     final commentId = c['id'] as String? ?? '';
+                    final authorName = author['name'] as String? ??
+                        author['email'] as String? ??
+                        'Usuario';
+                    final initial = authorName.isNotEmpty
+                        ? authorName[0].toUpperCase()
+                        : 'U';
 
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(14),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.border),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                            color: AppColors.border, width: 0.5),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -509,15 +685,15 @@ class _CommentsTab extends StatelessWidget {
                             children: [
                               CircleAvatar(
                                 radius: 16,
-                                backgroundColor:
-                                    AppColors.primary.withAlpha(20),
+                                backgroundColor: AppColors.primary
+                                    .withAlpha(AppAlpha.a10),
                                 child: Text(
-                                  ((author['name'] as String? ?? 'U')[0])
-                                      .toUpperCase(),
+                                  initial,
                                   style: GoogleFonts.inter(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13,
-                                      color: AppColors.primary),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                    color: AppColors.primary,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -527,21 +703,21 @@ class _CommentsTab extends StatelessWidget {
                                       CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      author['name'] as String? ??
-                                          author['email'] as String? ??
-                                          'Usuario',
+                                      authorName,
                                       style: GoogleFonts.inter(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppColors.textPrimary),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.textPrimary,
+                                      ),
                                     ),
                                     if (c['created_at'] != null)
                                       Text(
                                         _formatDate(
                                             c['created_at'] as String),
                                         style: GoogleFonts.inter(
-                                            fontSize: 11,
-                                            color: AppColors.textSecondary),
+                                          fontSize: 11,
+                                          color: AppColors.textSecondary,
+                                        ),
                                       ),
                                   ],
                                 ),
@@ -565,8 +741,9 @@ class _CommentsTab extends StatelessWidget {
                                     Text(
                                       '$likes',
                                       style: GoogleFonts.inter(
-                                          fontSize: 12,
-                                          color: AppColors.textSecondary),
+                                        fontSize: 13,
+                                        color: AppColors.textSecondary,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -577,9 +754,10 @@ class _CommentsTab extends StatelessWidget {
                           Text(
                             c['content'] as String? ?? '',
                             style: GoogleFonts.inter(
-                                fontSize: 14,
-                                color: AppColors.textPrimary,
-                                height: 1.45),
+                              fontSize: 13,
+                              color: AppColors.textPrimary,
+                              height: 1.5,
+                            ),
                           ),
                         ],
                       ),
@@ -588,7 +766,7 @@ class _CommentsTab extends StatelessWidget {
                 ),
         ),
 
-        // ── Comment input ────────────────────────────────────────────────
+        // ── Comment input ──────────────────────────────────────────────────
         Container(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           decoration: const BoxDecoration(
@@ -604,25 +782,31 @@ class _CommentsTab extends StatelessWidget {
                   maxLines: 3,
                   minLines: 1,
                   style: GoogleFonts.inter(
-                      fontSize: 14, color: AppColors.textPrimary),
+                    fontSize: 14,
+                    color: AppColors.textPrimary,
+                  ),
                   decoration: InputDecoration(
                     hintText: 'Escribe un comentario…',
                     hintStyle: GoogleFonts.inter(
-                        fontSize: 14, color: AppColors.textSecondary),
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                    ),
                     filled: true,
-                    fillColor: AppColors.background,
+                    fillColor: AppColors.surface,
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 10),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.border),
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          const BorderSide(color: AppColors.border),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.border),
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          const BorderSide(color: AppColors.border),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(10),
                       borderSide: const BorderSide(
                           color: AppColors.primary, width: 1.5),
                     ),
@@ -644,10 +828,15 @@ class _CommentsTab extends StatelessWidget {
                             width: 16,
                             height: 16,
                             child: CircularProgressIndicator(
-                                strokeWidth: 2, color: AppColors.textOnPrimary),
+                              strokeWidth: 2,
+                              color: AppColors.textOnPrimary,
+                            ),
                           )
-                        : const Icon(Icons.send_rounded,
-                            color: AppColors.textOnPrimary, size: 18),
+                        : const Icon(
+                            Icons.send_rounded,
+                            color: AppColors.textOnPrimary,
+                            size: 18,
+                          ),
                     onPressed: submitting ? null : onSubmit,
                     padding: EdgeInsets.zero,
                   ),

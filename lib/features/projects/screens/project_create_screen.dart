@@ -46,8 +46,9 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('Error al crear el proyecto: $e'),
-              backgroundColor: AppColors.error),
+            content: Text('Error al crear el proyecto: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -61,33 +62,42 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
+        elevation: 0,
         title: Text(
           'Nuevo proyecto',
           style: GoogleFonts.inter(
-              fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: _saving
-                ? const Center(
+          _saving
+              ? const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 16),
                     child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2)),
-                  )
-                : TextButton(
-                    onPressed: _save,
-                    child: Text(
-                      'Crear',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w600,
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
                         color: AppColors.primary,
-                        fontSize: 15,
                       ),
                     ),
                   ),
-          ),
+                )
+              : TextButton(
+                  onPressed: _save,
+                  child: Text(
+                    'Crear',
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+          const SizedBox(width: 8),
         ],
       ),
       body: Form(
@@ -100,7 +110,7 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: AppColors.border, width: 0.5),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,23 +118,35 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
                   Text(
                     'Información del proyecto',
                     style: GoogleFonts.inter(
-                      fontSize: 14,
+                      fontSize: 15,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 16),
+                  Text(
+                    'Título *',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
                   TextFormField(
                     controller: _titleCtrl,
                     style: GoogleFonts.inter(
-                        fontSize: 14, color: AppColors.textPrimary),
+                      fontSize: 14,
+                      color: AppColors.textPrimary,
+                    ),
                     decoration: InputDecoration(
-                      labelText: 'Título *',
-                      labelStyle: GoogleFonts.inter(
-                          color: AppColors.textSecondary),
                       hintText: 'Nombre del proyecto',
+                      hintStyle: GoogleFonts.inter(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
                       filled: true,
-                      fillColor: AppColors.background,
+                      fillColor: AppColors.surface,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: const BorderSide(color: AppColors.border),
@@ -136,26 +158,41 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: const BorderSide(
-                            color: AppColors.primary, width: 1.5),
+                          color: AppColors.primary,
+                          width: 1.5,
+                        ),
                       ),
                     ),
-                    validator: (v) => (v == null || v.trim().isEmpty)
-                        ? 'El título es requerido'
-                        : null,
+                    validator: (v) =>
+                        (v == null || v.trim().isEmpty)
+                            ? 'El título es requerido'
+                            : null,
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Descripción (opcional)',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
                   TextFormField(
                     controller: _descCtrl,
                     maxLines: 4,
                     style: GoogleFonts.inter(
-                        fontSize: 14, color: AppColors.textPrimary),
+                      fontSize: 14,
+                      color: AppColors.textPrimary,
+                    ),
                     decoration: InputDecoration(
-                      labelText: 'Descripción (opcional)',
-                      labelStyle: GoogleFonts.inter(
-                          color: AppColors.textSecondary),
                       hintText: '¿De qué trata el proyecto?',
+                      hintStyle: GoogleFonts.inter(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
                       filled: true,
-                      fillColor: AppColors.background,
+                      fillColor: AppColors.surface,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: const BorderSide(color: AppColors.border),
@@ -167,7 +204,9 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: const BorderSide(
-                            color: AppColors.primary, width: 1.5),
+                          color: AppColors.primary,
+                          width: 1.5,
+                        ),
                       ),
                     ),
                   ),
@@ -180,7 +219,7 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
               child: FilledButton(
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -191,14 +230,17 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: AppColors.textOnPrimary),
+                          strokeWidth: 2,
+                          color: AppColors.textOnPrimary,
+                        ),
                       )
                     : Text(
                         'Crear proyecto',
                         style: GoogleFonts.inter(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textOnPrimary),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textOnPrimary,
+                        ),
                       ),
               ),
             ),

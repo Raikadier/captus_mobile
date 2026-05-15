@@ -13,7 +13,8 @@ class AiTeacherToolsScreen extends ConsumerStatefulWidget {
       _AiTeacherToolsScreenState();
 }
 
-class _AiTeacherToolsScreenState extends ConsumerState<AiTeacherToolsScreen> {
+class _AiTeacherToolsScreenState
+    extends ConsumerState<AiTeacherToolsScreen> {
   // ── Semester Plan ──────────────────────────────────────────────────────────
   final _planCourseCtrl = TextEditingController();
   final _planTopicsCtrl = TextEditingController();
@@ -69,8 +70,6 @@ class _AiTeacherToolsScreenState extends ConsumerState<AiTeacherToolsScreen> {
     }
   }
 
-  // ── Semester Plan submit ───────────────────────────────────────────────────
-
   Future<void> _submitPlan() async {
     if (!_planFormKey.currentState!.validate()) return;
     final msg =
@@ -82,8 +81,6 @@ class _AiTeacherToolsScreenState extends ConsumerState<AiTeacherToolsScreen> {
     await _sendAndNavigate(msg);
   }
 
-  // ── Rubric submit ──────────────────────────────────────────────────────────
-
   Future<void> _submitRubric() async {
     if (!_rubricFormKey.currentState!.validate()) return;
     final msg =
@@ -92,8 +89,6 @@ class _AiTeacherToolsScreenState extends ConsumerState<AiTeacherToolsScreen> {
         'puntaje máximo ${_rubricScoreCtrl.text.trim()}';
     await _sendAndNavigate(msg);
   }
-
-  // ── Question Bank submit ───────────────────────────────────────────────────
 
   Future<void> _submitBank() async {
     if (!_bankFormKey.currentState!.validate()) return;
@@ -124,24 +119,30 @@ class _AiTeacherToolsScreenState extends ConsumerState<AiTeacherToolsScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
+        elevation: 0,
         title: Text(
           'Herramientas IA Docente',
           style: GoogleFonts.inter(
-              fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
         ),
+        actions: const [SizedBox(width: 8)],
       ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            // ── Intro ─────────────────────────────────────────────────────
+            // ── Intro banner ─────────────────────────────────────────────
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.primary.withAlpha(15),
+                color: AppColors.primary.withAlpha(AppAlpha.a10),
                 borderRadius: BorderRadius.circular(14),
-                border:
-                    Border.all(color: AppColors.primary.withAlpha(40)),
+                border: Border.all(
+                    color: AppColors.primary.withAlpha(AppAlpha.a20),
+                    width: 0.5),
               ),
               child: Row(
                 children: [
@@ -149,11 +150,14 @@ class _AiTeacherToolsScreenState extends ConsumerState<AiTeacherToolsScreen> {
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withAlpha(20),
+                      color: AppColors.primary.withAlpha(AppAlpha.a20),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.auto_awesome_rounded,
-                        color: AppColors.primary, size: 22),
+                    child: const Icon(
+                      Icons.auto_awesome_rounded,
+                      color: AppColors.primary,
+                      size: 22,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -163,7 +167,7 @@ class _AiTeacherToolsScreenState extends ConsumerState<AiTeacherToolsScreen> {
                         Text(
                           'Herramientas IA para Docentes',
                           style: GoogleFonts.inter(
-                            fontSize: 14,
+                            fontSize: 15,
                             fontWeight: FontWeight.w700,
                             color: AppColors.textPrimary,
                           ),
@@ -171,9 +175,10 @@ class _AiTeacherToolsScreenState extends ConsumerState<AiTeacherToolsScreen> {
                         Text(
                           'Genera material académico con inteligencia artificial',
                           style: GoogleFonts.inter(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                              height: 1.3),
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                            height: 1.3,
+                          ),
                         ),
                       ],
                     ),
@@ -207,7 +212,8 @@ class _AiTeacherToolsScreenState extends ConsumerState<AiTeacherToolsScreen> {
                     _FieldLabel('Temas a cubrir *'),
                     _ToolTextField(
                       controller: _planTopicsCtrl,
-                      hint: 'Ej. Límites, derivadas, integrales, aplicaciones',
+                      hint:
+                          'Ej. Límites, derivadas, integrales, aplicaciones',
                       maxLines: 3,
                       validator: _required,
                     ),
@@ -335,7 +341,8 @@ class _AiTeacherToolsScreenState extends ConsumerState<AiTeacherToolsScreen> {
                     _FieldLabel('Descripción de la actividad'),
                     _ToolTextField(
                       controller: _rubricDescCtrl,
-                      hint: 'Describe brevemente qué deben hacer los estudiantes…',
+                      hint:
+                          'Describe brevemente qué deben hacer los estudiantes…',
                       maxLines: 3,
                     ),
                     const SizedBox(height: 16),
@@ -354,7 +361,8 @@ class _AiTeacherToolsScreenState extends ConsumerState<AiTeacherToolsScreen> {
             _ToolCard(
               emoji: '🎯',
               title: 'Banco de Preguntas',
-              subtitle: 'Genera preguntas de evaluación con distintos niveles',
+              subtitle:
+                  'Genera preguntas de evaluación con distintos niveles',
               expanded: _bankExpanded,
               onToggle: () =>
                   setState(() => _bankExpanded = !_bankExpanded),
@@ -418,15 +426,18 @@ class _AiTeacherToolsScreenState extends ConsumerState<AiTeacherToolsScreen> {
                               value: _bankType,
                               items: const [
                                 DropdownMenuItem(
-                                    value: 'mixed', child: Text('Mixtas')),
+                                    value: 'mixed',
+                                    child: Text('Mixtas')),
                                 DropdownMenuItem(
                                     value: 'multiple_choice',
-                                    child: Text('Selección múltiple')),
+                                    child:
+                                        Text('Selección múltiple')),
                                 DropdownMenuItem(
                                     value: 'true_false',
                                     child: Text('V / F')),
                                 DropdownMenuItem(
-                                    value: 'open', child: Text('Abiertas')),
+                                    value: 'open',
+                                    child: Text('Abiertas')),
                               ],
                               onChanged: (v) =>
                                   setState(() => _bankType = v!),
@@ -444,13 +455,17 @@ class _AiTeacherToolsScreenState extends ConsumerState<AiTeacherToolsScreen> {
                               value: _bankDifficulty,
                               items: const [
                                 DropdownMenuItem(
-                                    value: 'mixed', child: Text('Mixta')),
+                                    value: 'mixed',
+                                    child: Text('Mixta')),
                                 DropdownMenuItem(
-                                    value: 'easy', child: Text('Fácil')),
+                                    value: 'easy',
+                                    child: Text('Fácil')),
                                 DropdownMenuItem(
-                                    value: 'medium', child: Text('Media')),
+                                    value: 'medium',
+                                    child: Text('Media')),
                                 DropdownMenuItem(
-                                    value: 'hard', child: Text('Difícil')),
+                                    value: 'hard',
+                                    child: Text('Difícil')),
                               ],
                               onChanged: (v) =>
                                   setState(() => _bankDifficulty = v!),
@@ -513,7 +528,7 @@ class _ToolCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: expanded ? AppColors.primary : AppColors.border,
-          width: expanded ? 1.5 : 1,
+          width: expanded ? 1.5 : 0.5,
         ),
       ),
       child: Column(
@@ -529,12 +544,14 @@ class _ToolCard extends StatelessWidget {
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withAlpha(15),
+                      color: AppColors.primary.withAlpha(AppAlpha.a10),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(
-                      child: Text(emoji,
-                          style: const TextStyle(fontSize: 20)),
+                      child: Text(
+                        emoji,
+                        style: const TextStyle(fontSize: 20),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -545,15 +562,15 @@ class _ToolCard extends StatelessWidget {
                         Text(
                           title,
                           style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
                           ),
                         ),
                         Text(
                           subtitle,
                           style: GoogleFonts.inter(
-                            fontSize: 12,
+                            fontSize: 13,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -596,8 +613,8 @@ class _FieldLabel extends StatelessWidget {
       child: Text(
         text,
         style: GoogleFonts.inter(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
           color: AppColors.textSecondary,
         ),
       ),
@@ -634,10 +651,10 @@ class _ToolTextField extends StatelessWidget {
       style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle:
-            GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary),
+        hintStyle: GoogleFonts.inter(
+            fontSize: 13, color: AppColors.textSecondary),
         filled: true,
-        fillColor: AppColors.background,
+        fillColor: AppColors.surface,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         border: OutlineInputBorder(
@@ -650,7 +667,8 @@ class _ToolTextField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderSide:
+              const BorderSide(color: AppColors.primary, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -658,7 +676,8 @@ class _ToolTextField extends StatelessWidget {
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+          borderSide:
+              const BorderSide(color: AppColors.error, width: 1.5),
         ),
       ),
     );
@@ -685,7 +704,7 @@ class _DropdownField<T> extends StatelessWidget {
       style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary),
       decoration: InputDecoration(
         filled: true,
-        fillColor: AppColors.background,
+        fillColor: AppColors.surface,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         border: OutlineInputBorder(
@@ -698,7 +717,8 @@ class _DropdownField<T> extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderSide:
+              const BorderSide(color: AppColors.primary, width: 1.5),
         ),
       ),
     );
@@ -721,7 +741,7 @@ class _GenerateButton extends StatelessWidget {
       child: FilledButton.icon(
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.primary,
-          padding: const EdgeInsets.symmetric(vertical: 14),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -732,15 +752,21 @@ class _GenerateButton extends StatelessWidget {
                 width: 16,
                 height: 16,
                 child: CircularProgressIndicator(
-                    strokeWidth: 2, color: AppColors.textOnPrimary),
+                  strokeWidth: 2,
+                  color: AppColors.textOnPrimary,
+                ),
               )
-            : const Icon(Icons.auto_awesome_rounded, color: AppColors.textOnPrimary),
+            : const Icon(
+                Icons.auto_awesome_rounded,
+                color: AppColors.textOnPrimary,
+              ),
         label: Text(
           sending ? 'Generando…' : 'Generar con IA',
           style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textOnPrimary),
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textOnPrimary,
+          ),
         ),
       ),
     );

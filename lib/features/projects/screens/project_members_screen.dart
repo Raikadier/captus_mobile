@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/services/api_client.dart';
+import '../../../shared/widgets/captus_fab.dart';
+import '../../../shared/widgets/cactus_refresh.dart';
 
 const _roleOptions = ['owner', 'admin', 'member'];
-const _roleLabels = {'owner': 'Propietario', 'admin': 'Admin', 'member': 'Miembro'};
+const _roleLabels = {
+  'owner': 'Propietario',
+  'admin': 'Admin',
+  'member': 'Miembro',
+};
 
 class ProjectMembersScreen extends StatefulWidget {
   final String projectId;
@@ -48,11 +54,16 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
         });
       }
     } catch (e) {
-      if (mounted) setState(() { _error = e.toString(); _loading = false; });
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _loading = false;
+        });
+      }
     }
   }
 
-  Future<void> _showAddMemberDialog() async {
+  Future<void> _showAddMemberSheet() async {
     final emailCtrl = TextEditingController();
     String selectedRole = 'member';
     final formKey = GlobalKey<FormState>();
@@ -69,7 +80,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
           padding: EdgeInsets.only(
             left: 24,
             right: 24,
-            top: 24,
+            top: 20,
             bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
           ),
           child: Form(
@@ -78,20 +89,59 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.border,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 Text(
                   'Agregar miembro',
                   style: GoogleFonts.inter(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
                 const SizedBox(height: 16),
+                Text(
+                  'Email del usuario *',
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 6),
                 TextFormField(
                   controller: emailCtrl,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Email del usuario *',
-                    border: OutlineInputBorder(),
+                  style: GoogleFonts.inter(
+                      fontSize: 14, color: AppColors.textPrimary),
+                  decoration: InputDecoration(
+                    hintText: 'correo@ejemplo.com',
+                    hintStyle: GoogleFonts.inter(
+                        fontSize: 14, color: AppColors.textSecondary),
+                    filled: true,
+                    fillColor: AppColors.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: AppColors.border),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: AppColors.border),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(
+                          color: AppColors.primary, width: 1.5),
+                    ),
                   ),
                   validator: (v) {
                     if (v == null || v.trim().isEmpty) return 'Requerido';
@@ -100,16 +150,41 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                   },
                 ),
                 const SizedBox(height: 12),
+                Text(
+                  'Rol',
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 6),
                 DropdownButtonFormField<String>(
                   value: selectedRole,
-                  decoration: const InputDecoration(
-                    labelText: 'Rol',
-                    border: OutlineInputBorder(),
+                  style: GoogleFonts.inter(
+                      fontSize: 14, color: AppColors.textPrimary),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: AppColors.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: AppColors.border),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: AppColors.border),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(
+                          color: AppColors.primary, width: 1.5),
+                    ),
                   ),
                   items: _roleOptions
                       .map((r) => DropdownMenuItem(
-                          value: r,
-                          child: Text(_roleLabels[r] ?? r)))
+                            value: r,
+                            child: Text(_roleLabels[r] ?? r),
+                          ))
                       .toList(),
                   onChanged: (v) => setModalState(() => selectedRole = v!),
                 ),
@@ -118,13 +193,25 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                   width: double.infinity,
                   child: FilledButton(
                     style: FilledButton.styleFrom(
-                        backgroundColor: AppColors.primary),
+                      backgroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
                         Navigator.pop(ctx, true);
                       }
                     },
-                    child: const Text('Agregar'),
+                    child: Text(
+                      'Agregar',
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textOnPrimary,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -152,31 +239,66 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
   }
 
   Future<void> _changeRole(Map<String, dynamic> member) async {
-    String currentRole =
-        member['role'] as String? ?? 'member';
+    String currentRole = member['role'] as String? ?? 'member';
     final user = member['user'] as Map<String, dynamic>? ?? member;
 
     final newRole = await showDialog<String>(
       context: context,
       builder: (_) => StatefulBuilder(
         builder: (ctx, setSt) => AlertDialog(
-          title:
-              Text('Cambiar rol de ${user['name'] ?? user['email'] ?? ''}'),
+          backgroundColor: AppColors.surface,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            'Cambiar rol',
+            style: GoogleFonts.inter(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
           content: DropdownButtonFormField<String>(
             value: currentRole,
+            style: GoogleFonts.inter(
+                fontSize: 14, color: AppColors.textPrimary),
+            decoration: InputDecoration(
+              labelText: user['name'] ?? user['email'] ?? '',
+              labelStyle: GoogleFonts.inter(
+                  color: AppColors.textSecondary),
+              filled: true,
+              fillColor: AppColors.surface,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: AppColors.border),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(
+                    color: AppColors.primary, width: 1.5),
+              ),
+            ),
             items: _roleOptions
-                .map((r) =>
-                    DropdownMenuItem(value: r, child: Text(_roleLabels[r] ?? r)))
+                .map((r) => DropdownMenuItem(
+                      value: r,
+                      child: Text(_roleLabels[r] ?? r),
+                    ))
                 .toList(),
             onChanged: (v) => setSt(() => currentRole = v!),
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text('Cancelar')),
-            ElevatedButton(
-                onPressed: () => Navigator.pop(ctx, currentRole),
-                child: const Text('Cambiar')),
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.primary),
+              onPressed: () => Navigator.pop(ctx, currentRole),
+              child: Text(
+                'Cambiar',
+                style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+              ),
+            ),
           ],
         ),
       ),
@@ -200,23 +322,47 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
 
   Future<void> _removeMember(Map<String, dynamic> member) async {
     final user = member['user'] as Map<String, dynamic>? ?? member;
-    final name = user['name'] as String? ?? user['email'] as String? ?? 'este usuario';
+    final name =
+        user['name'] as String? ?? user['email'] as String? ?? 'este usuario';
     final memberId = member['id'] as String?;
     if (memberId == null) return;
 
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Remover miembro'),
-        content: Text('¿Remover a $name del proyecto?'),
+        backgroundColor: AppColors.surface,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Remover miembro',
+          style: GoogleFonts.inter(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        content: Text(
+          '¿Remover a $name del proyecto?',
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            color: AppColors.textSecondary,
+            height: 1.5,
+          ),
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancelar')),
-          TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              style: TextButton.styleFrom(foregroundColor: AppColors.error),
-              child: const Text('Remover')),
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            style:
+                FilledButton.styleFrom(backgroundColor: AppColors.error),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(
+              'Remover',
+              style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+            ),
+          ),
         ],
       ),
     );
@@ -244,66 +390,35 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
+        elevation: 0,
         title: Text(
           'Miembros del proyecto',
           style: GoogleFonts.inter(
-              fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
         ),
-        actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _load),
-        ],
+        actions: const [SizedBox(width: 8)],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showAddMemberDialog,
-        icon: const Icon(Icons.person_add_rounded),
-        label: const Text('Agregar'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.textOnPrimary,
+      floatingActionButton: CaptusFab(
+        onPressed: _showAddMemberSheet,
+        icon: Icons.person_add_rounded,
+        tooltip: 'Agregar miembro',
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            )
           : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.error_outline,
-                          size: 48, color: AppColors.error),
-                      const SizedBox(height: 12),
-                      Text(_error!,
-                          style: GoogleFonts.inter(
-                              color: AppColors.textSecondary)),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                          onPressed: _load,
-                          child: const Text('Reintentar')),
-                    ],
-                  ),
-                )
+              ? _buildError()
               : _members.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.group_outlined,
-                              size: 64, color: AppColors.textSecondary),
-                          const SizedBox(height: 16),
-                          Text('Sin miembros',
-                              style: GoogleFonts.inter(
-                                  fontSize: 16,
-                                  color: AppColors.textSecondary)),
-                          const SizedBox(height: 8),
-                          Text('Agrega miembros con el botón +',
-                              style: GoogleFonts.inter(
-                                  fontSize: 13,
-                                  color: AppColors.textSecondary)),
-                        ],
-                      ),
-                    )
-                  : RefreshIndicator(
+                  ? _buildEmpty()
+                  : CactusRefresh(
                       onRefresh: _load,
                       child: ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+                        padding:
+                            const EdgeInsets.fromLTRB(16, 8, 16, 100),
                         itemCount: _members.length,
                         itemBuilder: (_, i) {
                           final m = _members[i] as Map<String, dynamic>;
@@ -311,112 +426,210 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                               m['user'] as Map<String, dynamic>? ?? m;
                           final role = m['role'] as String? ?? 'member';
                           final isOwner = role == 'owner';
+                          final name = user['name'] as String? ??
+                              user['email'] as String? ??
+                              '';
+                          final email = user['email'] as String? ?? '';
+                          final avatarUrl =
+                              user['avatar_url'] as String?;
+                          final initial = name.isNotEmpty
+                              ? name[0].toUpperCase()
+                              : 'U';
 
-                          return Card(
-                            margin: const EdgeInsets.only(bottom: 10),
-                            color: AppColors.surface,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.surface,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                  color: AppColors.border, width: 0.5),
                             ),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 6),
-                              leading: CircleAvatar(
-                                radius: 20,
-                                backgroundColor:
-                                    AppColors.primary.withAlpha(20),
-                                backgroundImage: user['avatar_url'] != null &&
-                                        (user['avatar_url'] as String)
-                                            .isNotEmpty
-                                    ? NetworkImage(
-                                        user['avatar_url'] as String)
-                                    : null,
-                                child: user['avatar_url'] == null ||
-                                        (user['avatar_url'] as String).isEmpty
-                                    ? Text(
-                                        ((user['name'] as String? ??
-                                                    'U')[0])
-                                                .toUpperCase(),
-                                        style: GoogleFonts.inter(
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 22,
+                                  backgroundColor: AppColors.primary
+                                      .withAlpha(AppAlpha.a10),
+                                  backgroundImage: avatarUrl != null &&
+                                          avatarUrl.isNotEmpty
+                                      ? NetworkImage(avatarUrl)
+                                      : null,
+                                  child: avatarUrl == null ||
+                                          avatarUrl.isEmpty
+                                      ? Text(
+                                          initial,
+                                          style: GoogleFonts.inter(
                                             fontWeight: FontWeight.bold,
-                                            color: AppColors.primary),
-                                      )
-                                    : null,
-                              ),
-                              title: Text(
-                                user['name'] as String? ??
-                                    user['email'] as String? ??
-                                    '',
-                                style: GoogleFonts.inter(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.textPrimary),
-                              ),
-                              subtitle: Text(
-                                user['email'] as String? ?? '',
-                                style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    color: AppColors.textSecondary),
-                              ),
-                              trailing: isOwner
-                                  ? Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.primary.withAlpha(20),
-                                        borderRadius:
-                                            BorderRadius.circular(20),
-                                      ),
-                                      child: Text(
-                                        'Propietario',
+                                            color: AppColors.primary,
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        name,
                                         style: GoogleFonts.inter(
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.primary),
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.textPrimary,
+                                        ),
                                       ),
-                                    )
-                                  : PopupMenuButton<String>(
-                                      icon: const Icon(Icons.more_vert,
-                                          color: AppColors.textSecondary),
-                                      onSelected: (action) {
-                                        if (action == 'role') {
-                                          _changeRole(m);
-                                        } else if (action == 'remove') {
-                                          _removeMember(m);
-                                        }
-                                      },
-                                      itemBuilder: (_) => [
-                                        PopupMenuItem(
-                                          value: 'role',
-                                          child: ListTile(
-                                            leading: const Icon(
-                                                Icons.swap_horiz_rounded),
-                                            title: Text(
-                                                _roleLabels[role] ?? role),
-                                            subtitle: const Text(
-                                                'Cambiar rol'),
-                                            contentPadding: EdgeInsets.zero,
+                                      if (email.isNotEmpty)
+                                        Text(
+                                          email,
+                                          style: GoogleFonts.inter(
+                                            fontSize: 13,
+                                            color:
+                                                AppColors.textSecondary,
                                           ),
                                         ),
-                                        const PopupMenuItem(
-                                          value: 'remove',
-                                          child: ListTile(
-                                            leading: Icon(
-                                                Icons.person_remove_outlined,
-                                                color: AppColors.error),
-                                            title: Text('Remover',
-                                                style: TextStyle(
-                                                    color: AppColors.error)),
-                                            contentPadding: EdgeInsets.zero,
-                                          ),
-                                        ),
-                                      ],
+                                    ],
+                                  ),
+                                ),
+                                if (isOwner)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 3),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary
+                                          .withAlpha(AppAlpha.a10),
+                                      borderRadius:
+                                          BorderRadius.circular(20),
                                     ),
+                                    child: Text(
+                                      'Propietario',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  PopupMenuButton<String>(
+                                    icon: const Icon(Icons.more_vert,
+                                        color: AppColors.textSecondary),
+                                    onSelected: (action) {
+                                      if (action == 'role') {
+                                        _changeRole(m);
+                                      } else if (action == 'remove') {
+                                        _removeMember(m);
+                                      }
+                                    },
+                                    itemBuilder: (_) => [
+                                      PopupMenuItem(
+                                        value: 'role',
+                                        child: Row(
+                                          children: [
+                                            const Icon(Icons
+                                                .swap_horiz_rounded),
+                                            const SizedBox(width: 12),
+                                            Text('Cambiar rol'),
+                                          ],
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: 'remove',
+                                        child: Row(
+                                          children: [
+                                            const Icon(
+                                              Icons
+                                                  .person_remove_outlined,
+                                              color: AppColors.error,
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Text(
+                                              'Remover',
+                                              style: GoogleFonts.inter(
+                                                  color: AppColors.error),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                              ],
                             ),
                           );
                         },
                       ),
                     ),
+    );
+  }
+
+  Widget _buildError() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.error_outline, size: 56, color: AppColors.error),
+          const SizedBox(height: 12),
+          Text(
+            'Error al cargar miembros',
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            _error!,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
+            onPressed: _load,
+            child: Text(
+              'Reintentar',
+              style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmpty() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.group_outlined,
+            size: 56,
+            color: AppColors.textSecondary,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Sin miembros',
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Agrega miembros con el botón +',
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
