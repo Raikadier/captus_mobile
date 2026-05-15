@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.captus.app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"  // Required by path_provider, share_plus, sqflite, etc.
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId = "com.captus.app"
-        minSdk = flutter.minSdkVersion            // Required by flutter_local_notifications
+        minSdk = 23   // firebase_analytics requires minSdk 23 (flutter.minSdkVersion=21 is too low)
         targetSdk = 34         // Android 14 — current stable target
         versionCode = flutter.versionCode
         versionName = flutter.versionName
