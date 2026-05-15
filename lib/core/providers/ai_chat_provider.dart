@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../services/api_client.dart';
+import 'auth_provider.dart';
 
 final _aiReceiveOptions = Options(receiveTimeout: const Duration(seconds: 90));
 
@@ -74,25 +75,52 @@ class AiChatState {
 }
 
 class AiChatNotifier extends Notifier<AiChatState> {
-  static const _welcomeText =
-      '¡Hola! Soy Captus IA. Tengo acceso a tus tareas, calendario y cursos. ¿En qué te puedo ayudar hoy?';
-
   CancelToken _cancelToken = CancelToken();
+
+  // ── Welcome message (role-aware) ───────────────────────────────────────────
+
+  static String _welcomeFor(String role, String? firstName) {
+    final greeting =
+        firstName != null && firstName.isNotEmpty ? '¡Hola, $firstName!' : '¡Hola!';
+    if (role == 'teacher') {
+      return '$greeting Soy Captus IA, tu asistente docente. Puedo '
+          'analizar el rendimiento de tus estudiantes, generar rúbricas, '
+          'bancos de preguntas, planes de semestre y más. ¿En qué te ayudo?';
+    }
+    if (role == 'admin' || role == 'superadmin') {
+      return '$greeting Soy Captus IA. Puedo responder preguntas sobre '
+          'la plataforma y ayudarte a gestionar tu institución.';
+    }
+    return '$greeting Soy Captus IA. Tengo acceso a tus tareas, '
+        'calendario y cursos. ¿En qué te puedo ayudar hoy?';
+  }
+
+  // ── Build ──────────────────────────────────────────────────────────────────
 
   @override
   AiChatState build() {
-    Future.microtask(_loadLatestConversation);
+    // Watch auth so the provider re-builds (resets) automatically on:
+    //  • logout / login (different user)
+    //  • role change
+    // This prevents chat state from bleeding between users on the same device.
+    final user = ref.watch(currentUserProvider);
+    final role = user?.role ?? 'student';
+    final firstName = user?.name.split(' ').firstOrNull;
 
+    // Do NOT auto-load the last conversation — each session starts fresh.
+    // Users can access previous chats via the History button.
     return AiChatState(
       messages: [
         ChatMessage(
-          text: _welcomeText,
+          text: _welcomeFor(role, firstName),
           isUser: false,
           time: DateTime.now(),
         ),
       ],
     );
   }
+
+  // ── Public API ─────────────────────────────────────────────────────────────
 
   void stop() {
     _cancelToken.cancel('Usuario detuvo la respuesta');
@@ -109,29 +137,6 @@ class AiChatNotifier extends Notifier<AiChatState> {
         ),
       ],
     );
-  }
-
-  Future<void> _loadLatestConversation() async {
-    try {
-      final res =
-          await ApiClient.instance.get<List<dynamic>>('/ai/conversations');
-
-      final list = res.data;
-      if (list == null || list.isEmpty) return;
-
-      final latest = list.first as Map<String, dynamic>;
-      final id = latest['id']?.toString();
-      final title = latest['title']?.toString().trim();
-
-      if (id == null || id.isEmpty) return;
-
-      await loadConversation(
-        id,
-        title: title == null || title.isEmpty ? null : title,
-      );
-    } catch (_) {
-      // Si falla, la conversación inicia limpia.
-    }
   }
 
   Future<void> send(String text) async {
@@ -257,11 +262,15 @@ class AiChatNotifier extends Notifier<AiChatState> {
         );
       }).toList();
 
+      final user = ref.read(currentUserProvider);
+      final role = user?.role ?? 'student';
+      final firstName = user?.name.split(' ').firstOrNull;
+
       state = AiChatState(
         messages: loaded.isEmpty
             ? [
                 ChatMessage(
-                  text: _welcomeText,
+                  text: _welcomeFor(role, firstName),
                   isUser: false,
                   time: DateTime.now(),
                 ),
@@ -279,14 +288,20 @@ class AiChatNotifier extends Notifier<AiChatState> {
     }
   }
 
+  /// Starts a new conversation, releasing the keep-alive so the provider
+  /// can be disposed normally when the user navigates away.
   void clear() {
     _cancelToken.cancel('Nueva conversación');
     _cancelToken = CancelToken();
 
+    final user = ref.read(currentUserProvider);
+    final role = user?.role ?? 'student';
+    final firstName = user?.name.split(' ').firstOrNull;
+
     state = AiChatState(
       messages: [
         ChatMessage(
-          text: _welcomeText,
+          text: _welcomeFor(role, firstName),
           isUser: false,
           time: DateTime.now(),
         ),
@@ -295,6 +310,9 @@ class AiChatNotifier extends Notifier<AiChatState> {
   }
 }
 
+// NotifierProvider that watches currentUserProvider in build() so it rebuilds
+// (resets to fresh chat) automatically when the authenticated user changes —
+// this prevents chat state from bleeding between users on the same device.
 final aiChatProvider = NotifierProvider<AiChatNotifier, AiChatState>(
   AiChatNotifier.new,
 );
