@@ -50,6 +50,17 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
   Future<void> _completeTask(String id) async {
     HapticFeedback.lightImpact();
     setState(() => _tasks.removeWhere((t) => t['id']?.toString() == id));
+    try {
+      await Supabase.instance.client
+          .from('course_assignments')
+          .update({'completed': true})
+          .eq('id', id);
+    } catch (e) {
+      debugPrint('ERROR completing task: $e');
+      if (mounted) await _fetchTasks();
+      return;
+    }
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text('✓ Tarea completada'),

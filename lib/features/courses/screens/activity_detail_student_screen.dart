@@ -72,7 +72,7 @@ class _ActivityDetailStudentScreenState
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
@@ -214,17 +214,15 @@ class _ActivityDetailStudentScreenState
         isGraded: _activity.isGraded,
         isSubmitted: _activity.isSubmitted,
         onSubmit: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                _activity.isGraded || _activity.isSubmitted
-                    ? 'Abriendo asistente IA...'
-                    : 'Entrega enviada',
-                style: GoogleFonts.inter(color: AppColors.textOnPrimary),
-              ),
-              backgroundColor: AppColors.surface2,
-            ),
-          );
+          if (_activity.isGraded || _activity.isSubmitted) {
+            // Actividad ya entregada/calificada → abrir IA
+            context.push('/ai');
+          } else {
+            // Navegar a pantalla real de entrega
+            context.push(
+              '/student/assignments/${widget.activityId}/submit',
+            );
+          }
         },
       ),
     );

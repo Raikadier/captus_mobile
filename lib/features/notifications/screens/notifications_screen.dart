@@ -117,10 +117,21 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             child: asyncNotifs.when(
               loading: () =>
                   const Center(child: CircularProgressIndicator()),
-              error: (_, __) => Center(
-                child: Text('No se pudieron cargar las notificaciones',
-                    style: GoogleFonts.inter(
-                        color: AppColors.textSecondary)),
+              error: (err, _) => Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.wifi_off_rounded, size: 48, color: AppColors.textSecondary),
+                    const SizedBox(height: 12),
+                    Text('No se pudieron cargar las notificaciones',
+                        style: GoogleFonts.inter(color: AppColors.textSecondary)),
+                    const SizedBox(height: 8),
+                    FilledButton.tonal(
+                      onPressed: () => ref.invalidate(notificationsProvider),
+                      child: Text('Reintentar', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                    ),
+                  ],
+                ),
               ),
               data: (all) {
                 final notifs = _selectedTab == 0

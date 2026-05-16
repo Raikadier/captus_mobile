@@ -79,7 +79,22 @@ class _AssignmentReviewScreenState
       ),
       body: submissionsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Error: $err')),
+        error: (err, _) => Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
+              const SizedBox(height: 12),
+              Text('No se pudo cargar la entrega',
+                  style: GoogleFonts.inter(color: AppColors.textSecondary)),
+              const SizedBox(height: 8),
+              FilledButton.tonal(
+                onPressed: () => ref.invalidate(submissionsProvider(widget.assignmentId)),
+                child: Text('Reintentar', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+              ),
+            ],
+          ),
+        ),
         data: (submissions) {
           if (submissions.isEmpty) {
             return const Center(
@@ -96,7 +111,7 @@ class _AssignmentReviewScreenState
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
                 child: ListTile(
-                  title: Text('Estudiante: ${sub.studentId}',
+                  title: Text('Estudiante: ${sub.studentId.substring(0, 8)}...',
                       style: GoogleFonts.inter(
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary)),

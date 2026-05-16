@@ -55,6 +55,32 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
     super.initState();
     _selectedCourseId = widget.courseId;
     _loadCourses();
+    if (_isEditing) _loadExistingTask();
+  }
+
+  Future<void> _loadExistingTask() async {
+    final idInt = int.tryParse(widget.taskId ?? '');
+    if (idInt == null) return;
+    try {
+      final row = await Supabase.instance.client
+          .from('course_assignments')
+          .select()
+          .eq('id', idInt)
+          .maybeSingle();
+      if (row == null || !mounted) return;
+      setState(() {
+        _titleCtrl.text = row['title']?.toString() ?? '';
+        _descCtrl.text = row['description']?.toString() ?? '';
+        if (row['due_date'] != null) {
+          _dueDate = DateTime.tryParse(row['due_date'].toString());
+        }
+        if (row['course_id'] != null) {
+          _selectedCourseId = row['course_id'].toString();
+        }
+      });
+    } catch (_) {
+      // No-op: form stays blank, user can fill in manually
+    }
   }
 
   @override

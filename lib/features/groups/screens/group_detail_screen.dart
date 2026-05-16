@@ -126,10 +126,16 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
         animation: _tabController,
         builder: (context, _) {
           if (_tabController.index != 0) return const SizedBox.shrink();
-          return FloatingActionButton(
-            onPressed: () {},
+          return FloatingActionButton.extended(
+            onPressed: () => context.push('/tasks/create'),
             backgroundColor: AppColors.primary,
-            child: const Icon(Icons.add, color: AppColors.textOnPrimary),
+            foregroundColor: AppColors.textOnPrimary,
+            icon: const Icon(Icons.add_rounded),
+            label: Text(
+              'Nueva tarea',
+              style: GoogleFonts.inter(
+                  fontSize: 14, fontWeight: FontWeight.w600),
+            ),
           );
         },
       ),
