@@ -228,7 +228,7 @@ class _NoteCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha(13),
+              color: AppColors.textPrimary.withAlpha(AppAlpha.a05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -345,7 +345,7 @@ class _NoteCard extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.delete_outline, color: AppColors.error),
-              title: const Text('Eliminar', style: TextStyle(color: AppColors.error)),
+              title: Text('Eliminar', style: GoogleFonts.inter(color: AppColors.error)),
               onTap: () {
                 Navigator.pop(context);
                 onDelete();

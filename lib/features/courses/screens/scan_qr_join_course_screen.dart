@@ -118,12 +118,12 @@ class _ScanQRJoinCourseScreenState extends State<ScanQRJoinCourseScreen> {
     final hasPendingConfirmation = _pendingInviteCode != null && !_isProcessingScan;
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.textPrimary,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: AppColors.textPrimary,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textOnPrimary),
           onPressed: () => context.pop(),
         ),
         title: Text(
@@ -131,7 +131,7 @@ class _ScanQRJoinCourseScreenState extends State<ScanQRJoinCourseScreen> {
           style: GoogleFonts.inter(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: AppColors.textOnPrimary,
           ),
         ),
       ),
@@ -163,7 +163,7 @@ class _ScanQRJoinCourseScreenState extends State<ScanQRJoinCourseScreen> {
               style: GoogleFonts.inter(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
-                color: Colors.white,
+                color: AppColors.textOnPrimary,
               ),
             ),
           ),
@@ -241,7 +241,7 @@ class _ScannerOverlay extends StatelessWidget {
         children: [
           ColorFiltered(
             colorFilter: ColorFilter.mode(
-              Colors.black.withAlpha(AppAlpha.a50),
+              AppColors.textPrimary.withAlpha(AppAlpha.a50),
               BlendMode.srcOut,
             ),
             child: Stack(
@@ -249,7 +249,7 @@ class _ScannerOverlay extends StatelessWidget {
               children: [
                 Container(
                   decoration: const BoxDecoration(
-                    color: Colors.black,
+                    color: AppColors.textPrimary,
                     backgroundBlendMode: BlendMode.dstOut,
                   ),
                 ),

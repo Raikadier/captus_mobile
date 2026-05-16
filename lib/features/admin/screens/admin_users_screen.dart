@@ -111,7 +111,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                     }
                   },
                   child: Text('Invitar',
-                    style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w600)),
+                    style: GoogleFonts.inter(color: AppColors.textOnPrimary, fontWeight: FontWeight.w600)),
                 ),
               ),
             ],
@@ -131,7 +131,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Remover', style: TextStyle(color: AppColors.error)),
+            child: Text('Remover', style: GoogleFonts.inter(color: AppColors.error)),
           ),
         ],
       ),
@@ -199,7 +199,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                       style: GoogleFonts.inter(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
-                        color: selected ? Colors.white : AppColors.textSecondary,
+                        color: selected ? AppColors.textOnPrimary : AppColors.textSecondary,
                       ),
                     ),
                   ),

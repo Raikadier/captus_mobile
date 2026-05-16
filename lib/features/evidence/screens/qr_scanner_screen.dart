@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../core/constants/app_colors.dart';
@@ -16,11 +17,11 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.textPrimary,
       appBar: AppBar(
         title: const Text('Escanear QR'),
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.textPrimary,
+        foregroundColor: AppColors.textOnPrimary,
       ),
       body: Stack(
         children: [
@@ -49,14 +50,14 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
               ),
             ),
           ),
-          const Positioned(
+          Positioned(
             bottom: 40,
             left: 24,
             right: 24,
             child: Text(
               'Alinea el código dentro del recuadro',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white),
+              style: GoogleFonts.inter(color: AppColors.textOnPrimary),
             ),
           )
         ],

@@ -326,7 +326,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.textOnPrimary,
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
@@ -389,7 +389,7 @@ class _MemberTileState extends State<_MemberTile> {
               style: GoogleFonts.inter(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: AppColors.textOnPrimary,
               ),
             ),
           ),

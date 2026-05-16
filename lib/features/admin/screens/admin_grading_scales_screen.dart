@@ -139,7 +139,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo guardar la escala. Intenta de nuevo.')), backgroundColor: Colors.red),
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo guardar la escala. Intenta de nuevo.')), backgroundColor: AppColors.error),
         );
       }
     }
@@ -154,7 +154,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo actualizar la escala predeterminada. Intenta de nuevo.')), backgroundColor: Colors.red),
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo actualizar la escala predeterminada. Intenta de nuevo.')), backgroundColor: AppColors.error),
         );
       }
     }
@@ -175,7 +175,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
               child: const Text('Cancelar')),
           TextButton(
               onPressed: () => Navigator.pop(context, true),
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              style: TextButton.styleFrom(foregroundColor: AppColors.error),
               child: const Text('Eliminar')),
         ],
       ),
@@ -187,7 +187,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo eliminar la escala. Intenta de nuevo.')), backgroundColor: Colors.red),
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo eliminar la escala. Intenta de nuevo.')), backgroundColor: AppColors.error),
         );
       }
     }
@@ -218,7 +218,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
         icon: const Icon(Icons.add),
         label: const Text('Nueva escala'),
         backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.textOnPrimary,
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -365,15 +365,15 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
                                                 contentPadding:
                                                     EdgeInsets.zero)),
                                       if (!isDefault)
-                                        const PopupMenuItem(
+                                        PopupMenuItem(
                                             value: 'delete',
                                             child: ListTile(
-                                                leading: Icon(
+                                                leading: const Icon(
                                                     Icons.delete_outline,
-                                                    color: Colors.red),
+                                                    color: AppColors.error),
                                                 title: Text('Eliminar',
-                                                    style: TextStyle(
-                                                        color: Colors.red)),
+                                                    style: GoogleFonts.inter(
+                                                        color: AppColors.error)),
                                                 contentPadding:
                                                     EdgeInsets.zero)),
                                     ],

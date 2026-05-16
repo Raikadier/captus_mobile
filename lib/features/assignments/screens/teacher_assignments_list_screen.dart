@@ -74,7 +74,7 @@ class TeacherAssignmentsListScreen extends ConsumerWidget {
                       label: const Text('Crear tarea'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppColors.textOnPrimary,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24, vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -120,7 +120,7 @@ class TeacherAssignmentsListScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.primary,
         onPressed: () => context.push('/teacher/assignments/create'),
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: AppColors.textOnPrimary),
       ),
     );
   }

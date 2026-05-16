@@ -65,7 +65,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Imagen seleccionada: ${file.path.split('/').last}'),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.success,
               duration: const Duration(seconds: 2),
             ),
           );
@@ -76,7 +76,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('⚠️ No se detectó ninguna imagen. Intenta de nuevo.'),
-              backgroundColor: Colors.orange,
+              backgroundColor: AppColors.warning,
               duration: Duration(seconds: 4),
             ),
           );
@@ -89,7 +89,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -300,7 +300,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                             border: Border.all(color: AppColors.background, width: 2),
                           ),
                           child: const Icon(Icons.camera_alt_rounded,
-                              size: 16, color: Colors.black),
+                              size: 16, color: AppColors.textPrimary),
                         ),
                       ),
                     ),

@@ -293,7 +293,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
           color: AppColors.surface,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha(13),
+              color: AppColors.textPrimary.withAlpha(AppAlpha.a05),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),

@@ -256,15 +256,15 @@ class _SwipeableTaskCard extends StatelessWidget {
         ),
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(left: 20),
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.check_circle_outline_rounded,
-                color: Colors.white, size: 22),
-            SizedBox(width: 8),
+            const Icon(Icons.check_circle_outline_rounded,
+                color: AppColors.textOnPrimary, size: 22),
+            const SizedBox(width: 8),
             Text('Completar',
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w600)),
+                style: GoogleFonts.inter(
+                    color: AppColors.textOnPrimary, fontWeight: FontWeight.w600)),
           ],
         ),
       ),
@@ -277,16 +277,16 @@ class _SwipeableTaskCard extends StatelessWidget {
         ),
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Text('Eliminar',
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w600)),
-            SizedBox(width: 8),
-            Icon(Icons.delete_outline_rounded,
-                color: Colors.white, size: 22),
+                style: GoogleFonts.inter(
+                    color: AppColors.textOnPrimary, fontWeight: FontWeight.w600)),
+            const SizedBox(width: 8),
+            const Icon(Icons.delete_outline_rounded,
+                color: AppColors.textOnPrimary, size: 22),
           ],
         ),
       ),

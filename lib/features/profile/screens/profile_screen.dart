@@ -89,7 +89,7 @@ class ProfileScreen extends ConsumerWidget {
                                 Border.all(color: AppColors.surface, width: 2),
                           ),
                           child: const Icon(Icons.camera_alt_rounded,
-                              size: 14, color: Colors.black),
+                              size: 14, color: AppColors.textPrimary),
                         ),
                       ),
                     ),
@@ -112,14 +112,16 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  user.role == 'teacher' ? 'Docente' : 'Estudiante',
+                  _roleDisplayText(user.role),
                   style: GoogleFonts.inter(
                       fontSize: 11,
                       color: AppColors.primary,
                       fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 16),
-                _buildStreakSection(ref),
+                // Streak section is only meaningful for students and teachers.
+                if (user.role == 'student' || user.role == 'teacher')
+                  _buildStreakSection(ref),
               ],
             ),
           ),
@@ -177,64 +179,67 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ]),
 
-                const SizedBox(height: 24),
+                // Stats and quick-access links are only relevant for
+                // students and teachers. Admins go straight to CUENTA.
+                if (user.role == 'student' || user.role == 'teacher') ...[
+                  const SizedBox(height: 24),
 
-                // Stats con datos reales
-                Text(
-                  'MIS ESTADÍSTICAS',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textSecondary,
-                    letterSpacing: 0.8,
+                  Text(
+                    'MIS ESTADÍSTICAS',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textSecondary,
+                      letterSpacing: 0.8,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                _buildRealStats(ref),
+                  const SizedBox(height: 8),
+                  _buildRealStats(ref),
 
-                const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-                // Quick links
-                Text(
-                  'ACCESO RÁPIDO',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textSecondary,
-                    letterSpacing: 0.8,
+                  Text(
+                    'ACCESO RÁPIDO',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textSecondary,
+                      letterSpacing: 0.8,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                _InfoCard(children: [
-                  _LinkRow(
-                    icon: Icons.bar_chart_rounded,
-                    label: 'Mis estadísticas',
-                    onTap: () => context.push('/statistics'),
-                  ),
-                  Consumer(
-                    builder: (context, ref, _) {
-                      final label = ref
-                          .watch(achievementsProvider)
-                          .maybeWhen(
-                            data: (s) => '${s.totalUnlocked}/$kTotalAchievements',
-                            orElse: () => '',
-                          );
-                      return _LinkRow(
-                        icon: Icons.emoji_events_rounded,
-                        label: 'Mis logros',
-                        trailingLabel: label,
-                        onTap: () =>
-                            context.push('/statistics/achievements'),
-                      );
-                    },
-                  ),
-                  _LinkRow(
-                    icon: Icons.notifications_outlined,
-                    label: 'Notificaciones',
-                    onTap: () => context.push('/notifications/settings'),
-                    isLast: true,
-                  ),
-                ]),
+                  const SizedBox(height: 8),
+                  _InfoCard(children: [
+                    _LinkRow(
+                      icon: Icons.bar_chart_rounded,
+                      label: 'Mis estadísticas',
+                      onTap: () => context.push('/statistics'),
+                    ),
+                    Consumer(
+                      builder: (context, ref, _) {
+                        final label = ref
+                            .watch(achievementsProvider)
+                            .maybeWhen(
+                              data: (s) =>
+                                  '${s.totalUnlocked}/$kTotalAchievements',
+                              orElse: () => '',
+                            );
+                        return _LinkRow(
+                          icon: Icons.emoji_events_rounded,
+                          label: 'Mis logros',
+                          trailingLabel: label,
+                          onTap: () =>
+                              context.push('/statistics/achievements'),
+                        );
+                      },
+                    ),
+                    _LinkRow(
+                      icon: Icons.notifications_outlined,
+                      label: 'Notificaciones',
+                      onTap: () => context.push('/notifications/settings'),
+                      isLast: true,
+                    ),
+                  ]),
+                ],
 
                 const SizedBox(height: 24),
 
@@ -495,7 +500,7 @@ class ProfileScreen extends ConsumerWidget {
               Navigator.pop(context);
               ref.read(authProvider.notifier).signOut();
             },
-            child: Text('Salir', style: TextStyle(color: AppColors.error)),
+            child: Text('Salir', style: GoogleFonts.inter(color: AppColors.error)),
           ),
         ],
       ),
@@ -658,6 +663,19 @@ class _StatTile extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+String _roleDisplayText(String role) {
+  switch (role) {
+    case 'teacher':
+      return 'Docente';
+    case 'admin':
+      return 'Administrador';
+    case 'superadmin':
+      return 'Super Admin';
+    default:
+      return 'Estudiante';
   }
 }
 

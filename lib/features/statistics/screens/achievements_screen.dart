@@ -344,7 +344,7 @@ class _FilterChips extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: isActive ? Colors.white : AppColors.textSecondary,
+            color: isActive ? AppColors.textOnPrimary : AppColors.textSecondary,
           ),
         ),
       ),

@@ -292,7 +292,7 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/tasks/personal/create'),
         backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: AppColors.textOnPrimary),
       ),
     );
   }
@@ -305,7 +305,7 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.check_circle, color: Colors.white),
+                const Icon(Icons.check_circle, color: AppColors.textOnPrimary),
                 const SizedBox(width: 8),
                 const Text('Tarea completada'),
               ],
@@ -358,7 +358,7 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
             SnackBar(
               content: Row(
                 children: [
-                  const Icon(Icons.delete, color: Colors.white),
+                  const Icon(Icons.delete, color: AppColors.textOnPrimary),
                   const SizedBox(width: 8),
                   const Text('Tarea eliminada'),
                 ],

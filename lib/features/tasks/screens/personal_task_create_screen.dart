@@ -230,7 +230,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
           children: [
             Icon(
               isError ? Icons.error_outline : Icons.check_circle,
-              color: Colors.white,
+              color: AppColors.textOnPrimary,
             ),
             const SizedBox(width: 8),
             Expanded(child: Text(message)),
@@ -248,7 +248,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.check_circle, color: Colors.white),
+            const Icon(Icons.check_circle, color: AppColors.textOnPrimary),
             const SizedBox(width: 8),
             Expanded(child: Text(message)),
           ],
@@ -606,7 +606,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                         color: AppColors.primary,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(Icons.add, color: Colors.white),
+                      child: const Icon(Icons.add, color: AppColors.textOnPrimary),
                     ),
                   ),
                 ],

@@ -110,12 +110,12 @@ class _StudentSubmissionCreateScreenState
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(
-                          color: Colors.white, strokeWidth: 2))
+                          color: AppColors.textOnPrimary, strokeWidth: 2))
                   : Text('Enviar Entrega',
                       style: GoogleFonts.inter(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white)),
+                          color: AppColors.textOnPrimary)),
             ),
           ],
         ),

@@ -129,7 +129,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
           return FloatingActionButton(
             onPressed: () {},
             backgroundColor: AppColors.primary,
-            child: const Icon(Icons.add, color: Colors.black),
+            child: const Icon(Icons.add, color: AppColors.textOnPrimary),
           );
         },
       ),
@@ -184,7 +184,7 @@ class _TasksTab extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: isDone
                         ? AppColors.primary
-                        : Colors.transparent,
+                        : AppColors.surface,
                     border: Border.all(
                       color: isDone
                           ? AppColors.primary
@@ -429,7 +429,7 @@ class _ActivityTab extends StatelessWidget {
                     children: [
                       TextSpan(
                         text: entry.actor,
-                        style: const TextStyle(
+                        style: GoogleFonts.inter(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w600,
                         ),
@@ -437,7 +437,7 @@ class _ActivityTab extends StatelessWidget {
                       TextSpan(text: ' ${entry.action} '),
                       TextSpan(
                         text: entry.target,
-                        style: const TextStyle(
+                        style: GoogleFonts.inter(
                           color: AppColors.primary,
                         ),
                       ),

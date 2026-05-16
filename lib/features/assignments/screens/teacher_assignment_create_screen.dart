@@ -319,7 +319,7 @@ class _TeacherAssignmentCreateScreenState
                                   _dueDate != null
                                       ? DateFormat('dd/MM/yyyy').format(_dueDate!)
                                       : 'Seleccionar',
-                                  style: TextStyle(
+                                  style: GoogleFonts.inter(
                                     color: _dueDate != null
                                         ? AppColors.textPrimary
                                         : AppColors.error,
@@ -401,14 +401,14 @@ class _TeacherAssignmentCreateScreenState
                       onPressed: _isLoading || _selectedCourseId == null ? null : _submit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppColors.textOnPrimary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 0,
                       ),
                       child: _isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
+                          ? const CircularProgressIndicator(color: AppColors.textOnPrimary)
                           : Text(
                               'Crear Asignación',
                               style: GoogleFonts.inter(

@@ -56,7 +56,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.check_circle, color: Colors.white),
+                const Icon(Icons.check_circle, color: AppColors.textOnPrimary),
                 const SizedBox(width: 8),
                 const Text('Tarea completada'),
               ],
@@ -106,7 +106,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
             SnackBar(
               content: Row(
                 children: [
-                  const Icon(Icons.delete, color: Colors.white),
+                  const Icon(Icons.delete, color: AppColors.textOnPrimary),
                   const SizedBox(width: 8),
                   const Text('Tarea eliminada'),
                 ],
@@ -243,7 +243,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                             height: 28,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: _isCompleted ? AppColors.primary : Colors.transparent,
+                              color: _isCompleted ? AppColors.primary : AppColors.surface,
                               border: Border.all(
                                 color: _isCompleted
                                     ? AppColors.primary
@@ -257,7 +257,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                                 ? const Icon(
                                     Icons.check_rounded,
                                     size: 18,
-                                    color: Colors.white,
+                                    color: AppColors.textOnPrimary,
                                   )
                                 : null,
                           ),
@@ -474,7 +474,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
               height: 22,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: subtask.isCompleted ? AppColors.primary : Colors.transparent,
+                color: subtask.isCompleted ? AppColors.primary : AppColors.surface,
                 border: Border.all(
                   color: subtask.isCompleted
                       ? AppColors.primary
@@ -485,7 +485,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                 ),
               ),
               child: subtask.isCompleted
-                  ? const Icon(Icons.check_rounded, size: 14, color: Colors.white)
+                  ? const Icon(Icons.check_rounded, size: 14, color: AppColors.textOnPrimary)
                   : null,
             ),
           ),

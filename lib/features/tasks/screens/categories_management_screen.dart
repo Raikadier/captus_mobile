@@ -61,7 +61,7 @@ class CategoriesManagementScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCreateDialog(context, ref),
         backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: AppColors.textOnPrimary),
       ),
     );
   }
