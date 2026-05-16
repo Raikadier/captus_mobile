@@ -268,7 +268,11 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
     if (_isLoadingTask) {
       return Scaffold(
         backgroundColor: AppColors.background,
-        appBar: AppBar(title: const Text('Cargando...')),
+        appBar: AppBar(
+          backgroundColor: AppColors.surface,
+          elevation: 0,
+          title: const Text('Cargando...'),
+        ),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -276,6 +280,8 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         title: Text(_isSubtask
             ? 'Nueva subtarea'
             : _isEditing
@@ -334,7 +340,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
             ],
             TextField(
               controller: _titleCtrl,
-              style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w600),
               decoration: InputDecoration(
                 hintText: _isSubtask ? 'Título de la subtarea' : 'Título de la tarea',
                 border: InputBorder.none,

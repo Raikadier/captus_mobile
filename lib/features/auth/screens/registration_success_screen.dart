@@ -48,6 +48,8 @@ class _RegistrationSuccessScreenState
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         title: const Text('Registro exitoso'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),

@@ -104,7 +104,7 @@ class _AdminInstitutionScreenState extends State<AdminInstitutionScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         title: Text('Institución',
           style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),

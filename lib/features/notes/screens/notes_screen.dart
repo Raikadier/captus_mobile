@@ -35,6 +35,8 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         title: Text(
           'Notas',
           style: GoogleFonts.inter(
@@ -85,6 +87,14 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),

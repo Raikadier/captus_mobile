@@ -36,6 +36,8 @@ class _RegisterAcademicProfileScreenState
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         title: const Text('Perfil académico'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -60,15 +62,40 @@ class _RegisterAcademicProfileScreenState
               const SizedBox(height: 28),
               TextFormField(
                 controller: _careerCtrl,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Carrera / Programa',
-                  prefixIcon: Icon(Icons.school_outlined),
+                  labelStyle: GoogleFonts.inter(color: AppColors.textSecondary),
                   hintText: 'Ingeniería de Sistemas',
+                  hintStyle: GoogleFonts.inter(color: AppColors.textDisabled),
+                  prefixIcon: const Icon(Icons.school_outlined, color: AppColors.textSecondary),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.border, width: 0.5),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.border, width: 0.5),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.error, width: 1),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
               Text('Semestre actual',
-                  style: Theme.of(context).textTheme.titleMedium),
+                  style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
@@ -136,6 +163,13 @@ class _RegisterAcademicProfileScreenState
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () => context.push('/register/notifications'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.textOnPrimary,
+                  minimumSize: const Size.fromHeight(48),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 0,
+                ),
                 child: const Text('Continuar'),
               ),
               const SizedBox(height: 24),

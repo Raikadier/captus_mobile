@@ -203,6 +203,8 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         title: const Text('Editar Perfil'),
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
@@ -300,7 +302,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                             border: Border.all(color: AppColors.background, width: 2),
                           ),
                           child: const Icon(Icons.camera_alt_rounded,
-                              size: 16, color: AppColors.textPrimary),
+                              size: 16, color: AppColors.textOnPrimary),
                         ),
                       ),
                     ),

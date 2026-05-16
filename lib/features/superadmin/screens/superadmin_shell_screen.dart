@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 /// Shell screen for the superadmin section — provides bottom navigation
-/// between platform dashboard, institutions list, and global users.
+/// between platform dashboard, institutions list, global users, audit, and
+/// account/profile.
 class SuperAdminShellScreen extends StatelessWidget {
   final Widget child;
   const SuperAdminShellScreen({super.key, required this.child});
 
   static const _tabs = [
-    _Tab(label: 'Plataforma', icon: Icons.dashboard_outlined,    route: '/superadmin/dashboard'),
-    _Tab(label: 'Instituciones', icon: Icons.business_outlined,  route: '/superadmin/institutions'),
-    _Tab(label: 'Usuarios',   icon: Icons.people_outline,        route: '/superadmin/users'),
-    _Tab(label: 'Auditoría',  icon: Icons.history_outlined,      route: '/superadmin/audit'),
+    _Tab(label: 'Plataforma',   icon: Icons.dashboard_outlined,   route: '/superadmin/dashboard'),
+    _Tab(label: 'Instituciones', icon: Icons.business_outlined,   route: '/superadmin/institutions'),
+    _Tab(label: 'Usuarios',     icon: Icons.people_outline,       route: '/superadmin/users'),
+    _Tab(label: 'Auditoría',    icon: Icons.history_outlined,     route: '/superadmin/audit'),
+    // "Cuenta" is the last tab; tapping it pushes /profile outside the shell
+    // so the back button in ProfileScreen returns here.
+    _Tab(label: 'Cuenta',       icon: Icons.person_outline_rounded, route: '/profile'),
   ];
 
   int _selectedIndex(BuildContext ctx) {
@@ -29,7 +33,15 @@ class SuperAdminShellScreen extends StatelessWidget {
       body: child,
       bottomNavigationBar: NavigationBar(
         selectedIndex: idx,
-        onDestinationSelected: (i) => context.go(_tabs[i].route),
+        onDestinationSelected: (i) {
+          final route = _tabs[i].route;
+          if (route == '/profile') {
+            // Push so the shell stays in the back-stack.
+            context.push(route);
+          } else {
+            context.go(route);
+          }
+        },
         destinations: _tabs
             .map((t) => NavigationDestination(
                   icon: Icon(t.icon),

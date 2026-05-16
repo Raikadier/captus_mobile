@@ -50,6 +50,8 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         title: const Text('Tareas personales'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -102,6 +104,8 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
                             )
                           : null,
                       border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,

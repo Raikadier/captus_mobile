@@ -1160,7 +1160,7 @@ class _StatCard extends StatelessWidget {
             value: value,
             suffix: valueSuffix,
             style: GoogleFonts.inter(
-              fontSize: 20,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),

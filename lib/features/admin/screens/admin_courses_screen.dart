@@ -312,7 +312,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                       backgroundColor: AppColors.primary.withAlpha(25),
                                       child: Text(
                                         name.isNotEmpty ? name[0].toUpperCase() : '?',
-                                        style: TextStyle(
+                                        style: GoogleFonts.inter(
                                             color: AppColors.primary,
                                             fontWeight: FontWeight.w600),
                                       ),
@@ -603,7 +603,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         title: Text('Cursos',
             style: GoogleFonts.inter(
@@ -669,7 +669,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                 child: Text(c['name'] as String? ?? '',
                                     style: GoogleFonts.inter(
                                         fontWeight: FontWeight.w600,
-                                        fontSize: 15,
+                                        fontSize: 14,
                                         color: AppColors.textPrimary)),
                               ),
                               Container(

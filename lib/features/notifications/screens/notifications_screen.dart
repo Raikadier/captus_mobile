@@ -63,6 +63,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         title: const Text('Notificaciones'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -101,7 +103,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: isSelected
-                            ? AppColors.textPrimary
+                            ? AppColors.textOnPrimary
                             : AppColors.textSecondary,
                       ),
                     ),

@@ -303,7 +303,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     color: AppColors.primary.withAlpha(AppAlpha.a20),
                     shape: BoxShape.circle,
                   ),
-                  todayTextStyle: TextStyle(
+                  todayTextStyle: GoogleFonts.inter(
                     color: AppColors.primary,
                     fontWeight: FontWeight.bold,
                   ),
@@ -311,7 +311,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     color: AppColors.primary,
                     shape: BoxShape.circle,
                   ),
-                  selectedTextStyle: const TextStyle(
+                  selectedTextStyle: GoogleFonts.inter(
                     color: AppColors.textOnPrimary,
                     fontWeight: FontWeight.bold,
                   ),
@@ -448,7 +448,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                       task.title,
                                       style: GoogleFonts.inter(
                                         fontWeight: FontWeight.w600,
-                                        fontSize: 15,
+                                        fontSize: 14,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
@@ -524,7 +524,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                       event.title,
                                       style: GoogleFonts.inter(
                                         fontWeight: FontWeight.w600,
-                                        fontSize: 15,
+                                        fontSize: 14,
                                       ),
                                     ),
                                     const SizedBox(height: 4),

@@ -56,6 +56,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         title: const Text('Recuperar contraseña'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -121,9 +123,35 @@ class _FormView extends StatelessWidget {
         TextFormField(
           controller: emailCtrl,
           keyboardType: TextInputType.emailAddress,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             labelText: 'Correo institucional',
-            prefixIcon: Icon(Icons.email_outlined),
+            labelStyle: GoogleFonts.inter(color: AppColors.textSecondary),
+            hintText: 'usuario@institución.edu',
+            hintStyle: GoogleFonts.inter(color: AppColors.textDisabled),
+            prefixIcon: const Icon(Icons.email_outlined, color: AppColors.textSecondary),
+            filled: true,
+            fillColor: AppColors.surface,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.border, width: 0.5),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.border, width: 0.5),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.error, width: 1),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+            ),
           ),
         ),
         if (errorMessage != null) ...[
@@ -144,6 +172,13 @@ class _FormView extends StatelessWidget {
         const SizedBox(height: 24),
         ElevatedButton(
           onPressed: isLoading ? null : onSend,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.textOnPrimary,
+            minimumSize: const Size.fromHeight(48),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            elevation: 0,
+          ),
           child: isLoading
               ? const SizedBox(
                   height: 20,
@@ -181,6 +216,13 @@ class _ConfirmationView extends StatelessWidget {
         const SizedBox(height: 40),
         ElevatedButton(
           onPressed: () => context.go('/login'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.textOnPrimary,
+            minimumSize: const Size.fromHeight(48),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            elevation: 0,
+          ),
           child: const Text('Volver al inicio de sesión'),
         ),
       ],

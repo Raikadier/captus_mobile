@@ -62,7 +62,7 @@ class _AdminDashboardScreenState
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         title: Row(
           children: [

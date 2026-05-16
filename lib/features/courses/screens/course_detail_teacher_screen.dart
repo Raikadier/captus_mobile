@@ -440,7 +440,7 @@ class _StatCard extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
+              color: color.withAlpha(AppAlpha.a10),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: color, size: 24),

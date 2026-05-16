@@ -223,18 +223,40 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             TextField(
               controller: gradeCtrl,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
+              style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
+              decoration: InputDecoration(
                 labelText: 'Calificación',
+                labelStyle: GoogleFonts.inter(color: AppColors.textSecondary),
                 hintText: 'Ej: 4.5',
+                hintStyle: GoogleFonts.inter(color: AppColors.textDisabled),
+                filled: true,
+                fillColor: AppColors.surface,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
+                errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error, width: 1)),
+                focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error, width: 1.5)),
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: feedbackCtrl,
               maxLines: 4,
-              decoration: const InputDecoration(
+              style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
+              decoration: InputDecoration(
                 labelText: 'Retroalimentación',
+                labelStyle: GoogleFonts.inter(color: AppColors.textSecondary),
                 hintText: 'Escribe comentarios para el estudiante',
+                hintStyle: GoogleFonts.inter(color: AppColors.textDisabled),
+                filled: true,
+                fillColor: AppColors.surface,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
+                errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error, width: 1)),
+                focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error, width: 1.5)),
               ),
             ),
           ],
@@ -258,6 +280,13 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               Navigator.pop(context);
               _gradeSubmission(submission, grade, feedbackCtrl.text);
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.textOnPrimary,
+              minimumSize: const Size.fromHeight(48),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 0,
+            ),
             child: const Text('Guardar'),
           ),
         ],
@@ -277,7 +306,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     if (_task == null) {
       return Scaffold(
         backgroundColor: AppColors.background,
-        appBar: AppBar(title: const Text('Detalle de tarea')),
+        appBar: AppBar(
+          backgroundColor: AppColors.surface,
+          elevation: 0,
+          title: const Text('Detalle de tarea'),
+        ),
         body: Center(
           child: ElevatedButton.icon(
             onPressed: () => context.go('/tasks'),
@@ -296,6 +329,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         title: Text(type == 'evaluation' ? 'Evaluación' : 'Tarea'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -349,19 +384,40 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         TextField(
           controller: _solutionCtrl,
           maxLines: 6,
-          decoration: const InputDecoration(
+          style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
+          decoration: InputDecoration(
             labelText: 'Solución de la tarea',
+            labelStyle: GoogleFonts.inter(color: AppColors.textSecondary),
             hintText: 'Escribe aquí tu solución...',
-            border: OutlineInputBorder(),
+            hintStyle: GoogleFonts.inter(color: AppColors.textDisabled),
+            filled: true,
+            fillColor: AppColors.surface,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
+            errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error, width: 1)),
+            focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error, width: 1.5)),
           ),
         ),
         const SizedBox(height: 12),
         TextField(
           controller: _attachmentCtrl,
-          decoration: const InputDecoration(
+          style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
+          decoration: InputDecoration(
             labelText: 'Enlace de archivo o evidencia',
+            labelStyle: GoogleFonts.inter(color: AppColors.textSecondary),
             hintText: 'Pega aquí un enlace si tienes archivo',
-            border: OutlineInputBorder(),
+            hintStyle: GoogleFonts.inter(color: AppColors.textDisabled),
+            prefixIcon: const Icon(Icons.link_rounded, color: AppColors.textSecondary, size: 20),
+            filled: true,
+            fillColor: AppColors.surface,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
+            errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error, width: 1)),
+            focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error, width: 1.5)),
           ),
         ),
         const SizedBox(height: 16),
@@ -441,6 +497,13 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
                         onPressed: () => _openGradeDialog(submission),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: AppColors.textOnPrimary,
+                          minimumSize: const Size.fromHeight(48),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          elevation: 0,
+                        ),
                         child: const Text('Calificar'),
                       ),
                     ),

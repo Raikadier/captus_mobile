@@ -159,7 +159,7 @@ class _SuperAdminInstitutionDetailScreenState
                   child: Text(
                     'Deshabilitar',
                     style: GoogleFonts.inter(
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textOnPrimary,
                     ),
@@ -333,7 +333,7 @@ class _SuperAdminInstitutionDetailScreenState
                   child: Text(
                     'Guardar',
                     style: GoogleFonts.inter(
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textOnPrimary,
                     ),
@@ -373,7 +373,7 @@ class _SuperAdminInstitutionDetailScreenState
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         title: Text(
           widget.institutionName.isNotEmpty
@@ -499,7 +499,7 @@ class _SuperAdminInstitutionDetailScreenState
                       Text(
                         d['name'] as String? ?? '',
                         style: GoogleFonts.inter(
-                          fontSize: 15,
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
                         ),
@@ -781,7 +781,7 @@ class _StatTile extends StatelessWidget {
             Text(
               value,
               style: GoogleFonts.inter(
-                fontSize: 20,
+                fontSize: 22,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
               ),

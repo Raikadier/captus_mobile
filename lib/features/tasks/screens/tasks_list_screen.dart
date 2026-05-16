@@ -96,6 +96,8 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         title: const Text('Mis tareas'),
         actions: [
           IconButton(

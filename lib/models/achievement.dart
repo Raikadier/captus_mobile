@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/constants/app_colors.dart';
 
 // Total de logros en el catálogo
 const int kTotalAchievements = 18;
@@ -24,15 +25,15 @@ extension AchievementDifficultyExtension on AchievementDifficulty {
   Color get color {
     switch (this) {
       case AchievementDifficulty.easy:
-        return const Color(0xFF4CAF50);
+        return AppColors.warning;
       case AchievementDifficulty.medium:
-        return const Color(0xFFFF9800);
+        return AppColors.textSecondary;
       case AchievementDifficulty.hard:
-        return const Color(0xFFF44336);
+        return AppColors.accentAmber;
       case AchievementDifficulty.special:
-        return const Color(0xFF9C27B0);
+        return AppColors.primary;
       case AchievementDifficulty.epic:
-        return const Color(0xFF673AB7);
+        return AppColors.accentPurple;
     }
   }
 }

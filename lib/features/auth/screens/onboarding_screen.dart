@@ -102,6 +102,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: ElevatedButton(
                 onPressed: _next,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.textOnPrimary,
+                  minimumSize: const Size.fromHeight(48),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 0,
+                ),
                 child: Text(
                   _currentPage == _pages.length - 1
                       ? 'Empezar ahora'
@@ -150,7 +157,7 @@ class _OnboardingPageWidget extends StatelessWidget {
           Text(
             page.title,
             style: GoogleFonts.inter(
-              fontSize: 26,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
@@ -160,7 +167,7 @@ class _OnboardingPageWidget extends StatelessWidget {
           Text(
             page.subtitle,
             style: GoogleFonts.inter(
-              fontSize: 15,
+              fontSize: 14,
               color: AppColors.textSecondary,
               height: 1.6,
             ),

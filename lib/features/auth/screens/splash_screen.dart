@@ -50,7 +50,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (authState?.isAuthenticated ?? false) {
       // Authenticated → go to the right dashboard based on role.
       final role = authState!.role;
-      context.go(role == 'teacher' ? '/home/teacher' : '/home');
+      if (role == 'superadmin') {
+        context.go('/superadmin/dashboard');
+      } else if (role == 'admin') {
+        context.go('/admin/dashboard');
+      } else {
+        context.go(role == 'teacher' ? '/home/teacher' : '/home');
+      }
     } else {
       // Check if first-time user → onboarding, otherwise login.
       final prefs = await SharedPreferences.getInstance();

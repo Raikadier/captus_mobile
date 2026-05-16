@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../core/constants/app_colors.dart';
 import '../services/superadmin_service.dart';
 
 class SuperAdminInstitutionsScreen extends StatefulWidget {
@@ -155,16 +157,17 @@ class _SuperAdminInstitutionsScreenState
                   final active = inst['is_active'] as bool? ?? true;
                   return ListTile(
                     leading: CircleAvatar(
-                      backgroundColor:
-                          active ? Colors.green.shade100 : Colors.red.shade100,
+                      backgroundColor: active
+                          ? AppColors.successLight
+                          : AppColors.errorLight,
                       child: Icon(Icons.business,
-                          color: active ? Colors.green : Colors.red),
+                          color: active ? AppColors.success : AppColors.error),
                     ),
                     title: Text(inst['name'] as String? ?? ''),
                     subtitle: Text(
                       active ? 'Activa' : 'Deshabilitada',
-                      style: TextStyle(
-                          color: active ? Colors.green : Colors.red),
+                      style: GoogleFonts.inter(
+                          color: active ? AppColors.success : AppColors.error),
                     ),
                     trailing: Switch(
                       value: active,

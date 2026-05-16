@@ -209,7 +209,7 @@ class _InAppBanner extends StatelessWidget {
                 GestureDetector(
                   onTap: onDismiss,
                   child: const Icon(Icons.close_rounded,
-                      size: 16, color: Color(0xFFAAAAAA)),
+                      size: 16, color: AppColors.textDisabled),
                 ),
               ],
             ),

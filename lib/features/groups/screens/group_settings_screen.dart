@@ -45,7 +45,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
         title: Text(
           'Archivar grupo',
           style: GoogleFonts.inter(
-            fontSize: 17,
+            fontSize: 16,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
           ),
@@ -85,7 +85,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
         title: Text(
           'Salir del grupo',
           style: GoogleFonts.inter(
-            fontSize: 17,
+            fontSize: 16,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
           ),
@@ -130,7 +130,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back,
@@ -176,11 +176,11 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
           TextField(
             controller: _nameController,
             style: GoogleFonts.inter(
-                fontSize: 15, color: AppColors.textPrimary),
+                fontSize: 14, color: AppColors.textPrimary),
             decoration: InputDecoration(
               hintText: 'Nombre del grupo',
               hintStyle: GoogleFonts.inter(
-                  fontSize: 15, color: AppColors.textDisabled),
+                  fontSize: 14, color: AppColors.textDisabled),
               filled: true,
               fillColor: AppColors.surface,
               border: OutlineInputBorder(
@@ -224,7 +224,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
                   child: Text(
                     _group.inviteCode,
                     style: GoogleFonts.inter(
-                      fontSize: 20,
+                      fontSize: 22,
                       fontWeight: FontWeight.w800,
                       color: AppColors.primary,
                       letterSpacing: 4,

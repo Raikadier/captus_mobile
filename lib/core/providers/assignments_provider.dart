@@ -78,7 +78,12 @@ class _EmptyAssignmentsRepository implements AssignmentsRepository {
 class TeacherAssignmentsNotifier extends AsyncNotifier<List<AssignmentModel>> {
   @override
   Future<List<AssignmentModel>> build() async {
-    return _fetchAssignments();
+    // ref.watch ensures this provider rebuilds (and data resets) when the
+    // authenticated user changes — prevents data leakage between accounts.
+    final user = ref.watch(currentUserProvider);
+    if (user == null) return [];
+    final repo = ref.read(assignmentsRepositoryProvider);
+    return await repo.getAssignmentsByTeacher(user.id);
   }
 
   Future<List<AssignmentModel>> _fetchAssignments() async {
@@ -168,7 +173,11 @@ final teacherAssignmentsProvider =
 class StudentAssignmentsNotifier extends AsyncNotifier<List<AssignmentModel>> {
   @override
   Future<List<AssignmentModel>> build() async {
-    return _fetchAssignments();
+    // ref.watch ensures this provider rebuilds when the user changes.
+    final user = ref.watch(currentUserProvider);
+    if (user == null) return [];
+    final repo = ref.read(assignmentsRepositoryProvider);
+    return await repo.getAssignmentsForStudent(user.id);
   }
 
   Future<List<AssignmentModel>> _fetchAssignments() async {

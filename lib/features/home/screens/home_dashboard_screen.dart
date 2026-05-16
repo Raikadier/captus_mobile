@@ -207,7 +207,7 @@ class _DashboardAppBar extends StatelessWidget {
                   ? Text(
                       user.firstName[0].toUpperCase(),
                       style: GoogleFonts.inter(
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: AppColors.primaryDark,
                       ),
@@ -215,11 +215,11 @@ class _DashboardAppBar extends StatelessWidget {
                   : null,
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
           Text(
             'Captus',
             style: GoogleFonts.inter(
-              fontSize: 20,
+              fontSize: 22,
               fontWeight: FontWeight.w700,
               color: AppColors.primary,
             ),
@@ -571,7 +571,7 @@ class _DayDot extends StatelessWidget {
               ? Center(
                   child: Text(
                     '✓',
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: AppColors.streakText,
@@ -651,7 +651,7 @@ class _SectionHeader extends StatelessWidget {
             Text(
               title,
               style: GoogleFonts.inter(
-                fontSize: 15,
+                fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
               ),

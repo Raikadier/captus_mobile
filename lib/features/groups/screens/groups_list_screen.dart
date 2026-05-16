@@ -82,10 +82,22 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,
                       ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide:
-                            const BorderSide(color: AppColors.primary),
+                            const BorderSide(color: AppColors.primary, width: 1.5),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: AppColors.error, width: 1),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: AppColors.error, width: 1.5),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 12),
@@ -243,7 +255,7 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         title: Text(
           'Mis Grupos',

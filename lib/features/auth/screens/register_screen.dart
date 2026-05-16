@@ -84,6 +84,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         title: const Text('Crear cuenta'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -166,10 +168,35 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 TextFormField(
                   controller: _nameCtrl,
                   textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Nombre completo',
-                    prefixIcon: Icon(Icons.person_outline_rounded),
+                    labelStyle: GoogleFonts.inter(),
                     hintText: 'Ej. Juan Pérez',
+                    hintStyle: GoogleFonts.inter(),
+                    prefixIcon: const Icon(Icons.person_outline_rounded),
+                    filled: true,
+                    fillColor: AppColors.surface,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.border, width: 0.5),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.border, width: 0.5),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.error, width: 1),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+                    ),
                   ),
                   validator: (v) {
                     if (v == null || v.trim().length < 4) {
@@ -182,10 +209,35 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 TextFormField(
                   controller: _emailCtrl,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Correo electrónico',
-                    prefixIcon: Icon(Icons.email_outlined),
+                    labelStyle: GoogleFonts.inter(),
                     hintText: 'usuario@ejemplo.com',
+                    hintStyle: GoogleFonts.inter(),
+                    prefixIcon: const Icon(Icons.email_outlined),
+                    filled: true,
+                    fillColor: AppColors.surface,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.border, width: 0.5),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.border, width: 0.5),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.error, width: 1),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+                    ),
                   ),
                   validator: (v) {
                     if (v == null || !_emailRegex.hasMatch(v.trim())) {
@@ -200,6 +252,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     labelText: 'Contraseña',
+                    labelStyle: GoogleFonts.inter(),
                     prefixIcon: const Icon(Icons.lock_outline_rounded),
                     suffixIcon: IconButton(
                       icon: Icon(_obscurePassword
@@ -209,7 +262,30 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           setState(() => _obscurePassword = !_obscurePassword),
                     ),
                     helperText: 'Mín. 8 caracteres, mayúscula, minúscula y número',
-                    helperStyle: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                    helperStyle: GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary),
+                    filled: true,
+                    fillColor: AppColors.surface,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.border, width: 0.5),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.border, width: 0.5),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.error, width: 1),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+                    ),
                   ),
                   validator: (v) {
                     if (v == null || !_passwordRegex.hasMatch(v)) {
@@ -224,6 +300,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   obscureText: _obscureConfirmPassword,
                   decoration: InputDecoration(
                     labelText: 'Confirmar contraseña',
+                    labelStyle: GoogleFonts.inter(),
                     prefixIcon: const Icon(Icons.lock_outline_rounded),
                     suffixIcon: IconButton(
                       icon: Icon(_obscureConfirmPassword
@@ -231,6 +308,29 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           : Icons.visibility_off_outlined),
                       onPressed: () => setState(
                           () => _obscureConfirmPassword = !_obscureConfirmPassword),
+                    ),
+                    filled: true,
+                    fillColor: AppColors.surface,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.border, width: 0.5),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.border, width: 0.5),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.error, width: 1),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.error, width: 1.5),
                     ),
                   ),
                   validator: (v) {
@@ -270,6 +370,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _register,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.textOnPrimary,
+                    minimumSize: const Size.fromHeight(48),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
                   child: _isLoading
                       ? const SizedBox(
                           height: 20,

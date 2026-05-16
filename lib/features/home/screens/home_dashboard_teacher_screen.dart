@@ -33,7 +33,7 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
           // ── AppBar ──────────────────────────────────────────────────────
           SliverAppBar(
             floating: true,
-            backgroundColor: AppColors.background,
+            backgroundColor: AppColors.surface,
             elevation: 0,
             titleSpacing: 16,
             title: Row(

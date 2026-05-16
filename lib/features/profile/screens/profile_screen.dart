@@ -89,7 +89,7 @@ class ProfileScreen extends ConsumerWidget {
                                 Border.all(color: AppColors.surface, width: 2),
                           ),
                           child: const Icon(Icons.camera_alt_rounded,
-                              size: 14, color: AppColors.textPrimary),
+                              size: 14, color: AppColors.textOnPrimary),
                         ),
                       ),
                     ),
@@ -433,7 +433,7 @@ class ProfileScreen extends ConsumerWidget {
               icon: Icons.percent_rounded,
               label: 'Éxito',
               value: '…',
-              color: const Color(0xFFAB47BC)),
+              color: AppColors.accentPurple),
         ],
       ),
       error: (_, __) => Row(
@@ -454,7 +454,7 @@ class ProfileScreen extends ConsumerWidget {
               icon: Icons.percent_rounded,
               label: 'Éxito',
               value: '-',
-              color: const Color(0xFFAB47BC)),
+              color: AppColors.accentPurple),
         ],
       ),
       data: (stats) => Row(
@@ -476,7 +476,7 @@ class ProfileScreen extends ConsumerWidget {
               label: 'Éxito',
               value:
                   '${(stats.completionPercentage * 100).toInt()}%',
-              color: const Color(0xFFAB47BC)),
+              color: AppColors.accentPurple),
         ],
       ),
     );

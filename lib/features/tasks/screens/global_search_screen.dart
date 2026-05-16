@@ -169,7 +169,7 @@ class _SearchResults extends StatelessWidget {
                   child: Center(
                     child: Text(
                       c.name[0],
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         color: AppColors.courseColor(c.colorIndex),
                         fontWeight: FontWeight.bold,
                       ),

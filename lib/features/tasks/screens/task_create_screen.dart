@@ -185,6 +185,8 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         title: Text(_isEditing ? 'Editar actividad' : 'Nueva actividad'),
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
@@ -204,7 +206,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
           children: [
             TextField(
               controller: _titleCtrl,
-              style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w600),
               decoration: InputDecoration(
                 hintText: _type == AcademicItemType.task
                     ? 'Título de la tarea'

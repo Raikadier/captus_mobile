@@ -200,7 +200,8 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         title: Text(
           'Escalas de calificación',
           style: GoogleFonts.inter(
@@ -300,7 +301,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
                                             scale['name'] as String? ?? '',
                                             style: GoogleFonts.inter(
                                                 fontWeight: FontWeight.w600,
-                                                fontSize: 15,
+                                                fontSize: 14,
                                                 color: AppColors.textPrimary),
                                           ),
                                           if (isDefault) ...[
