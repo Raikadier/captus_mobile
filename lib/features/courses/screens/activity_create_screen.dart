@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/services/api_client.dart';
 
 class ActivityCreateScreen extends StatefulWidget {
   final String courseId;
@@ -87,18 +88,85 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
     return '${date.day}/${date.month}/${date.year}  ${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
   }
 
-  void _submit(bool publish) {
+  bool _loading = false;
+
+  Future<void> _submit(bool publish) async {
     if (!_formKey.currentState!.validate()) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          publish ? 'Actividad publicada' : 'Borrador guardado',
-          style: GoogleFonts.inter(color: Colors.white),
+    setState(() => _loading = true);
+
+    try {
+      // Build ISO due-date string if selected
+      String? dueDateIso;
+      if (_dueDate != null) {
+        final t = _dueTime ?? const TimeOfDay(hour: 23, minute: 59);
+        final dt = DateTime(
+          _dueDate!.year,
+          _dueDate!.month,
+          _dueDate!.day,
+          t.hour,
+          t.minute,
+        );
+        dueDateIso = dt.toIso8601String();
+      }
+
+      final endpoint = _isEditing
+          ? '/assignments/${widget.activityId}'
+          : '/assignments';
+
+      final body = {
+        'course_id': widget.courseId,
+        'title': _titleController.text.trim(),
+        'description': _descriptionController.text.trim(),
+        if (dueDateIso != null) 'due_date': dueDateIso,
+        'is_group_assignment': false,
+        'type': _selectedType.toLowerCase(),
+        'requires_file': _requiresFile,
+        'is_draft': !publish,
+      };
+
+      if (_isEditing) {
+        await ApiClient.instance.put<dynamic>(endpoint, data: body);
+      } else {
+        await ApiClient.instance.post<dynamic>(endpoint, data: body);
+      }
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            publish ? 'Actividad publicada' : 'Borrador guardado',
+            style: GoogleFonts.inter(color: AppColors.textPrimary),
+          ),
+          backgroundColor:
+              publish ? AppColors.primary : AppColors.surface2,
         ),
-        backgroundColor: publish ? AppColors.primary : AppColors.surface2,
-      ),
-    );
-    context.pop();
+      );
+      context.pop();
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.message,
+            style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+          ),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Error al guardar la actividad.',
+            style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+          ),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override
@@ -260,10 +328,10 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => _submit(false),
+                    onPressed: _loading ? null : () => _submit(false),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.textSecondary,
-                      side: BorderSide(color: AppColors.border),
+                      side: const BorderSide(color: AppColors.border),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -279,20 +347,29 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () => _submit(true),
+                    onPressed: _loading ? null : () => _submit(true),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.black,
+                      foregroundColor: AppColors.textOnPrimary,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Text(
-                      'Publicar ahora',
-                      style: GoogleFonts.inter(
-                          fontSize: 14, fontWeight: FontWeight.w600),
-                    ),
+                    child: _loading
+                        ? const SizedBox(
+                            height: 18,
+                            width: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.textOnPrimary,
+                            ),
+                          )
+                        : Text(
+                            'Publicar ahora',
+                            style: GoogleFonts.inter(
+                                fontSize: 14, fontWeight: FontWeight.w600),
+                          ),
                   ),
                 ),
               ],

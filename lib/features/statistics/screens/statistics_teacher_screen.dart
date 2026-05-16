@@ -193,7 +193,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                     'Estadísticas',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.outfit(
+                    style: GoogleFonts.inter(
                       fontSize: isExpanded ? 24 : 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -385,7 +385,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
         border: Border.all(color: AppColors.border, width: 0.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(20),
+            color: AppColors.textPrimary.withAlpha(AppAlpha.a20),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -398,7 +398,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
           const Spacer(),
           Text(
             value,
-            style: GoogleFonts.outfit(
+            style: GoogleFonts.inter(
               fontSize: 22,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
@@ -429,7 +429,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
         border: Border.all(color: AppColors.border, width: 0.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(30),
+            color: AppColors.textPrimary.withAlpha(AppAlpha.a30),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -449,7 +449,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
               Expanded(
                 child: Text(
                   'Distribución',
-                  style: GoogleFonts.outfit(
+                  style: GoogleFonts.inter(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -500,7 +500,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
             const Spacer(),
             Text(
               '${(safePercentage * 100).toInt()}%',
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.inter(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: color,
@@ -589,7 +589,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                 selectedColor: AppColors.primary,
                 labelStyle: GoogleFonts.inter(
                   fontSize: 13,
-                  color: isSelected ? Colors.black : AppColors.textSecondary,
+                  color: isSelected ? AppColors.textPrimary : AppColors.textSecondary,
                   fontWeight:
                       isSelected ? FontWeight.bold : FontWeight.w500,
                 ),
@@ -775,7 +775,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                     children: [
                       Text(
                         student.studentName,
-                        style: GoogleFonts.outfit(
+                        style: GoogleFonts.inter(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
@@ -872,7 +872,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
       child: Center(
         child: Text(
           initial,
-          style: GoogleFonts.outfit(
+          style: GoogleFonts.inter(
             color: color,
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -951,7 +951,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.inter(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -996,7 +996,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
             const SizedBox(height: 24),
             Text(
               'Error al cargar estadísticas',
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.inter(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -1018,7 +1018,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
               label: const Text('Reintentar ahora'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                foregroundColor: Colors.black,
+                foregroundColor: AppColors.textOnPrimary,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
                   vertical: 16,

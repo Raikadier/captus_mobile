@@ -280,7 +280,7 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: _showFabMenu,
         backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.black),
+        child: const Icon(Icons.add, color: AppColors.textOnPrimary),
       ),
     );
   }
@@ -411,7 +411,7 @@ class _StackedAvatars extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: AppColors.textOnPrimary,
                   ),
                 ),
               ),

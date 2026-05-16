@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../core/constants/app_colors.dart';
 import '../services/superadmin_service.dart';
 
 class SuperAdminDashboardScreen extends StatefulWidget {
@@ -23,7 +25,10 @@ class _SuperAdminDashboardScreenState
   }
 
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final stats = await _svc.getPlatformStats();
       if (mounted) setState(() { _stats = stats; _loading = false; });
@@ -35,76 +40,164 @@ class _SuperAdminDashboardScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Panel de Plataforma'),
+        backgroundColor: AppColors.surface,
+        elevation: 0,
+        title: Text(
+          'Panel de Plataforma',
+          style: GoogleFonts.inter(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
         actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _load),
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded, color: AppColors.textPrimary),
+            onPressed: _load,
+          ),
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.primary))
           : _error != null
               ? Center(
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Text(_error!, textAlign: TextAlign.center),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                        onPressed: _load, child: const Text('Reintentar')),
-                  ]),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.error_outline_rounded,
+                            size: 48, color: AppColors.error),
+                        const SizedBox(height: 12),
+                        Text(
+                          _error!,
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.inter(
+                              color: AppColors.textSecondary, fontSize: 14),
+                        ),
+                        const SizedBox(height: 16),
+                        FilledButton.tonal(
+                          onPressed: _load,
+                          child: Text('Reintentar',
+                              style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w600)),
+                        ),
+                      ],
+                    ),
+                  ),
                 )
               : RefreshIndicator(
+                  color: AppColors.primary,
                   onRefresh: _load,
-                  child: ListView(padding: const EdgeInsets.all(16), children: [
-                    _SectionTitle('Instituciones'),
-                    _KpiRow([
-                      _Kpi('Total',   '${_stats!['institutions']['total'] ?? 0}',   Icons.business),
-                      _Kpi('Activas', '${_stats!['institutions']['active'] ?? 0}',  Icons.check_circle_outline),
-                      _Kpi('Inactivas',
-                          '${(_stats!['institutions']['total'] ?? 0) - (_stats!['institutions']['active'] ?? 0)}',
-                          Icons.block_outlined),
-                    ]),
-                    const SizedBox(height: 24),
-                    _SectionTitle('Usuarios'),
-                    _KpiRow([
-                      _Kpi('Total',    '${_stats!['users']['total'] ?? 0}',       Icons.people),
-                      _Kpi('Admins',   '${(_stats!['users']['byRole'] ?? {})['admin'] ?? 0}',   Icons.admin_panel_settings_outlined),
-                      _Kpi('Docentes', '${(_stats!['users']['byRole'] ?? {})['teacher'] ?? 0}', Icons.school_outlined),
-                      _Kpi('Alumnos',  '${(_stats!['users']['byRole'] ?? {})['student'] ?? 0}', Icons.person_outline),
-                    ]),
-                    const SizedBox(height: 24),
-                    _SectionTitle('Actividad'),
-                    _KpiRow([
-                      _Kpi('Cursos',         '${_stats!['courses'] ?? 0}',     Icons.menu_book_outlined),
-                      _Kpi('Matrículas',     '${_stats!['enrollments'] ?? 0}', Icons.how_to_reg_outlined),
-                    ]),
-                  ]),
+                  child: ListView(
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      _SectionLabel('INSTITUCIONES'),
+                      _KpiRow([
+                        _Kpi(
+                          label: 'Total',
+                          value: '${_stats!['institutions']['total'] ?? 0}',
+                          icon: Icons.business_rounded,
+                          color: AppColors.primary,
+                        ),
+                        _Kpi(
+                          label: 'Activas',
+                          value: '${_stats!['institutions']['active'] ?? 0}',
+                          icon: Icons.check_circle_outline_rounded,
+                          color: AppColors.success,
+                        ),
+                        _Kpi(
+                          label: 'Inactivas',
+                          value:
+                              '${(_stats!['institutions']['total'] ?? 0) - (_stats!['institutions']['active'] ?? 0)}',
+                          icon: Icons.block_outlined,
+                          color: AppColors.error,
+                        ),
+                      ]),
+                      const SizedBox(height: 20),
+                      _SectionLabel('USUARIOS'),
+                      _KpiRow([
+                        _Kpi(
+                          label: 'Total',
+                          value: '${_stats!['users']['total'] ?? 0}',
+                          icon: Icons.people_rounded,
+                          color: AppColors.primary,
+                        ),
+                        _Kpi(
+                          label: 'Admins',
+                          value:
+                              '${(_stats!['users']['byRole'] ?? {})['admin'] ?? 0}',
+                          icon: Icons.admin_panel_settings_outlined,
+                          color: AppColors.warning,
+                        ),
+                        _Kpi(
+                          label: 'Docentes',
+                          value:
+                              '${(_stats!['users']['byRole'] ?? {})['teacher'] ?? 0}',
+                          icon: Icons.school_outlined,
+                          color: AppColors.info,
+                        ),
+                        _Kpi(
+                          label: 'Alumnos',
+                          value:
+                              '${(_stats!['users']['byRole'] ?? {})['student'] ?? 0}',
+                          icon: Icons.person_outline_rounded,
+                          color: AppColors.success,
+                        ),
+                      ]),
+                      const SizedBox(height: 20),
+                      _SectionLabel('ACTIVIDAD'),
+                      _KpiRow([
+                        _Kpi(
+                          label: 'Cursos',
+                          value: '${_stats!['courses'] ?? 0}',
+                          icon: Icons.menu_book_outlined,
+                          color: AppColors.primary,
+                        ),
+                        _Kpi(
+                          label: 'Matrículas',
+                          value: '${_stats!['enrollments'] ?? 0}',
+                          icon: Icons.how_to_reg_outlined,
+                          color: AppColors.info,
+                        ),
+                      ]),
+                      const SizedBox(height: 32),
+                    ],
+                  ),
                 ),
     );
   }
 }
 
-class _SectionTitle extends StatelessWidget {
+class _SectionLabel extends StatelessWidget {
   final String text;
-  const _SectionTitle(this.text);
+  const _SectionLabel(this.text);
+
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Text(text,
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium
-                ?.copyWith(fontWeight: FontWeight.bold)),
+        padding: const EdgeInsets.only(bottom: 10, top: 4),
+        child: Text(
+          text,
+          style: GoogleFonts.inter(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textSecondary,
+            letterSpacing: 0.8,
+          ),
+        ),
       );
 }
 
 class _KpiRow extends StatelessWidget {
   final List<_Kpi> kpis;
   const _KpiRow(this.kpis);
+
   @override
   Widget build(BuildContext context) => Row(
-        children: kpis
-            .map((k) => Expanded(child: _KpiCard(k)))
-            .toList(),
+        children: kpis.map((k) => Expanded(child: _KpiCard(k))).toList(),
       );
 }
 
@@ -112,35 +205,60 @@ class _Kpi {
   final String label;
   final String value;
   final IconData icon;
-  const _Kpi(this.label, this.value, this.icon);
+  final Color color;
+  const _Kpi({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.color,
+  });
 }
 
 class _KpiCard extends StatelessWidget {
   final _Kpi kpi;
   const _KpiCard(this.kpi);
+
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Card(
+    return Container(
       margin: const EdgeInsets.all(4),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(kpi.icon, color: cs.primary, size: 28),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border, width: 0.5),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: kpi.color.withAlpha(AppAlpha.a15),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(kpi.icon, color: kpi.color, size: 22),
+          ),
           const SizedBox(height: 8),
-          Text(kpi.value,
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text(kpi.label,
-              textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelSmall
-                  ?.copyWith(color: cs.onSurfaceVariant)),
-        ]),
+          Text(
+            kpi.value,
+            style: GoogleFonts.inter(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            kpi.label,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
       ),
     );
   }

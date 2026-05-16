@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../constants/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../services/router_service.dart';
 import '../../features/auth/screens/splash_screen.dart';
@@ -43,6 +44,7 @@ import '../../features/courses/screens/course_create_screen.dart';
 import '../../features/groups/screens/groups_list_screen.dart';
 import '../../features/groups/screens/group_detail_screen.dart';
 import '../../features/groups/screens/group_settings_screen.dart';
+import '../../features/groups/screens/group_create_screen.dart';
 import '../../features/notifications/screens/notifications_screen.dart';
 import '../../features/notifications/screens/notifications_settings_screen.dart';
 import '../../features/statistics/screens/statistics_screen.dart';
@@ -127,9 +129,33 @@ GoRouter createRouter(WidgetRef ref) {
         return role == 'teacher' ? '/home/teacher' : '/home';
       }
 
-      // 4. Si está autenticado pero intenta entrar a una zona que no le corresponde (opcional/mejorado)
+      // 4. Enforce role zones — prevent cross-contamination between user types.
       if (isAuthenticated) {
         final role = authState?.role ?? 'student';
+
+        // ── Admin / Superadmin must NOT enter the student-teacher shell ──────
+        if (role == 'admin' || role == 'superadmin') {
+          // Routes exclusively for students and teachers:
+          const studentTeacherPrefixes = [
+            '/home', '/tasks', '/teacher', '/student',
+            '/ai', '/courses', '/statistics',
+          ];
+          if (studentTeacherPrefixes.any((p) => location.startsWith(p))) {
+            return role == 'admin'
+                ? '/admin/dashboard'
+                : '/superadmin/dashboard';
+          }
+        }
+
+        // ── Student / Teacher must NOT enter admin or superadmin zones ───────
+        if (role == 'student' || role == 'teacher') {
+          if (location.startsWith('/admin') ||
+              location.startsWith('/superadmin')) {
+            return role == 'teacher' ? '/home/teacher' : '/home';
+          }
+        }
+
+        // ── Cross-role guards within the student-teacher shell ───────────────
         if (role == 'student' && location.startsWith('/teacher')) {
           return '/home';
         }
@@ -515,6 +541,11 @@ GoRouter createRouter(WidgetRef ref) {
       ),
 
       GoRoute(
+        path: '/groups/create',
+        name: 'group_create',
+        builder: (_, __) => const GroupCreateScreen(),
+      ),
+      GoRoute(
         path: '/groups/:id',
         name: 'group_detail',
         builder: (_, state) =>
@@ -651,7 +682,7 @@ class NotFoundScreen extends ConsumerWidget {
     final role = authState?.role ?? 'student';
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -659,7 +690,7 @@ class NotFoundScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.search_off_rounded,
-                  size: 80, color: Colors.orange),
+                  size: 80, color: AppColors.warning),
               const SizedBox(height: 24),
               Text(
                 'Página no encontrada',
@@ -679,7 +710,7 @@ class NotFoundScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 32),
-              ElevatedButton(
+              FilledButton(
                 onPressed: () {
                   if (authState == null || !authState.isAuthenticated) {
                     context.go('/login');
@@ -695,9 +726,9 @@ class NotFoundScreen extends ConsumerWidget {
                     }
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.warning,
+                  foregroundColor: AppColors.textOnPrimary,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   shape: RoundedRectangleBorder(

@@ -34,7 +34,7 @@ class CourseGroupsTab extends ConsumerWidget {
                 context.push('/teacher/courses/$courseId/groups/new'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
-              foregroundColor: Colors.black,
+              foregroundColor: AppColors.textOnPrimary,
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
@@ -107,7 +107,7 @@ class CourseGroupsTab extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.border.withOpacity(0.6)),
+                border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
               ),
               child: Column(
                 children: students
@@ -122,7 +122,7 @@ class CourseGroupsTab extends ConsumerWidget {
                                 ? student.name[0].toUpperCase()
                                 : '?',
                             style: GoogleFonts.inter(
-                              color: Colors.white,
+                              color: AppColors.textOnPrimary,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -196,7 +196,7 @@ class _CreateCourseGroupScreenState
         SnackBar(
           content:
               Text(friendlyError(e, fallback: 'No se pudo crear el grupo. Intenta de nuevo.'), style: GoogleFonts.inter()),
-          backgroundColor: Colors.red.shade700,
+          backgroundColor: AppColors.error,
         ),
       );
     } finally {
@@ -212,11 +212,13 @@ class _CreateCourseGroupScreenState
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.orange.shade700,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.textPrimary,
+        elevation: 0,
         title: Text(
           'Crear Nuevo Grupo',
-          style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+          style: GoogleFonts.inter(
+              fontWeight: FontWeight.w700, color: AppColors.textPrimary),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(26),
@@ -228,7 +230,9 @@ class _CreateCourseGroupScreenState
                   child: Container(
                     height: 4,
                     decoration: BoxDecoration(
-                      color: _step == 0 ? Colors.white : Colors.white70,
+                      color: _step == 0
+                          ? AppColors.primary
+                          : AppColors.primary.withAlpha(AppAlpha.a40),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -238,7 +242,9 @@ class _CreateCourseGroupScreenState
                   child: Container(
                     height: 4,
                     decoration: BoxDecoration(
-                      color: _step == 1 ? Colors.white : Colors.white38,
+                      color: _step == 1
+                          ? AppColors.primary
+                          : AppColors.border,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -289,7 +295,7 @@ class _CreateCourseGroupScreenState
                             : null,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.black,
+                          foregroundColor: AppColors.textOnPrimary,
                         ),
                         child: Text(
                           'Continuar',
@@ -338,7 +344,7 @@ class _CreateCourseGroupScreenState
                                   border: Border.all(
                                     color: selected
                                         ? AppColors.primary
-                                        : AppColors.border.withOpacity(0.6),
+                                        : AppColors.border.withAlpha(AppAlpha.a60),
                                   ),
                                 ),
                                 child: CheckboxListTile(
@@ -387,7 +393,7 @@ class _CreateCourseGroupScreenState
                             onPressed: _saving ? null : _createGroup,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.black,
+                              foregroundColor: AppColors.textOnPrimary,
                             ),
                             child: Text(
                               _saving ? 'Creando...' : 'Crear grupo',
@@ -425,8 +431,9 @@ class GroupDetailTeacherScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.blue.shade600,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.textPrimary,
+        elevation: 0,
         title: groupsAsync.when(
           loading: () => const Text('Grupo'),
           error: (_, __) => const Text('Grupo'),
@@ -464,7 +471,7 @@ class GroupDetailTeacherScreen extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.border.withOpacity(0.6)),
+                border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
               ),
               child: Column(
                 children: [
@@ -506,7 +513,7 @@ class GroupDetailTeacherScreen extends ConsumerWidget {
                           child: Text(
                             m.name.isNotEmpty ? m.name[0].toUpperCase() : '?',
                             style: GoogleFonts.inter(
-                              color: Colors.white,
+                              color: AppColors.textOnPrimary,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -567,17 +574,19 @@ class GroupAdminTeacherScreen extends ConsumerWidget {
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: AppBar(
-          backgroundColor: Colors.orange.shade700,
-          foregroundColor: Colors.white,
+          backgroundColor: AppColors.surface,
+          foregroundColor: AppColors.textPrimary,
+          elevation: 0,
           title: Text(
             'Administrar Grupo',
-            style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+            style: GoogleFonts.inter(
+                fontWeight: FontWeight.w700, color: AppColors.textPrimary),
           ),
           bottom: TabBar(
-            indicatorColor: Colors.white,
+            indicatorColor: AppColors.primary,
             indicatorWeight: 3,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white.withOpacity(0.82),
+            labelColor: AppColors.primary,
+            unselectedLabelColor: AppColors.textSecondary,
             labelStyle:
                 GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13),
             unselectedLabelStyle:
@@ -665,7 +674,7 @@ class _GeneralAdminTab extends ConsumerWidget {
           Text(
             'Acciones Rápidas',
             style: GoogleFonts.inter(
-                fontSize: 24 * 0.75, fontWeight: FontWeight.w700),
+                fontSize: 18, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 10),
           GridView.count(
@@ -690,13 +699,13 @@ class _GeneralAdminTab extends ConsumerWidget {
               _AdminActionCard(
                 icon: Icons.person_add_alt_1_outlined,
                 label: 'Agregar Miembro',
-                color: Colors.orange,
+                color: AppColors.warning,
                 onTap: () => DefaultTabController.of(context).animateTo(1),
               ),
               _AdminActionCard(
                 icon: Icons.calendar_month_outlined,
                 label: 'Programar',
-                color: Colors.deepPurple,
+                color: AppColors.primary,
                 onTap: () => ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Próximamente')),
                 ),
@@ -704,7 +713,7 @@ class _GeneralAdminTab extends ConsumerWidget {
               _AdminActionCard(
                 icon: Icons.delete_outline,
                 label: 'Eliminar',
-                color: Colors.red,
+                color: AppColors.error,
                 onTap: () async {
                   final shouldDelete = await showDialog<bool>(
                     context: context,
@@ -770,14 +779,14 @@ class _MembersAdminTab extends ConsumerWidget {
         Text(
           'Miembros Actuales',
           style: GoogleFonts.inter(
-              fontSize: 28 * 0.75, fontWeight: FontWeight.w700),
+              fontSize: 16, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 10),
         Container(
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.border.withOpacity(0.6)),
+            border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
           ),
           child: currentMembers.isEmpty
               ? const Padding(
@@ -797,7 +806,7 @@ class _MembersAdminTab extends ConsumerWidget {
                                   ? member.name[0].toUpperCase()
                                   : '?',
                               style: GoogleFonts.inter(
-                                color: Colors.white,
+                                color: AppColors.textOnPrimary,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -833,14 +842,14 @@ class _MembersAdminTab extends ConsumerWidget {
         Text(
           'Agregar Miembros',
           style: GoogleFonts.inter(
-              fontSize: 28 * 0.75, fontWeight: FontWeight.w700),
+              fontSize: 16, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 10),
         Container(
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.border.withOpacity(0.6)),
+            border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
           ),
           child: addable.isEmpty
               ? const Padding(
@@ -860,7 +869,7 @@ class _MembersAdminTab extends ConsumerWidget {
                                   ? student.name[0].toUpperCase()
                                   : '?',
                               style: GoogleFonts.inter(
-                                color: Colors.white,
+                                color: AppColors.textOnPrimary,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -924,7 +933,7 @@ class _TasksAdminTab extends ConsumerWidget {
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
-              foregroundColor: Colors.black,
+              foregroundColor: AppColors.textOnPrimary,
             ),
             icon: const Icon(Icons.add),
             label: Text(
@@ -1110,7 +1119,7 @@ Future<void> _showAssignTaskSheet({
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(friendlyError(e, fallback: 'No se pudo asignar la tarea. Intenta de nuevo.')),
-                                      backgroundColor: Colors.red.shade700,
+                                      backgroundColor: AppColors.error,
                                     ),
                                   );
                                 }
@@ -1118,7 +1127,7 @@ Future<void> _showAssignTaskSheet({
                             : null,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.black,
+                          foregroundColor: AppColors.textOnPrimary,
                         ),
                         child: Text(saving ? 'Asignando...' : 'Asignar Tarea'),
                       ),
@@ -1153,7 +1162,7 @@ class _GroupAssignmentsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border.withOpacity(0.6)),
+        border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1204,7 +1213,7 @@ class _GroupAssignmentsList extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border.withOpacity(0.6)),
+                border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
               ),
               child: Row(
                 children: [
@@ -1214,7 +1223,7 @@ class _GroupAssignmentsList extends StatelessWidget {
                         : Icons.pending_actions_outlined,
                     color: assignment.graded
                         ? AppColors.success
-                        : Colors.orange.shade700,
+                        : AppColors.warning,
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -1269,7 +1278,7 @@ class _GroupTile extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.border.withOpacity(0.6)),
+            border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
@@ -1277,7 +1286,7 @@ class _GroupTile extends StatelessWidget {
               CircleAvatar(
                 radius: 24,
                 backgroundColor: color,
-                child: const Icon(Icons.groups_2_outlined, color: Colors.white),
+                child: const Icon(Icons.groups_2_outlined, color: AppColors.textOnPrimary),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -1287,7 +1296,7 @@ class _GroupTile extends StatelessWidget {
                     Text(
                       group.name,
                       style: GoogleFonts.inter(
-                        fontSize: 23 * 0.75,
+                        fontSize: 17,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
                       ),
@@ -1322,14 +1331,14 @@ class _GroupPreviewCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border.withOpacity(0.6)),
+        border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
       ),
       child: Row(
         children: [
           CircleAvatar(
             radius: 24,
             backgroundColor: AppColors.info,
-            child: const Icon(Icons.groups_2_outlined, color: Colors.white),
+            child: const Icon(Icons.groups_2_outlined, color: AppColors.textOnPrimary),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -1339,7 +1348,7 @@ class _GroupPreviewCard extends StatelessWidget {
                 Text(
                   name.isEmpty ? 'Nombre del grupo' : name,
                   style: GoogleFonts.inter(
-                    fontSize: 20 * 0.75,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -1369,23 +1378,23 @@ class _InfoCounter extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border.withOpacity(0.7)),
+        border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a70)),
       ),
       child: Column(
         children: [
           Text(
             value,
             style: GoogleFonts.inter(
-              fontSize: 30 * 0.75,
+              fontSize: 22,
               fontWeight: FontWeight.w800,
-              color: Colors.orange.shade700,
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             title,
             style: GoogleFonts.inter(
-              fontSize: 14 * 0.75,
+              fontSize: 11,
               color: AppColors.textSecondary,
             ),
           ),
@@ -1419,7 +1428,7 @@ class _AdminActionCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.border.withOpacity(0.65)),
+            border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -1428,7 +1437,7 @@ class _AdminActionCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.15),
+                  color: color.withAlpha(AppAlpha.a15),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, color: color),
@@ -1439,7 +1448,7 @@ class _AdminActionCard extends StatelessWidget {
                 style: GoogleFonts.inter(
                   fontWeight: FontWeight.w600,
                   color:
-                      label == 'Eliminar' ? Colors.red : AppColors.textPrimary,
+                      label == 'Eliminar' ? AppColors.error : AppColors.textPrimary,
                 ),
               ),
             ],
@@ -1462,7 +1471,7 @@ class _EmptyInfo extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border.withOpacity(0.6)),
+        border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
       ),
       child: Text(
         text,
@@ -1485,7 +1494,7 @@ class _ErrorBox extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.error.withOpacity(0.3)),
+        border: Border.all(color: AppColors.error.withAlpha(AppAlpha.a30)),
       ),
       child: Row(
         children: [
