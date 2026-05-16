@@ -40,7 +40,7 @@ class TaskCard extends StatelessWidget {
                 SlidableAction(
                   onPressed: (_) => onComplete?.call(),
                   backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.textOnPrimary,
                   icon: Icons.check_rounded,
                   label: 'Listo',
                   borderRadius: const BorderRadius.only(
@@ -59,14 +59,14 @@ class TaskCard extends StatelessWidget {
                 SlidableAction(
                   onPressed: (_) => onEdit?.call(),
                   backgroundColor: AppColors.info,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.textOnPrimary,
                   icon: Icons.edit_rounded,
                   label: 'Editar',
                 ),
                 SlidableAction(
                   onPressed: (_) => onDelete?.call(),
                   backgroundColor: AppColors.error,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.textOnPrimary,
                   icon: Icons.delete_outline_rounded,
                   label: 'Eliminar',
                   borderRadius: const BorderRadius.only(
@@ -341,7 +341,7 @@ class _CircleCheckbox extends StatelessWidget {
           ),
         ),
         child: isCompleted
-            ? const Icon(Icons.check_rounded, size: 13, color: Colors.white)
+            ? const Icon(Icons.check_rounded, size: 13, color: AppColors.textOnPrimary)
             : null,
       ),
     );

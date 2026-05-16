@@ -43,7 +43,7 @@ class CaptusBottomSheet extends StatelessWidget {
       isDismissible: isDismissible,
       enableDrag: enableDrag,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withAlpha(AppAlpha.a40),
+      barrierColor: AppColors.textPrimary.withAlpha(AppAlpha.a40),
       transitionAnimationController: AnimationController(
         vsync: Navigator.of(context),
         duration: AppDurations.enter,

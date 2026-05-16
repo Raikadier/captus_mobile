@@ -80,7 +80,7 @@ class CaptusDialog extends StatelessWidget {
       context: context,
       barrierDismissible: true,
       barrierLabel: '',
-      barrierColor: Colors.black.withAlpha(AppAlpha.a40),
+      barrierColor: AppColors.textPrimary.withAlpha(AppAlpha.a40),
       transitionDuration: AppDurations.standard,
       pageBuilder: (_, __, ___) => dialog,
       transitionBuilder: (_, anim, __, child) {

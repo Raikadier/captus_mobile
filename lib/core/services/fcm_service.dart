@@ -2,6 +2,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../constants/app_colors.dart';
 import 'api_client.dart';
 import 'router_service.dart';
 
@@ -159,12 +161,12 @@ class _InAppBanner extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF1E1E1E),
+              color: AppColors.modalBg,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFF00C853).withAlpha(80)),
+              border: Border.all(color: AppColors.success.withAlpha(AppAlpha.a80)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withAlpha(100),
+                  color: AppColors.textPrimary.withAlpha(AppAlpha.a80),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -174,12 +176,12 @@ class _InAppBanner extends StatelessWidget {
               children: [
                 Container(
                   width: 36, height: 36,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF00C853),
+                  decoration: BoxDecoration(
+                    color: AppColors.success,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.notifications_rounded,
-                      size: 18, color: Colors.black),
+                      size: 18, color: AppColors.textOnPrimary),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -188,17 +190,17 @@ class _InAppBanner extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(title,
-                          style: const TextStyle(
+                          style: GoogleFonts.inter(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                            color: AppColors.textOnPrimary,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis),
                       if (body.isNotEmpty)
                         Text(body,
-                            style: const TextStyle(
-                                fontSize: 12, color: Color(0xFFAAAAAA)),
+                            style: GoogleFonts.inter(
+                                fontSize: 12, color: AppColors.textSecondary),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis),
                     ],
