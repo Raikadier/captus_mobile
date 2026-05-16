@@ -126,7 +126,7 @@ class JoinCourseScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: AppColors.textPrimary),
@@ -149,7 +149,7 @@ class JoinCourseScreen extends ConsumerWidget {
             ),
             error: (e, _) => _ResultView(
               icon: Icons.error_outline,
-              iconColor: Colors.red,
+              iconColor: AppColors.error,
               title: 'Algo salió mal',
               subtitle: 'No pudimos procesar la invitación.\n$e',
               buttonLabel: 'Volver al inicio',
@@ -178,7 +178,7 @@ class JoinCourseScreen extends ConsumerWidget {
                 case _JoinStatus.error:
                   return _ResultView(
                     icon: Icons.error_outline,
-                    iconColor: Colors.red,
+                    iconColor: AppColors.error,
                     title: 'Algo salió mal',
                     subtitle:
                         result.message ?? 'No pudimos procesar la invitación.\nIntenta de nuevo.',
@@ -188,7 +188,7 @@ class JoinCourseScreen extends ConsumerWidget {
                 case _JoinStatus.alreadyEnrolled:
                   return _ResultView(
                     icon: Icons.check_circle_outline,
-                    iconColor: Colors.green,
+                    iconColor: AppColors.success,
                     title: 'Ya estás inscrito',
                     subtitle: 'Ya eres estudiante de "${result.message}".',
                     buttonLabel: 'Ver mis cursos',
@@ -274,7 +274,7 @@ class _ResultView extends StatelessWidget {
             onPressed: onButton,
             style: ElevatedButton.styleFrom(
               backgroundColor: isSuccess ? AppColors.primary : AppColors.textPrimary,
-              foregroundColor: isSuccess ? Colors.black : Colors.white,
+              foregroundColor: AppColors.textOnPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),

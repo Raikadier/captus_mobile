@@ -37,7 +37,7 @@ class _CalendarEventCreateScreenState
     AppColors.error,
     AppColors.primary,
     AppColors.warning,
-    Colors.purple,
+    AppColors.primary,
   ];
 
   bool get _isEditing => widget.eventId != null;

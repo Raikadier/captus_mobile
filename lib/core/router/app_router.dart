@@ -697,7 +697,7 @@ class NotFoundScreen extends ConsumerWidget {
                 style: GoogleFonts.inter(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 12),
@@ -706,7 +706,7 @@ class NotFoundScreen extends ConsumerWidget {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(
                   fontSize: 16,
-                  color: Colors.black54,
+                  color: AppColors.textSecondary,
                 ),
               ),
               const SizedBox(height: 32),

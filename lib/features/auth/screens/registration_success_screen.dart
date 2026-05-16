@@ -219,7 +219,7 @@ class _RegistrationSuccessScreenState
                   style: GoogleFonts.inter(
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
-                    color: Colors.black,
+                    color: AppColors.textOnPrimary,
                   ),
                 ),
               ),

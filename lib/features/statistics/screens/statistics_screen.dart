@@ -110,7 +110,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: stats.hasStreak
-              ? [const Color(0xFF7A4F00).withAlpha(40), AppColors.primaryDark]
+              ? [AppColors.warning.withAlpha(40), AppColors.primaryDark]
               : [AppColors.surface, AppColors.surface2],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -359,7 +359,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         Expanded(
           child: _StatCard(
             icon: Icons.percent_rounded,
-            iconColor: const Color(0xFFAB47BC),
+            iconColor: AppColors.primary,
             label: 'Éxito',
             value: (stats.completionPercentage * 100).toInt(),
             subtitle: 'completado',
@@ -689,7 +689,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                           titleStyle: GoogleFonts.inter(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: AppColors.textOnPrimary,
                           ),
                         );
                       }).toList(),
@@ -807,7 +807,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             Expanded(
               child: _ActivityCard(
                 icon: Icons.note_rounded,
-                iconColor: const Color(0xFFAB47BC),
+                iconColor: AppColors.primary,
                 title: 'Notas',
                 main: '${stats.totalNotes}',
                 mainLabel: 'total',
@@ -1080,7 +1080,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: isSelected
-                              ? Colors.white
+                              ? AppColors.textOnPrimary
                               : AppColors.textPrimary,
                         ),
                       ),
@@ -1100,7 +1100,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
+                    foregroundColor: AppColors.textOnPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),

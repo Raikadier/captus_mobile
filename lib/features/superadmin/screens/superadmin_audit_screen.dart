@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../core/constants/app_colors.dart';
 import '../services/superadmin_service.dart';
 
 class SuperAdminAuditScreen extends StatefulWidget {
@@ -49,18 +51,20 @@ class _SuperAdminAuditScreenState extends State<SuperAdminAuditScreen> {
     return Icons.history;
   }
 
-  Color _colorFor(String action, ColorScheme cs) {
-    if (action.contains('DISABLE') || action.contains('REMOVE')) return cs.error;
-    if (action.contains('ENABLE')) return Colors.green;
-    return cs.primary;
+  Color _colorFor(String action) {
+    if (action.contains('DISABLE') || action.contains('REMOVE')) return AppColors.error;
+    if (action.contains('ENABLE')) return AppColors.success;
+    return AppColors.primary;
   }
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Auditoría'),
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         actions: [
           IconButton(
               icon: const Icon(Icons.refresh),
@@ -96,15 +100,15 @@ class _SuperAdminAuditScreenState extends State<SuperAdminAuditScreen> {
                       final date = log['created_at'] as String? ?? '';
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: _colorFor(action, cs).withAlpha(30),
+                          backgroundColor: _colorFor(action).withAlpha(30),
                           child: Icon(_iconFor(action),
-                              color: _colorFor(action, cs), size: 20),
+                              color: _colorFor(action), size: 20),
                         ),
                         title: Text(action,
-                            style: const TextStyle(fontSize: 13)),
+                            style: GoogleFonts.inter(fontSize: 13)),
                         subtitle: Text(
                           '$actor · ${date.length > 10 ? date.substring(0, 10) : date}',
-                          style: const TextStyle(fontSize: 11),
+                          style: GoogleFonts.inter(fontSize: 11),
                         ),
                         onTap: () => _showPayload(log),
                       );
@@ -122,7 +126,7 @@ class _SuperAdminAuditScreenState extends State<SuperAdminAuditScreen> {
         content: SingleChildScrollView(
           child: Text(
             (log['payload'] ?? {}).toString(),
-            style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+            style: GoogleFonts.inter(fontSize: 12),
           ),
         ),
         actions: [

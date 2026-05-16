@@ -214,7 +214,7 @@ class _PermissionErrorView extends StatelessWidget {
             onPressed: onRetry,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
-              foregroundColor: Colors.black,
+              foregroundColor: AppColors.textOnPrimary,
             ),
             icon: const Icon(Icons.refresh),
             label: const Text('Reintentar'),
@@ -241,7 +241,7 @@ class _ScannerOverlay extends StatelessWidget {
         children: [
           ColorFiltered(
             colorFilter: ColorFilter.mode(
-              Colors.black.withOpacity(0.55),
+              Colors.black.withAlpha(AppAlpha.a50),
               BlendMode.srcOut,
             ),
             child: Stack(
@@ -276,13 +276,13 @@ class _ScannerOverlay extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isDetected ? Colors.greenAccent : AppColors.primary,
+                  color: isDetected ? AppColors.success : AppColors.primary,
                   width: isDetected ? 3 : 2,
                 ),
                 boxShadow: [
                   if (isDetected)
                     BoxShadow(
-                      color: Colors.greenAccent.withOpacity(0.45),
+                      color: AppColors.success.withAlpha(AppAlpha.a40),
                       blurRadius: 18,
                       spreadRadius: 2,
                     ),

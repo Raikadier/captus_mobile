@@ -161,7 +161,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo guardar el período. Intenta de nuevo.')), backgroundColor: Colors.red),
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo guardar el período. Intenta de nuevo.')), backgroundColor: AppColors.error),
         );
       }
     }
@@ -176,7 +176,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo activar el período. Intenta de nuevo.')), backgroundColor: Colors.red),
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo activar el período. Intenta de nuevo.')), backgroundColor: AppColors.error),
         );
       }
     }
@@ -197,7 +197,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
               child: const Text('Cancelar')),
           TextButton(
               onPressed: () => Navigator.pop(context, true),
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              style: TextButton.styleFrom(foregroundColor: AppColors.error),
               child: const Text('Eliminar')),
         ],
       ),
@@ -209,7 +209,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo eliminar el período. Intenta de nuevo.')), backgroundColor: Colors.red),
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo eliminar el período. Intenta de nuevo.')), backgroundColor: AppColors.error),
         );
       }
     }
@@ -222,7 +222,8 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surface,
+        elevation: 0,
         title: Text(
           'Períodos académicos',
           style: GoogleFonts.inter(
@@ -237,7 +238,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
         icon: const Icon(Icons.add),
         label: const Text('Nuevo período'),
         backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.textOnPrimary,
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -298,8 +299,8 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                               side: isActive
-                                  ? BorderSide(
-                                      color: Colors.green, width: 1.5)
+                                  ? const BorderSide(
+                                      color: AppColors.success, width: 1.5)
                                   : BorderSide.none,
                             ),
                             child: Padding(
@@ -311,13 +312,13 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                                     height: 48,
                                     decoration: BoxDecoration(
                                       color: isActive
-                                          ? Colors.green.withAlpha(25)
+                                          ? AppColors.success.withAlpha(AppAlpha.a20)
                                           : AppColors.primary.withAlpha(20),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Icon(Icons.date_range_outlined,
                                         color: isActive
-                                            ? Colors.green
+                                            ? AppColors.success
                                             : AppColors.primary),
                                   ),
                                   const SizedBox(width: 14),
@@ -342,7 +343,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                                                       horizontal: 8,
                                                       vertical: 2),
                                               decoration: BoxDecoration(
-                                                color: Colors.green
+                                                color: AppColors.success
                                                     .withAlpha(25),
                                                 borderRadius:
                                                     BorderRadius.circular(20),
@@ -350,7 +351,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                                               child: Text('activo',
                                                   style: GoogleFonts.inter(
                                                       fontSize: 11,
-                                                      color: Colors.green,
+                                                      color: AppColors.success,
                                                       fontWeight:
                                                           FontWeight.w600)),
                                             ),
@@ -388,26 +389,26 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                                               title: Text('Editar'),
                                               contentPadding: EdgeInsets.zero)),
                                       if (!isActive)
-                                        const PopupMenuItem(
+                                        PopupMenuItem(
                                             value: 'activate',
                                             child: ListTile(
-                                                leading: Icon(
+                                                leading: const Icon(
                                                     Icons.check_circle_outline,
-                                                    color: Colors.green),
+                                                    color: AppColors.success),
                                                 title: Text('Marcar activo',
-                                                    style: TextStyle(
-                                                        color: Colors.green)),
+                                                    style: GoogleFonts.inter(
+                                                        color: AppColors.success)),
                                                 contentPadding:
                                                     EdgeInsets.zero)),
-                                      const PopupMenuItem(
+                                      PopupMenuItem(
                                           value: 'delete',
                                           child: ListTile(
-                                              leading: Icon(
+                                              leading: const Icon(
                                                   Icons.delete_outline,
-                                                  color: Colors.red),
+                                                  color: AppColors.error),
                                               title: Text('Eliminar',
-                                                  style: TextStyle(
-                                                      color: Colors.red)),
+                                                  style: GoogleFonts.inter(
+                                                      color: AppColors.error)),
                                               contentPadding:
                                                   EdgeInsets.zero)),
                                     ],

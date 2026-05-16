@@ -95,7 +95,7 @@ class _RegisterAcademicProfileScreenState
                           style: GoogleFonts.inter(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: isSelected ? Colors.black : AppColors.textPrimary,
+                            color: isSelected ? AppColors.textOnPrimary : AppColors.textPrimary,
                           ),
                         ),
                       ),

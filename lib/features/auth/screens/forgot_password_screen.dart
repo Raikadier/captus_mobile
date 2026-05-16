@@ -149,7 +149,7 @@ class _FormView extends StatelessWidget {
                   height: 20,
                   width: 20,
                   child: CircularProgressIndicator(
-                      strokeWidth: 2, color: Colors.black),
+                      strokeWidth: 2, color: AppColors.textOnPrimary),
                 )
               : const Text('Enviar instrucciones'),
         ),

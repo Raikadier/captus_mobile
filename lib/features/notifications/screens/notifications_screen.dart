@@ -42,7 +42,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       case NotificationType.ai:
         return AppColors.warning;
       case NotificationType.course:
-        return Colors.purple;
+        return AppColors.accentPurple;
       case NotificationType.system:
         return AppColors.textSecondary;
     }
@@ -101,7 +101,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: isSelected
-                            ? Colors.black
+                            ? AppColors.textPrimary
                             : AppColors.textSecondary,
                       ),
                     ),
@@ -161,7 +161,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                         alignment: Alignment.centerRight,
                         padding: const EdgeInsets.only(right: 16),
                         child: const Icon(Icons.delete_outline_rounded,
-                            color: Colors.white),
+                            color: AppColors.textOnPrimary),
                       ),
                       onDismissed: (_) =>
                           ref.read(notificationsProvider.notifier).remove(n.id),

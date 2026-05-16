@@ -72,7 +72,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         return AppColors.warning;
       case 'reunión':
       case 'reunion':
-        return Colors.purple;
+        return AppColors.primary;
       default:
         return AppColors.primary;
     }
@@ -96,7 +96,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       builder: (context) => Container(
         margin: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -278,9 +278,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.surface,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.shade200),
+                border: Border.all(color: AppColors.surface2),
               ),
               child: TableCalendar<dynamic>(
                 focusedDay: _focusedDay,
@@ -312,7 +312,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     shape: BoxShape.circle,
                   ),
                   selectedTextStyle: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textOnPrimary,
                     fontWeight: FontWeight.bold,
                   ),
                   markerDecoration: BoxDecoration(
@@ -425,9 +425,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           margin: const EdgeInsets.only(bottom: 12),
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: AppColors.surface,
                             borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: Colors.grey.shade200),
+                            border: Border.all(color: AppColors.surface2),
                           ),
                           child: Row(
                             children: [
@@ -501,9 +501,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           margin: const EdgeInsets.only(bottom: 12),
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: AppColors.surface,
                             borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: Colors.grey.shade200),
+                            border: Border.all(color: AppColors.surface2),
                           ),
                           child: Row(
                             children: [
@@ -582,7 +582,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: _showCreateMenu,
         backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: AppColors.textOnPrimary),
       ),
     );
   }
@@ -615,7 +615,7 @@ class _FormatButton extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : AppColors.textSecondary,
+            color: isSelected ? AppColors.textOnPrimary : AppColors.textSecondary,
           ),
         ),
       ),
@@ -655,7 +655,7 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: Theme.of(context).copyWith(dialogBackgroundColor: Colors.white),
+      data: Theme.of(context).copyWith(dialogBackgroundColor: AppColors.surface),
       child: AlertDialog(
         title: Text(
           'Seleccionar mes y año',

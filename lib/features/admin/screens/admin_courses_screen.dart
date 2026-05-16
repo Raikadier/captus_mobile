@@ -204,7 +204,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
       _load();
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo guardar el curso. Intenta de nuevo.')), backgroundColor: Colors.red));
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo guardar el curso. Intenta de nuevo.')), backgroundColor: AppColors.error));
     }
   }
 
@@ -329,7 +329,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                         : null,
                                     trailing: IconButton(
                                       icon: const Icon(Icons.person_remove_outlined,
-                                          color: Colors.red, size: 20),
+                                          color: AppColors.error, size: 20),
                                       tooltip: 'Desinscribir',
                                       onPressed: () async {
                                         final ok = await showDialog<bool>(
@@ -344,7 +344,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                               TextButton(
                                                   onPressed: () => Navigator.pop(dialogCtx, true),
                                                   style: TextButton.styleFrom(
-                                                      foregroundColor: Colors.red),
+                                                      foregroundColor: AppColors.error),
                                                   child: const Text('Quitar')),
                                             ],
                                           ),
@@ -359,7 +359,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                           if (mounted) ScaffoldMessenger.of(context)
                                               .showSnackBar(SnackBar(
                                                   content: Text(friendlyError(e, fallback: 'No se pudo desinscribir al estudiante. Intenta de nuevo.')),
-                                                  backgroundColor: Colors.red));
+                                                  backgroundColor: AppColors.error));
                                         }
                                       },
                                     ),
@@ -454,7 +454,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
       }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo inscribir a los estudiantes. Intenta de nuevo.')), backgroundColor: Colors.red));
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo inscribir a los estudiantes. Intenta de nuevo.')), backgroundColor: AppColors.error));
     }
   }
 
@@ -552,7 +552,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
           SnackBar(content: Text(res['message'] as String? ?? 'Enviado')));
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo enviar la notificación. Intenta de nuevo.')), backgroundColor: Colors.red));
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo enviar la notificación. Intenta de nuevo.')), backgroundColor: AppColors.error));
     }
   }
 
@@ -576,7 +576,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
               onPressed: () => Navigator.pop(dialogCtx, false),
               child: const Text('Cancelar')),
           TextButton(
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              style: TextButton.styleFrom(foregroundColor: AppColors.error),
               onPressed: () => Navigator.pop(dialogCtx, true),
               child: const Text('Eliminar')),
         ],
@@ -592,7 +592,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
       }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo eliminar el curso. Intenta de nuevo.')), backgroundColor: Colors.red));
+          SnackBar(content: Text(friendlyError(e, fallback: 'No se pudo eliminar el curso. Intenta de nuevo.')), backgroundColor: AppColors.error));
     }
   }
 
@@ -715,13 +715,13 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                           title: Text('Inscribir estudiantes'),
                                           contentPadding: EdgeInsets.zero)),
                                   const PopupMenuDivider(),
-                                  const PopupMenuItem(
+                                  PopupMenuItem(
                                       value: 'delete',
                                       child: ListTile(
-                                          leading: Icon(Icons.delete_outline,
-                                              color: Colors.red),
+                                          leading: const Icon(Icons.delete_outline,
+                                              color: AppColors.error),
                                           title: Text('Eliminar curso',
-                                              style: TextStyle(color: Colors.red)),
+                                              style: GoogleFonts.inter(color: AppColors.error)),
                                           contentPadding: EdgeInsets.zero)),
                                 ],
                               ),

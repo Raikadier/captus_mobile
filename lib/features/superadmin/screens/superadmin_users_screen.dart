@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/constants/app_colors.dart';
 import '../services/superadmin_service.dart';
 
 const _roles = ['student', 'teacher', 'admin', 'superadmin'];
@@ -101,7 +102,7 @@ class _SuperAdminUsersScreenState extends State<SuperAdminUsersScreen> {
               child: const Text('Cancelar')),
           ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.error),
+                  backgroundColor: AppColors.error),
               onPressed: () => Navigator.pop(context, true),
               child: const Text('Remover')),
         ],
@@ -125,7 +126,12 @@ class _SuperAdminUsersScreenState extends State<SuperAdminUsersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Usuarios Globales')),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: const Text('Usuarios Globales'),
+        backgroundColor: AppColors.surface,
+        elevation: 0,
+      ),
       body: Column(children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),

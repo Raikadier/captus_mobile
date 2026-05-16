@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_animations.dart';
 import '../../core/providers/auth_provider.dart';
@@ -56,7 +57,7 @@ void _showMoreMenu(BuildContext context, String role) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black54,
+      barrierColor: AppColors.textPrimary.withAlpha(AppAlpha.a50),
       builder: (context) => _MoreMenuSheet(
         role: role,
         onNavigate: (route) {
@@ -235,7 +236,7 @@ class _CenterNavItem extends StatelessWidget {
         child: Icon(
           isSelected ? activeIcon : icon,
           size: 28,
-          color: isSelected ? Colors.white : AppColors.textSecondary, // white OK: over gradient green bg
+          color: isSelected ? AppColors.textOnPrimary : AppColors.textSecondary,
         ),
       ),
     );
@@ -255,7 +256,7 @@ class _MoreMenuSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Color(0xFF1E1E1E), // AppColors.modalBg — available after Phase 1 merge
+        color: AppColors.modalBg,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
@@ -277,7 +278,7 @@ class _MoreMenuSheet extends StatelessWidget {
                 children: [
                   Text(
                     'Más opciones',
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -353,7 +354,7 @@ class _MenuOption extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
@@ -362,7 +363,7 @@ class _MenuOption extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       fontSize: 13,
                       color: AppColors.textSecondary,
                     ),

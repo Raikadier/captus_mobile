@@ -220,7 +220,7 @@ class _ActivityDetailStudentScreenState
                 _activity.isGraded || _activity.isSubmitted
                     ? 'Abriendo asistente IA...'
                     : 'Entrega enviada',
-                style: GoogleFonts.inter(color: Colors.white),
+                style: GoogleFonts.inter(color: AppColors.textOnPrimary),
               ),
               backgroundColor: AppColors.surface2,
             ),
@@ -495,7 +495,7 @@ class _BottomBar extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor:
                 showAiButton ? AppColors.surface2 : AppColors.primary,
-            foregroundColor: showAiButton ? AppColors.primary : Colors.black,
+            foregroundColor: showAiButton ? AppColors.primary : AppColors.textOnPrimary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
               side: showAiButton

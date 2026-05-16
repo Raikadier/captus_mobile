@@ -76,7 +76,7 @@ class _CourseCreateScreenState extends ConsumerState<CourseCreateScreen> {
               const SizedBox(height: 24),
               TextFormField(
                 controller: _titleCtrl,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style: GoogleFonts.inter(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                   labelText: 'Nombre del curso',
                   hintText: 'Ej. Estructuras de Datos',
@@ -89,7 +89,7 @@ class _CourseCreateScreenState extends ConsumerState<CourseCreateScreen> {
               TextFormField(
                 controller: _descCtrl,
                 maxLines: 4,
-                style: const TextStyle(color: AppColors.textPrimary),
+                style: GoogleFonts.inter(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                   labelText: 'Descripción',
                   hintText: 'Descripción del curso...',

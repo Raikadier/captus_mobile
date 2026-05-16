@@ -316,11 +316,11 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: Colors.white.withAlpha(40),
+                        color: AppColors.textOnPrimary.withAlpha(40),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(Icons.auto_awesome_rounded,
-                          color: Colors.white, size: 22),
+                          color: AppColors.textOnPrimary, size: 22),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -332,21 +332,21 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
                             style: GoogleFonts.inter(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
-                              color: Colors.white,
+                              color: AppColors.textOnPrimary,
                             ),
                           ),
                           Text(
                             'Genera planes, rúbricas y bancos de preguntas',
                             style: GoogleFonts.inter(
                               fontSize: 12,
-                              color: Colors.white.withAlpha(200),
+                              color: AppColors.textOnPrimary.withAlpha(200),
                             ),
                           ),
                         ],
                       ),
                     ),
                     const Icon(Icons.arrow_forward_ios_rounded,
-                        size: 14, color: Colors.white),
+                        size: 14, color: AppColors.textOnPrimary),
                   ],
                 ),
               ),
@@ -364,7 +364,7 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/ai'),
         backgroundColor: AppColors.primary,
-        child: const Icon(Icons.auto_awesome_rounded, color: Colors.black),
+        child: const Icon(Icons.auto_awesome_rounded, color: AppColors.textOnPrimary),
       ),
     );
   }
@@ -411,7 +411,7 @@ class _PillButton extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: Colors.black,
+            color: AppColors.textOnPrimary,
           ),
         ),
       ),
