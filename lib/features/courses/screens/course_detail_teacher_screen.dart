@@ -97,12 +97,12 @@ class _CourseDetailTeacherScreenState extends State<CourseDetailTeacherScreen>
             expandedHeight: 140,
             backgroundColor: color,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: const Icon(Icons.arrow_back, color: AppColors.textOnPrimary),
               onPressed: () => context.pop(),
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.more_vert, color: Colors.white),
+                icon: const Icon(Icons.more_vert, color: AppColors.textOnPrimary),
                 onPressed: () => _showMenu(context),
               ),
             ],
@@ -110,7 +110,7 @@ class _CourseDetailTeacherScreenState extends State<CourseDetailTeacherScreen>
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [color, color.withOpacity(0.7)],
+                    colors: [color, color.withAlpha(AppAlpha.a70)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -125,14 +125,14 @@ class _CourseDetailTeacherScreenState extends State<CourseDetailTeacherScreen>
                       style: GoogleFonts.inter(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        color: AppColors.textOnPrimary,
                       ),
                     ),
                     Text(
                       '${_course.code} · ${_mockStudents.length} estudiantes',
                       style: GoogleFonts.inter(
                         fontSize: 13,
-                        color: Colors.white.withOpacity(0.85),
+                        color: AppColors.textOnPrimary.withAlpha(AppAlpha.a80),
                       ),
                     ),
                   ],
@@ -179,7 +179,7 @@ class _CourseDetailTeacherScreenState extends State<CourseDetailTeacherScreen>
             onPressed: () =>
                 context.push('/teacher/courses/${_course.id}/activity/create'),
             backgroundColor: AppColors.primary,
-            child: const Icon(Icons.add, color: Colors.black),
+            child: const Icon(Icons.add, color: AppColors.textOnPrimary),
           );
         },
       ),
@@ -221,7 +221,7 @@ class _ActivitiesTeacherTab extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
+                  color: color.withAlpha(AppAlpha.a10),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(Icons.assignment_outlined, color: color, size: 20),
@@ -294,7 +294,7 @@ class _StudentsTab extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: AppColors.textOnPrimary,
                   ),
                 ),
               ),

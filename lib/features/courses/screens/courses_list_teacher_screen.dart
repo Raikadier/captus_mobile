@@ -56,7 +56,7 @@ class CoursesListTeacherScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {},
         backgroundColor: AppColors.primary,
-        foregroundColor: Colors.black,
+        foregroundColor: AppColors.textOnPrimary,
         icon: const Icon(Icons.add),
         label: Text(
           'Nuevo curso',
@@ -84,7 +84,7 @@ class _TeacherCourseCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border.withOpacity(0.4)),
+          border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a40)),
         ),
         child: Row(
           children: [
@@ -112,7 +112,7 @@ class _TeacherCourseCard extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 7, vertical: 2),
                           decoration: BoxDecoration(
-                            color: color.withOpacity(0.15),
+                            color: color.withAlpha(AppAlpha.a15),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
@@ -130,7 +130,7 @@ class _TeacherCourseCard extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: AppColors.warning.withOpacity(0.15),
+                              color: AppColors.warning.withAlpha(AppAlpha.a15),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(

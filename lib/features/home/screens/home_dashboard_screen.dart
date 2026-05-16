@@ -126,7 +126,7 @@ class HomeDashboardScreen extends ConsumerWidget {
                     child: _QuickAccessCard(
                       icon: Icons.folder_rounded,
                       label: 'Proyectos',
-                      color: const Color(0xFF8B5CF6),
+                      color: AppColors.primary,
                       onTap: () => context.push('/projects'),
                     ),
                   ),
@@ -339,7 +339,7 @@ class _AiSuggestionCard extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Colors.white.withAlpha(40),
+                color: AppColors.textOnPrimary.withAlpha(40),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Center(
@@ -356,7 +356,7 @@ class _AiSuggestionCard extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white.withAlpha(180),
+                      color: AppColors.textOnPrimary.withAlpha(180),
                       letterSpacing: 0.8,
                     ),
                   ),
@@ -366,7 +366,7 @@ class _AiSuggestionCard extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: Colors.white,
+                      color: AppColors.textOnPrimary,
                       height: 1.4,
                     ),
                   ),
@@ -377,7 +377,7 @@ class _AiSuggestionCard extends StatelessWidget {
             const Icon(
               Icons.arrow_forward_ios_rounded,
               size: 14,
-              color: Colors.white,
+              color: AppColors.textOnPrimary,
             ),
           ],
         ),

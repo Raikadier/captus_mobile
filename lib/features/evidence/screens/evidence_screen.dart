@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -158,10 +159,10 @@ class _EvidenceScreenState extends State<EvidenceScreen> {
           ),
           Expanded(
             child: _items.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
                       'Aún no hay evidencias guardadas',
-                      style: TextStyle(color: Colors.grey),
+                      style: GoogleFonts.inter(color: AppColors.textSecondary),
                     ),
                   )
                 : ListView.builder(
@@ -174,9 +175,9 @@ class _EvidenceScreenState extends State<EvidenceScreen> {
                         margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: AppColors.surface,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey.shade200),
+                          border: Border.all(color: AppColors.border),
                         ),
                         child: Row(
                           children: [
@@ -188,16 +189,17 @@ class _EvidenceScreenState extends State<EvidenceScreen> {
                                 children: [
                                   Text(
                                     item.title,
-                                    style: const TextStyle(
+                                    style: GoogleFonts.inter(
                                       fontWeight: FontWeight.w700,
+                                      color: AppColors.textPrimary,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     _subtitle(item),
-                                    style: const TextStyle(
+                                    style: GoogleFonts.inter(
                                       fontSize: 12,
-                                      color: Colors.grey,
+                                      color: AppColors.textSecondary,
                                     ),
                                   ),
                                 ],
@@ -248,14 +250,14 @@ class _ActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: AppColors.surface,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade200),
+            border: Border.all(color: AppColors.border),
             borderRadius: BorderRadius.circular(16),
           ),
           padding: const EdgeInsets.all(14),
@@ -266,7 +268,7 @@ class _ActionCard extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 title,
-                style: const TextStyle(fontWeight: FontWeight.w700),
+                style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppColors.textPrimary),
               ),
             ],
           ),
@@ -300,7 +302,7 @@ class _EvidencePreview extends StatelessWidget {
         width: 58,
         height: 58,
         padding: const EdgeInsets.all(4),
-        color: Colors.white,
+        color: AppColors.surface,
         child: QrImageView(data: item.qrData!),
       );
     }

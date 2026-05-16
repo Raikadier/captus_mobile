@@ -48,7 +48,7 @@ class _CourseDetailStudentScreenState extends State<CourseDetailStudentScreen>
             pinned: true,
             backgroundColor: color,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: const Icon(Icons.arrow_back, color: AppColors.textOnPrimary),
               onPressed: () => context.pop(),
             ),
             flexibleSpace: FlexibleSpaceBar(
@@ -57,7 +57,7 @@ class _CourseDetailStudentScreenState extends State<CourseDetailStudentScreen>
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [color, color.withOpacity(0.7)],
+                    colors: [color, color.withAlpha(AppAlpha.a70)],
                   ),
                 ),
                 padding: const EdgeInsets.fromLTRB(16, 80, 16, 16),
@@ -69,14 +69,14 @@ class _CourseDetailStudentScreenState extends State<CourseDetailStudentScreen>
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: AppColors.textOnPrimary.withAlpha(AppAlpha.a20),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         _course.code,
                         style: GoogleFonts.inter(
                           fontSize: 11,
-                          color: Colors.white,
+                          color: AppColors.textOnPrimary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -87,14 +87,14 @@ class _CourseDetailStudentScreenState extends State<CourseDetailStudentScreen>
                       style: GoogleFonts.inter(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        color: AppColors.textOnPrimary,
                       ),
                     ),
                     Text(
                       _course.teacherName,
                       style: GoogleFonts.inter(
                         fontSize: 13,
-                        color: Colors.white.withOpacity(0.85),
+                        color: AppColors.textOnPrimary.withAlpha(AppAlpha.a80),
                       ),
                     ),
                   ],
@@ -205,7 +205,7 @@ class _ActivityTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border.withOpacity(0.5)),
+          border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a50)),
         ),
         child: Row(
           children: [
@@ -213,7 +213,7 @@ class _ActivityTile extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: accentColor.withOpacity(0.12),
+                color: accentColor.withAlpha(AppAlpha.a10),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
@@ -258,7 +258,7 @@ class _ActivityTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: chipColor.withOpacity(0.12),
+                color: chipColor.withAlpha(AppAlpha.a10),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(

@@ -190,7 +190,7 @@ class _SettingsSecurityScreenState extends State<SettingsSecurityScreen> {
                 ),
                 child: Text('Actualizar',
                     style: GoogleFonts.inter(
-                        color: Colors.black, fontWeight: FontWeight.w600)),
+                        color: AppColors.textOnPrimary, fontWeight: FontWeight.w600)),
               ),
             ),
           ],

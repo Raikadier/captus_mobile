@@ -194,7 +194,7 @@ class _TasksTab extends StatelessWidget {
                   ),
                   child: isDone
                       ? const Icon(Icons.check,
-                          size: 13, color: Colors.black)
+                          size: 13, color: AppColors.textPrimary)
                       : null,
                 ),
                 const SizedBox(width: 12),
@@ -303,7 +303,7 @@ class _MembersTab extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: AppColors.textOnPrimary,
                   ),
                 ),
               ),
@@ -415,7 +415,7 @@ class _ActivityTab extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: AppColors.textOnPrimary,
                   ),
                 ),
               ),
