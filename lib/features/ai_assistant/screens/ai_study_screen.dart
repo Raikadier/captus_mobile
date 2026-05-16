@@ -1,10 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/providers/ai_chat_provider.dart';
+import '../../../core/services/api_client.dart';
 
 enum _StudyMode { flashcards, quiz, resumen, mapaConceptual }
 
@@ -49,24 +48,31 @@ extension _StudyModeExt on _StudyMode {
   }
 }
 
-class AiStudyScreen extends ConsumerStatefulWidget {
+// AiStudyScreen calls the AI backend directly without going through
+// aiChatProvider — study sessions are self-contained and do not bleed
+// into the user's main chat history.
+class AiStudyScreen extends StatefulWidget {
   const AiStudyScreen({super.key});
 
   @override
-  ConsumerState<AiStudyScreen> createState() => _AiStudyScreenState();
+  State<AiStudyScreen> createState() => _AiStudyScreenState();
 }
 
-class _AiStudyScreenState extends ConsumerState<AiStudyScreen> {
+class _AiStudyScreenState extends State<AiStudyScreen> {
   final _contentCtrl = TextEditingController();
   final _subjectCtrl = TextEditingController();
   _StudyMode _selectedMode = _StudyMode.resumen;
   bool _generated = false;
   String? _result;
   bool _isLoading = false;
-  int _prevMessageCount = 0;
+  CancelToken? _cancelToken;
+
+  static final _receiveOptions =
+      Options(receiveTimeout: const Duration(seconds: 90));
 
   @override
   void dispose() {
+    _cancelToken?.cancel('Screen disposed');
     _contentCtrl.dispose();
     _subjectCtrl.dispose();
     super.dispose();
@@ -87,8 +93,7 @@ class _AiStudyScreenState extends ConsumerState<AiStudyScreen> {
     final msg =
         'Genera ${_selectedMode.apiLabel} del siguiente documento$materia:\n\n$content';
 
-    final chatState = ref.read(aiChatProvider);
-    _prevMessageCount = chatState.messages.length;
+    _cancelToken = CancelToken();
 
     setState(() {
       _isLoading = true;
@@ -96,10 +101,48 @@ class _AiStudyScreenState extends ConsumerState<AiStudyScreen> {
       _result = null;
     });
 
-    await ref.read(aiChatProvider.notifier).send(msg);
+    try {
+      // Direct call to /ai/chat — no conversationId, so this creates an
+      // isolated one-shot conversation that never touches the user's chat history.
+      final res = await ApiClient.instance.post<Map<String, dynamic>>(
+        '/ai/chat',
+        data: {'message': msg},
+        options: _receiveOptions,
+        cancelToken: _cancelToken,
+      );
+
+      final body = res.data ?? <String, dynamic>{};
+      final reply = body['result'] as String? ?? 'Sin respuesta.';
+
+      if (mounted) {
+        setState(() {
+          _result = reply;
+          _generated = true;
+          _isLoading = false;
+        });
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.cancel) return;
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _result = 'No pude conectar con el asistente. Intenta de nuevo.';
+          _generated = true;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _result = 'Error inesperado. Intenta de nuevo.';
+          _generated = true;
+        });
+      }
+    }
   }
 
   void _reset() {
+    _cancelToken?.cancel('Nueva sesión');
     setState(() {
       _contentCtrl.clear();
       _subjectCtrl.clear();
@@ -111,26 +154,10 @@ class _AiStudyScreenState extends ConsumerState<AiStudyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AiChatState>(aiChatProvider, (prev, next) {
-      if (!next.isLoading && _isLoading) {
-        if (next.messages.length > _prevMessageCount) {
-          final aiMessages =
-              next.messages.where((m) => !m.isUser).toList();
-          if (aiMessages.isNotEmpty) {
-            setState(() {
-              _result = aiMessages.last.text;
-              _generated = true;
-              _isLoading = false;
-            });
-          }
-        }
-      }
-    });
-
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         title: Text(
           'Modo Estudio IA',
@@ -140,19 +167,6 @@ class _AiStudyScreenState extends ConsumerState<AiStudyScreen> {
             color: AppColors.textPrimary,
           ),
         ),
-        actions: [
-          if (_generated)
-            TextButton.icon(
-              icon: const Icon(Icons.chat_bubble_outline,
-                  size: 16, color: AppColors.primary),
-              label: Text(
-                'Ver chat',
-                style: GoogleFonts.inter(color: AppColors.primary),
-              ),
-              onPressed: () => context.go('/ai'),
-            ),
-          const SizedBox(width: 8),
-        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -372,7 +386,7 @@ class _AiStudyScreenState extends ConsumerState<AiStudyScreen> {
 
               const SizedBox(height: 20),
 
-              // ── Generate button ──────────────────────────────────────────
+              // ── Generate / Nueva sesión buttons ──────────────────────────
               Row(
                 children: [
                   Expanded(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -29,6 +30,11 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
   void initState() {
     super.initState();
     _initStt();
+    // Ensure every visit to the AI screen starts a completely fresh chat.
+    // addPostFrameCallback so the provider is fully built before we call clear().
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(aiChatProvider.notifier).clear();
+    });
   }
 
   Future<void> _initStt() async {
@@ -200,7 +206,7 @@ class _Header extends ConsumerWidget {
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(Icons.auto_awesome_rounded,
-                color: Colors.white, size: 18),
+                color: AppColors.textOnPrimary, size: 18),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -331,9 +337,23 @@ class _MessageBubble extends StatelessWidget {
     required this.onSuggestion,
   });
 
+  void _copyToClipboard(BuildContext context) {
+    Clipboard.setData(ClipboardData(text: message.text));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Mensaje copiado',
+            style: GoogleFonts.inter(fontSize: 13)),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.textPrimary,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isUser = message.isUser;
+    final timeStr = DateFormat('HH:mm').format(message.time);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -360,37 +380,52 @@ class _MessageBubble extends StatelessWidget {
                 ),
               ],
               Flexible(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 10),
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.78,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isUser ? AppColors.primary : AppColors.surface,
-                    borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(16),
-                      topRight: const Radius.circular(16),
-                      bottomLeft: Radius.circular(isUser ? 16 : 4),
-                      bottomRight: Radius.circular(isUser ? 4 : 16),
+                child: GestureDetector(
+                  onLongPress: () => _copyToClipboard(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 10),
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.78,
                     ),
-                    border: isUser
-                        ? null
-                        : Border.all(color: AppColors.border),
+                    decoration: BoxDecoration(
+                      color: isUser ? AppColors.primary : AppColors.surface,
+                      borderRadius: BorderRadius.only(
+                        topLeft: const Radius.circular(16),
+                        topRight: const Radius.circular(16),
+                        bottomLeft: Radius.circular(isUser ? 16 : 4),
+                        bottomRight: Radius.circular(isUser ? 4 : 16),
+                      ),
+                      border: isUser
+                          ? null
+                          : Border.all(color: AppColors.border),
+                    ),
+                    child: isUser
+                        ? SelectableText(
+                            message.text,
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              color: AppColors.textOnPrimary,
+                              height: 1.45,
+                            ),
+                          )
+                        : _MarkdownMessage(text: message.text),
                   ),
-                  child: isUser
-                      ? SelectableText(
-                          message.text,
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            color: Colors.white,
-                            height: 1.45,
-                          ),
-                        )
-                      : _MarkdownMessage(text: message.text),
                 ),
               ),
             ],
+          ),
+          // Timestamp
+          Padding(
+            padding: EdgeInsets.only(
+              top: 2,
+              left: isUser ? 0 : 34,
+            ),
+            child: Text(
+              timeStr,
+              style: GoogleFonts.inter(
+                  fontSize: 10, color: AppColors.textSecondary),
+            ),
           ),
           // Reasoning steps (collapsible)
           if (!isUser && message.steps.isNotEmpty)
@@ -845,7 +880,7 @@ class _ThinkingStepsState extends State<_ThinkingSteps> {
                     Icon(
                       allOk ? Icons.psychology_rounded : Icons.psychology_alt_rounded,
                       size: 14,
-                      color: allOk ? AppColors.primary : Colors.orange,
+                      color: allOk ? AppColors.primary : AppColors.warning,
                     ),
                     const SizedBox(width: 5),
                     Text(
@@ -889,7 +924,7 @@ class _ThinkingStepsState extends State<_ThinkingSteps> {
                                   ? Icons.check_circle_rounded
                                   : Icons.cancel_rounded,
                               size: 12,
-                              color: step.success ? Colors.green : Colors.red,
+                              color: step.success ? AppColors.success : AppColors.error,
                             ),
                             const SizedBox(width: 5),
                             Icon(_iconFor(step.name),
@@ -1002,17 +1037,17 @@ class _InputBar extends StatelessWidget {
               width: 44,
               decoration: BoxDecoration(
                 color: isListening
-                    ? Colors.red.withAlpha(25)
+                    ? AppColors.error.withAlpha(AppAlpha.a10)
                     : AppColors.surface,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isListening ? Colors.red : AppColors.border,
+                  color: isListening ? AppColors.error : AppColors.border,
                 ),
               ),
               child: IconButton(
                 icon: Icon(
                   isListening ? Icons.stop_rounded : Icons.mic_rounded,
-                  color: isListening ? Colors.red : AppColors.textSecondary,
+                  color: isListening ? AppColors.error : AppColors.textSecondary,
                   size: 20,
                 ),
                 onPressed: onVoice,
@@ -1050,7 +1085,7 @@ class _SendButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           child: IconButton(
-            icon: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
+            icon: const Icon(Icons.send_rounded, color: AppColors.textOnPrimary, size: 18),
             onPressed: onSend,
             padding: EdgeInsets.zero,
           ),
@@ -1068,13 +1103,13 @@ class _StopButton extends StatelessWidget {
         width: 44,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: Colors.red.shade50,
+            color: AppColors.error.withAlpha(AppAlpha.a10),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.red.shade200),
+            border: Border.all(color: AppColors.error.withAlpha(AppAlpha.a30)),
           ),
           child: IconButton(
-            icon: Icon(Icons.stop_rounded,
-                color: Colors.red.shade600, size: 20),
+            icon: const Icon(Icons.stop_rounded,
+                color: AppColors.error, size: 20),
             onPressed: onStop,
             padding: EdgeInsets.zero,
             tooltip: 'Detener',

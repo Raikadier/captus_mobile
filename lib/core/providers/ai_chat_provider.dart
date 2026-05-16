@@ -63,11 +63,15 @@ class AiChatState {
     String? conversationTitle,
     String? error,
     bool clearError = false,
+    // Set to true to explicitly null-out conversationId (passing null alone
+    // is indistinguishable from "not provided" in Dart optional params).
+    bool clearConversationId = false,
   }) {
     return AiChatState(
       messages: messages ?? this.messages,
       isLoading: isLoading ?? this.isLoading,
-      conversationId: conversationId ?? this.conversationId,
+      conversationId:
+          clearConversationId ? null : conversationId ?? this.conversationId,
       conversationTitle: conversationTitle ?? this.conversationTitle,
       error: clearError ? null : error ?? this.error,
     );
@@ -106,6 +110,11 @@ class AiChatNotifier extends Notifier<AiChatState> {
     final user = ref.watch(currentUserProvider);
     final role = user?.role ?? 'student';
     final firstName = user?.name.split(' ').firstOrNull;
+
+    // Cancel any in-flight request when the notifier is disposed (autoDispose
+    // triggered by user navigating away). Without this, the awaited POST in
+    // send() would complete on a disposed notifier, throwing StateError.
+    ref.onDispose(() => _cancelToken.cancel('Notifier disposed'));
 
     // Do NOT auto-load the last conversation — each session starts fresh.
     // Users can access previous chats via the History button.
@@ -236,7 +245,11 @@ class AiChatNotifier extends Notifier<AiChatState> {
     }
   }
 
-  Future<void> loadConversation(
+  /// Loads a historical conversation into state.
+  ///
+  /// Returns `true` on success, `false` on failure. The caller should show
+  /// an error message and NOT navigate to the chat screen on `false`.
+  Future<bool> loadConversation(
     String conversationId, {
     String? title,
   }) async {
@@ -280,11 +293,16 @@ class AiChatNotifier extends Notifier<AiChatState> {
         conversationId: conversationId,
         conversationTitle: title,
       );
+      return true;
     } catch (_) {
+      // Clear the conversationId so a subsequent send() doesn't append to a
+      // conversation the client never successfully loaded.
       state = state.copyWith(
         isLoading: false,
+        clearConversationId: true,
         error: 'No se pudo cargar la conversación.',
       );
+      return false;
     }
   }
 
@@ -310,9 +328,11 @@ class AiChatNotifier extends Notifier<AiChatState> {
   }
 }
 
-// NotifierProvider that watches currentUserProvider in build() so it rebuilds
-// (resets to fresh chat) automatically when the authenticated user changes —
-// this prevents chat state from bleeding between users on the same device.
-final aiChatProvider = NotifierProvider<AiChatNotifier, AiChatState>(
+// AutoDispose: state is destroyed when no widget is listening (user leaves the
+// AI screen). On re-entry, build() runs again → fresh chat every visit.
+// ref.watch(currentUserProvider) also resets on logout/login so chats are
+// fully isolated between different users on the same device.
+final aiChatProvider =
+    NotifierProvider.autoDispose<AiChatNotifier, AiChatState>(
   AiChatNotifier.new,
 );

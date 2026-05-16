@@ -64,7 +64,9 @@ class _AiTeacherToolsScreenState
     setState(() => _sending = true);
     try {
       await ref.read(aiChatProvider.notifier).send(message);
-      if (mounted) context.go('/ai');
+      // pop() returns to the already-mounted AiChatScreen so initState /
+      // clear() never fires — the generated result stays visible.
+      if (mounted) context.pop();
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -118,7 +120,7 @@ class _AiTeacherToolsScreenState
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         title: Text(
           'Herramientas IA Docente',
@@ -128,7 +130,6 @@ class _AiTeacherToolsScreenState
             color: AppColors.textPrimary,
           ),
         ),
-        actions: const [SizedBox(width: 8)],
       ),
       body: SafeArea(
         child: ListView(

@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/ai_chat_provider.dart';
 import '../../../core/providers/ai_settings_provider.dart';
+import '../../../core/providers/conversations_provider.dart';
 
 class AiSettingsScreen extends ConsumerWidget {
   const AiSettingsScreen({super.key});
@@ -16,7 +17,16 @@ class AiSettingsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Configuración IA'),
+        backgroundColor: AppColors.surface,
+        elevation: 0,
+        title: Text(
+          'Configuración IA',
+          style: GoogleFonts.inter(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
@@ -40,6 +50,46 @@ class _SettingsBody extends ConsumerWidget {
 
   void _update(WidgetRef ref, AiSettings updated) =>
       ref.read(aiSettingsProvider.notifier).save(updated);
+
+  Future<void> _clearHistory(BuildContext context, WidgetRef ref) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text('Borrar historial',
+            style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+        content: Text(
+          'Se eliminarán todas las conversaciones del servidor. Esta acción no se puede deshacer.',
+          style: GoogleFonts.inter(color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style:
+                TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: const Text('Borrar todo'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !context.mounted) return;
+    try {
+      // Delete all conversations server-side AND clear local state.
+      await ref.read(conversationsProvider.notifier).deleteAll();
+      ref.read(aiChatProvider.notifier).clear();
+      if (!context.mounted) return;
+      context.pop();
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo borrar el historial.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -75,6 +125,7 @@ class _SettingsBody extends ConsumerWidget {
         const SizedBox(height: 8),
         _SectionLabel('COMPORTAMIENTO'),
 
+        // ── Tone selector ──────────────────────────────────────────────
         Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
@@ -88,7 +139,12 @@ class _SettingsBody extends ConsumerWidget {
             children: [
               Text('Tono de respuestas',
                   style: GoogleFonts.inter(
-                      fontSize: 14, fontWeight: FontWeight.w600)),
+                      fontSize: 14, fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary)),
+              const SizedBox(height: 4),
+              Text('Cómo responde Captus IA',
+                  style: GoogleFonts.inter(
+                      fontSize: 12, color: AppColors.textSecondary)),
               const SizedBox(height: 12),
               Row(
                 children: ['Formal', 'Amigable', 'Motivacional']
@@ -102,11 +158,12 @@ class _SettingsBody extends ConsumerWidget {
                           _update(ref, settings.copyWith(toneIndex: e.key)),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 150),
-                        margin: const EdgeInsets.only(right: 6),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        margin: EdgeInsets.only(
+                            right: e.key < 2 ? 6 : 0),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? AppColors.primaryDark
+                              ? AppColors.primaryLight
                               : AppColors.surface2,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
@@ -155,41 +212,31 @@ class _SettingsBody extends ConsumerWidget {
         ),
 
         const SizedBox(height: 24),
-        OutlinedButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (ctx) => AlertDialog(
-                backgroundColor: AppColors.surface,
-                title: const Text('Borrar historial'),
-                content: const Text(
-                  '¿Estás seguro? Se eliminará la conversación actual de la app.',
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(ctx).pop(),
-                    child: const Text('Cancelar'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      ref.read(aiChatProvider.notifier).clear();
-                      Navigator.of(ctx).pop();
-                      context.pop();
-                    },
-                    style: TextButton.styleFrom(
-                        foregroundColor: AppColors.error),
-                    child: const Text('Borrar'),
-                  ),
-                ],
-              ),
-            );
-          },
+
+        // ── Borrar historial ───────────────────────────────────────────
+        _SectionLabel('DATOS'),
+        OutlinedButton.icon(
+          onPressed: () => _clearHistory(context, ref),
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.error,
-            side: const BorderSide(color: AppColors.error),
+            side: const BorderSide(color: AppColors.error, width: 0.5),
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12)),
           ),
-          child: const Text('Borrar historial de conversaciones'),
+          icon: const Icon(Icons.delete_sweep_outlined, size: 18),
+          label: Text(
+            'Borrar historial de conversaciones',
+            style: GoogleFonts.inter(fontWeight: FontWeight.w500),
+          ),
         ),
+        const SizedBox(height: 8),
+        Text(
+          'Elimina permanentemente todas tus conversaciones del servidor.',
+          style: GoogleFonts.inter(
+              fontSize: 11, color: AppColors.textSecondary),
+        ),
+        const SizedBox(height: 32),
       ],
     );
   }
@@ -251,14 +298,21 @@ class _ToggleItem extends StatelessWidget {
               children: [
                 Text(label,
                     style: GoogleFonts.inter(
-                        fontSize: 14, fontWeight: FontWeight.w600)),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary)),
                 Text(subtitle,
                     style: GoogleFonts.inter(
-                        fontSize: 12, color: AppColors.textSecondary)),
+                        fontSize: 12,
+                        color: AppColors.textSecondary)),
               ],
             ),
           ),
-          Switch(value: value, onChanged: onChanged),
+          Switch(
+            value: value,
+            onChanged: onChanged,
+            activeColor: AppColors.primary,
+          ),
         ],
       ),
     );
