@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/courses_provider.dart';
 
 class CourseCreateScreen extends ConsumerStatefulWidget {
@@ -26,14 +27,47 @@ class _CourseCreateScreenState extends ConsumerState<CourseCreateScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    debugPrint('CREATE_COURSE_BUTTON_PRESSED');
+    final isValid = _formKey.currentState!.validate();
+    
+    if (!isValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor, completa los campos requeridos')),
+      );
+      return;
+    }
+
+    final user = ref.read(currentUserProvider);
+    final payload = {
+      'title': _titleCtrl.text.trim(),
+      'description': _descCtrl.text.trim(),
+      'teacher_id': user?.id,
+    };
+    debugPrint('CREATE_COURSE_PAYLOAD: $payload');
+
     setState(() => _loading = true);
     try {
       await ref.read(teacherCoursesNotifierProvider.notifier).createCourse(
             title: _titleCtrl.text.trim(),
             description: _descCtrl.text.trim(),
           );
-      if (mounted) context.pop();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Curso creado correctamente')),
+        );
+        context.pop();
+      }
+    } catch (e) {
+      debugPrint('COURSE_CREATE_ERROR: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al crear curso: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }

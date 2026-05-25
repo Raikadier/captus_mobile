@@ -14,6 +14,9 @@ class AssignmentModel {
   final DateTime? updatedAt;
 
   final String? fileUrl;
+  final int? courseGroupId;
+  final String? assignmentType;
+  final String priority;
 
   const AssignmentModel({
     required this.id,
@@ -30,6 +33,9 @@ class AssignmentModel {
     this.isGroupAssignment = false,
     this.updatedAt,
     this.fileUrl,
+    this.courseGroupId,
+    this.assignmentType,
+    this.priority = 'medio',
   });
 
   factory AssignmentModel.fromJson(Map<String, dynamic> json) {
@@ -62,6 +68,11 @@ class AssignmentModel {
           ? DateTime.tryParse(json['updated_at'].toString())
           : null,
       fileUrl: (json['file_url'] ?? json['fileUrl'])?.toString(),
+      courseGroupId: json['course_group_id'] != null 
+          ? int.tryParse(json['course_group_id'].toString()) 
+          : null,
+      assignmentType: (json['tipo_asignacion'] ?? json['assignment_type'])?.toString(),
+      priority: (json['priority'] ?? json['prioridad'])?.toString() ?? 'medio',
     );
   }
 
@@ -69,12 +80,16 @@ class AssignmentModel {
   /// id is omitted so Supabase auto-generates the integer PK.
   Map<String, dynamic> toJson() => {
         'course_id': int.tryParse(courseId) ?? courseId,
+        'teacher_id': teacherId,
         'title': title,
         'description': description,
+        'start_date': startDate?.toIso8601String(),
         'due_date': dueDate.toIso8601String(),
-        'is_group_assignment': isGroupAssignment,
-        'file_url': fileUrl,
-        if (updatedAt != null) 'updated_at': updatedAt!.toIso8601String(),
+        'max_grade': maxGrade,
+        'requires_file': requiresFile,
+        'tipo_asignacion': assignmentType,
+        'course_group_id': courseGroupId,
+        'priority': priority,
       };
 
   AssignmentModel copyWith({
@@ -92,6 +107,9 @@ class AssignmentModel {
     bool? isGroupAssignment,
     DateTime? updatedAt,
     String? fileUrl,
+    int? courseGroupId,
+    String? assignmentType,
+    String? priority,
   }) {
     return AssignmentModel(
       id: id ?? this.id,
@@ -108,6 +126,9 @@ class AssignmentModel {
       isGroupAssignment: isGroupAssignment ?? this.isGroupAssignment,
       updatedAt: updatedAt ?? this.updatedAt,
       fileUrl: fileUrl ?? this.fileUrl,
+      courseGroupId: courseGroupId ?? this.courseGroupId,
+      assignmentType: assignmentType ?? this.assignmentType,
+      priority: priority ?? this.priority,
     );
   }
 }

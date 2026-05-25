@@ -37,6 +37,7 @@ import '../../features/courses/screens/course_groups_teacher_screens.dart';
 import '../../features/courses/screens/activity_create_screen.dart';
 import '../../features/courses/screens/course_create_screen.dart';
 import '../../features/groups/screens/groups_list_screen.dart';
+import '../../features/groups/screens/create_group_global_screen.dart';
 import '../../features/groups/screens/group_detail_screen.dart';
 import '../../features/groups/screens/group_settings_screen.dart';
 import '../../features/notifications/screens/notifications_screen.dart';
@@ -215,6 +216,11 @@ GoRouter createRouter(WidgetRef ref) {
             path: '/groups',
             name: 'groups_list',
             builder: (_, __) => const GroupsListScreen(),
+          ),
+          GoRoute(
+            path: '/teacher/statistics',
+            name: 'statistics_teacher',
+            builder: (_, __) => const StatisticsTeacherScreen(),
           ),
         ],
       ),
@@ -417,6 +423,11 @@ GoRouter createRouter(WidgetRef ref) {
       ),
 
       GoRoute(
+        path: '/groups/create',
+        name: 'groups_create',
+        builder: (_, __) => const CreateGroupGlobalScreen(),
+      ),
+      GoRoute(
         path: '/groups/:id',
         name: 'group_detail',
         builder: (_, state) =>
@@ -450,11 +461,7 @@ GoRouter createRouter(WidgetRef ref) {
         name: 'achievements',
         builder: (_, __) => const AchievementsScreen(),
       ),
-      GoRoute(
-        path: '/teacher/statistics',
-        name: 'statistics_teacher',
-        builder: (_, __) => const StatisticsTeacherScreen(),
-      ),
+      // /teacher/statistics is now inside the ShellRoute above (MainShell wraps it).
       GoRoute(
         path: '/teacher/student/:id',
         name: 'student_profile_view',

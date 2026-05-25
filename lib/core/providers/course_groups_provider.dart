@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'auth_provider.dart';
+import 'courses_provider.dart';
 
 final _supabase = Supabase.instance.client;
 
@@ -98,19 +100,56 @@ class GroupAssignment {
 final courseGroupsProvider =
     FutureProvider.autoDispose.family<List<CourseGroup>, int>(
   (ref, courseId) async {
+    try {
+      final res = await _supabase
+          .from('course_groups')
+          .select('id, course_id, name, description, created_by, created_at, '
+              'course_group_members(id)')
+          .eq('course_id', courseId)
+          .order('created_at', ascending: true);
+
+      return (res as List)
+          .cast<Map<String, dynamic>>()
+          .map(CourseGroup.fromJson)
+          .toList();
+    } catch (e) {
+      debugPrint('FETCH_GROUPS_ERROR: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      throw Exception('Error al cargar grupos: $e');
+    }
+  },
+);
+
+final teacherGroupsProvider = FutureProvider.autoDispose<List<CourseGroup>>((ref) async {
+  try {
+    final coursesAsync = ref.watch(coursesProvider);
+    final courses = coursesAsync.value ?? [];
+    if (courses.isEmpty) return [];
+    
+    final courseIds = courses.map((c) => int.tryParse(c.id)).whereType<int>().toList();
+    if (courseIds.isEmpty) return [];
+
     final res = await _supabase
         .from('course_groups')
         .select('id, course_id, name, description, created_by, created_at, '
             'course_group_members(id)')
-        .eq('course_id', courseId)
-        .order('created_at', ascending: true);
+        .inFilter('course_id', courseIds)
+        .order('created_at', ascending: false);
 
     return (res as List)
         .cast<Map<String, dynamic>>()
         .map(CourseGroup.fromJson)
         .toList();
-  },
-);
+  } catch (e) {
+    debugPrint('FETCH_TEACHER_GROUPS_ERROR: $e');
+    if (e is PostgrestException) {
+      throw Exception('Error Supabase (${e.code}): ${e.message}');
+    }
+    throw Exception('Error al cargar grupos del docente: $e');
+  }
+});
 
 final groupMembersProvider =
     FutureProvider.autoDispose.family<List<GroupMember>, int>(
@@ -158,12 +197,13 @@ final courseStudentsProvider =
     FutureProvider.autoDispose.family<List<EnrolledStudent>, int>(
   (ref, courseId) async {
     try {
+      debugPrint('LOAD_STUDENTS_FOR_COURSE: $courseId');
       final res = await _supabase
           .from('course_enrollments')
           .select('student_id, users(id, name, email, avatarUrl)')
           .eq('course_id', courseId);
 
-      return (res as List).map((row) {
+      final students = (res as List).map((row) {
         final user = row['users'] as Map<String, dynamic>;
         return EnrolledStudent(
           id: user['id']?.toString() ?? '',
@@ -172,8 +212,14 @@ final courseStudentsProvider =
           avatarUrl: user['avatarUrl']?.toString(),
         );
       }).toList();
+      debugPrint('STUDENTS_FOUND: ${students.length}');
+      return students;
     } catch (e) {
-      return <EnrolledStudent>[];
+      debugPrint('ERROR_LOADING_STUDENTS: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      throw Exception('Error al cargar estudiantes del curso: $e');
     }
   },
 );
@@ -205,52 +251,60 @@ final unassignedCourseStudentsProvider =
 final groupAssignmentsProvider =
     FutureProvider.autoDispose.family<List<GroupAssignment>, int>(
   (ref, groupId) async {
-    final submissionsRes = await _supabase
-        .from('assignment_submissions')
-        .select('id, assignment_id, submitted_at, graded, grade, feedback')
-        .eq('group_id', groupId)
-        .order('submitted_at', ascending: false);
+    try {
+      final submissionsRes = await _supabase
+          .from('assignment_submissions')
+          .select('id, assignment_id, submitted_at, graded, grade, feedback')
+          .eq('group_id', groupId)
+          .order('submitted_at', ascending: false);
 
-    final submissions =
-        (submissionsRes as List).cast<Map<String, dynamic>>();
-    if (submissions.isEmpty) return [];
+      final submissions =
+          (submissionsRes as List).cast<Map<String, dynamic>>();
+      if (submissions.isEmpty) return [];
 
-    final assignmentIds = submissions
-        .map((row) => row['assignment_id'])
-        .whereType<int>()
-        .toSet()
-        .toList();
+      final assignmentIds = submissions
+          .map((row) => row['assignment_id'])
+          .whereType<int>()
+          .toSet()
+          .toList();
 
-    final assignmentsRes = await _supabase
-        .from('course_assignments')
-        .select('id, title, description, due_date')
-        .inFilter('id', assignmentIds);
+      final assignmentsRes = await _supabase
+          .from('course_assignments')
+          .select('id, title, description, due_date')
+          .inFilter('id', assignmentIds);
 
-    final assignments =
-        (assignmentsRes as List).cast<Map<String, dynamic>>();
-    final assignmentById = {
-      for (final assignment in assignments)
-        (assignment['id'] as int): assignment,
-    };
+      final assignments =
+          (assignmentsRes as List).cast<Map<String, dynamic>>();
+      final assignmentById = {
+        for (final assignment in assignments)
+          (assignment['id'] as int): assignment,
+      };
 
-    return submissions.map((submission) {
-      final assignmentId = submission['assignment_id'] as int;
-      final assignment = assignmentById[assignmentId];
-      return GroupAssignment(
-        submissionId: submission['id'] as int,
-        assignmentId: assignmentId,
-        title: assignment?['title']?.toString() ?? 'Tarea',
-        description: assignment?['description']?.toString(),
-        dueDate:
-            DateTime.tryParse(assignment?['due_date']?.toString() ?? '') ??
-                DateTime.now(),
-        graded: submission['graded'] == true,
-        grade: submission['grade'] as num?,
-        feedback: submission['feedback']?.toString(),
-        submittedAt:
-            DateTime.tryParse(submission['submitted_at']?.toString() ?? ''),
-      );
-    }).toList();
+      return submissions.map((submission) {
+        final assignmentId = submission['assignment_id'] as int;
+        final assignment = assignmentById[assignmentId];
+        return GroupAssignment(
+          submissionId: submission['id'] as int,
+          assignmentId: assignmentId,
+          title: assignment?['title']?.toString() ?? 'Tarea',
+          description: assignment?['description']?.toString(),
+          dueDate:
+              DateTime.tryParse(assignment?['due_date']?.toString() ?? '') ??
+                  DateTime.now(),
+          graded: submission['graded'] == true,
+          grade: submission['grade'] as num?,
+          feedback: submission['feedback']?.toString(),
+          submittedAt:
+              DateTime.tryParse(submission['submitted_at']?.toString() ?? ''),
+        );
+      }).toList();
+    } catch (e) {
+      debugPrint('FETCH_GROUP_ASSIGNMENTS_ERROR: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      throw Exception('Error al cargar tareas del grupo: $e');
+    }
   },
 );
 
@@ -269,32 +323,47 @@ class CourseGroupsNotifier extends AsyncNotifier<void> {
       throw Exception('Usuario no autenticado');
     }
 
-    final groupRes = await _supabase
-        .from('course_groups')
-        .insert({
-          'course_id': courseId,
-          'name': name.trim(),
-          'description': (description ?? '').trim(),
-          'created_by': user.id,
-        })
-        .select('id')
-        .single();
+    final payload = {
+      'course_id': courseId,
+      'name': name.trim(),
+      'description': (description ?? '').trim(),
+      'created_by': user.id,
+    };
+    debugPrint('CREATE_GROUP_BUTTON_PRESSED');
+    debugPrint('CREATE_GROUP_PAYLOAD: $payload');
 
-    final groupId = groupRes['id'] as int;
+    try {
+      final groupRes = await _supabase
+          .from('course_groups')
+          .insert(payload)
+          .select('id')
+          .single();
 
-    if (memberIds.isNotEmpty) {
-      final rows = memberIds
-          .map((studentId) => {
-                'group_id': groupId,
-                'student_id': studentId,
-              })
-          .toList();
-      await _supabase.from('course_group_members').insert(rows);
+      debugPrint('GROUP_CREATED_RESPONSE: $groupRes');
+      final groupId = groupRes['id'] as int;
+
+      if (memberIds.isNotEmpty) {
+        final rows = memberIds
+            .map((studentId) => {
+                  'group_id': groupId,
+                  'student_id': studentId,
+                })
+            .toList();
+        debugPrint('INSERTING_GROUP_MEMBERS: $rows');
+        await _supabase.from('course_group_members').insert(rows);
+      }
+
+      ref.invalidate(courseGroupsProvider(courseId));
+      ref.invalidate(unassignedCourseStudentsProvider(courseId));
+      ref.invalidate(teacherGroupsProvider);
+      return groupId;
+    } catch (e) {
+      debugPrint('GROUP_CREATE_ERROR: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      throw Exception('Error al crear grupo: $e');
     }
-
-    ref.invalidate(courseGroupsProvider(courseId));
-    ref.invalidate(unassignedCourseStudentsProvider(courseId));
-    return groupId;
   }
 
   Future<void> addMember({
@@ -302,13 +371,21 @@ class CourseGroupsNotifier extends AsyncNotifier<void> {
     required int groupId,
     required String studentId,
   }) async {
-    await _supabase.from('course_group_members').insert({
-      'group_id': groupId,
-      'student_id': studentId,
-    });
-    ref.invalidate(groupMembersProvider(groupId));
-    ref.invalidate(courseGroupsProvider(courseId));
-    ref.invalidate(unassignedCourseStudentsProvider(courseId));
+    try {
+      await _supabase.from('course_group_members').insert({
+        'group_id': groupId,
+        'student_id': studentId,
+      });
+      ref.invalidate(groupMembersProvider(groupId));
+      ref.invalidate(courseGroupsProvider(courseId));
+      ref.invalidate(unassignedCourseStudentsProvider(courseId));
+    } catch (e) {
+      debugPrint('ADD_MEMBER_ERROR: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      throw Exception('Error al añadir miembro: $e');
+    }
   }
 
   Future<void> removeMember({
@@ -316,14 +393,22 @@ class CourseGroupsNotifier extends AsyncNotifier<void> {
     required int groupId,
     required String studentId,
   }) async {
-    await _supabase
-        .from('course_group_members')
-        .delete()
-        .eq('group_id', groupId)
-        .eq('student_id', studentId);
-    ref.invalidate(groupMembersProvider(groupId));
-    ref.invalidate(courseGroupsProvider(courseId));
-    ref.invalidate(unassignedCourseStudentsProvider(courseId));
+    try {
+      await _supabase
+          .from('course_group_members')
+          .delete()
+          .eq('group_id', groupId)
+          .eq('student_id', studentId);
+      ref.invalidate(groupMembersProvider(groupId));
+      ref.invalidate(courseGroupsProvider(courseId));
+      ref.invalidate(unassignedCourseStudentsProvider(courseId));
+    } catch (e) {
+      debugPrint('REMOVE_MEMBER_ERROR: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      throw Exception('Error al eliminar miembro: $e');
+    }
   }
 
   Future<void> assignTaskToGroup({
@@ -333,41 +418,60 @@ class CourseGroupsNotifier extends AsyncNotifier<void> {
     String? description,
     required DateTime dueDate,
   }) async {
-    final assignmentRes = await _supabase
-        .from('course_assignments')
-        .insert({
-          'course_id': courseId,
-          'title': title.trim(),
-          'description': (description ?? '').trim(),
-          'due_date': dueDate.toIso8601String(),
-          'is_group_assignment': true,
-        })
-        .select('id')
-        .single();
+    try {
+      final assignmentRes = await _supabase
+          .from('course_assignments')
+          .insert({
+            'course_id': courseId,
+            'title': title.trim(),
+            'description': (description ?? '').trim(),
+            'due_date': dueDate.toIso8601String(),
+            'is_group_assignment': true,
+            'course_group_id': groupId,
+            'assignment_type': 'group',
+          })
+          .select('id')
+          .single();
 
-    await _supabase.from('assignment_submissions').insert({
-      'assignment_id': assignmentRes['id'] as int,
-      'group_id': groupId,
-    });
+      await _supabase.from('assignment_submissions').insert({
+        'assignment_id': assignmentRes['id'] as int,
+        'group_id': groupId,
+      });
 
-    ref.invalidate(groupAssignmentsProvider(groupId));
+      ref.invalidate(groupAssignmentsProvider(groupId));
+    } catch (e) {
+      debugPrint('ASSIGN_TASK_ERROR: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      throw Exception('Error al asignar tarea: $e');
+    }
   }
 
   Future<void> deleteGroup({
     required int courseId,
     required int groupId,
   }) async {
-    await _supabase
-        .from('assignment_submissions')
-        .delete()
-        .eq('group_id', groupId);
-    await _supabase
-        .from('course_group_members')
-        .delete()
-        .eq('group_id', groupId);
-    await _supabase.from('course_groups').delete().eq('id', groupId);
-    ref.invalidate(courseGroupsProvider(courseId));
-    ref.invalidate(unassignedCourseStudentsProvider(courseId));
+    try {
+      await _supabase
+          .from('assignment_submissions')
+          .delete()
+          .eq('group_id', groupId);
+      await _supabase
+          .from('course_group_members')
+          .delete()
+          .eq('group_id', groupId);
+      await _supabase.from('course_groups').delete().eq('id', groupId);
+      ref.invalidate(courseGroupsProvider(courseId));
+      ref.invalidate(unassignedCourseStudentsProvider(courseId));
+      ref.invalidate(teacherGroupsProvider);
+    } catch (e) {
+      debugPrint('DELETE_GROUP_ERROR: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      throw Exception('Error al eliminar grupo: $e');
+    }
   }
 }
 

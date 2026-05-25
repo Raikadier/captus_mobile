@@ -1,5 +1,5 @@
 import '../../../models/teacher_stats_model.dart';
 
 abstract class TeacherStatsRepository {
-  Future<TeacherStatsSummaryModel> getTeacherStats({String? courseId});
+  Future<TeacherStatsSummaryModel> getTeacherStats({String? courseId, int? groupId});
 }

@@ -176,9 +176,18 @@ class _CreateCourseGroupScreenState
   }
 
   Future<void> _createGroup() async {
+    debugPrint('CREATE_GROUP_BUTTON_PRESSED');
     if (_nameCtrl.text.trim().isEmpty || _saving) return;
     setState(() => _saving = true);
     try {
+      final payload = {
+        'courseId': widget.courseId,
+        'name': _nameCtrl.text,
+        'description': _descCtrl.text,
+        'memberIds': _selectedStudentIds.toList(),
+      };
+      debugPrint('CREATE_GROUP_PAYLOAD: $payload');
+      
       final groupId =
           await ref.read(courseGroupsNotifierProvider.notifier).createGroup(
                 courseId: widget.courseId,
@@ -188,8 +197,12 @@ class _CreateCourseGroupScreenState
               );
 
       if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Grupo creado correctamente')),
+      );
       context.go('/teacher/courses/${widget.courseId}/groups/$groupId');
     } catch (e) {
+      debugPrint('Error al crear grupo: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -405,7 +418,7 @@ class _CreateCourseGroupScreenState
   }
 }
 
-class GroupDetailTeacherScreen extends ConsumerWidget {
+class GroupDetailTeacherScreen extends ConsumerStatefulWidget {
   final int courseId;
   final int groupId;
 
@@ -416,10 +429,29 @@ class GroupDetailTeacherScreen extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final membersAsync = ref.watch(groupMembersProvider(groupId));
-    final assignmentsAsync = ref.watch(groupAssignmentsProvider(groupId));
-    final groupsAsync = ref.watch(courseGroupsProvider(courseId));
+  ConsumerState<GroupDetailTeacherScreen> createState() => _GroupDetailTeacherScreenState();
+}
+
+class _GroupDetailTeacherScreenState extends ConsumerState<GroupDetailTeacherScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final membersAsync = ref.watch(groupMembersProvider(widget.groupId));
+    final assignmentsAsync = ref.watch(groupAssignmentsProvider(widget.groupId));
+    final groupsAsync = ref.watch(courseGroupsProvider(widget.courseId));
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -432,7 +464,7 @@ class GroupDetailTeacherScreen extends ConsumerWidget {
           data: (groups) {
             CourseGroup? group;
             for (final item in groups) {
-              if (item.id == groupId) {
+              if (item.id == widget.groupId) {
                 group = item;
                 break;
               }
@@ -446,104 +478,300 @@ class GroupDetailTeacherScreen extends ConsumerWidget {
         actions: [
           IconButton(
             onPressed: () => context.push(
-              '/teacher/courses/$courseId/groups/$groupId/admin',
+              '/teacher/courses/${widget.courseId}/groups/${widget.groupId}/admin',
             ),
             icon: const Icon(Icons.settings_outlined),
           ),
         ],
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.white,
+          indicatorWeight: 3,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white.withOpacity(0.82),
+          labelStyle: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13),
+          unselectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13),
+          isScrollable: true,
+          tabs: const [
+            Tab(text: 'Tareas'),
+            Tab(text: 'Miembros'),
+            Tab(text: 'Entregas'),
+            Tab(text: 'Calificaciones'),
+          ],
+        ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
+      body: SafeArea(
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+          // Tareas Tab
+          assignmentsAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (_, __) => const _EmptyInfo(text: 'No se pudieron cargar tareas'),
+            data: (assignments) => ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                _GroupAssignmentsCard(
+                  assignments: assignments,
+                  onAssign: () => _showAssignTaskSheet(
+                    context: context,
+                    ref: ref,
+                    courseId: widget.courseId,
+                    groupId: widget.groupId,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Miembros Tab
           membersAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (_, __) =>
-                const _EmptyInfo(text: 'No se pudieron cargar miembros'),
-            data: (members) => Container(
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.border.withOpacity(0.6)),
-              ),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(14),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Miembros',
-                          style: GoogleFonts.inter(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          '${members.length}',
-                          style: GoogleFonts.inter(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
+            error: (_, __) => const _EmptyInfo(text: 'No se pudieron cargar miembros'),
+            data: (members) => ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppColors.border.withOpacity(0.6)),
                   ),
-                  const Divider(height: 1),
-                  if (members.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: _EmptyInfo(text: 'Sin miembros todavía'),
-                    )
-                  else
-                    ...members.map(
-                      (m) => ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: AppColors.courseColor(
-                            m.studentId.hashCode.abs() % 10,
-                          ),
-                          child: Text(
-                            m.name.isNotEmpty ? m.name[0].toUpperCase() : '?',
-                            style: GoogleFonts.inter(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(14),
+                        child: Row(
+                          children: [
+                            Text(
+                              'Miembros',
+                              style: GoogleFonts.inter(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              '${members.length}',
+                              style: GoogleFonts.inter(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Divider(height: 1),
+                      if (members.isEmpty)
+                        const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: _EmptyInfo(text: 'Sin miembros todavía'),
+                        )
+                      else
+                        ...members.map(
+                          (m) => ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: AppColors.courseColor(
+                                m.studentId.hashCode.abs() % 10,
+                              ),
+                              child: Text(
+                                m.name.isNotEmpty ? m.name[0].toUpperCase() : '?',
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            title: Text(
+                              m.name,
+                              style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                            ),
+                            subtitle: Text(
+                              m.email.isEmpty ? 'Sin correo' : m.email,
+                              style: GoogleFonts.inter(color: AppColors.textSecondary),
                             ),
                           ),
                         ),
-                        title: Text(
-                          m.name,
-                          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-                        ),
-                        subtitle: Text(
-                          m.email.isEmpty ? 'Sin correo' : m.email,
-                          style:
-                              GoogleFonts.inter(color: AppColors.textSecondary),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
-          assignmentsAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (_, __) =>
-                const _EmptyInfo(text: 'No se pudieron cargar tareas'),
-            data: (assignments) => _GroupAssignmentsCard(
-              assignments: assignments,
-              onAssign: () => _showAssignTaskSheet(
-                context: context,
-                ref: ref,
-                courseId: courseId,
-                groupId: groupId,
-              ),
+          
+          // Entregas Tab
+          Center(
+            child: Text(
+              'Las entregas pueden ser revisadas\nal tocar una Tarea específica.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(color: AppColors.textSecondary),
+            ),
+          ),
+          
+          // Calificaciones Tab
+          Center(
+            child: Text(
+              'Las calificaciones se gestionan\ndesde el detalle de cada Tarea.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(color: AppColors.textSecondary),
             ),
           ),
         ],
       ),
+    ),
+      floatingActionButton: AnimatedBuilder(
+        animation: _tabController,
+        builder: (context, _) {
+          // Solo mostrar en Tareas (0) y Miembros (1)
+          if (_tabController.index > 1) return const SizedBox.shrink();
+          
+          return FloatingActionButton(
+            heroTag: 'group_detail_fab',
+            onPressed: () {
+              debugPrint('INSIDE_GROUP_FAB_PRESSED, TAB: ${_tabController.index}');
+              if (_tabController.index == 0) {
+                _showAssignTaskSheet(
+                  context: context,
+                  ref: ref,
+                  courseId: widget.courseId,
+                  groupId: widget.groupId,
+                );
+              } else {
+                _showAddMembersSheet(
+                  context: context,
+                  ref: ref,
+                  courseId: widget.courseId,
+                  groupId: widget.groupId,
+                );
+              }
+            },
+            backgroundColor: AppColors.primary,
+            child: const Icon(Icons.add, color: Colors.black),
+          );
+        },
+      ),
     );
   }
+}
+
+void _showAddMembersSheet({
+  required BuildContext context,
+  required WidgetRef ref,
+  required int courseId,
+  required int groupId,
+}) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: AppColors.background,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) => DraggableScrollableSheet(
+      initialChildSize: 0.6,
+      maxChildSize: 0.9,
+      minChildSize: 0.4,
+      expand: false,
+      builder: (_, scrollController) => Consumer(
+        builder: (context, ref, _) {
+          final unassignedAsync = ref.watch(unassignedCourseStudentsProvider(courseId));
+          return Column(
+            children: [
+              const SizedBox(height: 12),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  'Agregar Miembros',
+                  style: GoogleFonts.inter(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: unassignedAsync.when(
+                  loading: () => const Center(child: CircularProgressIndicator()),
+                  error: (e, __) => Center(child: Text('Error: $e')),
+                  data: (students) {
+                    if (students.isEmpty) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(20),
+                          child: Text(
+                            'No hay estudiantes sin grupo en este curso',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: AppColors.textSecondary),
+                          ),
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      controller: scrollController,
+                      itemCount: students.length,
+                      itemBuilder: (context, index) {
+                        final s = students[index];
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: AppColors.courseColor(
+                              s.id.hashCode.abs() % 10,
+                            ),
+                            child: Text(
+                              s.name.isNotEmpty ? s.name[0].toUpperCase() : '?',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          title: Text(
+                            s.name,
+                            style: const TextStyle(color: AppColors.textPrimary),
+                          ),
+                          subtitle: Text(
+                            s.email,
+                            style: const TextStyle(color: AppColors.textSecondary),
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.add_circle_outline, color: AppColors.primary),
+                            onPressed: () async {
+                              try {
+                                await ref.read(courseGroupsNotifierProvider.notifier).addMember(
+                                  courseId: courseId,
+                                  groupId: groupId,
+                                  studentId: s.id,
+                                );
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Estudiante agregado')),
+                                  );
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Error: $e')),
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    ),
+  );
 }
 
 class GroupAdminTeacherScreen extends ConsumerWidget {
@@ -1197,47 +1425,59 @@ class _GroupAssignmentsList extends StatelessWidget {
     return Column(
       children: assignments
           .map(
-            (assignment) => Container(
-              margin: const EdgeInsets.only(bottom: 10),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
+            (assignment) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Material(
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border.withOpacity(0.6)),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    assignment.graded
-                        ? Icons.check_circle_outline
-                        : Icons.pending_actions_outlined,
-                    color: assignment.graded
-                        ? AppColors.success
-                        : Colors.orange.shade700,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () {
+                    context.push('/teacher/assignments/${assignment.assignmentId}/review');
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.border.withOpacity(0.6)),
+                    ),
+                    child: Row(
                       children: [
-                        Text(
-                          assignment.title,
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
+                        Icon(
+                          assignment.graded
+                              ? Icons.check_circle_outline
+                              : Icons.pending_actions_outlined,
+                          color: assignment.graded
+                              ? AppColors.success
+                              : Colors.orange.shade700,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                assignment.title,
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                              Text(
+                                'Entrega: ${DateFormat('dd/MM/yyyy').format(assignment.dueDate)}',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        Text(
-                          'Entrega: ${DateFormat('dd/MM/yyyy').format(assignment.dueDate)}',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
+                        const Icon(Icons.chevron_right, color: AppColors.textSecondary),
                       ],
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           )

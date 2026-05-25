@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/courses_provider.dart';
 import '../../../models/course.dart';
 import '../../../shared/widgets/empty_state.dart';
 
-class CoursesListTeacherScreen extends StatelessWidget {
+class CoursesListTeacherScreen extends ConsumerWidget {
   const CoursesListTeacherScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final courses = CourseModel.mockList;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final coursesAsync = ref.watch(coursesProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -31,30 +33,38 @@ class CoursesListTeacherScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.filter_list, color: AppColors.textSecondary),
-            onPressed: () {},
+            icon: const Icon(Icons.refresh, color: AppColors.textSecondary),
+            onPressed: () => ref.invalidate(coursesProvider),
           ),
         ],
       ),
-      body: courses.isEmpty
-          ? EmptyState(
+      body: coursesAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, _) => Center(child: Text('Error: $err')),
+        data: (courses) {
+          if (courses.isEmpty) {
+            return EmptyState(
               icon: Icons.school_outlined,
               title: 'Sin cursos',
               subtitle: 'Crea tu primer curso para comenzar.',
               actionLabel: 'Crear curso',
-              onAction: () {},
-            )
-          : ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: courses.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final course = courses[index];
-                return _TeacherCourseCard(course: course);
-              },
-            ),
+              onAction: () => context.push('/courses/create'),
+            );
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: courses.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final course = courses[index];
+              return _TeacherCourseCard(course: course);
+            },
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () => context.push('/courses/create'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.black,
         icon: const Icon(Icons.add),

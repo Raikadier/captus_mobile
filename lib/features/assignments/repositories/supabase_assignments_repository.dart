@@ -9,19 +9,44 @@ class SupabaseAssignmentsRepository implements AssignmentsRepository {
 
   @override
   Future<AssignmentModel> createAssignment(AssignmentModel assignment) async {
+    final payload = assignment.toJson();
+    if (payload['id'] == '' || payload['id'] == '0') {
+      payload.remove('id'); // Dejar que Supabase genere el ID autoincremental
+    }
+    
+    // Limpieza de campos que podrían no existir en la tabla o causar conflictos
+    payload.remove('course'); 
+    payload.remove('submissions');
+
+    // Validación obligatoria de restricciones CHECK
+    final forbiddenTypes = ['course', 'group', 'student'];
+    if (forbiddenTypes.contains(payload['tipo_asignacion'])) {
+      payload['tipo_asignacion'] = 'tarea';
+    }
+
+    if (payload['priority'] == 'medium') {
+      payload['priority'] = 'medio';
+    } else if (payload['priority'] == 'low') {
+       payload['priority'] = 'bajo';
+    } else if (payload['priority'] == 'high') {
+       payload['priority'] = 'alto';
+    }
+
     try {
-      final data = assignment.toJson();
-      if (data['id'] == '') {
-        data.remove('id'); // Dejar que Supabase genere el ID autoincremental
-      }
+      debugPrint('PRE-INSERT PAYLOAD: $payload');
       final response = await _client
           .from('course_assignments')
-          .insert(data)
+          .insert(payload)
           .select()
           .single();
+      debugPrint('CREATE_ASSIGNMENT_SUCCESS: $response');
       return AssignmentModel.fromJson(response);
     } catch (e) {
-      throw Exception('Error al crear tarea en Supabase: $e');
+      debugPrint('ASSIGNMENT_CREATE_ERROR: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      throw Exception('Error al crear tarea: $e');
     }
   }
 
@@ -36,7 +61,10 @@ class SupabaseAssignmentsRepository implements AssignmentsRepository {
           .single();
       return AssignmentModel.fromJson(response);
     } catch (e) {
-      throw Exception('Error al actualizar tarea en Supabase: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      throw Exception('Error al actualizar tarea: $e');
     }
   }
 
@@ -45,7 +73,10 @@ class SupabaseAssignmentsRepository implements AssignmentsRepository {
     try {
       await _client.from('course_assignments').delete().eq('id', assignmentId);
     } catch (e) {
-      throw Exception('Error al eliminar tarea en Supabase: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      throw Exception('Error al eliminar tarea: $e');
     }
   }
 
@@ -53,16 +84,19 @@ class SupabaseAssignmentsRepository implements AssignmentsRepository {
   Future<List<AssignmentModel>> getAssignmentsByTeacher(
       String teacherId) async {
     try {
-      // Unir con courses para filtrar por teacher_id
       final res = await _client
           .from('course_assignments')
-          .select('*, courses!inner(teacher_id)')
-          .eq('courses.teacher_id', teacherId)
+          .select()
+          .eq('teacher_id', teacherId)
           .order('created_at', ascending: false);
 
       return (res as List).map((e) => AssignmentModel.fromJson(e)).toList();
     } catch (e) {
-      return []; // Respuesta vacía segura
+      debugPrint('LOAD_ASSIGNMENTS_ERROR: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      rethrow;
     }
   }
 
@@ -70,21 +104,19 @@ class SupabaseAssignmentsRepository implements AssignmentsRepository {
   Future<List<AssignmentModel>> getAssignmentsForStudent(
       String studentId) async {
     try {
-      // 1. Obtener a qué cursos pertenece el estudiante (basado en group_members y course_groups)
-      final groupsRes = await _client
-          .from('group_members')
-          .select('course_groups!inner(course_id)')
-          .eq('user_id', studentId);
+      // 1. Obtener cursos del estudiante vía inscripciones o grupos
+      final enrollmentsRes = await _client
+          .from('course_enrollments')
+          .select('course_id')
+          .eq('student_id', studentId);
 
-      final Set<String> courseIds = {};
-      for (var row in (groupsRes as List)) {
-        final cId = row['course_groups']?['course_id']?.toString();
-        if (cId != null) courseIds.add(cId);
-      }
+      final Set<String> courseIds = (enrollmentsRes as List)
+          .map((row) => row['course_id'].toString())
+          .toSet();
 
       if (courseIds.isEmpty) return [];
 
-      // 2. Traer course_assignments de esos cursos
+      // 2. Traer tareas de esos cursos
       final res = await _client
           .from('course_assignments')
           .select()
@@ -93,26 +125,55 @@ class SupabaseAssignmentsRepository implements AssignmentsRepository {
 
       return (res as List).map((e) => AssignmentModel.fromJson(e)).toList();
     } catch (e) {
-      return [];
+      debugPrint('LOAD_STUDENT_ASSIGNMENTS_ERROR: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      throw Exception('Error al cargar tareas del estudiante: $e');
     }
   }
 
   @override
   Future<void> assignToGroup(String assignmentId, String groupId) async {
-    // No aplica: en esta versión, is_group_assignment = true indica que
-    // se asigna automáticamente a los grupos del curso.
+    try {
+      await _client.from('assignment_submissions').insert({
+        'assignment_id': int.parse(assignmentId),
+        'group_id': int.parse(groupId),
+        'student_id': null, // Es grupal
+        'graded': false,
+      });
+    } catch (e) {
+      debugPrint('Error assignToGroup: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      rethrow;
+    }
   }
 
   @override
   Future<void> assignToStudent(String assignmentId, String studentId) async {
-    // No aplica: no usamos assignment_targets para estudiantes individuales.
+    try {
+      await _client.from('assignment_submissions').insert({
+        'assignment_id': int.parse(assignmentId),
+        'student_id': studentId,
+        'group_id': null, // Es individual
+        'graded': false,
+      });
+    } catch (e) {
+      debugPrint('Error assignToStudent: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      rethrow;
+    }
   }
 
   @override
   Future<SubmissionModel> createSubmission(SubmissionModel submission) async {
     try {
       final data = submission.toJson();
-      if (data['id'] == '') {
+      if (data['id'] == '' || data['id'] == '0') {
         data.remove('id');
       }
       final res = await _client
@@ -122,6 +183,9 @@ class SupabaseAssignmentsRepository implements AssignmentsRepository {
           .single();
       return SubmissionModel.fromJson(res);
     } catch (e) {
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
       throw Exception('Error al crear entrega: $e');
     }
   }
@@ -137,6 +201,9 @@ class SupabaseAssignmentsRepository implements AssignmentsRepository {
           .single();
       return SubmissionModel.fromJson(res);
     } catch (e) {
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
       throw Exception('Error al actualizar entrega: $e');
     }
   }
@@ -152,7 +219,11 @@ class SupabaseAssignmentsRepository implements AssignmentsRepository {
           .order('created_at', ascending: false);
       return (res as List).map((e) => SubmissionModel.fromJson(e)).toList();
     } catch (e) {
-      return [];
+      debugPrint('GET_SUBMISSIONS_ERROR: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      throw Exception('Error al cargar entregas: $e');
     }
   }
 
@@ -166,6 +237,9 @@ class SupabaseAssignmentsRepository implements AssignmentsRepository {
         'graded': true,
       }).eq('id', submissionId);
     } catch (e) {
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
       throw Exception('Error al calificar entrega: $e');
     }
   }
@@ -173,16 +247,19 @@ class SupabaseAssignmentsRepository implements AssignmentsRepository {
   @override
   Future<Map<String, dynamic>> getTeacherStats(String teacherId) async {
     try {
+      // Total de tareas creadas por el docente
       final assignmentsRes = await _client
           .from('course_assignments')
-          .select('id, courses!inner(teacher_id)')
-          .eq('courses.teacher_id', teacherId);
+          .select('id')
+          .eq('teacher_id', teacherId);
       final totalAssignments = (assignmentsRes as List).length;
 
+      // Entregas pendientes de calificar
+      // Buscamos entregas de tareas que pertenecen a este docente
       final pendingRes = await _client
           .from('assignment_submissions')
-          .select('id, course_assignments!inner(courses!inner(teacher_id))')
-          .eq('course_assignments.courses.teacher_id', teacherId)
+          .select('id, course_assignments!inner(teacher_id)')
+          .eq('course_assignments.teacher_id', teacherId)
           .eq('graded', false);
 
       final pendingToGrade = (pendingRes as List).length;
@@ -192,10 +269,11 @@ class SupabaseAssignmentsRepository implements AssignmentsRepository {
         'pendingToGrade': pendingToGrade,
       };
     } catch (e) {
-      return {
-        'totalAssignments': 0,
-        'pendingToGrade': 0,
-      };
+      debugPrint('STATS_ERROR: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      throw Exception('Error al cargar estadísticas del docente: $e');
     }
   }
 
@@ -207,15 +285,15 @@ class SupabaseAssignmentsRepository implements AssignmentsRepository {
       final res = await _client
           .from('assignment_submissions')
           .select(
-              '*, course_assignments!inner(title, courses!inner(teacher_id))')
-          .eq('course_assignments.courses.teacher_id', teacherId)
+              '*, course_assignments!inner(title, teacher_id)')
+          .eq('course_assignments.teacher_id', teacherId)
           .order('created_at', ascending: false)
           .limit(limit);
 
       return List<Map<String, dynamic>>.from(res.map((e) {
         return {
           'id': e['id'],
-          'studentId': e['user_id'] ?? e['student_id'],
+          'studentId': e['student_id'] ?? e['user_id'],
           'assignmentId': e['assignment_id'],
           'title': e['course_assignments']['title'],
           'status': e['graded'] == true ? 'graded' : 'submitted',
@@ -224,20 +302,27 @@ class SupabaseAssignmentsRepository implements AssignmentsRepository {
         };
       }));
     } catch (e) {
-      return [];
+      debugPrint('RECENT_SUBMISSIONS_ERROR: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      throw Exception('Error al cargar entregas recientes: $e');
     }
   }
 
   @override
   Future<String?> uploadFile(dynamic file, String fileName) async {
     try {
-      final path = 'assignments/$fileName';
+      final path = 'assignments/${DateTime.now().millisecondsSinceEpoch}_$fileName';
       await _client.storage.from('assignments').uploadBinary(path, file);
       final url = _client.storage.from('assignments').getPublicUrl(path);
       return url;
     } catch (e) {
       debugPrint('Error uploading file: $e');
-      return null;
+      if (e is StorageException) {
+        throw Exception('Error de almacenamiento (${e.error}): ${e.message}');
+      }
+      throw Exception('Error al subir archivo: $e');
     }
   }
 }

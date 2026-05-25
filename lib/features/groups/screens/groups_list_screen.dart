@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../models/group.dart';
+import '../../../core/providers/course_groups_provider.dart';
+import '../../../core/providers/courses_provider.dart';
 import '../../../shared/widgets/empty_state.dart';
 
-class GroupsListScreen extends StatefulWidget {
+class GroupsListScreen extends ConsumerStatefulWidget {
   const GroupsListScreen({super.key});
 
   @override
-  State<GroupsListScreen> createState() => _GroupsListScreenState();
+  ConsumerState<GroupsListScreen> createState() => _GroupsListScreenState();
 }
 
-class _GroupsListScreenState extends State<GroupsListScreen> {
+class _GroupsListScreenState extends ConsumerState<GroupsListScreen> {
   final List<TextEditingController> _codeControllers =
       List.generate(6, (_) => TextEditingController());
   final List<FocusNode> _codeFocuses =
@@ -228,17 +230,10 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
     );
   }
 
-  String _formatLastActivity(DateTime dt) {
-    final diff = DateTime.now().difference(dt);
-    if (diff.inMinutes < 60) return 'Hace ${diff.inMinutes} min';
-    if (diff.inHours < 24) return 'Hace ${diff.inHours} h';
-    if (diff.inDays == 1) return 'Ayer';
-    return 'Hace ${diff.inDays} días';
-  }
-
   @override
   Widget build(BuildContext context) {
-    final groups = GroupModel.mockList;
+    final groupsAsync = ref.watch(teacherGroupsProvider);
+    final coursesAsync = ref.watch(coursesProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -253,30 +248,51 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
             color: AppColors.textPrimary,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              ref.invalidate(teacherGroupsProvider);
+            },
+          ),
+        ],
       ),
-      body: groups.isEmpty
-          ? EmptyState(
+      body: groupsAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, _) => Center(child: Text('Error: $err')),
+        data: (groups) {
+          if (groups.isEmpty) {
+            return EmptyState(
               icon: Icons.group_outlined,
               title: 'Sin grupos',
-              subtitle:
-                  'Crea un grupo o únete con un código.',
-              actionLabel: 'Comenzar',
+              subtitle: 'Crea un grupo para comenzar a colaborar.',
+              actionLabel: 'Crear grupo',
               onAction: _showFabMenu,
-            )
-          : ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: groups.length,
-              separatorBuilder: (_, __) =>
-                  const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final group = groups[index];
-                return _GroupCard(
-                  group: group,
-                  lastActivityText:
-                      _formatLastActivity(group.lastActivity),
-                );
-              },
-            ),
+            );
+          }
+
+          return coursesAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, _) => Center(child: Text('Error: $err')),
+            data: (courses) {
+              final courseMap = {for (var c in courses) int.tryParse(c.id): c.name};
+
+              return ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemCount: groups.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final group = groups[index];
+                  return _GroupCard(
+                    group: group,
+                    courseName: courseMap[group.courseId],
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showFabMenu,
         backgroundColor: AppColors.primary,
@@ -287,18 +303,18 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
 }
 
 class _GroupCard extends StatelessWidget {
-  final GroupModel group;
-  final String lastActivityText;
+  final CourseGroup group;
+  final String? courseName;
 
   const _GroupCard({
     required this.group,
-    required this.lastActivityText,
+    this.courseName,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.push('/groups/${group.id}'),
+      onTap: () => context.push('/teacher/courses/${group.courseId}/groups/${group.id}', extra: {'courseTitle': courseName ?? 'Curso'}),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -308,7 +324,15 @@ class _GroupCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            _StackedAvatars(members: group.members),
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.group_outlined, color: AppColors.primary, size: 24),
+            ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
@@ -323,9 +347,9 @@ class _GroupCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  if (group.courseName != null)
+                  if (courseName != null)
                     Text(
-                      group.courseName!,
+                      courseName!,
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         color: AppColors.textSecondary,
@@ -333,41 +357,17 @@ class _GroupCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      const Icon(Icons.access_time,
-                          size: 12, color: AppColors.textDisabled),
-                      const SizedBox(width: 3),
-                      Text(
-                        lastActivityText,
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          color: AppColors.textDisabled,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    '${group.memberCount} miembros',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: AppColors.textDisabled,
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 8),
-            if (group.pendingTasks > 0)
-              Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.warning.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '${group.pendingTasks}',
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.warning,
-                  ),
-                ),
-              ),
+            const Icon(Icons.chevron_right, color: AppColors.textDisabled),
           ],
         ),
       ),
@@ -375,50 +375,4 @@ class _GroupCard extends StatelessWidget {
   }
 }
 
-class _StackedAvatars extends StatelessWidget {
-  final List<GroupMember> members;
 
-  const _StackedAvatars({required this.members});
-
-  @override
-  Widget build(BuildContext context) {
-    final visible = members.take(3).toList();
-    final avatarSize = 34.0;
-    final overlap = 10.0;
-    final totalWidth =
-        avatarSize + (visible.length - 1).clamp(0, 2) * (avatarSize - overlap);
-
-    return SizedBox(
-      width: totalWidth,
-      height: avatarSize,
-      child: Stack(
-        children: List.generate(visible.length, (i) {
-          final member = visible[i];
-          return Positioned(
-            left: i * (avatarSize - overlap),
-            child: Container(
-              width: avatarSize,
-              height: avatarSize,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border:
-                    Border.all(color: AppColors.surface, width: 2),
-                color: AppColors.courseColor(i),
-              ),
-              child: Center(
-                child: Text(
-                  member.name[0],
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }),
-      ),
-    );
-  }
-}

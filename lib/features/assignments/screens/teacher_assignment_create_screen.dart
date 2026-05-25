@@ -33,12 +33,13 @@ class _TeacherAssignmentCreateScreenState
   DateTime? _startDate;
   DateTime? _dueDate;
   double _maxGrade = 5.0;
-  bool _isGroupAssignment = false;
+
 
   Uint8List? _attachedFileBytes;
   String? _attachedFileName;
 
   bool _isLoading = false;
+  String _assignTo = 'course'; // 'course', 'group', 'student'
 
   Future<void> _pickDate(BuildContext context, bool isStart) async {
     final initialDate = isStart
@@ -86,21 +87,41 @@ class _TeacherAssignmentCreateScreenState
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    debugPrint('CREATE_ASSIGNMENT_BUTTON_PRESSED');
+    debugPrint('selectedCourseId: $_selectedCourseId');
+    debugPrint('selectedGroupId: $_selectedGroupId');
+    debugPrint('selectedStudentId: $_selectedStudentId');
+    
+    final isValid = _formKey.currentState!.validate();
+    debugPrint('FORM_VALID: $isValid');
+
+    _formKey.currentState!.save();
+
+    if (!isValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Revisa los campos del formulario')),
+      );
+      return;
+    }
     if (_selectedCourseId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, selecciona un curso')),
+        const SnackBar(content: Text('Selecciona un curso')),
+      );
+      return;
+    }
+    if (_title.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Escribe un título')),
       );
       return;
     }
     if (_dueDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, selecciona una fecha límite')),
+        const SnackBar(content: Text('Selecciona fecha límite')),
       );
       return;
     }
 
-    _formKey.currentState!.save();
     setState(() => _isLoading = true);
 
     try {
@@ -114,6 +135,14 @@ class _TeacherAssignmentCreateScreenState
         fileUrl = await repo.uploadFile(_attachedFileBytes!, _attachedFileName!);
       }
 
+      // El assignment_type debe representar el tipo académico, no el destinatario.
+      // Por defecto usar 'tarea'.
+      const String assignmentType = 'tarea';
+      final int? courseGroupId = _selectedGroupId;
+
+      debugPrint('assignmentType: $assignmentType');
+      debugPrint('courseGroupId: $courseGroupId');
+
       final newAssignment = AssignmentModel(
         id: '', 
         courseId: _selectedCourseId!,
@@ -126,29 +155,40 @@ class _TeacherAssignmentCreateScreenState
         type: 'Tarea',
         maxGrade: _maxGrade,
         requiresFile: true,
-        isGroupAssignment: _isGroupAssignment || _selectedGroupId != null,
+        isGroupAssignment: courseGroupId != null,
         fileUrl: fileUrl,
+        courseGroupId: courseGroupId,
+        assignmentType: assignmentType,
+        priority: 'medio',
       );
 
       final notifier = ref.read(teacherAssignmentsProvider.notifier);
       final created = await notifier.createAssignment(newAssignment);
 
       if (created != null) {
-        // If it's for a specific group or student, we might need to handle extra logic here
-        // or the repository handles it if we pass targets.
-        // For now, following the user's instructions.
+        // Si es para grupo o estudiante, crear el registro en submissions si corresponde
+        if (_selectedGroupId != null) {
+          await repo.assignToGroup(created.id, _selectedGroupId!.toString());
+        } else if (_selectedStudentId != null) {
+          await repo.assignToStudent(created.id, _selectedStudentId!);
+        }
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Tarea creada exitosamente')),
+            const SnackBar(content: Text('Asignación creada correctamente')),
           );
-          context.pop();
+          context.go('/teacher/assignments');
         }
+      } else {
+         // El notifier ya captura el error y lo pone en el state, 
+         // pero aquí lanzamos una excepción si created es null para entrar al catch
+         throw Exception('Error al crear asignación');
       }
     } catch (e) {
+      debugPrint('Error completo en _submit: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al crear tarea: $e')),
+          SnackBar(content: Text('Error: $e')),
         );
       }
     } finally {
@@ -216,13 +256,28 @@ class _TeacherAssignmentCreateScreenState
                   _buildSectionTitle('Curso'),
                   DropdownButtonFormField<String>(
                     decoration: _inputDecoration('Selecciona un curso'),
+                    dropdownColor: Colors.white,
+                    style: const TextStyle(color: Colors.black, fontSize: 13),
+                    iconEnabledColor: Colors.black,
                     value: _selectedCourseId,
                     items: courses.map((c) {
-                      return DropdownMenuItem(
+                      return DropdownMenuItem<String>(
                         value: c.id,
-                        child: Text(c.name),
+                        child: Text(c.name, style: const TextStyle(color: Colors.black)),
                       );
                     }).toList(),
+                    selectedItemBuilder: (context) {
+                      return courses.map((c) {
+                        return Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            c.name,
+                            style: const TextStyle(color: Colors.black),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        );
+                      }).toList();
+                    },
                     validator: (val) =>
                         val == null ? 'Selecciona un curso' : null,
                     onChanged: (val) {
@@ -236,50 +291,66 @@ class _TeacherAssignmentCreateScreenState
                   const SizedBox(height: 20),
 
                   if (_selectedCourseId != null) ...[
-                    _buildSectionTitle('Asignar a (Opcional)'),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: groupsAsync.when(
-                            loading: () => const Center(child: CircularProgressIndicator()),
-                            error: (_, __) => const Text('Error grupos'),
-                            data: (groups) => DropdownButtonFormField<int>(
-                              decoration: _inputDecoration('Grupo'),
-                              value: _selectedGroupId,
-                              isExpanded: true,
-                              items: [
-                                const DropdownMenuItem(value: null, child: Text('Todo el curso')),
-                                ...groups.map((g) => DropdownMenuItem(value: g.id, child: Text(g.name))),
-                              ],
-                              onChanged: (val) => setState(() {
-                                _selectedGroupId = val;
-                                if (val != null) _selectedStudentId = null;
-                              }),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: studentsAsync.when(
-                            loading: () => const Center(child: CircularProgressIndicator()),
-                            error: (_, __) => const Text('Error estudiantes'),
-                            data: (students) => DropdownButtonFormField<String>(
-                              decoration: _inputDecoration('Estudiante'),
-                              value: _selectedStudentId,
-                              isExpanded: true,
-                              items: [
-                                const DropdownMenuItem(value: null, child: Text('Todos')),
-                                ...students.map((s) => DropdownMenuItem(value: s.id, child: Text(s.name))),
-                              ],
-                              onChanged: (val) => setState(() {
-                                _selectedStudentId = val;
-                                if (val != null) _selectedGroupId = null;
-                              }),
-                            ),
-                          ),
-                        ),
+                    _buildSectionTitle('Asignar a'),
+                    DropdownButtonFormField<String>(
+                      decoration: _inputDecoration('Destinatario'),
+                      dropdownColor: Colors.white,
+                      style: const TextStyle(color: Colors.black, fontSize: 13),
+                      iconEnabledColor: Colors.black,
+                      value: _assignTo,
+                      items: const [
+                        DropdownMenuItem(value: 'course', child: Text('Todo el curso', style: TextStyle(color: Colors.black))),
+                        DropdownMenuItem(value: 'group', child: Text('Un grupo específico', style: TextStyle(color: Colors.black))),
+                        DropdownMenuItem(value: 'student', child: Text('Un estudiante específico', style: TextStyle(color: Colors.black))),
                       ],
+                      onChanged: (val) {
+                        setState(() {
+                          _assignTo = val!;
+                          _selectedGroupId = null;
+                          _selectedStudentId = null;
+                        });
+                      },
                     ),
+                    const SizedBox(height: 12),
+                    
+                    if (_assignTo == 'group')
+                      groupsAsync.when(
+                        loading: () => const Center(child: CircularProgressIndicator()),
+                        error: (_, __) => const Text('Error al cargar grupos'),
+                        data: (groups) => DropdownButtonFormField<int>(
+                          decoration: _inputDecoration('Selecciona el grupo'),
+                          dropdownColor: Colors.white,
+                          style: const TextStyle(color: Colors.black, fontSize: 13),
+                          iconEnabledColor: Colors.black,
+                          value: _selectedGroupId,
+                          items: groups.map((g) => DropdownMenuItem<int>(
+                            value: g.id, 
+                            child: Text(g.name, style: const TextStyle(color: Colors.black))
+                          )).toList(),
+                          validator: (val) => _assignTo == 'group' && val == null ? 'Selecciona un grupo' : null,
+                          onChanged: (val) => setState(() => _selectedGroupId = val),
+                        ),
+                      ),
+
+                    if (_assignTo == 'student')
+                      studentsAsync.when(
+                        loading: () => const Center(child: CircularProgressIndicator()),
+                        error: (_, __) => const Text('Error al cargar estudiantes'),
+                        data: (students) => DropdownButtonFormField<String>(
+                          decoration: _inputDecoration('Selecciona el estudiante'),
+                          dropdownColor: Colors.white,
+                          style: const TextStyle(color: Colors.black, fontSize: 13),
+                          iconEnabledColor: Colors.black,
+                          value: _selectedStudentId,
+                          items: students.map((s) => DropdownMenuItem<String>(
+                            value: s.id, 
+                            child: Text(s.name, style: const TextStyle(color: Colors.black))
+                          )).toList(),
+                          validator: (val) => _assignTo == 'student' && val == null ? 'Selecciona un estudiante' : null,
+                          onChanged: (val) => setState(() => _selectedStudentId = val),
+                        ),
+                      ),
+                    
                     const SizedBox(height: 20),
                   ],
 
@@ -397,7 +468,7 @@ class _TeacherAssignmentCreateScreenState
                     width: double.infinity,
                     height: 54,
                     child: ElevatedButton(
-                      onPressed: _isLoading || _selectedCourseId == null ? null : _submit,
+                      onPressed: _isLoading ? null : _submit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,

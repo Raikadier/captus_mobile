@@ -90,85 +90,87 @@ class _CourseDetailTeacherScreenState extends State<CourseDetailTeacherScreen>
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: NestedScrollView(
-        headerSliverBuilder: (context, _) => [
-          SliverAppBar(
-            pinned: true,
-            expandedHeight: 140,
-            backgroundColor: color,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => context.pop(),
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.more_vert, color: Colors.white),
-                onPressed: () => _showMenu(context),
+      body: SafeArea(
+        child: NestedScrollView(
+          headerSliverBuilder: (context, _) => [
+            SliverAppBar(
+              pinned: true,
+              expandedHeight: 140,
+              backgroundColor: color,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => context.pop(),
               ),
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [color, color.withOpacity(0.7)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.more_vert, color: Colors.white),
+                  onPressed: () => _showMenu(context),
+                ),
+              ],
+              flexibleSpace: FlexibleSpaceBar(
+                background: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [color, color.withOpacity(0.7)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(16, 80, 16, 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        _course.name,
+                        style: GoogleFonts.inter(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        '${_course.code} · ${_mockStudents.length} estudiantes',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: Colors.white.withOpacity(0.85),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                padding: const EdgeInsets.fromLTRB(16, 80, 16, 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      _course.name,
-                      style: GoogleFonts.inter(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      '${_course.code} · ${_mockStudents.length} estudiantes',
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: Colors.white.withOpacity(0.85),
-                      ),
-                    ),
-                  ],
+              ),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(48),
+                child: Container(
+                  color: AppColors.background,
+                  child: TabBar(
+                    controller: _tabController,
+                    labelColor: color,
+                    unselectedLabelColor: AppColors.textSecondary,
+                    indicatorColor: color,
+                    indicatorWeight: 2,
+                    labelStyle: GoogleFonts.inter(
+                        fontSize: 13, fontWeight: FontWeight.w600),
+                    unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
+                    tabs: const [
+                      Tab(text: 'Actividades'),
+                      Tab(text: 'Estudiantes'),
+                      Tab(text: 'Estadísticas'),
+                    ],
+                  ),
                 ),
               ),
             ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(48),
-              child: Container(
-                color: AppColors.background,
-                child: TabBar(
-                  controller: _tabController,
-                  labelColor: color,
-                  unselectedLabelColor: AppColors.textSecondary,
-                  indicatorColor: color,
-                  indicatorWeight: 2,
-                  labelStyle: GoogleFonts.inter(
-                      fontSize: 13, fontWeight: FontWeight.w600),
-                  unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
-                  tabs: const [
-                    Tab(text: 'Actividades'),
-                    Tab(text: 'Estudiantes'),
-                    Tab(text: 'Estadísticas'),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            _ActivitiesTeacherTab(course: _course, color: color),
-            _StudentsTab(students: _mockStudents),
-            _StatsTab(course: _course, color: color),
           ],
+          body: TabBarView(
+            controller: _tabController,
+            children: [
+              _ActivitiesTeacherTab(course: _course, color: color),
+              _StudentsTab(students: _mockStudents),
+              _StatsTab(course: _course, color: color),
+            ],
+          ),
         ),
       ),
       floatingActionButton: AnimatedBuilder(

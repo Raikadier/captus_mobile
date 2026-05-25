@@ -13,14 +13,13 @@ class TeacherCourse {
   final int studentCount;
   final String inviteCode;
   final int colorIndex;
-
   TeacherCourse({
     required this.id,
     required this.title,
     required this.code,
     required this.studentCount,
     required this.inviteCode,
-    required this.colorIndex,
+    this.colorIndex = 0,
   });
 }
 
@@ -29,15 +28,35 @@ class CoursesService {
 
   Future<List<CourseModel>> fetchAll(String role, String userId) async {
     if (Env.hasSupabase) {
-      final res = await _supabase
-          .from('courses')
-          .select()
-          .eq(role == 'teacher' ? 'teacher_id' : 'userId', userId);
-      return (res as List).map((c) => CourseModel.fromJson(c)).toList();
+      try {
+        if (role == 'teacher') {
+          final res = await _supabase
+              .from('courses')
+              .select('id, name:title, code:invite_code, description, teacher_id')
+              .eq('teacher_id', userId);
+          return (res as List).map((c) => CourseModel.fromJson(c)).toList();
+        } else {
+          // Para estudiantes, buscamos en enrollments
+          final res = await _supabase
+              .from('course_enrollments')
+              .select('courses(id, name:title, code:invite_code, description, teacher_id)')
+              .eq('student_id', userId);
+          
+          return (res as List)
+              .map((row) => CourseModel.fromJson(row['courses'] as Map<String, dynamic>))
+              .toList();
+        }
+      } catch (e) {
+        debugPrint('FETCH_COURSES_ERROR: $e');
+        if (e is PostgrestException) {
+          throw Exception('Error Supabase (${e.code}): ${e.message}');
+        }
+        throw Exception('Error al cargar cursos: $e');
+      }
     }
 
     if (kIsWeb) {
-      return []; // Safe fallback for web without Supabase
+      throw Exception('Supabase no configurado para entorno Web');
     }
 
     final raw = await DatabaseService.query(
@@ -50,17 +69,28 @@ class CoursesService {
 
   Future<void> create(Map<String, dynamic> data) async {
     if (Env.hasSupabase) {
-      await _supabase.from('courses').insert({
-        'name': data['name'],
+      final payload = {
+        'title': data['name'],
         'description': data['description'],
-        'teacher_id': data['userId'], // Ensure correct mapping
-        'code': data['code'],
-        'colorIndex': data['colorIndex'],
-      });
+        'teacher_id': data['userId'],
+        'invite_code': data['code'],
+      };
+      debugPrint('CREATE_COURSE_PAYLOAD: $payload');
+      try {
+        await _supabase.from('courses').insert(payload);
+      } catch (e) {
+        debugPrint('COURSE_CREATE_ERROR: $e');
+        if (e is PostgrestException) {
+          throw Exception('Error Supabase (${e.code}): ${e.message}');
+        }
+        throw Exception('Error al crear curso: $e');
+      }
       return;
     }
 
-    if (kIsWeb) return;
+    if (kIsWeb) {
+      throw Exception('Supabase no configurado para entorno Web');
+    }
 
     await DatabaseService.insert('courses', data);
   }
@@ -100,7 +130,6 @@ final teacherCoursesProvider =
       code: c.code,
       studentCount: 0, // Fallback safe
       inviteCode: c.code,
-      colorIndex: c.colorIndex,
     );
   }).toList();
 });

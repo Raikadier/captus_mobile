@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../models/teacher_stats_model.dart';
 import 'teacher_stats_repository.dart';
@@ -6,7 +7,7 @@ class SupabaseTeacherStatsRepository implements TeacherStatsRepository {
   final SupabaseClient _client = Supabase.instance.client;
 
   @override
-  Future<TeacherStatsSummaryModel> getTeacherStats({String? courseId}) async {
+  Future<TeacherStatsSummaryModel> getTeacherStats({String? courseId, int? groupId}) async {
     try {
       final userId = _client.auth.currentUser?.id;
       if (userId == null) return TeacherStatsSummaryModel.empty();
@@ -33,24 +34,27 @@ class SupabaseTeacherStatsRepository implements TeacherStatsRepository {
       Map<String, String> studentsMap = {}; // id -> name
 
       // 3.1 Try groups first
-      final List courseGroupsData = await _client
-          .from('course_groups')
-          .select('id')
-          .filter('course_id', 'in', courseIds);
-      
-      final groupIds = courseGroupsData.map((g) => g['id']).toList();
+      List groupIds = [];
+      if (groupId != null) {
+        groupIds = [groupId];
+      } else {
+        final List courseGroupsData = await _client
+            .from('course_groups')
+            .select('id')
+            .filter('course_id', 'in', courseIds);
+        groupIds = courseGroupsData.map((g) => g['id']).toList();
+      }
       
       if (groupIds.isNotEmpty) {
         final List membersData = await _client
-            .from('group_members')
-            .select('user_id, profiles!inner(full_name, role)')
-            .filter('group_id', 'in', groupIds)
-            .eq('profiles.role', 'student');
+            .from('course_group_members')
+            .select('student_id, users!inner(name)')
+            .filter('group_id', 'in', groupIds);
 
         for (var m in membersData) {
-          final profile = m['profiles'] as Map<String, dynamic>?;
-          if (profile != null) {
-            studentsMap[m['user_id']] = profile['full_name'] ?? 'Estudiante';
+          final user = m['users'] as Map<String, dynamic>?;
+          if (user != null) {
+            studentsMap[m['student_id']] = user['name'] ?? 'Estudiante';
           }
         }
       }
@@ -62,16 +66,18 @@ class SupabaseTeacherStatsRepository implements TeacherStatsRepository {
       if (assignmentIds.isNotEmpty) {
         final List submissionsData = await _client
             .from('assignment_submissions')
-            .select('id, assignment_id, student_id, grade, graded, submitted_at, profiles!inner(full_name)')
+            .select('id, assignment_id, student_id, group_id, grade, graded, submitted_at, users(name)')
             .filter('assignment_id', 'in', assignmentIds);
         submissionsList = submissionsData;
 
         // 4.1 Fallback: if no students found in groups, get them from submissions
         if (studentsMap.isEmpty) {
           for (var s in submissionsList) {
-            final profile = s['profiles'] as Map<String, dynamic>?;
-            if (profile != null && !studentsMap.containsKey(s['student_id'])) {
-              studentsMap[s['student_id']] = profile['full_name'] ?? 'Estudiante';
+            final studentId = s['student_id']?.toString();
+            if (studentId == null) continue;
+            final user = s['users'] as Map<String, dynamic>?;
+            if (user != null && !studentsMap.containsKey(studentId)) {
+              studentsMap[studentId] = user['name'] ?? 'Estudiante';
             }
           }
         }
@@ -96,7 +102,13 @@ class SupabaseTeacherStatsRepository implements TeacherStatsRepository {
         final sId = entry.key;
         final sName = entry.value;
 
-        final studentSubmissions = submissionsList.where((s) => s['student_id'] == sId).toList();
+        // Fetch student's direct submissions and their group's submissions
+        final studentGroupIds = groupIds.isNotEmpty ? groupIds : []; 
+        final studentSubmissions = submissionsList.where((s) {
+          final isDirect = s['student_id'] == sId;
+          final isGroup = s['group_id'] != null && studentGroupIds.contains(s['group_id']);
+          return isDirect || isGroup;
+        }).toList();
         final submittedCount = studentSubmissions.length;
         final gradedSubmissions = studentSubmissions.where((s) => s['graded'] == true).toList();
         final gradedCount = gradedSubmissions.length;
@@ -170,8 +182,11 @@ class SupabaseTeacherStatsRepository implements TeacherStatsRepository {
         students: studentStats,
       );
     } catch (e) {
-      // Return empty instead of throwing to avoid UI crashes
-      return TeacherStatsSummaryModel.empty();
+      debugPrint('STATS_CALC_ERROR: $e');
+      if (e is PostgrestException) {
+        throw Exception('Error Supabase (${e.code}): ${e.message}');
+      }
+      throw Exception('Error al calcular estadísticas: $e');
     }
   }
 

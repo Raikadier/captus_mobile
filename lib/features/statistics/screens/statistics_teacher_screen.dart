@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/courses_provider.dart';
+import '../../../core/providers/course_groups_provider.dart';
 import '../../../models/teacher_stats_model.dart';
 import '../providers/teacher_stats_provider.dart';
 
@@ -28,33 +29,55 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     final statsAsync = ref.watch(teacherStatsSummaryProvider);
     final coursesAsync = ref.watch(coursesProvider);
     final selectedCourseId = ref.watch(selectedCourseForStatsProvider);
+    final selectedGroupId = ref.watch(selectedGroupForStatsProvider);
     final activeFilter = ref.watch(statisticsFilterProvider);
+    
+    debugPrint('STATS_SELECTED_COURSE: $selectedCourseId');
+    debugPrint('STATS_SELECTED_GROUP: $selectedGroupId');
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: statsAsync.when(
-        data: (stats) => RefreshIndicator(
-          onRefresh: () async {
-            ref.invalidate(teacherStatsSummaryProvider);
-            await Future<void>.delayed(const Duration(milliseconds: 300));
-          },
-          color: AppColors.primary,
-          backgroundColor: AppColors.surface,
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-              _buildAppBar(context, ref),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                  child: _buildCourseSelector(
-                    ref,
-                    coursesAsync,
-                    selectedCourseId,
+      body: SafeArea(
+        bottom: false, // bottom is handled by MainShell's bottom nav
+        child: statsAsync.when(
+          data: (stats) {
+            debugPrint('STATS_STUDENTS_COUNT: ${stats.totalStudents}');
+            debugPrint('STATS_SUBMISSIONS_COUNT: ${stats.totalSubmissions}');
+            
+            return RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(teacherStatsSummaryProvider);
+              await Future<void>.delayed(const Duration(milliseconds: 300));
+            },
+            color: AppColors.primary,
+            backgroundColor: AppColors.surface,
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                _buildAppBar(context, ref),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: Column(
+                      children: [
+                        _buildCourseSelector(
+                          ref,
+                          coursesAsync,
+                          selectedCourseId,
+                        ),
+                        if (selectedCourseId != null) ...[
+                          const SizedBox(height: 12),
+                          _buildGroupSelector(
+                            ref,
+                            ref.watch(courseGroupsProvider(int.parse(selectedCourseId))),
+                            selectedGroupId,
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              if (stats.totalStudents == 0)
+                if (stats.totalStudents == 0)
                 SliverFillRemaining(
                   hasScrollBody: false,
                   child: _buildEmptyState(
@@ -64,7 +87,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                     icon: Icons.people_outline_rounded,
                   ),
                 )
-              else ...[
+                else ...[
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -118,11 +141,13 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                   ),
                 ),
                 _buildStudentList(context, stats, activeFilter),
-                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                // Extra bottom padding so content isn't hidden behind the bottom nav
+                const SliverToBoxAdapter(child: SizedBox(height: 120)),
+                ],
               ],
-            ],
-          ),
-        ),
+            ),
+          );
+        },
         loading: () => const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -135,32 +160,23 @@ class StatisticsTeacherScreen extends ConsumerWidget {
               ),
             ],
           ),
+          ),
+          error: (err, _) => _buildErrorState(ref, err),
         ),
-        error: (err, _) => _buildErrorState(ref, err),
       ),
     );
   }
 
   Widget _buildAppBar(BuildContext context, WidgetRef ref) {
-    final canPop = GoRouter.of(context).canPop();
-
     return SliverAppBar(
-      expandedHeight: 120,
+      expandedHeight: 100,
       floating: false,
       pinned: true,
+      automaticallyImplyLeading: false,
       backgroundColor: AppColors.background.withAlpha(240),
       elevation: 0,
       centerTitle: false,
-      leading: canPop
-          ? IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: AppColors.textPrimary,
-                size: 20,
-              ),
-              onPressed: () => context.pop(),
-            )
-          : null,
+      leading: null,
       flexibleSpace: FlexibleSpaceBar(
         titlePadding: EdgeInsets.zero,
         background: Container(
@@ -181,7 +197,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
 
             return Padding(
               padding: EdgeInsets.only(
-                left: canPop ? 48 : 16,
+                left: 16,
                 bottom: isExpanded ? 16 : 14,
                 right: 72,
               ),
@@ -270,22 +286,22 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                   fontSize: 14,
                 ),
               ),
-              dropdownColor: AppColors.surface,
+              dropdownColor: Colors.white,
               icon: const Icon(
                 Icons.keyboard_arrow_down_rounded,
                 color: AppColors.primary,
                 size: 24,
               ),
               isExpanded: true,
-              style: GoogleFonts.inter(
-                color: AppColors.textPrimary,
+              style: const TextStyle(
+                color: Colors.black,
                 fontSize: 14,
               ),
               borderRadius: BorderRadius.circular(16),
               items: [
                 const DropdownMenuItem<String>(
                   value: 'all',
-                  child: Text('Todos los cursos'),
+                  child: Text('Todos los cursos', style: TextStyle(color: Colors.black)),
                 ),
                 ...courses.map<DropdownMenuItem<String>>(
                   (c) => DropdownMenuItem<String>(
@@ -294,14 +310,135 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                       c.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Colors.black),
                     ),
                   ),
                 ),
               ],
+              selectedItemBuilder: (context) {
+                return [
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Todos los cursos', style: TextStyle(color: Colors.black))
+                  ),
+                  ...courses.map((c) => Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      c.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                  )),
+                ];
+              },
               onChanged: (value) {
                 ref
                     .read(selectedCourseForStatsProvider.notifier)
                     .select(value == 'all' ? null : value);
+              },
+            ),
+          ),
+        );
+      },
+      loading: () => Container(
+        height: 54,
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Center(
+          child: SizedBox(
+            width: 80,
+            height: 2,
+            child: LinearProgressIndicator(),
+          ),
+        ),
+      ),
+      error: (_, __) => const SizedBox.shrink(),
+    );
+  }
+
+  Widget _buildGroupSelector(
+    WidgetRef ref,
+    AsyncValue<dynamic> groupsAsync,
+    int? selectedId,
+  ) {
+    return groupsAsync.when(
+      data: (groups) {
+        if (groups == null || groups.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        final dropdownValue = selectedId?.toString() ?? 'all';
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.border, width: 0.5),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: dropdownValue,
+              hint: Text(
+                'Todos los grupos',
+                style: GoogleFonts.inter(
+                  color: AppColors.textSecondary,
+                  fontSize: 14,
+                ),
+              ),
+              dropdownColor: Colors.white,
+              icon: const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: AppColors.primary,
+                size: 24,
+              ),
+              isExpanded: true,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              items: [
+                const DropdownMenuItem<String>(
+                  value: 'all',
+                  child: Text('Todos los grupos', style: TextStyle(color: Colors.black)),
+                ),
+                ...groups.map<DropdownMenuItem<String>>(
+                  (g) => DropdownMenuItem<String>(
+                    value: g.id.toString(),
+                    child: Text(
+                      g.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                  ),
+                ),
+              ],
+              selectedItemBuilder: (context) {
+                return [
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Todos los grupos', style: TextStyle(color: Colors.black))
+                  ),
+                  ...groups.map((g) => Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      g.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                  )),
+                ];
+              },
+              onChanged: (value) {
+                ref
+                    .read(selectedGroupForStatsProvider.notifier)
+                    .select(value == 'all' ? null : int.tryParse(value ?? ''));
               },
             ),
           ),

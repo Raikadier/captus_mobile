@@ -17,60 +17,12 @@ final assignmentsRepositoryProvider = Provider<AssignmentsRepository>((ref) {
     return SupabaseAssignmentsRepository();
   }
   if (kIsWeb) {
-    // Para web sin Supabase, evitamos llamar SQLite devolviendo el repositorio local
-    // pero el repositorio local debería manejar el caso web o usamos uno mock.
-    // Como LocalAssignmentsRepository usa DatabaseService (sqlite), fallará.
-    return _EmptyAssignmentsRepository();
+    throw Exception('Supabase no configurado para el módulo de tareas en Web');
   }
   return LocalAssignmentsRepository();
 });
 
-/// Repositorio vacío para evitar bloqueos en web cuando no hay Supabase.
-class _EmptyAssignmentsRepository implements AssignmentsRepository {
-  @override
-  Future<AssignmentModel> createAssignment(AssignmentModel assignment) async =>
-      assignment;
-  @override
-  Future<AssignmentModel> updateAssignment(AssignmentModel assignment) async =>
-      assignment;
-  @override
-  Future<void> deleteAssignment(String assignmentId) async {}
-  @override
-  Future<List<AssignmentModel>> getAssignmentsByTeacher(String teacherId) async =>
-      [];
-  @override
-  Future<List<AssignmentModel>> getAssignmentsForStudent(
-          String studentId) async =>
-      [];
-  @override
-  Future<void> assignToGroup(String assignmentId, String groupId) async {}
-  @override
-  Future<void> assignToStudent(String assignmentId, String studentId) async {}
-  @override
-  Future<SubmissionModel> createSubmission(SubmissionModel submission) async =>
-      submission;
-  @override
-  Future<SubmissionModel> updateSubmission(SubmissionModel submission) async =>
-      submission;
-  @override
-  Future<List<SubmissionModel>> getSubmissionsByAssignment(
-          String assignmentId) async =>
-      [];
-  @override
-  Future<void> gradeSubmission(
-          String submissionId, double grade, String feedback) async {}
-  @override
-  Future<Map<String, dynamic>> getTeacherStats(String teacherId) async =>
-      {'totalAssignments': 0, 'pendingToGrade': 0};
-  @override
-  Future<List<Map<String, dynamic>>> getRecentSubmissionsByTeacher(
-          String teacherId,
-          {int limit = 5}) async =>
-      [];
-
-  @override
-  Future<String?> uploadFile(dynamic file, String fileName) async => null;
-}
+// _EmptyAssignmentsRepository removed as it is no longer used and we prefer throwing exceptions directly in the provider.
 
 // -----------------------------------------------------------------------------
 // 1. TeacherAssignmentsNotifier
@@ -82,10 +34,15 @@ class TeacherAssignmentsNotifier extends AsyncNotifier<List<AssignmentModel>> {
   }
 
   Future<List<AssignmentModel>> _fetchAssignments() async {
-    final user = ref.read(currentUserProvider);
-    if (user == null) return [];
-    final repo = ref.read(assignmentsRepositoryProvider);
-    return await repo.getAssignmentsByTeacher(user.id);
+    try {
+      final user = ref.read(currentUserProvider);
+      if (user == null) return [];
+      final repo = ref.read(assignmentsRepositoryProvider);
+      return await repo.getAssignmentsByTeacher(user.id);
+    } catch (e) {
+      debugPrint('LOAD_ASSIGNMENTS_ERROR: $e');
+      rethrow;
+    }
   }
 
   Future<void> refresh() async {
@@ -98,6 +55,7 @@ class TeacherAssignmentsNotifier extends AsyncNotifier<List<AssignmentModel>> {
       final repo = ref.read(assignmentsRepositoryProvider);
       final newAssignment = await repo.createAssignment(assignment);
       state = state.whenData((assignments) => [...assignments, newAssignment]);
+      ref.invalidate(teacherStatsProvider);
       return newAssignment;
     } catch (e, st) {
       state = AsyncError(e, st);
@@ -151,6 +109,8 @@ class TeacherAssignmentsNotifier extends AsyncNotifier<List<AssignmentModel>> {
       final repo = ref.read(assignmentsRepositoryProvider);
       await repo.gradeSubmission(submissionId, grade, feedback);
       ref.invalidate(submissionsProvider(assignmentId));
+      ref.invalidate(teacherStatsProvider);
+      ref.invalidate(recentSubmissionsProvider);
     } catch (e, st) {
       state = AsyncError(e, st);
     }
