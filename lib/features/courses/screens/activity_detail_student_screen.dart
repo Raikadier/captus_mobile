@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/courses_provider.dart';
 import '../../../models/course.dart';
 
-class ActivityDetailStudentScreen extends StatefulWidget {
+class ActivityDetailStudentScreen extends ConsumerStatefulWidget {
   final String courseId;
   final String activityId;
 
@@ -15,37 +17,14 @@ class ActivityDetailStudentScreen extends StatefulWidget {
   });
 
   @override
-  State<ActivityDetailStudentScreen> createState() =>
+  ConsumerState<ActivityDetailStudentScreen> createState() =>
       _ActivityDetailStudentScreenState();
 }
 
 class _ActivityDetailStudentScreenState
-    extends State<ActivityDetailStudentScreen> {
+    extends ConsumerState<ActivityDetailStudentScreen> {
   final _commentController = TextEditingController();
   bool _fileSelected = false;
-
-  late CourseModel _course;
-  late ActivityModel _activity;
-
-  @override
-  void initState() {
-    super.initState();
-    _course = CourseModel.mockList.firstWhere(
-      (c) => c.id == widget.courseId,
-      orElse: () => CourseModel.mockList.first,
-    );
-    _activity = _course.activities.firstWhere(
-      (a) => a.id == widget.activityId,
-      orElse: () => _course.activities.isNotEmpty
-          ? _course.activities.first
-          : ActivityModel(
-              id: widget.activityId,
-              title: 'Actividad',
-              dueDate: DateTime.now().add(const Duration(days: 3)),
-              type: 'Tarea',
-            ),
-    );
-  }
 
   @override
   void dispose() {
@@ -65,8 +44,70 @@ class _ActivityDetailStudentScreenState
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColors.courseColor(_course.colorIndex);
-    final dueDiff = _activity.dueDate.difference(DateTime.now());
+    final courseAsync = ref.watch(courseByIdProvider(widget.courseId));
+
+    return courseAsync.when(
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (_, __) => Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppColors.surface,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            onPressed: () => context.pop(),
+          ),
+        ),
+        body: Center(
+          child: Text('No se pudo cargar la actividad',
+              style: GoogleFonts.inter(color: AppColors.textSecondary)),
+        ),
+      ),
+      data: (course) {
+        // Try to find the activity; use a placeholder if activities are empty
+        final ActivityModel activity;
+        if (course != null && course.activities.isNotEmpty) {
+          try {
+            activity = course.activities
+                .firstWhere((a) => a.id == widget.activityId);
+          } catch (_) {
+            return _buildNotFound(context);
+          }
+        } else {
+          activity = ActivityModel(
+            id: widget.activityId,
+            title: 'Actividad',
+            dueDate: DateTime.now().add(const Duration(days: 3)),
+            type: 'Tarea',
+          );
+        }
+        return _buildBody(context, course, activity);
+      },
+    );
+  }
+
+  Widget _buildNotFound(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          onPressed: () => context.pop(),
+        ),
+      ),
+      body: Center(
+        child: Text('Actividad no encontrada',
+            style: GoogleFonts.inter(color: AppColors.textSecondary)),
+      ),
+    );
+  }
+
+  Widget _buildBody(
+      BuildContext context, CourseModel? course, ActivityModel activity) {
+    final color =
+        AppColors.courseColor(course?.colorIndex ?? 0);
+    final dueDiff = activity.dueDate.difference(DateTime.now());
     final isOverdue = dueDiff.isNegative;
 
     return Scaffold(
@@ -79,7 +120,7 @@ class _ActivityDetailStudentScreenState
           onPressed: () => context.pop(),
         ),
         title: Text(
-          _activity.type,
+          activity.type,
           style: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -91,7 +132,7 @@ class _ActivityDetailStudentScreenState
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            _activity.title,
+            activity.title,
             style: GoogleFonts.inter(
               fontSize: 22,
               fontWeight: FontWeight.w700,
@@ -126,7 +167,7 @@ class _ActivityDetailStudentScreenState
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      _formatCountdown(_activity.dueDate),
+                      _formatCountdown(activity.dueDate),
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -141,7 +182,7 @@ class _ActivityDetailStudentScreenState
                 ),
               ),
               const SizedBox(width: 8),
-              if (_activity.requiresFile)
+              if (activity.requiresFile)
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -167,7 +208,7 @@ class _ActivityDetailStudentScreenState
                 ),
             ],
           ),
-          if (_activity.description != null) ...[
+          if (activity.description != null) ...[
             const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.all(16),
@@ -176,7 +217,7 @@ class _ActivityDetailStudentScreenState
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Text(
-                _activity.description!,
+                activity.description!,
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   color: AppColors.textSecondary,
@@ -195,26 +236,26 @@ class _ActivityDetailStudentScreenState
             ),
           ),
           const SizedBox(height: 12),
-          if (_activity.isGraded) ...[
-            _GradedView(activity: _activity, color: color),
-          ] else if (_activity.isSubmitted) ...[
+          if (activity.isGraded) ...[
+            _GradedView(activity: activity, color: color),
+          ] else if (activity.isSubmitted) ...[
             _SubmittedView(),
           ] else ...[
             _UploadView(
               fileSelected: _fileSelected,
               commentController: _commentController,
               onFileTap: () => setState(() => _fileSelected = !_fileSelected),
-              requiresFile: _activity.requiresFile,
+              requiresFile: activity.requiresFile,
             ),
           ],
           const SizedBox(height: 100),
         ],
       ),
       bottomNavigationBar: _BottomBar(
-        isGraded: _activity.isGraded,
-        isSubmitted: _activity.isSubmitted,
+        isGraded: activity.isGraded,
+        isSubmitted: activity.isSubmitted,
         onSubmit: () {
-          if (_activity.isGraded || _activity.isSubmitted) {
+          if (activity.isGraded || activity.isSubmitted) {
             // Actividad ya entregada/calificada → abrir IA
             context.push('/ai');
           } else {

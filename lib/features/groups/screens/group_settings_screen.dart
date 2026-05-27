@@ -1,32 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/groups_provider.dart';
 import '../../../models/group.dart';
 
-class GroupSettingsScreen extends StatefulWidget {
+class GroupSettingsScreen extends ConsumerStatefulWidget {
   final String groupId;
 
   const GroupSettingsScreen({super.key, required this.groupId});
 
   @override
-  State<GroupSettingsScreen> createState() => _GroupSettingsScreenState();
+  ConsumerState<GroupSettingsScreen> createState() =>
+      _GroupSettingsScreenState();
 }
 
-class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
-  late GroupModel _group;
+class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
+  GroupModel? _group;
   late TextEditingController _nameController;
   bool _notificationsEnabled = true;
 
   @override
   void initState() {
     super.initState();
-    _group = GroupModel.mockList.firstWhere(
-      (g) => g.id == widget.groupId,
-      orElse: () => GroupModel.mockList.first,
-    );
-    _nameController = TextEditingController(text: _group.name);
+    _nameController = TextEditingController();
+  }
+
+  void _initGroup(List<GroupModel> groups) {
+    if (_group != null) return; // already initialized
+    try {
+      _group =
+          groups.firstWhere((g) => g.id == widget.groupId);
+    } catch (_) {
+      _group = null;
+    }
+    _nameController.text = _group?.name ?? '';
   }
 
   @override
@@ -91,7 +101,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
           ),
         ),
         content: Text(
-          '¿Seguro que deseas salir de "${_group.name}"?',
+          '¿Seguro que deseas salir de "${_group?.name ?? 'este grupo'}"?',
           style: GoogleFonts.inter(
               fontSize: 14, color: AppColors.textSecondary),
         ),
@@ -127,6 +137,30 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final groupsAsync = ref.watch(myGroupsProvider);
+    groupsAsync.whenData(_initGroup);
+
+    final group = _group;
+    if (group == null && groupsAsync.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (group == null) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppColors.surface,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            onPressed: () => context.pop(),
+          ),
+        ),
+        body: Center(
+          child: Text('Grupo no encontrado',
+              style: GoogleFonts.inter(color: AppColors.textSecondary)),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -199,7 +233,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
           const SizedBox(height: 28),
           _sectionHeader('Miembros'),
           const SizedBox(height: 8),
-          ..._group.members.map((member) =>
+          ...group.members.map((member) =>
               _MemberTile(member: member)),
           const SizedBox(height: 28),
           _sectionHeader('Código de invitación'),
@@ -222,7 +256,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
                         color: AppColors.primary.withAlpha(AppAlpha.a30)),
                   ),
                   child: Text(
-                    _group.inviteCode,
+                    group.inviteCode,
                     style: GoogleFonts.inter(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
@@ -238,7 +272,7 @@ class _GroupSettingsScreenState extends State<GroupSettingsScreen> {
                   tooltip: 'Copiar',
                   onPressed: () {
                     Clipboard.setData(
-                        ClipboardData(text: _group.inviteCode));
+                        ClipboardData(text: group.inviteCode));
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('Código copiado',

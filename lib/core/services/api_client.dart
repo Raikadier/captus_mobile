@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:meta/meta.dart';
 import '../env/env.dart';
 import 'supabase_service.dart';
 
@@ -11,15 +12,23 @@ import 'supabase_service.dart';
 ///   final res = await ApiClient.instance.get('/tasks');
 ///   final res = await ApiClient.instance.post('/tasks', data: {...});
 class ApiClient {
-  ApiClient._();
+  ApiClient._() : _dio = _buildDioDefaults();
+
+  /// For unit tests only — creates an isolated [ApiClient] backed by a
+  /// custom [Dio] (typically a [MockDio] or one with [HttpMockAdapter]).
+  ///
+  /// Do NOT use this constructor in production code.
+  @visibleForTesting
+  ApiClient.forTesting(Dio dio) : _dio = dio;
+
   static final ApiClient _instance = ApiClient._();
   static ApiClient get instance => _instance;
 
-  late final Dio _dio = _buildDio();
+  final Dio _dio;
 
   Dio get dio => _dio;
 
-  Dio _buildDio() {
+  static Dio _buildDioDefaults() {
     final dio = Dio(
       BaseOptions(
         baseUrl: Env.apiBaseUrl,
@@ -39,6 +48,7 @@ class ApiClient {
 
     return dio;
   }
+
 
   // ── Convenience wrappers ──────────────────────────────────────────────────
 
