@@ -7,12 +7,14 @@ import '../constants/app_animations.dart';
 class AppTheme {
   AppTheme._();
 
-  static ThemeData get dark {
-    final base = ThemeData.dark(useMaterial3: true);
+  /// Light theme — the app's primary (and currently only) visual mode.
+  /// All [AppColors] tokens are designed for a light background.
+  static ThemeData get light {
+    final base = ThemeData.light(useMaterial3: true);
     return base.copyWith(
       scaffoldBackgroundColor: AppColors.background,
-      colorScheme: const ColorScheme.dark(
-        brightness: Brightness.dark,
+      colorScheme: const ColorScheme.light(
+        brightness: Brightness.light,
         primary: AppColors.primary,
         onPrimary: AppColors.textOnPrimary,
         secondary: AppColors.primaryLight,
@@ -149,9 +151,11 @@ class AppTheme {
           color: AppColors.textPrimary,
         ),
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
+        // Dark icons on the light status bar (Android) / dark content (iOS)
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.light,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.light,
         ),
       );
 

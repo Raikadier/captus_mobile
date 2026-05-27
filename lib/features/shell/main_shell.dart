@@ -124,30 +124,35 @@ class _CaptusBottomNav extends StatelessWidget {
               _NavItem(
                 icon: Icons.home_outlined,
                 activeIcon: Icons.home_rounded,
+                label: 'Inicio',
                 isSelected: selectedIndex == 0,
                 onTap: () => onTap(0),
               ),
               _NavItem(
                 icon: Icons.assignment_outlined,
                 activeIcon: Icons.assignment_rounded,
+                label: 'Tareas',
                 isSelected: selectedIndex == 1,
                 onTap: () => onTap(1),
               ),
               _CenterNavItem(
                 icon: Icons.auto_awesome_outlined,
                 activeIcon: Icons.auto_awesome_rounded,
+                label: 'Captus AI',
                 isSelected: selectedIndex == 2,
                 onTap: () => onTap(2),
               ),
               _NavItem(
                 icon: Icons.school_outlined,
                 activeIcon: Icons.school_rounded,
+                label: 'Cursos',
                 isSelected: selectedIndex == 3,
                 onTap: () => onTap(3),
               ),
               _NavItem(
                 icon: Icons.add_circle_outline_rounded,
                 activeIcon: Icons.add_circle_rounded,
+                label: 'Más opciones',
                 isSelected: selectedIndex == 4,
                 onTap: () => onTap(4),
               ),
@@ -162,32 +167,40 @@ class _CaptusBottomNav extends StatelessWidget {
 class _NavItem extends StatelessWidget {
   final IconData icon;
   final IconData activeIcon;
+  final String label;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _NavItem({
     required this.icon,
     required this.activeIcon,
+    required this.label,
     required this.isSelected,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: AppDurations.exit,
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withAlpha(30) : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Icon(
-          isSelected ? activeIcon : icon,
-          size: 26,
-          color: isSelected ? AppColors.primary : AppColors.textSecondary,
+    return Semantics(
+      button: true,
+      label: label,
+      selected: isSelected,
+      excludeSemantics: true,
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedContainer(
+          duration: AppDurations.exit,
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: isSelected ? AppColors.primary.withAlpha(30) : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Icon(
+            isSelected ? activeIcon : icon,
+            size: 26,
+            color: isSelected ? AppColors.primary : AppColors.textSecondary,
+          ),
         ),
       ),
     );
@@ -197,19 +210,26 @@ class _NavItem extends StatelessWidget {
 class _CenterNavItem extends StatelessWidget {
   final IconData icon;
   final IconData activeIcon;
+  final String label;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _CenterNavItem({
     required this.icon,
     required this.activeIcon,
+    required this.label,
     required this.isSelected,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      label: label,
+      selected: isSelected,
+      excludeSemantics: true,
+      child: GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: AppDurations.exit,
@@ -239,6 +259,7 @@ class _CenterNavItem extends StatelessWidget {
           color: isSelected ? AppColors.textOnPrimary : AppColors.textSecondary,
         ),
       ),
+    ),
     );
   }
 }
@@ -281,7 +302,7 @@ class _MoreMenuSheet extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: AppColors.textOnDark,
                     ),
                   ),
                 ],
@@ -328,7 +349,11 @@ class _MenuOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      label: '$title: $subtitle',
+      excludeSemantics: true,
+      child: GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -378,6 +403,7 @@ class _MenuOption extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }

@@ -53,7 +53,8 @@ class CaptusApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Captus',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark,
+      theme: AppTheme.light,
+      themeMode: ThemeMode.light,   // lock to light until dark tokens exist
       routerConfig: router,
     );
   }
