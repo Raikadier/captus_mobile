@@ -312,7 +312,7 @@ class _MoreMenuSheet extends StatelessWidget {
                 icon: Icons.calendar_today_rounded,
                 iconColor: AppColors.primary,
                 title: 'Calendario',
-                subtitle: 'Ver eventos yrecordatorios',
+                subtitle: 'Ver eventos y recordatorios',
                 onTap: () => onNavigate('/calendar'),
               ),
               const SizedBox(height: 12),
