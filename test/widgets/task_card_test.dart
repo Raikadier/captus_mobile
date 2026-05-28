@@ -137,9 +137,11 @@ void main() {
         TaskCard(task: task, onComplete: () => completed = true),
       ));
 
-      // Find the animated container used as the checkbox
+      // Find the animated container used as the checkbox (circle shape)
       final checkboxFinder = find.byWidgetPredicate(
-        (w) => w is AnimatedContainer && w.decoration != null,
+        (w) =>
+            w is AnimatedContainer &&
+            (w.decoration as BoxDecoration?)?.shape == BoxShape.circle,
       );
       await tester.tap(checkboxFinder.first);
       await tester.pump();
@@ -161,11 +163,11 @@ void main() {
 
       await tester.pumpWidget(makeScaffoldWidget(TaskCard(task: task)));
 
-      expect(find.textContaining('subtareas'), findsOneWidget);
+      expect(find.textContaining('/'), findsOneWidget);
       expect(find.byType(LinearProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('shows "1 de 2 subtareas" for 1/2 completed', (tester) async {
+    testWidgets('shows "1/2" for 1/2 completed', (tester) async {
       final task = makeTask(
         subtasks: [
           const SubTask(id: '1', title: 'A', isCompleted: true),
@@ -175,7 +177,7 @@ void main() {
 
       await tester.pumpWidget(makeScaffoldWidget(TaskCard(task: task)));
 
-      expect(find.text('1 de 2 subtareas'), findsOneWidget);
+      expect(find.text('1/2'), findsOneWidget);
     });
 
     testWidgets('shows 50% when 1 of 2 subtasks complete', (tester) async {
@@ -226,7 +228,7 @@ void main() {
       final opacityWidget = tester.widget<AnimatedOpacity>(
         find.byType(AnimatedOpacity),
       );
-      expect(opacityWidget.opacity, 0.7);
+      expect(opacityWidget.opacity, 0.75);
     });
 
     testWidgets('non-overdue task has full opacity', (tester) async {
