@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_animations.dart';
+import '../../core/constants/app_gradients.dart';
+import '../../core/constants/app_shadows.dart';
+import '../../core/constants/app_spacing.dart';
 import '../../core/providers/auth_provider.dart';
+import '../../shared/widgets/captus_pressable.dart';
 import '../../shared/widgets/offline_banner.dart';
 
 class MainShell extends ConsumerWidget {
@@ -17,7 +20,8 @@ class MainShell extends ConsumerWidget {
         location.startsWith('/teacher/assignments') ||
         location.startsWith('/student/assignments')) return 1;
     if (location.startsWith('/ai')) return 2;
-    if (location.startsWith('/courses') || location.startsWith('/teacher/courses')) return 3;
+    if (location.startsWith('/courses') ||
+        location.startsWith('/teacher/courses')) return 3;
     if (location.startsWith('/calendar') || location.startsWith('/notes')) return 4;
     return 0;
   }
@@ -25,39 +29,23 @@ class MainShell extends ConsumerWidget {
   void _onTabTap(BuildContext context, int index, String role) {
     switch (index) {
       case 0:
-        if (role == 'teacher') {
-          context.go('/home/teacher');
-        } else {
-          context.go('/home');
-        }
-        break;
+        context.go(role == 'teacher' ? '/home/teacher' : '/home');
       case 1:
-        if (role == 'teacher') {
-          context.go('/teacher/assignments');
-        } else {
-          context.go('/tasks');
-        }
-        break;
+        context.go(role == 'teacher' ? '/teacher/assignments' : '/tasks');
       case 2:
         context.go('/ai');
-        break;
       case 3:
-        if (role == 'teacher') {
-          context.go('/teacher/courses');
-        } else {
-          context.go('/courses');
-        }
-        break;
+        context.go(role == 'teacher' ? '/teacher/courses' : '/courses');
       case 4:
         break;
     }
   }
 
-void _showMoreMenu(BuildContext context, String role) {
+  void _showMoreMenu(BuildContext context, String role) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      barrierColor: AppColors.textPrimary.withAlpha(AppAlpha.a50),
+      barrierColor: AppColors.textPrimary.withAlpha(AppAlpha.a40),
       builder: (context) => _MoreMenuSheet(
         role: role,
         onNavigate: (route) {
@@ -95,6 +83,11 @@ void _showMoreMenu(BuildContext context, String role) {
   }
 }
 
+// ── Premium bottom navigation bar ─────────────────────────────────────────────
+//
+// v2: Dark shell (slate-900) background — premium, Spotify-inspired.
+// Hairline slate-800 top border. Selected = brand green. Unselected = slate-400.
+//
 class _CaptusBottomNav extends StatelessWidget {
   final int selectedIndex;
   final String role;
@@ -109,17 +102,20 @@ class _CaptusBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: AppColors.primary.withAlpha(25),
+      decoration: const BoxDecoration(
+        color: AppColors.shellBg,  // slate-900 — dark shell
         border: Border(
-          top: BorderSide(color: AppColors.primary.withAlpha(50), width: 0.5),
+          top: BorderSide(
+            color: AppColors.shellSurface, // slate-800 hairline
+            width: 0.5,
+          ),
         ),
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+        child: SizedBox(
+          height: AppSpacing.bottomNavHeight,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _NavItem(
                 icon: Icons.home_outlined,
@@ -150,9 +146,9 @@ class _CaptusBottomNav extends StatelessWidget {
                 onTap: () => onTap(3),
               ),
               _NavItem(
-                icon: Icons.add_circle_outline_rounded,
-                activeIcon: Icons.add_circle_rounded,
-                label: 'Más opciones',
+                icon: Icons.grid_view_outlined,
+                activeIcon: Icons.grid_view_rounded,
+                label: 'Más',
                 isSelected: selectedIndex == 4,
                 onTap: () => onTap(4),
               ),
@@ -189,17 +185,44 @@ class _NavItem extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         behavior: HitTestBehavior.opaque,
-        child: AnimatedContainer(
-          duration: AppDurations.exit,
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: isSelected ? AppColors.primary.withAlpha(30) : Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Icon(
-            isSelected ? activeIcon : icon,
-            size: 26,
-            color: isSelected ? AppColors.primary : AppColors.textSecondary,
+        child: SizedBox(
+          width: 60,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedContainer(
+                duration: AppDurations.fast,
+                curve: AppCurves.standard,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? AppColors.primary.withAlpha(AppAlpha.a20)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(99), // pill indicator
+                ),
+                child: AnimatedSwitcher(
+                  duration: AppDurations.quick,
+                  child: Icon(
+                    isSelected ? activeIcon : icon,
+                    key: ValueKey(isSelected),
+                    size: 24,
+                    color: isSelected
+                        ? AppColors.primary    // brand green on dark
+                        : AppColors.slate400,  // muted gray
+                  ),
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  color: isSelected ? AppColors.primary : AppColors.slate500,
+                  letterSpacing: isSelected ? 0.1 : 0,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -207,6 +230,7 @@ class _NavItem extends StatelessWidget {
   }
 }
 
+// Center "AI" button — premium gradient pill with brand shadow
 class _CenterNavItem extends StatelessWidget {
   final IconData icon;
   final IconData activeIcon;
@@ -229,40 +253,57 @@ class _CenterNavItem extends StatelessWidget {
       label: label,
       selected: isSelected,
       excludeSemantics: true,
-      child: GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: AppDurations.exit,
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isSelected
-                ? [AppColors.primary, AppColors.primaryDark]
-                : [AppColors.surface2, AppColors.surface2],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.primary.withAlpha(100),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
+      child: CaptusPressable(
+        onTap: onTap,
+        pressScale: 0.92,
+        child: SizedBox(
+          width: 64,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedContainer(
+                duration: AppDurations.standard,
+                curve: AppCurves.springShort,
+                width: 44,
+                height: 32,
+                decoration: BoxDecoration(
+                  gradient: isSelected ? AppGradients.brand : null,
+                  color: isSelected ? null : AppColors.shellSurface,
+                  borderRadius: BorderRadius.circular(99),
+                  boxShadow: isSelected ? AppShadows.brandSm : null,
+                ),
+                child: Center(
+                  child: AnimatedSwitcher(
+                    duration: AppDurations.quick,
+                    child: Icon(
+                      isSelected ? activeIcon : icon,
+                      key: ValueKey(isSelected),
+                      size: 22,
+                      color: isSelected
+                          ? AppColors.textOnPrimary
+                          : AppColors.slate400,
+                    ),
                   ),
-                ]
-              : null,
-        ),
-        child: Icon(
-          isSelected ? activeIcon : icon,
-          size: 28,
-          color: isSelected ? AppColors.textOnPrimary : AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  color: isSelected ? AppColors.primary : AppColors.slate500,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 }
+
+// ── More-options bottom sheet ──────────────────────────────────────────────────
 
 class _MoreMenuSheet extends StatelessWidget {
   final String role;
@@ -277,45 +318,41 @@ class _MoreMenuSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: AppColors.modalBg,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(AppSpacing.cardPaddingLarge),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Drag handle
               Container(
-                width: 40,
+                width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.textSecondary.withAlpha(100),
-                  borderRadius: BorderRadius.circular(2),
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(99),
                 ),
               ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Text(
-                    'Más opciones',
-                    style: GoogleFonts.inter(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textOnDark,
-                    ),
-                  ),
-                ],
+              const SizedBox(height: AppSpacing.sectionGap),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Más opciones',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.sectionGap),
               _MenuOption(
-                icon: Icons.calendar_today_rounded,
+                icon: Icons.calendar_month_rounded,
                 iconColor: AppColors.primary,
                 title: 'Calendario',
                 subtitle: 'Ver eventos y recordatorios',
                 onTap: () => onNavigate('/calendar'),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.cardGap),
               _MenuOption(
                 icon: Icons.note_alt_rounded,
                 iconColor: AppColors.streak,
@@ -323,7 +360,7 @@ class _MoreMenuSheet extends StatelessWidget {
                 subtitle: 'Tus notas personales',
                 onTap: () => onNavigate('/notes'),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s4),
             ],
           ),
         ),
@@ -349,49 +386,41 @@ class _MenuOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: '$title: $subtitle',
-      excludeSemantics: true,
-      child: GestureDetector(
+    return CaptusPressable(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.cardPaddingStd),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border, width: 0.5),
+          border: Border.all(color: AppColors.border, width: 1),
+          boxShadow: AppShadows.xs,
         ),
         child: Row(
           children: [
+            // Icon container
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(AppSpacing.s3),
               decoration: BoxDecoration(
-                color: iconColor.withAlpha(25),
+                color: iconColor.withAlpha(AppAlpha.a10),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: iconColor, size: 24),
+              child: Icon(icon, color: iconColor, size: 22),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: AppSpacing.s4),
+            // Labels
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
@@ -399,12 +428,11 @@ class _MenuOption extends StatelessWidget {
             Icon(
               Icons.chevron_right_rounded,
               color: AppColors.textSecondary,
+              size: 20,
             ),
           ],
         ),
       ),
-    ),
     );
   }
 }
-

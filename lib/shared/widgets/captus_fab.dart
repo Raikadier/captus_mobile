@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_animations.dart';
+import '../../core/constants/app_gradients.dart';
+import '../../core/constants/app_shadows.dart';
 
-/// A FloatingActionButton that enters the screen with a spring scale
-/// animation following the Captus design system (scale 0→1, elasticOut,
-/// 400ms, 100ms delay after screen build).
+/// Premium FloatingActionButton following Captus Design System v2.
 ///
-/// Drop-in replacement for [FloatingActionButton] in any Scaffold.
+/// Upgrades vs v1:
+///   - Gradient fill (brand-500 → brand-600, 135°)
+///   - Brand-tinted shadow (AppShadows.brandMd) — depth without heavy elevation
+///   - Spring scale entrance (elasticOut, 420ms, 100ms post-build delay)
+///   - Press feedback: scale down to 0.94 on tap, spring back on release
 ///
 /// Usage:
 /// ```dart
@@ -18,16 +23,12 @@ class CaptusFab extends StatefulWidget {
   final VoidCallback onPressed;
   final IconData icon;
   final String? tooltip;
-  final Color? backgroundColor;
-  final Color? foregroundColor;
 
   const CaptusFab({
     super.key,
     required this.onPressed,
     this.icon = Icons.add_rounded,
     this.tooltip,
-    this.backgroundColor,
-    this.foregroundColor,
   });
 
   @override
@@ -35,43 +36,98 @@ class CaptusFab extends StatefulWidget {
 }
 
 class _CaptusFabState extends State<CaptusFab>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl;
-  late final Animation<double> _scale;
+    with TickerProviderStateMixin {
+  // ── Entrance animation ──────────────────────────────────────────────────────
+  late final AnimationController _entranceCtrl;
+  late final Animation<double> _entranceScale;
+
+  // ── Press animation ─────────────────────────────────────────────────────────
+  late final AnimationController _pressCtrl;
+  late final Animation<double> _pressScale;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(
+
+    // Spring entrance: 0 → 1 with elasticOut overshoot
+    _entranceCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: AppDurations.slow, // 420ms
     );
-    _scale = CurvedAnimation(
-      parent: _ctrl,
-      curve: Curves.elasticOut, // natural spring bounce
+    _entranceScale = CurvedAnimation(
+      parent: _entranceCtrl,
+      curve: AppCurves.spring, // elasticOut
     );
-    // Small delay so the screen content renders first
+
+    // Press: 1 → 0.94
+    _pressCtrl = AnimationController(
+      vsync: this,
+      duration: AppDurations.instant,       // 80ms press
+      reverseDuration: AppDurations.quick,  // 120ms release
+    );
+    _pressScale = Tween<double>(begin: 1.0, end: 0.94).animate(
+      CurvedAnimation(
+        parent: _pressCtrl,
+        curve: AppCurves.exit,
+        reverseCurve: AppCurves.springShort,
+      ),
+    );
+
+    // Delay entrance so screen content settles first
     Future.delayed(const Duration(milliseconds: 100), () {
-      if (mounted) _ctrl.forward();
+      if (mounted) _entranceCtrl.forward();
     });
   }
 
   @override
   void dispose() {
-    _ctrl.dispose();
+    _entranceCtrl.dispose();
+    _pressCtrl.dispose();
     super.dispose();
   }
 
+  void _onTapDown(TapDownDetails _) => _pressCtrl.forward();
+  void _onTapUp(TapUpDetails _) => _pressCtrl.reverse();
+  void _onTapCancel() => _pressCtrl.reverse();
+
   @override
   Widget build(BuildContext context) {
+    // Compose scales: entrance × press
     return ScaleTransition(
-      scale: _scale,
-      child: FloatingActionButton(
-        onPressed: widget.onPressed,
-        tooltip: widget.tooltip,
-        backgroundColor: widget.backgroundColor ?? AppColors.primary,
-        foregroundColor: widget.foregroundColor ?? AppColors.textOnPrimary,
-        child: Icon(widget.icon),
+      scale: _entranceScale,
+      child: AnimatedBuilder(
+        animation: _pressScale,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _pressScale.value,
+            child: child,
+          );
+        },
+        child: Tooltip(
+          message: widget.tooltip ?? '',
+          child: GestureDetector(
+            onTap: widget.onPressed,
+            onTapDown: _onTapDown,
+            onTapUp: _onTapUp,
+            onTapCancel: _onTapCancel,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: AppGradients.brand,
+                shape: BoxShape.circle,
+                boxShadow: AppShadows.brandMd,
+              ),
+              child: SizedBox(
+                width: 56,
+                height: 56,
+                child: Icon(
+                  widget.icon,
+                  color: AppColors.textOnPrimary,
+                  size: 28,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

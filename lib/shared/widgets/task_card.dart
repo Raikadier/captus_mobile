@@ -2,9 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_animations.dart';
+import '../../core/constants/app_shadows.dart';
+import '../../core/constants/app_spacing.dart';
 import '../../models/task.dart';
+import 'captus_pressable.dart';
 import 'countdown_chip.dart';
 
+/// Premium task card — Captus Design System v2.
+///
+/// Upgrades vs v1:
+///   - AppShadows.sm elevation on default state (depth without heaviness)
+///   - CaptusPressable wrapper for scale + opacity press feedback
+///   - AppSpacing tokens for all padding/margin values
+///   - Refined typography via theme text styles
+///   - AnimatedContainer for smooth state transitions
 class TaskCard extends StatelessWidget {
   final TaskModel task;
   final VoidCallback? onTap;
@@ -29,6 +41,8 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+
     return Slidable(
       key: ValueKey(task.id),
       startActionPane: _isDisabled
@@ -76,43 +90,50 @@ class TaskCard extends StatelessWidget {
                 ),
               ],
             ),
-      child: GestureDetector(
+      child: CaptusPressable(
         onTap: onTap,
         child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 200),
-          opacity: _isOverdue ? 0.7 : 1.0,
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+          duration: AppDurations.standard,
+          opacity: _isOverdue ? 0.75 : 1.0,
+          child: AnimatedContainer(
+            duration: AppDurations.standard,
+            curve: AppCurves.standard,
+            margin: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.pageMargin,
+              vertical: AppSpacing.s1 + 2, // 6px — tighter than before
+            ),
             decoration: BoxDecoration(
               color: _isCompleted
                   ? AppColors.surface2
                   : _isOverdue
-                      ? AppColors.errorLight.withAlpha(38)
+                      ? AppColors.errorLight
                       : AppColors.surface,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: _isOverdue
-                    ? AppColors.error.withAlpha(76)
-                    : _isCompleted
-                        ? AppColors.border
-                        : AppColors.border,
-                width: 1.5,
+                    ? AppColors.error.withAlpha(AppAlpha.a30)
+                    : AppColors.border,
+                width: 1,
               ),
-              boxShadow: _isOverdue
-                  ? [
-                      BoxShadow(
-                        color: AppColors.error.withAlpha(25),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ]
-                  : null,
+              // v2: subtle shadow on default state for depth
+              boxShadow: _isCompleted
+                  ? null
+                  : _isOverdue
+                      ? [
+                          BoxShadow(
+                            color: AppColors.error.withAlpha(AppAlpha.a12),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : AppShadows.sm,
             ),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // ── Top row: checkbox + title + priority badge ──────────
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -121,15 +142,14 @@ class TaskCard extends StatelessWidget {
                         isDisabled: _isDisabled,
                         onTap: _isDisabled ? null : onComplete,
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: AppSpacing.s2 + 2), // 10px
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               task.title,
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
+                              style: (tt.titleMedium ?? const TextStyle()).copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: _isCompleted
                                     ? AppColors.textDisabled
@@ -146,11 +166,10 @@ class TaskCard extends StatelessWidget {
                             ),
                             if (task.description != null &&
                                 task.description!.isNotEmpty) ...[
-                              const SizedBox(height: 4),
+                              const SizedBox(height: AppSpacing.s1),
                               Text(
                                 task.description!,
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
+                                style: (tt.bodySmall ?? const TextStyle()).copyWith(
                                   color: _isCompleted
                                       ? AppColors.textDisabled
                                       : AppColors.textSecondary,
@@ -162,49 +181,28 @@ class TaskCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.s2),
                       _PriorityBadge(priority: task.priority),
                     ],
                   ),
-                  const SizedBox(height: 10),
+
+                  const SizedBox(height: AppSpacing.s2 + 2), // 10px
+
+                  // ── Bottom row: category + due date + subtask count ─────
                   Row(
                     children: [
-                      const SizedBox(width: 32),
+                      const SizedBox(width: AppSpacing.s8), // indent to align with title
                       if (task.categoryName != null) ...[
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.surface2,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.label_outline,
-                                size: 12,
-                                color: AppColors.textSecondary,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                task.categoryName!,
-                                style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        _CategoryChip(label: task.categoryName!),
                         if (task.dueDate != null)
-                          Text(
-                            ' · ',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              color: AppColors.textDisabled,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s1),
+                            child: Text(
+                              '·',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.textDisabled,
+                              ),
                             ),
                           ),
                       ],
@@ -213,26 +211,29 @@ class TaskCard extends StatelessWidget {
                       const Spacer(),
                       if (task.subtasks.isNotEmpty && showSubtaskProgress)
                         Text(
-                          '${task.completedSubtasks} de ${task.subtasks.length} subtareas',
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
+                          '${task.completedSubtasks}/${task.subtasks.length}',
+                          style: (tt.labelSmall ?? const TextStyle()).copyWith(
                             color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                     ],
                   ),
+
+                  // ── Subtask progress bar ────────────────────────────────
                   if (task.subtasks.isNotEmpty && showSubtaskProgress) ...[
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.s2),
                     Row(
                       children: [
-                        const SizedBox(width: 32),
+                        const SizedBox(width: AppSpacing.s8),
                         Expanded(
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(99),
                             child: LinearProgressIndicator(
-                              value: task.completedSubtasks / task.subtasks.length,
-                              minHeight: 5,
-                              backgroundColor: AppColors.surface2,
+                              value: task.completedSubtasks /
+                                  task.subtasks.length,
+                              minHeight: 4,
+                              backgroundColor: AppColors.surface3,
                               valueColor: AlwaysStoppedAnimation<Color>(
                                 _isCompleted
                                     ? AppColors.textDisabled
@@ -241,11 +242,10 @@ class TaskCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: AppSpacing.s2),
                         Text(
                           '${(task.completedSubtasks / task.subtasks.length * 100).round()}%',
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
+                          style: (tt.labelSmall ?? const TextStyle()).copyWith(
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w500,
                           ),
@@ -263,38 +263,66 @@ class TaskCard extends StatelessWidget {
   }
 }
 
+// ── Category chip ──────────────────────────────────────────────────────────────
+
+class _CategoryChip extends StatelessWidget {
+  final String label;
+  const _CategoryChip({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.s2 - 2, // 6px
+        vertical: 2,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.surface2,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.label_outline_rounded,
+            size: 11,
+            color: AppColors.textSecondary,
+          ),
+          const SizedBox(width: AppSpacing.s1),
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Priority badge ─────────────────────────────────────────────────────────────
+
 class _PriorityBadge extends StatelessWidget {
   final TaskPriority priority;
   const _PriorityBadge({required this.priority});
 
   @override
   Widget build(BuildContext context) {
-    String label;
-    Color textColor;
-    Color bgColor;
-
-    switch (priority) {
-      case TaskPriority.high:
-        label = 'Alta';
-        textColor = AppColors.error;
-        bgColor = AppColors.errorLight;
-        break;
-      case TaskPriority.medium:
-        label = 'Media';
-        textColor = AppColors.warning;
-        bgColor = AppColors.warningLight;
-        break;
-      case TaskPriority.low:
-        label = 'Baja';
-        textColor = AppColors.primary;
-        bgColor = AppColors.primaryLight;
-        break;
-    }
+    final (String label, Color text, Color bg) = switch (priority) {
+      TaskPriority.high   => ('Alta',  AppColors.error,   AppColors.errorLight),
+      TaskPriority.medium => ('Media', AppColors.warning, AppColors.warningLight),
+      TaskPriority.low    => ('Baja',  AppColors.primary, AppColors.primaryLight),
+    };
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.s2,
+        vertical: 3,
+      ),
       decoration: BoxDecoration(
-        color: bgColor,
+        color: bg,
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
@@ -302,12 +330,14 @@ class _PriorityBadge extends StatelessWidget {
         style: GoogleFonts.inter(
           fontSize: 11,
           fontWeight: FontWeight.w600,
-          color: textColor,
+          color: text,
         ),
       ),
     );
   }
 }
+
+// ── Circle checkbox ────────────────────────────────────────────────────────────
 
 class _CircleCheckbox extends StatelessWidget {
   final bool isCompleted;
@@ -325,7 +355,8 @@ class _CircleCheckbox extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: AppDurations.standard,
+        curve: AppCurves.springShort,
         width: 22,
         height: 22,
         decoration: BoxDecoration(
@@ -341,7 +372,11 @@ class _CircleCheckbox extends StatelessWidget {
           ),
         ),
         child: isCompleted
-            ? const Icon(Icons.check_rounded, size: 13, color: AppColors.textOnPrimary)
+            ? const Icon(
+                Icons.check_rounded,
+                size: 13,
+                color: AppColors.textOnPrimary,
+              )
             : null,
       ),
     );
