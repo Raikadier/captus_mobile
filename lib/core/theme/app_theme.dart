@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_animations.dart';
-import '../constants/app_shadows.dart';
 import '../constants/app_spacing.dart';
 
 /// Material 3 theme for Captus — v2.0

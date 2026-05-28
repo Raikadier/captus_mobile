@@ -57,9 +57,14 @@ void main() {
       app.main();
       await tester.pumpAndSettle(const Duration(seconds: 5));
 
-      final loginBtn =
-          find.textContaining('Iniciar') | find.textContaining('Entrar');
-      if (loginBtn.evaluate().isNotEmpty) {
+      final loginBtnIniciar = find.textContaining('Iniciar');
+      final loginBtnEntrar = find.textContaining('Entrar');
+      final hasLoginBtn = loginBtnIniciar.evaluate().isNotEmpty ||
+          loginBtnEntrar.evaluate().isNotEmpty;
+      if (hasLoginBtn) {
+        final loginBtn = loginBtnIniciar.evaluate().isNotEmpty
+            ? loginBtnIniciar
+            : loginBtnEntrar;
         await tester.tap(loginBtn.first);
         await tester.pump();
 

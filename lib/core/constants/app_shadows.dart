@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
 
 /// Shadow / elevation token system for Captus — v2.0
 ///
@@ -12,11 +11,6 @@ import 'app_colors.dart';
 /// Reference: CAPTUS_DESIGN_SYSTEM.md §5
 class AppShadows {
   AppShadows._();
-
-  // ─── SHADOW COLOR BASE ──────────────────────────────────────────────────────
-  static const Color _base = Color(0x0A0F172A);  // rgba(15,23,42, 0.04)
-  static const Color _dark = Color(0x140F172A);  // rgba(15,23,42, 0.08)
-  static const Color _medium = Color(0x120F172A); // rgba(15,23,42, 0.07)
 
   // ─── NEUTRAL ELEVATION ──────────────────────────────────────────────────────
 
