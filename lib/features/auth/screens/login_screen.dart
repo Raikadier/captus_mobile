@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -52,25 +52,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: AppColors.background,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s6),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 40),
+                const SizedBox(height: AppSpacing.s10),
                 Center(
                   child: Column(
                     children: [
                       Container(
                         width: 64,
                         height: 64,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: AppColors.primary,
                           shape: BoxShape.circle,
                         ),
@@ -78,28 +79,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           child: Text('🌵', style: TextStyle(fontSize: 32)),
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Captus',
-                        style: GoogleFonts.inter(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
+                      const SizedBox(height: AppSpacing.s4),
+                      Text('Captus', style: tt.displaySmall),
                     ],
                   ),
                 ),
-                const SizedBox(height: 48),
-                Text(
-                  'Iniciar sesión',
-                  style: GoogleFonts.inter(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.s12),
+                Text('Iniciar sesión',
+                    style: tt.headlineLarge!.copyWith(fontSize: 24)),
+                const SizedBox(height: AppSpacing.s6),
                 TextFormField(
                   controller: _emailCtrl,
                   keyboardType: TextInputType.emailAddress,
@@ -118,7 +106,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s4),
                 TextFormField(
                   controller: _passwordCtrl,
                   obscureText: _obscurePassword,
@@ -147,77 +135,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () => context.push('/forgot-password'),
-                    child: Text(
-                      '¿Olvidaste tu contraseña?',
-                      style: GoogleFonts.inter(fontSize: 12),
-                    ),
+                    child: const Text('¿Olvidaste tu contraseña?'),
                   ),
                 ),
                 if (_errorMessage != null) ...[
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: AppColors.error.withAlpha(25),
-                      borderRadius: BorderRadius.circular(8),
-                      border:
-                          Border.all(color: AppColors.error.withAlpha(76)),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.error_outline_rounded,
-                            color: AppColors.error, size: 16),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            _errorMessage!,
-                            style: GoogleFonts.inter(
-                                fontSize: 12, color: AppColors.error),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  const SizedBox(height: AppSpacing.s3),
+                  _ErrorBanner(message: _errorMessage!),
                 ],
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    onPressed: _isLoading ? null : _login,
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppColors.textOnPrimary),
-                          )
-                        : Text(
-                            'Entrar',
-                            style: GoogleFonts.inter(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: AppColors.textOnPrimary,
-                            ),
-                          ),
-                  ),
+                const SizedBox(height: AppSpacing.s6),
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _login,
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.textOnPrimary),
+                        )
+                      : const Text('Entrar'),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.s6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      '¿No tienes cuenta? ',
-                      style:
-                          GoogleFonts.inter(color: AppColors.textSecondary),
+                    Flexible(
+                      child: Text(
+                        '¿No tienes cuenta? ',
+                        style: tt.bodyMedium!
+                            .copyWith(color: AppColors.textSecondary),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     TextButton(
                       onPressed: () => context.go('/register'),
@@ -225,11 +173,43 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.s6),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ErrorBanner extends StatelessWidget {
+  final String message;
+  const _ErrorBanner({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s3, vertical: AppSpacing.s2 + 2),
+      decoration: BoxDecoration(
+        color: AppColors.error.withAlpha(25),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.error.withAlpha(76)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline_rounded,
+              color: AppColors.error, size: 16),
+          const SizedBox(width: AppSpacing.s2),
+          Expanded(
+            child: Text(
+              message,
+              style: tt.bodySmall!.copyWith(color: AppColors.error),
+            ),
+          ),
+        ],
       ),
     );
   }

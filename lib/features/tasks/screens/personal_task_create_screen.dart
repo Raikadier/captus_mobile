@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_animations.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../core/providers/categories_provider.dart';
 import '../../../models/task.dart';
@@ -232,7 +233,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
               isError ? Icons.error_outline : Icons.check_circle,
               color: AppColors.textOnPrimary,
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.s2),
             Expanded(child: Text(message)),
           ],
         ),
@@ -249,7 +250,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
         content: Row(
           children: [
             const Icon(Icons.check_circle, color: AppColors.textOnPrimary),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.s2),
             Expanded(child: Text(message)),
           ],
         ),
@@ -263,14 +264,13 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
 
     if (_isLoadingTask) {
       return Scaffold(
         backgroundColor: AppColors.background,
         appBar: AppBar(
-          backgroundColor: AppColors.surface,
-          elevation: 0,
           title: const Text('Cargando...'),
         ),
         body: const Center(child: CircularProgressIndicator()),
@@ -280,8 +280,6 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: Text(_isSubtask
             ? 'Nueva subtarea'
             : _isEditing
@@ -305,13 +303,13 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.s5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_isSubtask && _existingTask != null) ...[
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.s3),
                 decoration: BoxDecoration(
                   color: AppColors.surface2,
                   borderRadius: BorderRadius.circular(10),
@@ -323,44 +321,32 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                       size: 18,
                       color: AppColors.textSecondary,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.s2),
                     Expanded(
                       child: Text(
                         'Subtarea de: ${_existingTask!.title}',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: tt.bodySmall,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s5),
             ],
             TextField(
               controller: _titleCtrl,
-              style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w600),
+              style: tt.displaySmall,
               decoration: InputDecoration(
                 hintText: _isSubtask ? 'Título de la subtarea' : 'Título de la tarea',
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                filled: false,
-                contentPadding: EdgeInsets.zero,
               ),
               maxLines: 2,
             ),
             const Divider(color: AppColors.border),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.s4),
             if (!_isSubtask) ...[
               Text(
                 'Prioridad',
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: tt.headlineSmall,
               ),
               const SizedBox(height: 10),
               Row(
@@ -381,7 +367,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                     child: GestureDetector(
                       onTap: () => setState(() => _priority = p),
                       child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 150),
+                        duration: AppDurations.fast,
                         margin: const EdgeInsets.only(right: 8),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         decoration: BoxDecoration(
@@ -395,7 +381,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                         child: Center(
                           child: Text(
                             label,
-                            style: GoogleFonts.inter(
+                            style: tt.titleMedium?.copyWith(
                               fontWeight: FontWeight.w700,
                               color: isSelected ? color : AppColors.textSecondary,
                             ),
@@ -406,14 +392,10 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
               Text(
                 'Fecha de vencimiento',
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: tt.headlineSmall,
               ),
               const SizedBox(height: 10),
               GestureDetector(
@@ -442,7 +424,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                           _dueDate != null
                               ? DateFormat("d 'de' MMMM, h:mm a", 'es').format(_dueDate!)
                               : 'Seleccionar fecha',
-                          style: GoogleFonts.inter(
+                          style: tt.bodyMedium?.copyWith(
                             color: _dueDate != null
                                 ? AppColors.textPrimary
                                 : AppColors.textSecondary,
@@ -469,14 +451,14 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                       isSelected: _dueDate != null && _dueDate!.year == _tomorrow.year && _dueDate!.month == _tomorrow.month && _dueDate!.day == _tomorrow.day,
                       onTap: () => _setQuickDate(_tomorrow),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.s2),
                     _QuickDateChip(
                       label: 'Fin de semana',
                       icon: Icons.weekend_outlined,
                       isSelected: _dueDate != null && _dueDate!.year == _weekend.year && _dueDate!.month == _weekend.month && _dueDate!.day == _weekend.day,
                       onTap: () => _setQuickDate(_weekend),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.s2),
                     _QuickDateChip(
                       label: 'Próxima semana',
                       icon: Icons.calendar_view_week_outlined,
@@ -486,19 +468,15 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
               Text(
                 'Categoría',
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: tt.headlineSmall,
               ),
               const SizedBox(height: 10),
               categoriesAsync.when(
                 data: (categories) => Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3),
                   decoration: BoxDecoration(
                     color: AppColors.surface2,
                     borderRadius: BorderRadius.circular(12),
@@ -510,7 +488,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                       dropdownColor: AppColors.surface,
                       hint: Text(
                         'Sin categoría',
-                        style: GoogleFonts.inter(color: AppColors.textSecondary),
+                        style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
                       ),
                       isExpanded: true,
                       icon: Icon(
@@ -522,7 +500,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                           value: null,
                           child: Text(
                             'Sin categoría',
-                            style: GoogleFonts.inter(color: AppColors.textSecondary),
+                            style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
                           ),
                         ),
                         ...categories.map((c) => DropdownMenuItem<int?>(
@@ -537,42 +515,25 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (_, __) => const Text('Error al cargar categorías'),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
             ],
             Text(
               'Descripción',
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: tt.headlineSmall,
             ),
             const SizedBox(height: 10),
             TextFormField(
               controller: _descCtrl,
               maxLines: 4,
-              style: GoogleFonts.inter(),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Agrega una descripción...',
-                hintStyle: GoogleFonts.inter(color: AppColors.textSecondary),
-                filled: true,
-                fillColor: AppColors.surface2,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.all(14),
               ),
             ),
             if (!_isSubtask) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
               Text(
                 'Subtareas',
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: tt.headlineSmall,
               ),
               const SizedBox(height: 10),
               if (_subtasks.isNotEmpty) ...[
@@ -584,25 +545,13 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                   Expanded(
                     child: TextFormField(
                       controller: _subtaskCtrl,
-                      style: GoogleFonts.inter(),
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Agregar subtarea...',
-                        hintStyle: GoogleFonts.inter(color: AppColors.textSecondary),
-                        filled: true,
-                        fillColor: AppColors.surface2,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 12,
-                        ),
                       ),
                       onFieldSubmitted: (_) => _addSubtask(),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.s2),
                   GestureDetector(
                     onTap: _addSubtask,
                     child: Container(
@@ -626,9 +575,10 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
   }
 
   Widget _buildSubtaskItem(int index) {
+    final tt = Theme.of(context).textTheme;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3, vertical: 10),
       decoration: BoxDecoration(
         color: AppColors.surface2,
         borderRadius: BorderRadius.circular(10),
@@ -644,7 +594,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
           Expanded(
             child: Text(
               _subtasks[index],
-              style: GoogleFonts.inter(fontSize: 14),
+              style: tt.bodyMedium,
             ),
           ),
           GestureDetector(
@@ -676,11 +626,12 @@ class _QuickDateChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        duration: AppDurations.fast,
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primaryLight : AppColors.surface2,
           borderRadius: BorderRadius.circular(20),
@@ -699,9 +650,7 @@ class _QuickDateChip extends StatelessWidget {
             const SizedBox(width: 6),
             Text(
               label,
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+              style: tt.labelLarge?.copyWith(
                 color: isSelected ? AppColors.primary : AppColors.textSecondary,
               ),
             ),

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_animations.dart';
+import '../../../core/services/api_client.dart';
 import '../../../core/services/local_notification_service.dart';
 import '../../../core/utils/app_errors.dart';
 import '../../../models/task.dart';
@@ -59,15 +60,12 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
   }
 
   Future<void> _loadExistingTask() async {
-    final idInt = int.tryParse(widget.taskId ?? '');
-    if (idInt == null) return;
+    final id = widget.taskId;
+    if (id == null) return;
     try {
-      final row = await Supabase.instance.client
-          .from('course_assignments')
-          .select()
-          .eq('id', idInt)
-          .maybeSingle();
-      if (row == null || !mounted) return;
+      final res = await ApiClient.instance.get<dynamic>('/assignments/$id');
+      final row = res.data;
+      if (row == null || row is! Map || !mounted) return;
       setState(() {
         _titleCtrl.text = row['title']?.toString() ?? '';
         _descCtrl.text = row['description']?.toString() ?? '';
@@ -95,24 +93,15 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
     setState(() => _isLoadingCourses = true);
 
     try {
-      final user = Supabase.instance.client.auth.currentUser;
-
-      if (user == null) {
-        throw Exception('Usuario no autenticado');
-      }
-
-      final response = await Supabase.instance.client
-          .from('courses')
-          .select('id,title')
-          .eq('teacher_id', user.id)
-          .order('title', ascending: true);
+      final res = await ApiClient.instance.get<dynamic>('/courses/teacher');
+      final response = res.data;
 
       final loadedCourses = (response as List).map((row) {
         final map = row as Map<String, dynamic>;
 
         return _CourseOption(
           id: map['id'].toString(),
-          name: (map['title'] ?? 'Materia sin nombre').toString(),
+          name: (map['title'] ?? map['name'] ?? 'Materia sin nombre').toString(),
         );
       }).toList();
 
@@ -139,9 +128,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
   }
 
   Future<void> _loadGroupsByCourse(String courseId) async {
-    final parsedCourseId = int.tryParse(courseId);
-
-    if (parsedCourseId == null) {
+    if (courseId.isEmpty) {
       setState(() {
         _groups.clear();
         _selectedGroupId = null;
@@ -156,28 +143,9 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
     });
 
     try {
-      final user = Supabase.instance.client.auth.currentUser;
-
-      if (user == null) {
-        throw Exception('Usuario no autenticado');
-      }
-
-      final course = await Supabase.instance.client
-          .from('courses')
-          .select('id,teacher_id')
-          .eq('id', parsedCourseId)
-          .eq('teacher_id', user.id)
-          .maybeSingle();
-
-      if (course == null) {
-        throw Exception('No tienes permiso sobre esta materia');
-      }
-
-      final response = await Supabase.instance.client
-          .from('course_groups')
-          .select('id,name')
-          .eq('course_id', parsedCourseId)
-          .order('id', ascending: true);
+      final res = await ApiClient.instance
+          .get<dynamic>('/groups/course/$courseId');
+      final response = res.data;
 
       final loadedGroups = (response as List).map((row) {
         final map = row as Map<String, dynamic>;
@@ -208,11 +176,10 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: Text(_isEditing ? 'Editar actividad' : 'Nueva actividad'),
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
@@ -226,27 +193,22 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.s5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
               controller: _titleCtrl,
-              style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w600),
+              style: tt.displaySmall,
               decoration: InputDecoration(
                 hintText: _type == AcademicItemType.task
                     ? 'Título de la tarea'
                     : 'Título de la evaluación',
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                filled: false,
-                contentPadding: EdgeInsets.zero,
               ),
               maxLines: 2,
             ),
             const Divider(color: AppColors.border),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.s4),
 
             Text('Tipo', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
@@ -266,7 +228,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
               ],
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.s6),
             Text('Prioridad', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
             Row(
@@ -289,7 +251,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                   child: GestureDetector(
                     onTap: () => setState(() => _priority = p),
                     child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 150),
+                      duration: AppDurations.fast,
                       margin: const EdgeInsets.only(right: 8),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       decoration: BoxDecoration(
@@ -303,7 +265,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                       child: Center(
                         child: Text(
                           label,
-                          style: GoogleFonts.inter(
+                          style: tt.titleMedium?.copyWith(
                             fontWeight: FontWeight.w700,
                             color: isSelected ? color : AppColors.textSecondary,
                           ),
@@ -315,7 +277,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
               }).toList(),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.s6),
             Text('Fecha límite', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
             GestureDetector(
@@ -350,7 +312,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.s6),
             Text('Materia', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
             DropdownButtonFormField<String>(
@@ -382,7 +344,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                     },
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.s6),
             Text('Grupo', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
             DropdownButtonFormField<String>(
@@ -408,7 +370,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                   : (value) => setState(() => _selectedGroupId = value),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.s6),
             Text('Descripción', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
             TextFormField(
@@ -417,7 +379,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
               decoration: const InputDecoration(hintText: 'Agrega detalles...'),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.s6),
             Text('Subtareas / instrucciones', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
             ..._subtasks.map((s) => ListTile(
@@ -449,13 +411,14 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
     required IconData icon,
     required AcademicItemType type,
   }) {
+    final tt = Theme.of(context).textTheme;
     final isSelected = _type == type;
 
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() => _type = type),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
+          duration: AppDurations.fast,
           padding: const EdgeInsets.symmetric(vertical: 13),
           decoration: BoxDecoration(
             color: isSelected ? AppColors.primary.withAlpha(38) : AppColors.surface2,
@@ -471,7 +434,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
               const SizedBox(height: 6),
               Text(
                 label,
-                style: GoogleFonts.inter(
+                style: tt.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: isSelected ? AppColors.primary : AppColors.textSecondary,
                 ),
@@ -508,15 +471,6 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
   Future<void> _save() async {
     if (_isSaving) return;
 
-    final user = Supabase.instance.client.auth.currentUser;
-
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Usuario no autenticado')),
-      );
-      return;
-    }
-
     if (_titleCtrl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Ingresa un título')),
@@ -531,29 +485,13 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
       return;
     }
 
-    final courseId = int.tryParse(_selectedCourseId!);
-    final courseGroupId = int.tryParse(_selectedGroupId!);
-
-    if (courseId == null || courseGroupId == null) return;
-
     setState(() => _isSaving = true);
 
     try {
-      final course = await Supabase.instance.client
-          .from('courses')
-          .select('id,teacher_id')
-          .eq('id', courseId)
-          .eq('teacher_id', user.id)
-          .maybeSingle();
-
-      if (course == null) {
-        throw Exception('Solo el docente dueño del curso puede asignar actividades');
-      }
-
-      await Supabase.instance.client.from('course_assignments').insert({
-        'course_id': courseId,
-        'course_group_id': courseGroupId,
-        'teacher_id': user.id,
+      // Use Express API — enforces teacher-owns-course + notifies students
+      await ApiClient.instance.post<dynamic>('/assignments', data: {
+        'course_id': _selectedCourseId,
+        'course_group_id': _selectedGroupId,
         'title': _titleCtrl.text.trim(),
         'description': _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
         'due_date': _dueDate?.toIso8601String(),

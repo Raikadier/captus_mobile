@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_animations.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../core/utils/app_errors.dart';
 import '../../../models/task.dart';
@@ -57,7 +58,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
             content: Row(
               children: [
                 const Icon(Icons.check_circle, color: AppColors.textOnPrimary),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.s2),
                 const Text('Tarea completada'),
               ],
             ),
@@ -107,7 +108,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
               content: Row(
                 children: [
                   const Icon(Icons.delete, color: AppColors.textOnPrimary),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.s2),
                   const Text('Tarea eliminada'),
                 ],
               ),
@@ -147,6 +148,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     if (_isLoading) {
       return Scaffold(
         backgroundColor: AppColors.background,
@@ -164,12 +166,12 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.error_outline, size: 48, color: AppColors.textSecondary),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.s4),
               Text(
                 'Tarea no encontrada',
-                style: GoogleFonts.inter(color: AppColors.textSecondary),
+                style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.s4),
               ElevatedButton(
                 onPressed: () => context.pop(),
                 child: const Text('Volver'),
@@ -206,15 +208,15 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.s5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AnimatedOpacity(
               opacity: _isOverdue ? 0.7 : 1.0,
-              duration: const Duration(milliseconds: 200),
+              duration: AppDurations.fast,
               child: Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppSpacing.s4),
                 decoration: BoxDecoration(
                   color: _isCompleted
                       ? AppColors.surface2
@@ -238,7 +240,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                         GestureDetector(
                           onTap: _isDisabled ? null : _completeTask,
                           child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
+                            duration: AppDurations.fast,
                             width: 28,
                             height: 28,
                             decoration: BoxDecoration(
@@ -262,13 +264,11 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                                 : null,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: AppSpacing.s3),
                         Expanded(
                           child: Text(
                             _task!.title,
-                            style: GoogleFonts.inter(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
+                            style: tt.headlineLarge?.copyWith(
                               color: _isCompleted
                                   ? AppColors.textDisabled
                                   : _isOverdue
@@ -282,7 +282,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.s4),
                     Row(
                       children: [
                         _buildInfoChip(
@@ -295,7 +295,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                                   : AppColors.primary,
                         ),
                         if (_task!.categoryName != null) ...[
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppSpacing.s2),
                           _buildInfoChip(
                             icon: Icons.label_outline,
                             label: _task!.categoryName!,
@@ -305,7 +305,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                       ],
                     ),
                     if (_task!.dueDate != null) ...[
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.s3),
                       _buildInfoChip(
                         icon: Icons.calendar_today_outlined,
                         label: DateFormat("d 'de' MMMM, h:mm a", 'es').format(_task!.dueDate!),
@@ -317,14 +317,10 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
               ),
             ),
             if (_task!.description != null && _task!.description!.isNotEmpty) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
               Text(
                 'Descripción',
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
+                style: tt.headlineSmall,
               ),
               const SizedBox(height: 10),
               Container(
@@ -337,8 +333,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                 ),
                 child: Text(
                   _task!.description!,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
+                  style: tt.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                     height: 1.5,
                   ),
@@ -346,25 +341,17 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
               ),
             ],
             if (_task!.subtasks.isNotEmpty) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'Subtareas',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: tt.headlineSmall,
                   ),
                   Text(
                     '${_task!.completedSubtasks} de ${_task!.subtasks.length}',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: tt.titleMedium?.copyWith(color: AppColors.textSecondary),
                   ),
                 ],
               ),
@@ -380,14 +367,14 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.s4),
               ...List.generate(_task!.subtasks.length, (index) {
                 final subtask = _task!.subtasks[index];
                 return _buildSubtaskItem(subtask);
               }),
             ],
             if (!_isDisabled) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
               GestureDetector(
                 onTap: () => context.push('/tasks/personal/create?parentTaskId=${widget.taskId}'),
                 child: Container(
@@ -401,14 +388,10 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.add_rounded, color: AppColors.primary),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.s2),
                       Text(
                         'Agregar subtarea',
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary,
-                        ),
+                        style: tt.titleMedium?.copyWith(color: AppColors.primary),
                       ),
                     ],
                   ),
@@ -427,6 +410,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
     required String label,
     required Color color,
   }) {
+    final tt = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
@@ -440,11 +424,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
           const SizedBox(width: 6),
           Text(
             label,
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: color,
-            ),
+            style: tt.labelLarge?.copyWith(color: color),
           ),
         ],
       ),
@@ -452,9 +432,10 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
   }
 
   Widget _buildSubtaskItem(SubTask subtask) {
+    final tt = Theme.of(context).textTheme;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(AppSpacing.s3),
       decoration: BoxDecoration(
         color: subtask.isCompleted ? AppColors.surface2 : AppColors.surface,
         borderRadius: BorderRadius.circular(10),
@@ -469,7 +450,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                 ? null
                 : () => _toggleSubtask(subtask.id, !subtask.isCompleted),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
+              duration: AppDurations.fast,
               width: 22,
               height: 22,
               decoration: BoxDecoration(
@@ -489,12 +470,11 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                   : null,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.s3),
           Expanded(
             child: Text(
               subtask.title,
-              style: GoogleFonts.inter(
-                fontSize: 14,
+              style: tt.bodyMedium?.copyWith(
                 color: subtask.isCompleted
                     ? AppColors.textDisabled
                     : AppColors.textPrimary,

@@ -1,32 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/providers/courses_provider.dart';
+import '../../../core/providers/tasks_provider.dart';
 import '../../../models/task.dart';
 import '../../../models/course.dart';
 
-class GlobalSearchScreen extends StatefulWidget {
+class GlobalSearchScreen extends ConsumerStatefulWidget {
   const GlobalSearchScreen({super.key});
 
   @override
-  State<GlobalSearchScreen> createState() => _GlobalSearchScreenState();
+  ConsumerState<GlobalSearchScreen> createState() =>
+      _GlobalSearchScreenState();
 }
 
-class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
+class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
   final _searchCtrl = TextEditingController();
   String _query = '';
 
-  List<TaskModel> get _taskResults => _query.isEmpty
-      ? []
-      : TaskModel.mockList
-          .where((t) => t.title.toLowerCase().contains(_query.toLowerCase()))
-          .toList();
+  List<TaskModel> _taskResults(List<TaskModel> allTasks) =>
+      _query.isEmpty
+          ? []
+          : allTasks
+              .where((t) =>
+                  t.title.toLowerCase().contains(_query.toLowerCase()))
+              .toList();
 
-  List<CourseModel> get _courseResults => _query.isEmpty
-      ? []
-      : CourseModel.mockList
-          .where((c) => c.name.toLowerCase().contains(_query.toLowerCase()))
-          .toList();
+  List<CourseModel> _courseResults(List<CourseModel> allCourses) =>
+      _query.isEmpty
+          ? []
+          : allCourses
+              .where((c) =>
+                  c.name.toLowerCase().contains(_query.toLowerCase()))
+              .toList();
 
   @override
   void dispose() {
@@ -36,7 +44,14 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final hasResults = _taskResults.isNotEmpty || _courseResults.isNotEmpty;
+    final allTasks =
+        ref.watch(tasksNotifierProvider).asData?.value ?? [];
+    final allCourses =
+        ref.watch(coursesProvider).asData?.value ?? [];
+
+    final tasks = _taskResults(allTasks);
+    final courses = _courseResults(allCourses);
+    final hasResults = tasks.isNotEmpty || courses.isNotEmpty;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -48,11 +63,13 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         title: TextField(
           controller: _searchCtrl,
           autofocus: true,
-          style: GoogleFonts.inter(fontSize: 16, color: AppColors.textPrimary),
+          style: Theme.of(context).textTheme.bodyLarge,
           decoration: InputDecoration(
             hintText: 'Buscar tareas, materias, grupos...',
-            hintStyle: GoogleFonts.inter(
-                fontSize: 16, color: AppColors.textDisabled),
+            hintStyle: Theme.of(context)
+                .textTheme
+                .bodyLarge!
+                .copyWith(color: AppColors.textDisabled),
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
@@ -73,38 +90,34 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         ],
       ),
       body: _query.isEmpty
-          ? _RecentSearches()
+          ? const _RecentSearches()
           : hasResults
-              ? _SearchResults(
-                  tasks: _taskResults,
-                  courses: _courseResults,
-                )
+              ? _SearchResults(tasks: tasks, courses: courses)
               : _NoResults(query: _query),
     );
   }
 }
 
 class _RecentSearches extends StatelessWidget {
+  const _RecentSearches();
+
   @override
   Widget build(BuildContext context) {
-    final recents = ['Cálculo II', 'Estructuras de Datos', 'Parcial'];
+    final tt = Theme.of(context).textTheme;
+    const recents = ['Cálculo II', 'Estructuras de Datos', 'Parcial'];
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       children: [
         Text(
           'BÚSQUEDAS RECIENTES',
-          style: GoogleFonts.inter(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textSecondary,
-            letterSpacing: 0.8,
-          ),
+          style: tt.labelMedium!.copyWith(
+              color: AppColors.textSecondary, letterSpacing: 0.8),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.s3),
         ...recents.map((r) => ListTile(
               leading: const Icon(Icons.history_rounded,
                   color: AppColors.textSecondary),
-              title: Text(r, style: GoogleFonts.inter(fontSize: 14)),
+              title: Text(r, style: tt.bodyMedium),
               dense: true,
               contentPadding: EdgeInsets.zero,
             )),
@@ -121,65 +134,56 @@ class _SearchResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       children: [
         if (tasks.isNotEmpty) ...[
           Text(
             'TAREAS',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textSecondary,
-              letterSpacing: 0.8,
-            ),
+            style: tt.labelMedium!.copyWith(
+                color: AppColors.textSecondary, letterSpacing: 0.8),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.s2),
           ...tasks.map((t) => ListTile(
-                leading: const Icon(Icons.check_box_outline_blank_rounded,
+                leading: const Icon(
+                    Icons.check_box_outline_blank_rounded,
                     color: AppColors.primary),
-                title: Text(t.title, style: GoogleFonts.inter(fontSize: 14)),
+                title: Text(t.title, style: tt.bodyMedium),
                 subtitle: Text(t.courseName ?? '',
-                    style: GoogleFonts.inter(
-                        fontSize: 12, color: AppColors.textSecondary)),
+                    style: tt.bodySmall),
                 dense: true,
                 onTap: () => context.push('/tasks/${t.id}'),
               )),
         ],
         if (courses.isNotEmpty) ...[
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           Text(
             'MATERIAS',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textSecondary,
-              letterSpacing: 0.8,
-            ),
+            style: tt.labelMedium!.copyWith(
+                color: AppColors.textSecondary, letterSpacing: 0.8),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.s2),
           ...courses.map((c) => ListTile(
                 leading: Container(
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: AppColors.courseColor(c.colorIndex).withAlpha(38),
+                    color: AppColors.courseColor(c.colorIndex)
+                        .withAlpha(38),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Center(
                     child: Text(
                       c.name[0],
-                      style: GoogleFonts.inter(
-                        color: AppColors.courseColor(c.colorIndex),
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: tt.labelLarge!.copyWith(
+                          color:
+                              AppColors.courseColor(c.colorIndex)),
                     ),
                   ),
                 ),
-                title: Text(c.name, style: GoogleFonts.inter(fontSize: 14)),
-                subtitle: Text(c.code,
-                    style: GoogleFonts.inter(
-                        fontSize: 12, color: AppColors.textSecondary)),
+                title: Text(c.name, style: tt.bodyMedium),
+                subtitle: Text(c.code, style: tt.bodySmall),
                 dense: true,
                 onTap: () => context.push('/courses/${c.id}'),
               )),
@@ -195,30 +199,31 @@ class _NoResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(40),
+        padding: const EdgeInsets.all(AppSpacing.s10),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text('🔍', style: TextStyle(fontSize: 48)),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.s4),
             Text(
               'Sin resultados para "$query"',
-              style: GoogleFonts.inter(
-                  fontSize: 16, fontWeight: FontWeight.w600),
+              style: tt.headlineSmall,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.s2),
             Text(
               '¿Quieres preguntarle a Captus IA?',
-              style: GoogleFonts.inter(
-                  fontSize: 14, color: AppColors.textSecondary),
+              style: tt.bodyMedium!
+                  .copyWith(color: AppColors.textSecondary),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.s6),
             OutlinedButton.icon(
               onPressed: () => context.push('/ai'),
-              icon: const Text('🤖', style: TextStyle(fontSize: 16)),
+              icon: const Text('🤖',
+                  style: TextStyle(fontSize: 16)),
               label: const Text('Preguntar al asistente'),
             ),
           ],

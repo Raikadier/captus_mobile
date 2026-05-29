@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/categories_provider.dart';
 import '../../../models/category.dart';
+import '../../../shared/widgets/captus_fab.dart';
 
 class CategoriesManagementScreen extends ConsumerWidget {
   const CategoriesManagementScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tt = Theme.of(context).textTheme;
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
 
     return Scaffold(
@@ -28,12 +30,15 @@ class CategoriesManagementScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
-              const SizedBox(height: 16),
-              Text('Error: $error'),
-              const SizedBox(height: 16),
+              const Icon(Icons.error_outline,
+                  size: 48, color: AppColors.error),
+              const SizedBox(height: AppSpacing.s4),
+              Text('Error: $error', style: tt.bodyMedium),
+              const SizedBox(height: AppSpacing.s4),
               ElevatedButton(
-                onPressed: () => ref.read(categoriesNotifierProvider.notifier).refreshCategories(),
+                onPressed: () => ref
+                    .read(categoriesNotifierProvider.notifier)
+                    .refreshCategories(),
                 child: const Text('Reintentar'),
               ),
             ],
@@ -42,7 +47,7 @@ class CategoriesManagementScreen extends ConsumerWidget {
         data: (categories) => categories.isEmpty
             ? _EmptyState(onAdd: () => _showCreateDialog(context, ref))
             : ListView.builder(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppSpacing.s4),
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
                   final category = categories[index];
@@ -50,36 +55,35 @@ class CategoriesManagementScreen extends ConsumerWidget {
                     category: category,
                     onEdit: category.isGeneral
                         ? null
-                        : () => _showEditDialog(context, ref, category),
+                        : () =>
+                            _showEditDialog(context, ref, category),
                     onDelete: category.isGeneral
                         ? null
-                        : () => _showDeleteDialog(context, ref, category),
+                        : () => _showDeleteDialog(
+                            context, ref, category),
                   );
                 },
               ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: CaptusFab(
         onPressed: () => _showCreateDialog(context, ref),
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: AppColors.textOnPrimary),
+        icon: Icons.add_rounded,
+        tooltip: 'Nueva categoría',
       ),
     );
   }
 
   void _showCreateDialog(BuildContext context, WidgetRef ref) {
     final controller = TextEditingController();
-
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Nueva Categoría'),
+        title: const Text('Nueva categoría'),
         content: TextField(
           controller: controller,
           autofocus: true,
           decoration: const InputDecoration(
-            hintText: 'Nombre de la categoría',
-            border: OutlineInputBorder(),
-          ),
+              hintText: 'Nombre de la categoría'),
           textCapitalization: TextCapitalization.sentences,
         ),
         actions: [
@@ -91,9 +95,10 @@ class CategoriesManagementScreen extends ConsumerWidget {
             onPressed: () async {
               final name = controller.text.trim();
               if (name.isEmpty) return;
-
               Navigator.pop(context);
-              await ref.read(categoriesNotifierProvider.notifier).create(name);
+              await ref
+                  .read(categoriesNotifierProvider.notifier)
+                  .create(name);
             },
             child: const Text('Crear'),
           ),
@@ -102,20 +107,19 @@ class CategoriesManagementScreen extends ConsumerWidget {
     );
   }
 
-  void _showEditDialog(BuildContext context, WidgetRef ref, CategoryModel category) {
-    final controller = TextEditingController(text: category.name);
-
+  void _showEditDialog(
+      BuildContext context, WidgetRef ref, CategoryModel category) {
+    final controller =
+        TextEditingController(text: category.name);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Editar Categoría'),
+        title: const Text('Editar categoría'),
         content: TextField(
           controller: controller,
           autofocus: true,
           decoration: const InputDecoration(
-            hintText: 'Nombre de la categoría',
-            border: OutlineInputBorder(),
-          ),
+              hintText: 'Nombre de la categoría'),
           textCapitalization: TextCapitalization.sentences,
         ),
         actions: [
@@ -127,9 +131,10 @@ class CategoriesManagementScreen extends ConsumerWidget {
             onPressed: () async {
               final name = controller.text.trim();
               if (name.isEmpty) return;
-
               Navigator.pop(context);
-              await ref.read(categoriesNotifierProvider.notifier).updateCategory(category.id, name);
+              await ref
+                  .read(categoriesNotifierProvider.notifier)
+                  .updateCategory(category.id, name);
             },
             child: const Text('Guardar'),
           ),
@@ -138,22 +143,27 @@ class CategoriesManagementScreen extends ConsumerWidget {
     );
   }
 
-  void _showDeleteDialog(BuildContext context, WidgetRef ref, CategoryModel category) {
+  void _showDeleteDialog(
+      BuildContext context, WidgetRef ref, CategoryModel category) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminar Categoría'),
-        content: Text('¿Estás seguro de que quieres eliminar "${category.name}"?'),
+        title: const Text('Eliminar categoría'),
+        content: Text(
+            '¿Estás seguro de que quieres eliminar "${category.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancelar'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
+            style: FilledButton.styleFrom(
+                backgroundColor: AppColors.error),
             onPressed: () async {
               Navigator.pop(context);
-              await ref.read(categoriesNotifierProvider.notifier).deleteCategory(category.id);
+              await ref
+                  .read(categoriesNotifierProvider.notifier)
+                  .deleteCategory(category.id);
             },
             child: const Text('Eliminar'),
           ),
@@ -165,41 +175,30 @@ class CategoriesManagementScreen extends ConsumerWidget {
 
 class _EmptyState extends StatelessWidget {
   final VoidCallback onAdd;
-
   const _EmptyState({required this.onAdd});
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.category_outlined,
-            size: 64,
-            color: AppColors.textDisabled,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'No hay categorías',
-            style: GoogleFonts.inter(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Crea tu primera categoría',
-            style: GoogleFonts.inter(
-              color: AppColors.textDisabled,
-            ),
-          ),
-          const SizedBox(height: 24),
+          const Icon(Icons.category_outlined,
+              size: 64, color: AppColors.textDisabled),
+          const SizedBox(height: AppSpacing.s4),
+          Text('No hay categorías',
+              style: tt.headlineMedium!
+                  .copyWith(color: AppColors.textSecondary)),
+          const SizedBox(height: AppSpacing.s2),
+          Text('Crea tu primera categoría',
+              style: tt.bodyMedium!
+                  .copyWith(color: AppColors.textDisabled)),
+          const SizedBox(height: AppSpacing.s6),
           FilledButton.icon(
             onPressed: onAdd,
             icon: const Icon(Icons.add),
-            label: const Text('Crear Categoría'),
+            label: const Text('Crear categoría'),
           ),
         ],
       ),
@@ -220,15 +219,17 @@ class _CategoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.s3),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.s4, vertical: AppSpacing.s2),
         leading: Container(
           width: 40,
           height: 40,
@@ -239,25 +240,20 @@ class _CategoryTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(
-            category.isGeneral ? Icons.folder_rounded : Icons.label_outline_rounded,
-            color: category.isGeneral ? AppColors.primary : AppColors.textSecondary,
+            category.isGeneral
+                ? Icons.folder_rounded
+                : Icons.label_outline_rounded,
+            color: category.isGeneral
+                ? AppColors.primary
+                : AppColors.textSecondary,
           ),
         ),
-        title: Text(
-          category.name,
-          style: GoogleFonts.inter(
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
-        ),
+        title: Text(category.name,
+            style: tt.headlineSmall),
         subtitle: category.isGeneral
-            ? Text(
-                'Categoría predeterminada',
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
-              )
+            ? Text('Categoría predeterminada',
+                style: tt.bodySmall!
+                    .copyWith(color: AppColors.textSecondary))
             : null,
         trailing: category.isGeneral
             ? null
@@ -270,7 +266,8 @@ class _CategoryTile extends StatelessWidget {
                     color: AppColors.textSecondary,
                   ),
                   IconButton(
-                    icon: const Icon(Icons.delete_outline, size: 20),
+                    icon:
+                        const Icon(Icons.delete_outline, size: 20),
                     onPressed: onDelete,
                     color: AppColors.error,
                   ),

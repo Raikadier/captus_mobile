@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
+import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -25,7 +27,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   int _selectedRole = 0;
 
   static final _emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
-  static final _passwordRegex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$');
+  static final _passwordRegex =
+      RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$');
 
   static const _taglines = [
     'Tu academia, tu ritmo',
@@ -75,17 +78,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
-    // Navigate to success screen with email for confirmation instructions
     context.go('/register/success', extra: _emailCtrl.text.trim());
   }
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: const Text('Crear cuenta'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -94,13 +95,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.s6),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.s2),
                 Center(
                   child: Column(
                     children: [
@@ -118,35 +120,28 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           ],
                         ),
                         child: const Center(
-                          child: Text('🌵', style: TextStyle(fontSize: 32)),
+                          child: Text('🌵',
+                              style: TextStyle(fontSize: 32)),
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Captus',
-                        style: GoogleFonts.inter(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.s4),
+                      Text('Captus', style: tt.displaySmall),
+                      const SizedBox(height: AppSpacing.s2),
                       Text(
                         _getRandomTagline(),
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: tt.bodySmall!
+                            .copyWith(color: AppColors.textSecondary),
                         textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: AppSpacing.s8),
 
                 // Role selector
-                Text('Soy...', style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 12),
+                Text('Soy...',
+                    style: tt.titleMedium),
+                const SizedBox(height: AppSpacing.s3),
                 Row(
                   children: [
                     _RoleCard(
@@ -155,7 +150,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       isSelected: _selectedRole == 0,
                       onTap: () => setState(() => _selectedRole = 0),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.s3),
                     _RoleCard(
                       label: 'Docente',
                       emoji: '📚',
@@ -164,39 +159,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.s6),
                 TextFormField(
                   controller: _nameCtrl,
                   textCapitalization: TextCapitalization.words,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Nombre completo',
-                    labelStyle: GoogleFonts.inter(),
                     hintText: 'Ej. Juan Pérez',
-                    hintStyle: GoogleFonts.inter(),
-                    prefixIcon: const Icon(Icons.person_outline_rounded),
-                    filled: true,
-                    fillColor: AppColors.surface,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.border, width: 0.5),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.border, width: 0.5),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.error, width: 1),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.error, width: 1.5),
-                    ),
+                    prefixIcon: Icon(Icons.person_outline_rounded),
                   ),
                   validator: (v) {
                     if (v == null || v.trim().length < 4) {
@@ -205,39 +175,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s4),
                 TextFormField(
                   controller: _emailCtrl,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Correo electrónico',
-                    labelStyle: GoogleFonts.inter(),
                     hintText: 'usuario@ejemplo.com',
-                    hintStyle: GoogleFonts.inter(),
-                    prefixIcon: const Icon(Icons.email_outlined),
-                    filled: true,
-                    fillColor: AppColors.surface,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.border, width: 0.5),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.border, width: 0.5),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.error, width: 1),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.error, width: 1.5),
-                    ),
+                    prefixIcon: Icon(Icons.email_outlined),
                   ),
                   validator: (v) {
                     if (v == null || !_emailRegex.hasMatch(v.trim())) {
@@ -246,46 +191,22 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s4),
                 TextFormField(
                   controller: _passwordCtrl,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     labelText: 'Contraseña',
-                    labelStyle: GoogleFonts.inter(),
                     prefixIcon: const Icon(Icons.lock_outline_rounded),
                     suffixIcon: IconButton(
                       icon: Icon(_obscurePassword
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined),
-                      onPressed: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
+                      onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword),
                     ),
-                    helperText: 'Mín. 8 caracteres, mayúscula, minúscula y número',
-                    helperStyle: GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary),
-                    filled: true,
-                    fillColor: AppColors.surface,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.border, width: 0.5),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.border, width: 0.5),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.error, width: 1),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.error, width: 1.5),
-                    ),
+                    helperText:
+                        'Mín. 8 caracteres, mayúscula, minúscula y número',
                   ),
                   validator: (v) {
                     if (v == null || !_passwordRegex.hasMatch(v)) {
@@ -294,43 +215,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s4),
                 TextFormField(
                   controller: _confirmCtrl,
                   obscureText: _obscureConfirmPassword,
                   decoration: InputDecoration(
                     labelText: 'Confirmar contraseña',
-                    labelStyle: GoogleFonts.inter(),
                     prefixIcon: const Icon(Icons.lock_outline_rounded),
                     suffixIcon: IconButton(
                       icon: Icon(_obscureConfirmPassword
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined),
-                      onPressed: () => setState(
-                          () => _obscureConfirmPassword = !_obscureConfirmPassword),
-                    ),
-                    filled: true,
-                    fillColor: AppColors.surface,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.border, width: 0.5),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.border, width: 0.5),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.error, width: 1),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+                      onPressed: () => setState(() =>
+                          _obscureConfirmPassword =
+                              !_obscureConfirmPassword),
                     ),
                   ),
                   validator: (v) {
@@ -344,49 +242,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   },
                 ),
                 if (_errorMessage != null) ...[
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: AppColors.error.withAlpha(25),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.error.withAlpha(76)),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.error_outline_rounded,
-                            color: AppColors.error, size: 16),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(_errorMessage!,
-                              style: GoogleFonts.inter(
-                                  fontSize: 12, color: AppColors.error)),
-                        ),
-                      ],
-                    ),
-                  ),
+                  const SizedBox(height: AppSpacing.s3),
+                  _ErrorBanner(message: _errorMessage!),
                 ],
-                const SizedBox(height: 32),
+                const SizedBox(height: AppSpacing.s8),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _register,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.textOnPrimary,
-                    minimumSize: const Size.fromHeight(48),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    elevation: 0,
-                  ),
                   child: _isLoading
                       ? const SizedBox(
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: AppColors.textOnPrimary),
+                              strokeWidth: 2,
+                              color: AppColors.textOnPrimary),
                         )
                       : const Text('Continuar'),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.s6),
               ],
             ),
           ),
@@ -411,12 +283,14 @@ class _RoleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Expanded(
-      child: GestureDetector(
+      child: CaptusPressable(
         onTap: onTap,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 20),
+          duration: AppDurations.fast,
+          curve: AppCurves.standard,
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.s5),
           decoration: BoxDecoration(
             color: isSelected ? AppColors.primaryDark : AppColors.surface,
             borderRadius: BorderRadius.circular(12),
@@ -428,18 +302,48 @@ class _RoleCard extends StatelessWidget {
           child: Column(
             children: [
               Text(emoji, style: const TextStyle(fontSize: 28)),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.s2),
               Text(
                 label,
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                style: tt.headlineSmall!.copyWith(
+                  color: isSelected
+                      ? AppColors.primary
+                      : AppColors.textPrimary,
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ErrorBanner extends StatelessWidget {
+  final String message;
+  const _ErrorBanner({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s3, vertical: AppSpacing.s2 + 2),
+      decoration: BoxDecoration(
+        color: AppColors.error.withAlpha(25),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.error.withAlpha(76)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline_rounded,
+              color: AppColors.error, size: 16),
+          const SizedBox(width: AppSpacing.s2),
+          Expanded(
+            child: Text(message,
+                style: tt.bodySmall!.copyWith(color: AppColors.error)),
+          ),
+        ],
       ),
     );
   }
