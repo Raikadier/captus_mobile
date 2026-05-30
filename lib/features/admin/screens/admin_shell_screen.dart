@@ -35,7 +35,6 @@ class AdminShellScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     final idx = _selectedIndex(context);
     return Scaffold(
       restorationId: 'admin_shell_screen',

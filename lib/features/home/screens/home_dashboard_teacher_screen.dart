@@ -361,7 +361,6 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     return Container(
       margin: const EdgeInsets.fromLTRB(
           AppSpacing.s4, 0, AppSpacing.s4, AppSpacing.s3),
@@ -464,7 +463,6 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     return Container(width: 0.5, height: 40, color: AppColors.border);
   }
 }

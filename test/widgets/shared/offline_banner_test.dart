@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:captus_mobile/shared/widgets/offline_banner.dart';
-import 'package:captus_mobile/core/providers/connectivity_provider.dart';
 import '../../helpers/test_helpers.dart';
 
 void main() {

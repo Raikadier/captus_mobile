@@ -364,7 +364,6 @@ class _InfoTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.s4),
       children: [

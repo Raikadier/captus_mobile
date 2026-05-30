@@ -12,10 +12,6 @@ class CategorySectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
-    const sectionDecoration = BoxDecoration(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.all(Radius.circular(AppRadius.r7)),
-    );
 
     if (stats.categoryTaskCounts.isEmpty) {
       return Container(

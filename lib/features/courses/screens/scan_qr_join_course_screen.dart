@@ -225,7 +225,6 @@ class _ScannerOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     return IgnorePointer(
       child: Stack(
         children: [

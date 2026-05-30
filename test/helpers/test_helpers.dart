@@ -3,6 +3,8 @@
 /// Usage:
 ///   await tester.pumpWidget(makeTestableWidget(child));
 ///   await tester.pumpWidget(makeTestableWidget(child, overrides: [...]));
+library;
+
 
 // All imports MUST come first in Dart
 import 'package:flutter/material.dart';

@@ -937,7 +937,6 @@ Future<void> _showAssignTaskSheet({
     ),
     builder: (sheetContext) => StatefulBuilder(
       builder: (sheetContext, setSheetState) {
-        final tt = Theme.of(sheetContext).textTheme;
         final canSubmit =
             titleCtrl.text.trim().isNotEmpty && dueDate != null && !saving;
         return Padding(

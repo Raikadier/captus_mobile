@@ -11,7 +11,6 @@ class QuickStatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     return Row(
       children: [
         Expanded(child: StatCard(icon: Icons.check_circle_rounded, iconColor: AppColors.primary, label: 'Completadas', value: stats.completedTasks, subtitle: 'en total')),

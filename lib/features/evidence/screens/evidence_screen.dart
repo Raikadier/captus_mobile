@@ -284,7 +284,6 @@ class _EvidencePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     if (item.imagePath != null) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(AppRadius.r5),

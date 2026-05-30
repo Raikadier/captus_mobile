@@ -4,6 +4,8 @@
 /// All values map to BorderRadius.circular(N) for consistency.
 ///
 /// Reference: CAPTUS_DESIGN_SYSTEM.md §4
+library;
+
 import 'package:flutter/material.dart';
 
 class AppRadius {

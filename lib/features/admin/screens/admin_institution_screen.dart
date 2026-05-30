@@ -154,7 +154,6 @@ class _Field extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.s4),
       child: TextField(

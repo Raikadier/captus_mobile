@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:captus_mobile/core/services/local_storage_service.dart';
-import 'package:captus_mobile/core/providers/connectivity_provider.dart';
 import 'package:captus_mobile/shared/widgets/offline_banner.dart';
 import 'package:captus_mobile/shared/widgets/streak_badge.dart';
 import 'package:captus_mobile/shared/widgets/empty_state.dart';

@@ -54,7 +54,6 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     return Scaffold(
       restorationId: 'forgot_password_screen',
       backgroundColor: AppColors.background,

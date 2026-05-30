@@ -140,7 +140,6 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
       ),
       builder: (ctx) {
-        final tt = Theme.of(ctx).textTheme;
         return Padding(
           padding: EdgeInsets.only(
             left: AppSpacing.s6,

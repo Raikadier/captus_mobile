@@ -1,7 +1,7 @@
 /// E2E Navigation smoke tests — run on device/emulator.
 ///
 /// How to run:
-///   flutter test integration_test/app_navigation_test.dart --device-id <id>
+///   flutter test integration_test/app_navigation_test.dart --device-id `<id>`
 ///
 /// These tests launch the full app and verify that key navigation flows
 /// complete without crashing. They do NOT require an authenticated user;
