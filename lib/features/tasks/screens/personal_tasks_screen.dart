@@ -484,7 +484,7 @@ class _DateFilterChip extends StatelessWidget {
             ),
             if (isActive) ...[
               const SizedBox(width: AppSpacing.s1),
-              GestureDetector(
+              CaptusPressable(
                 onTap: onClear,
                 child: const Icon(Icons.close,
                     size: 16, color: AppColors.primary),

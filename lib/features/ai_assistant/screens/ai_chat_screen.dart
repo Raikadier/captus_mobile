@@ -11,6 +11,7 @@ import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/ai_chat_provider.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class AiChatScreen extends ConsumerStatefulWidget {
   const AiChatScreen({super.key});
@@ -767,7 +768,7 @@ class _SuggestionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return CaptusPressable(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
@@ -833,7 +834,7 @@ class _ThinkingStepsState extends State<_ThinkingSteps> {
     final count = widget.steps.length;
     final allOk = widget.steps.every((s) => s.success);
 
-    return GestureDetector(
+    return CaptusPressable(
       onTap: () => setState(() => _expanded = !_expanded),
       child: AnimatedSize(
         duration: const Duration(milliseconds: 220),

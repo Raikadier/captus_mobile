@@ -11,6 +11,7 @@ import '../providers/achievements_provider.dart';
 import '../../../shared/widgets/loading_shimmer.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_radius.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class AchievementsScreen extends ConsumerStatefulWidget {
   const AchievementsScreen({super.key});
@@ -302,7 +303,7 @@ class _FilterChips extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     final tt = Theme.of(context).textTheme;
-    return GestureDetector(
+    return CaptusPressable(
       onTap: onTap,
       child: AnimatedContainer(
         duration: AppDurations.fast,
@@ -357,7 +358,7 @@ class _AchievementTile extends StatelessWidget {
     final difficulty = def.difficulty;
     final unlocked = achievement.isCompleted;
 
-    return GestureDetector(
+    return CaptusPressable(
       onTap: () => _showDetailSheet(context, achievement),
       child: Container(
         padding: const EdgeInsets.all(10),

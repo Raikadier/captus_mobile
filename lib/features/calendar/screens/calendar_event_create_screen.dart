@@ -9,6 +9,7 @@ import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/events_provider.dart';
 import '../../../core/utils/app_errors.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class CalendarEventCreateScreen extends ConsumerStatefulWidget {
   final String? date;
@@ -214,7 +215,7 @@ class _CalendarEventCreateScreenState
               children: _types.asMap().entries.map((e) {
                 final isSelected = _typeIndex == e.key;
                 final color = _typeColors[e.key];
-                return GestureDetector(
+                return CaptusPressable(
                   onTap: () => setState(() => _typeIndex = e.key),
                   child: AnimatedContainer(
                     duration: AppDurations.fast,
@@ -262,7 +263,7 @@ class _CalendarEventCreateScreenState
             ),
             SizedBox(height: AppSpacing.s4),
 
-            GestureDetector(
+            CaptusPressable(
               onTap: _pickStartDate,
               child: Container(
                 padding: const EdgeInsets.all(14),
@@ -291,7 +292,7 @@ class _CalendarEventCreateScreenState
             SizedBox(height: AppSpacing.s4),
 
             if (!_allDay) ...[
-              GestureDetector(
+              CaptusPressable(
                 onTap: _pickEndDate,
                 child: Container(
                   padding: const EdgeInsets.all(14),

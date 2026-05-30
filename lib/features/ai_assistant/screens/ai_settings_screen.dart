@@ -8,6 +8,7 @@ import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/ai_chat_provider.dart';
 import '../../../core/providers/ai_settings_provider.dart';
 import '../../../core/providers/conversations_provider.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class AiSettingsScreen extends ConsumerWidget {
   const AiSettingsScreen({super.key});
@@ -146,7 +147,7 @@ class _SettingsBody extends ConsumerWidget {
                     .map((e) {
                   final isSelected = settings.toneIndex == e.key;
                   return Expanded(
-                    child: GestureDetector(
+                    child: CaptusPressable(
                       onTap: () =>
                           _update(ref, settings.copyWith(toneIndex: e.key)),
                       child: AnimatedContainer(

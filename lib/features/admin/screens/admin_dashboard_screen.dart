@@ -7,6 +7,7 @@ import '../../../shared/widgets/cactus_refresh.dart';
 import '../services/admin_service.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_radius.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -298,7 +299,7 @@ class _QuickAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return CaptusPressable(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.s4),

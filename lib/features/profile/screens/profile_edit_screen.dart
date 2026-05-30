@@ -9,6 +9,7 @@ import '../../../core/providers/auth_provider.dart';
 import '../../../core/services/avatar_service.dart';
 import '../../../core/constants/app_radius.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class ProfileEditScreen extends ConsumerStatefulWidget {
   const ProfileEditScreen({super.key});
@@ -252,7 +253,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
               Center(
                 child: Stack(
                   children: [
-                    GestureDetector(
+                    CaptusPressable(
                       onTap: _showImageSourcePicker,
                       child: Container(
                         width: 96,
@@ -295,7 +296,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                     ),
                     Positioned(
                       bottom: 0, right: 0,
-                      child: GestureDetector(
+                      child: CaptusPressable(
                         onTap: _showImageSourcePicker,
                         child: Container(
                           padding: const EdgeInsets.all(AppSpacing.s2),

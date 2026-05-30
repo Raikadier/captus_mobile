@@ -6,6 +6,7 @@ import '../providers/achievements_provider.dart';
 import '../../../models/achievement.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_radius.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class AchievementsCard extends ConsumerWidget {
   const AchievementsCard({super.key});
@@ -105,7 +106,7 @@ class AchievementsCard extends ConsumerWidget {
                     ),
                   ],
                   const SizedBox(height: 14),
-                  GestureDetector(
+                  CaptusPressable(
                     onTap: () => context.push('/statistics/achievements'),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

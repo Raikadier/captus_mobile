@@ -6,6 +6,7 @@ import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/courses_provider.dart';
 import '../../../models/course.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class CourseDetailStudentScreen extends ConsumerStatefulWidget {
   final String courseId;
@@ -254,7 +255,7 @@ class _ActivityTile extends StatelessWidget {
 
     final daysLeft = activity.dueDate.difference(DateTime.now()).inDays;
 
-    return GestureDetector(
+    return CaptusPressable(
       onTap: () => context.push('/courses/$courseId/activity/${activity.id}'),
       child: Container(
         padding: const EdgeInsets.all(14),

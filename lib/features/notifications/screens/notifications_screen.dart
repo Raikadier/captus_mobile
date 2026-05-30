@@ -6,6 +6,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/notifications_provider.dart';
 import '../../../models/app_notification.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
@@ -84,7 +85,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             child: Row(
               children: ['Todas', 'Sin leer'].asMap().entries.map((e) {
                 final isSelected = _selectedTab == e.key;
-                return GestureDetector(
+                return CaptusPressable(
                   onTap: () => setState(() => _selectedTab = e.key),
                   child: Container(
                     margin: const EdgeInsets.only(right: AppSpacing.s2),
@@ -169,7 +170,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                       ),
                       onDismissed: (_) =>
                           ref.read(notificationsProvider.notifier).remove(n.id),
-                      child: GestureDetector(
+                      child: CaptusPressable(
                         onTap: () {
                           ref
                               .read(notificationsProvider.notifier)

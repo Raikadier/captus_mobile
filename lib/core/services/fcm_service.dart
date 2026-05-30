@@ -8,6 +8,7 @@ import 'api_client.dart';
 import 'router_service.dart';
 import '../constants/app_radius.dart';
 import '../constants/app_spacing.dart';
+import '../../shared/widgets/captus_pressable.dart';
 
 // ── Background handler (top-level, required by Firebase) ─────────────────────
 @pragma('vm:entry-point')
@@ -159,7 +160,7 @@ class _InAppBanner extends StatelessWidget {
       right: AppSpacing.s3,
       child: Material(
         color: Colors.transparent,
-        child: GestureDetector(
+        child: CaptusPressable(
           onTap: onTap,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
@@ -204,7 +205,7 @@ class _InAppBanner extends StatelessWidget {
                     ],
                   ),
                 ),
-                GestureDetector(
+                CaptusPressable(
                   onTap: onDismiss,
                   child: const Icon(Icons.close_rounded,
                       size: 16, color: AppColors.textDisabled),

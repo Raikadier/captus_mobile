@@ -14,6 +14,7 @@ import '../widgets/activity_summary_section.dart';
 import '../widgets/achievements_card.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_radius.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class StatisticsScreen extends ConsumerStatefulWidget {
   const StatisticsScreen({super.key});
@@ -119,7 +120,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 spacing: 8, runSpacing: 8,
                 children: [3, 5, 7, 10, 15, 20].map((goal) {
                   final isSelected = selectedGoal == goal;
-                  return GestureDetector(
+                  return CaptusPressable(
                     onTap: () => setState(() => selectedGoal = goal),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),

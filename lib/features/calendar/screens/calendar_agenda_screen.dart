@@ -7,6 +7,7 @@ import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../models/task.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class CalendarAgendaScreen extends ConsumerWidget {
   const CalendarAgendaScreen({super.key});
@@ -127,7 +128,7 @@ class CalendarAgendaScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    ...entry.value.map((task) => GestureDetector(
+                    ...entry.value.map((task) => CaptusPressable(
                           onTap: () {
                             if (task.id != null) {
                               context.push('/tasks/${task.id}');

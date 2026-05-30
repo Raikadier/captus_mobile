@@ -7,6 +7,7 @@ import '../../../models/note.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_radius.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class NotesScreen extends ConsumerStatefulWidget {
   const NotesScreen({super.key});
@@ -361,7 +362,7 @@ class _PinnedNoteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
-    return GestureDetector(
+    return CaptusPressable(
       onTap: onTap,
       child: Container(
         width: 140,
@@ -387,7 +388,7 @@ class _PinnedNoteCard extends StatelessWidget {
                     color: AppColors.primary,
                   ),
                   const Spacer(),
-                  GestureDetector(
+                  CaptusPressable(
                     onTap: onTogglePin,
                     child: Icon(
                       Icons.close,

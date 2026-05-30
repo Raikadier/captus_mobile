@@ -9,6 +9,7 @@ import '../../../core/constants/app_animations.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../core/utils/app_errors.dart';
 import '../../../models/task.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class PersonalTaskDetailScreen extends ConsumerStatefulWidget {
   final int taskId;
@@ -237,7 +238,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GestureDetector(
+                        CaptusPressable(
                           onTap: _isDisabled ? null : _completeTask,
                           child: AnimatedContainer(
                             duration: AppDurations.fast,
@@ -375,7 +376,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
             ],
             if (!_isDisabled) ...[
               const SizedBox(height: AppSpacing.s6),
-              GestureDetector(
+              CaptusPressable(
                 onTap: () => context.push('/tasks/personal/create?parentTaskId=${widget.taskId}'),
                 child: Container(
                   padding: const EdgeInsets.all(14),
@@ -443,7 +444,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
       ),
       child: Row(
         children: [
-          GestureDetector(
+          CaptusPressable(
             onTap: _isDisabled
                 ? null
                 : () => _toggleSubtask(subtask.id, !subtask.isCompleted),
@@ -483,7 +484,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
             ),
           ),
           if (!_isDisabled)
-            GestureDetector(
+            CaptusPressable(
               onTap: () async {
                 await ref.read(tasksServiceProvider).deleteSubtask(int.parse(subtask.id));
                 await _loadTask();

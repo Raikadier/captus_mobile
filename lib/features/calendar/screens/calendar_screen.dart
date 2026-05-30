@@ -13,6 +13,7 @@ import '../../../core/providers/events_provider.dart';
 import '../../../models/task.dart';
 import '../../../shared/widgets/captus_fab.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
@@ -193,7 +194,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  GestureDetector(
+                  CaptusPressable(
                     onTap: _showMonthYearPicker,
                     child: Row(
                       children: [
@@ -576,7 +577,7 @@ class _FormatButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
-    return GestureDetector(
+    return CaptusPressable(
       onTap: onTap,
       child: AnimatedContainer(
         duration: AppDurations.fast,

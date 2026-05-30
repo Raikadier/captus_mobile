@@ -6,6 +6,7 @@ import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/courses_provider.dart';
 import '../../../models/course.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class ActivityDetailStudentScreen extends ConsumerStatefulWidget {
   final String courseId;
@@ -387,7 +388,7 @@ class _UploadView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (requiresFile) ...[
-          GestureDetector(
+          CaptusPressable(
             onTap: onFileTap,
             child: Container(
               width: double.infinity,

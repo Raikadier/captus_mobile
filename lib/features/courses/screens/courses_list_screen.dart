@@ -9,6 +9,7 @@ import '../../../models/course.dart';
 import '../../../shared/widgets/captus_fab.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/staggered_list.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class CoursesListScreen extends ConsumerWidget {
   const CoursesListScreen({super.key});
@@ -102,7 +103,7 @@ class _CourseCard extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
     final color = AppColors.courseColor(course.colorIndex);
 
-    return GestureDetector(
+    return CaptusPressable(
       onTap: () => context.push('/courses/${course.id}'),
       child: Container(
         decoration: BoxDecoration(

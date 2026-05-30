@@ -6,6 +6,7 @@ import '../../../core/constants/app_animations.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_radius.dart';
 import '../../../core/services/api_client.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 enum _StudyMode { flashcards, quiz, resumen, mapaConceptual }
 
@@ -229,7 +230,7 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                 runSpacing: 8,
                 children: _StudyMode.values.map((mode) {
                   final selected = _selectedMode == mode;
-                  return GestureDetector(
+                  return CaptusPressable(
                     onTap: () => setState(() => _selectedMode = mode),
                     child: AnimatedContainer(
                       duration: AppDurations.fast,

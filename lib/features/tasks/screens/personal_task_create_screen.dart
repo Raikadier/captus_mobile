@@ -9,6 +9,7 @@ import '../../../core/constants/app_animations.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../core/providers/categories_provider.dart';
 import '../../../models/task.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class PersonalTaskCreateScreen extends ConsumerStatefulWidget {
   final int? taskId;
@@ -364,7 +365,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                           : 'Baja';
 
                   return Expanded(
-                    child: GestureDetector(
+                    child: CaptusPressable(
                       onTap: () => setState(() => _priority = p),
                       child: AnimatedContainer(
                         duration: AppDurations.fast,
@@ -398,7 +399,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 10),
-              GestureDetector(
+              CaptusPressable(
                 onTap: _pickDate,
                 child: Container(
                   padding: const EdgeInsets.all(14),
@@ -432,7 +433,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                         ),
                       ),
                       if (_dueDate != null)
-                        GestureDetector(
+                        CaptusPressable(
                           onTap: () => setState(() => _dueDate = null),
                           child: Icon(Icons.close_rounded, size: 18),
                         ),
@@ -552,7 +553,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                     ),
                   ),
                   const SizedBox(width: AppSpacing.s2),
-                  GestureDetector(
+                  CaptusPressable(
                     onTap: _addSubtask,
                     child: Container(
                       width: 44,
@@ -596,7 +597,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
-          GestureDetector(
+          CaptusPressable(
             onTap: () => setState(() => _subtasks.removeAt(index)),
             child: Icon(
               Icons.close,
@@ -625,7 +626,7 @@ class _QuickDateChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return CaptusPressable(
       onTap: onTap,
       child: AnimatedContainer(
         duration: AppDurations.fast,

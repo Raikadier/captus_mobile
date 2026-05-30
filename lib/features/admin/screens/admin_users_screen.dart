@@ -5,6 +5,7 @@ import '../../../core/utils/app_errors.dart';
 import '../services/admin_service.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_radius.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class AdminUsersScreen extends StatefulWidget {
   const AdminUsersScreen({super.key});
@@ -180,7 +181,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s1),
               children: _roleLabels.entries.map((e) {
                 final selected = _roleTab == e.key;
-                return GestureDetector(
+                return CaptusPressable(
                   onTap: () {
                     setState(() => _roleTab = e.key);
                     _load();
@@ -255,7 +256,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                               ),
                               _RoleBadge(role: role),
                               const SizedBox(width: AppSpacing.s2),
-                              GestureDetector(
+                              CaptusPressable(
                                 onTap: () => _confirmRemove(u['id'].toString(), name),
                                 child: const Icon(Icons.remove_circle_outline,
                                   color: AppColors.error, size: 20),

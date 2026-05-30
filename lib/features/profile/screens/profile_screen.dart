@@ -9,6 +9,7 @@ import '../../statistics/providers/user_statistics_provider.dart';
 import '../../statistics/providers/achievements_provider.dart';
 import '../../statistics/utils/streak_messages.dart';
 import '../../../models/achievement.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -79,7 +80,7 @@ class ProfileScreen extends ConsumerWidget {
                     Positioned(
                       bottom: 0,
                       right: 0,
-                      child: GestureDetector(
+                      child: CaptusPressable(
                         onTap: () => context.push('/profile/edit'),
                         child: Container(
                           padding: const EdgeInsets.all(6),

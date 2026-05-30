@@ -10,6 +10,7 @@ import '../../../core/services/api_client.dart';
 import '../../../core/services/local_notification_service.dart';
 import '../../../core/utils/app_errors.dart';
 import '../../../models/task.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 enum AcademicItemType {
   task,
@@ -248,7 +249,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                         : 'Baja';
 
                 return Expanded(
-                  child: GestureDetector(
+                  child: CaptusPressable(
                     onTap: () => setState(() => _priority = p),
                     child: AnimatedContainer(
                       duration: AppDurations.fast,
@@ -280,7 +281,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
             const SizedBox(height: AppSpacing.s6),
             Text('Fecha límite', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
-            GestureDetector(
+            CaptusPressable(
               onTap: _pickDate,
               child: Container(
                 padding: const EdgeInsets.all(14),
@@ -303,7 +304,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                       ),
                     ),
                     if (_dueDate != null)
-                      GestureDetector(
+                      CaptusPressable(
                         onTap: () => setState(() => _dueDate = null),
                         child: const Icon(Icons.close_rounded, size: 16),
                       ),
@@ -414,7 +415,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
     final isSelected = _type == type;
 
     return Expanded(
-      child: GestureDetector(
+      child: CaptusPressable(
         onTap: () => setState(() => _type = type),
         child: AnimatedContainer(
           duration: AppDurations.fast,

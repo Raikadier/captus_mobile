@@ -4,6 +4,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_radius.dart';
 import '../../../core/services/api_client.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class ActivityCreateScreen extends StatefulWidget {
   final String courseId;
@@ -197,7 +198,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
               runSpacing: AppSpacing.s2,
               children: _types.map((type) {
                 final selected = _selectedType == type;
-                return GestureDetector(
+                return CaptusPressable(
                   onTap: () => setState(() => _selectedType = type),
                   child: Container(
                     padding:
@@ -252,7 +253,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
             const SizedBox(height: AppSpacing.s5),
             _SectionLabel('Fecha de entrega'),
             const SizedBox(height: AppSpacing.s2),
-            GestureDetector(
+            CaptusPressable(
               onTap: _pickDate,
               child: Container(
                 padding: const EdgeInsets.all(14),
