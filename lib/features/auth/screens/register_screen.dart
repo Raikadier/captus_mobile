@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_animations.dart';
+import '../../../core/constants/app_shadows.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/auth_provider.dart';
@@ -113,12 +114,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         decoration: BoxDecoration(
                           color: AppColors.primaryDark,
                           shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withAlpha(AppAlpha.a30),
-                              blurRadius: 20,
-                            ),
-                          ],
+                          boxShadow: AppShadows.brandSm,
                         ),
                         child: const Center(
                           child: Text('🌵',

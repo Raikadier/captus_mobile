@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_shadows.dart';
 import '../../../core/providers/notes_provider.dart';
 import '../../../models/note.dart';
 import '../../../shared/widgets/empty_state.dart';
@@ -230,13 +231,7 @@ class _NoteCard extends StatelessWidget {
             color: note.accentColor.withAlpha(AppAlpha.a20),
             width: 1,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.textPrimary.withAlpha(AppAlpha.a05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow: AppShadows.xs,
         ),
         child: Padding(
           padding: const EdgeInsets.all(10),

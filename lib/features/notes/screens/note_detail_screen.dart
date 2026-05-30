@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_shadows.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/notes_provider.dart';
 import '../../../models/note.dart';
@@ -260,13 +261,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.textPrimary.withAlpha(AppAlpha.a05),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
+          boxShadow: AppShadows.smDark,
         ),
         child: SafeArea(
           child: Row(
