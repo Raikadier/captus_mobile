@@ -192,7 +192,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
           padding: const EdgeInsets.all(AppSpacing.s4),
           children: [
             _SectionLabel('Tipo de actividad'),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.s2 + 2),
             Wrap(
               spacing: AppSpacing.s2,
               runSpacing: AppSpacing.s2,
@@ -207,7 +207,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
                       color: selected
                           ? AppColors.primary.withAlpha(AppAlpha.a15)
                           : AppColors.surface,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppRadius.r4),
                       border: Border.all(
                         color: selected ? AppColors.primary : AppColors.border,
                       ),
@@ -274,7 +274,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
                           ? AppColors.primary
                           : AppColors.textDisabled,
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: AppSpacing.s2 + 2),
                     Text(
                       _dueDate != null
                           ? _formatDate(_dueDate!, _dueTime)
@@ -300,7 +300,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
                 children: [
                   const Icon(Icons.attach_file,
                       size: 20, color: AppColors.textSecondary),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: AppSpacing.s2 + 2),
                   Expanded(
                     child: Text(
                       'Requiere entrega de archivo',

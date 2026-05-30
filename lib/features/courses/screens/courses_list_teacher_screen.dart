@@ -123,7 +123,7 @@ class _TeacherCourseCard extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),

@@ -213,7 +213,7 @@ class _ActivitiesTab extends StatelessWidget {
     return ListView.separated(
       padding: const EdgeInsets.all(AppSpacing.s4),
       itemCount: course.activities.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.s2 + 2),
       itemBuilder: (context, index) {
         final activity = course.activities[index];
         return _ActivityTile(
@@ -271,7 +271,7 @@ class _ActivityTile extends StatelessWidget {
               height: 40,
               decoration: BoxDecoration(
                 color: accentColor.withAlpha(AppAlpha.a10),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppRadius.r4),
               ),
               child: Icon(
                 _typeIcon(activity.type),

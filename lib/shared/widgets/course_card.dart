@@ -53,8 +53,8 @@ class CourseCard extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: gradient,
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(15),
-                  topRight: Radius.circular(15),
+                  topLeft: Radius.circular(AppRadius.r6),
+                  topRight: Radius.circular(AppRadius.r6),
                 ),
               ),
             ),
@@ -76,7 +76,7 @@ class CourseCard extends StatelessWidget {
                           height: 36,
                           decoration: BoxDecoration(
                             color: color.withAlpha(AppAlpha.a15),
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(AppRadius.r4),
                           ),
                           child: Center(
                             child: Text(

@@ -241,7 +241,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
         ),
         backgroundColor: isError ? AppColors.error : AppColors.success,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.r4)),
       ),
     );
   }
@@ -258,7 +258,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
         ),
         backgroundColor: AppColors.success,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.r4)),
         duration: const Duration(seconds: 3),
       ),
     );
@@ -313,7 +313,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                 padding: const EdgeInsets.all(AppSpacing.s3),
                 decoration: BoxDecoration(
                   color: AppColors.surface2,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.r4),
                 ),
                 child: Row(
                   children: [
@@ -349,7 +349,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                 'Prioridad',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.s2 + 2),
               Row(
                 children: TaskPriority.values.map((p) {
                   final isSelected = _priority == p;
@@ -373,7 +373,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         decoration: BoxDecoration(
                           color: isSelected ? color.withAlpha(AppAlpha.a15) : AppColors.surface2,
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(AppRadius.r4),
                           border: Border.all(
                             color: isSelected ? color : AppColors.border,
                             width: isSelected ? 2 : 0.5,
@@ -398,7 +398,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                 'Fecha de vencimiento',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.s2 + 2),
               CaptusPressable(
                 onTap: _pickDate,
                 child: Container(
@@ -419,7 +419,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                             ? AppColors.primary
                             : AppColors.textSecondary,
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: AppSpacing.s2 + 2),
                       Expanded(
                         child: Text(
                           _dueDate != null
@@ -441,7 +441,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.s2 + 2),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -474,7 +474,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                 'Categoría',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.s2 + 2),
               categoriesAsync.when(
                 data: (categories) => Container(
                   padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3),
@@ -522,7 +522,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
               'Descripción',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.s2 + 2),
             TextFormField(
               controller: _descCtrl,
               maxLines: 4,
@@ -536,10 +536,10 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                 'Subtareas',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.s2 + 2),
               if (_subtasks.isNotEmpty) ...[
                 ...List.generate(_subtasks.length, (index) => _buildSubtaskItem(index)),
-                const SizedBox(height: 10),
+                const SizedBox(height: AppSpacing.s2 + 2),
               ],
               Row(
                 children: [
@@ -581,7 +581,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3, vertical: 10),
       decoration: BoxDecoration(
         color: AppColors.surface2,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadius.r4),
       ),
       child: Row(
         children: [
@@ -590,7 +590,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
             size: 18,
             color: AppColors.textSecondary,
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpacing.s2 + 2),
           Expanded(
             child: Text(
               _subtasks[index],
@@ -633,7 +633,7 @@ class _QuickDateChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primaryLight : AppColors.surface2,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.r8),
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.border,
           ),

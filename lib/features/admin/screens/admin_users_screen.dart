@@ -53,7 +53,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
       ),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModal) => Padding(
@@ -192,7 +192,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                     decoration: BoxDecoration(
                       color: selected ? AppColors.primary : AppColors.surface,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(AppRadius.r8),
                       border: Border.all(
                         color: selected ? AppColors.primary : AppColors.border,
                       ),
@@ -289,7 +289,7 @@ class _RoleBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.r8),
       ),
       child: Text(label,
         style: Theme.of(context).textTheme.labelMedium),

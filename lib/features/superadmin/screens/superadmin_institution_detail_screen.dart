@@ -69,7 +69,7 @@ class _SuperAdminInstitutionDetailScreenState
         isScrollControlled: true,
         backgroundColor: AppColors.surface,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
         ),
         builder: (ctx) => Padding(
           padding: EdgeInsets.only(
@@ -88,7 +88,7 @@ class _SuperAdminInstitutionDetailScreenState
                   height: 4,
                   decoration: BoxDecoration(
                     color: AppColors.border,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(AppRadius.r1),
                   ),
                 ),
               ),
@@ -97,12 +97,12 @@ class _SuperAdminInstitutionDetailScreenState
                 'Deshabilitar institución',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.s2),
               Text(
                 'Deshabilitarás "${_detail!['name']}". Escribe el motivo:',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.s4),
               Text(
                 'Motivo',
                 style: Theme.of(context).textTheme.titleSmall,
@@ -118,15 +118,15 @@ class _SuperAdminInstitutionDetailScreenState
                   filled: true,
                   fillColor: AppColors.surface,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.r4),
                     borderSide: const BorderSide(color: AppColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.r4),
                     borderSide: const BorderSide(color: AppColors.border),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.r4),
                     borderSide: const BorderSide(
                         color: AppColors.primary, width: 1.5),
                   ),
@@ -191,7 +191,7 @@ class _SuperAdminInstitutionDetailScreenState
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
       ),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
@@ -212,7 +212,7 @@ class _SuperAdminInstitutionDetailScreenState
                   height: 4,
                   decoration: BoxDecoration(
                     color: AppColors.border,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(AppRadius.r1),
                   ),
                 ),
               ),
@@ -221,7 +221,7 @@ class _SuperAdminInstitutionDetailScreenState
                 'Editar institución',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.s4),
               Text(
                 'Nombre',
                 style: Theme.of(context).textTheme.titleSmall,
@@ -236,15 +236,15 @@ class _SuperAdminInstitutionDetailScreenState
                   filled: true,
                   fillColor: AppColors.surface,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.r4),
                     borderSide: const BorderSide(color: AppColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.r4),
                     borderSide: const BorderSide(color: AppColors.border),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.r4),
                     borderSide: const BorderSide(
                         color: AppColors.primary, width: 1.5),
                   ),
@@ -252,7 +252,7 @@ class _SuperAdminInstitutionDetailScreenState
                 validator: (v) =>
                     (v == null || v.trim().isEmpty) ? 'Requerido' : null,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.s3),
               Text(
                 'Email de contacto',
                 style: Theme.of(context).textTheme.titleSmall,
@@ -268,15 +268,15 @@ class _SuperAdminInstitutionDetailScreenState
                   filled: true,
                   fillColor: AppColors.surface,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.r4),
                     borderSide: const BorderSide(color: AppColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.r4),
                     borderSide: const BorderSide(color: AppColors.border),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.r4),
                     borderSide: const BorderSide(
                         color: AppColors.primary, width: 1.5),
                   ),
@@ -352,7 +352,7 @@ class _SuperAdminInstitutionDetailScreenState
               tooltip: 'Editar',
               onPressed: _showEditDialog,
             ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.s2),
         ],
       ),
       body: _loading
@@ -371,18 +371,18 @@ class _SuperAdminInstitutionDetailScreenState
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.error_outline, size: 56, color: AppColors.error),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             'Error al cargar institución',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             _error!,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleSmall,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
             onPressed: _load,
@@ -444,7 +444,7 @@ class _SuperAdminInstitutionDetailScreenState
                     size: 22,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.s3),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -462,7 +462,7 @@ class _SuperAdminInstitutionDetailScreenState
                                   ? AppColors.success
                                   : AppColors.error)
                               .withAlpha(AppAlpha.a10),
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(AppRadius.r8),
                         ),
                         child: Text(
                           isActive ? 'Activa' : 'Deshabilitada',
@@ -492,7 +492,7 @@ class _SuperAdminInstitutionDetailScreenState
             ),
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
 
           // ── Info card ──────────────────────────────────────────────────
           _InfoCard(children: [
@@ -523,7 +523,7 @@ class _SuperAdminInstitutionDetailScreenState
               ),
           ]),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
 
           // ── Stats card ─────────────────────────────────────────────────
           Container(
@@ -552,14 +552,14 @@ class _SuperAdminInstitutionDetailScreenState
                       label: 'Miembros',
                       value: '${stats['members'] ?? 0}',
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.s3),
                     _StatTile(
                       icon: Icons.book_rounded,
                       color: AppColors.primary,
                       label: 'Cursos',
                       value: '${stats['courses'] ?? 0}',
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.s3),
                     _StatTile(
                       icon: Icons.how_to_reg_rounded,
                       color: AppColors.accentPurple,
@@ -569,14 +569,14 @@ class _SuperAdminInstitutionDetailScreenState
                   ],
                 ),
                 if (byRole.isNotEmpty) ...[
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.s4),
                   const Divider(height: 1, color: AppColors.border),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.s3),
                   Text(
                     'Por rol',
                     style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.textSecondary, letterSpacing: 0.5),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.s2),
                   _RoleRow(
                     label: 'Administradores',
                     count: '${byRole['admin'] ?? 0}',
@@ -594,7 +594,7 @@ class _SuperAdminInstitutionDetailScreenState
             ),
           ),
 
-          const SizedBox(height: 80),
+          const SizedBox(height: AppSpacing.s20),
         ],
       ),
     );
@@ -624,7 +624,7 @@ class _InfoCard extends StatelessWidget {
             'INFORMACIÓN',
             style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.textSecondary, letterSpacing: 0.5),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           ...children,
         ],
       ),
@@ -653,7 +653,7 @@ class _InfoRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, size: 16, color: AppColors.textSecondary),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpacing.s2 + 2),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

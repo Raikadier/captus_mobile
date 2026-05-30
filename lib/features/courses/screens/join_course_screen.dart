@@ -224,7 +224,7 @@ class _ResultView extends StatelessWidget {
             color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.s2 + 2),
         Text(
           subtitle,
           textAlign: TextAlign.center,

@@ -187,7 +187,7 @@ class _InAppBanner extends StatelessWidget {
                   child: const Icon(Icons.notifications_rounded,
                       size: 18, color: AppColors.textOnPrimary),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.s3),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

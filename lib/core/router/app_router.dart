@@ -701,18 +701,18 @@ class NotFoundScreen extends ConsumerWidget {
             children: [
               const Icon(Icons.search_off_rounded,
                   size: 80, color: AppColors.warning),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
               Text(
                 'Página no encontrada',
                 style: tt.displaySmall!.copyWith(color: AppColors.textPrimary),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.s3),
               Text(
                 'No pudimos encontrar la ruta: $location',
                 textAlign: TextAlign.center,
                 style: tt.headlineSmall,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.s8),
               FilledButton(
                 onPressed: () {
                   if (authState == null || !authState.isAuthenticated) {

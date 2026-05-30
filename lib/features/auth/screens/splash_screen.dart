@@ -39,7 +39,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _navigate() async {
-    await Future.delayed(const Duration(milliseconds: 1800));
+    await Future.delayed(AppDurations.splash);
     if (!mounted) return;
 
     final authAsync = ref.read(authProvider);

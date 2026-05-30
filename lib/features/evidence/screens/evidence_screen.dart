@@ -262,7 +262,7 @@ class _ActionCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, color: AppColors.primary, size: 30),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.s2 + 2),
               Text(
                 title,
                 style: tt.titleMedium!.copyWith(color: AppColors.textPrimary),

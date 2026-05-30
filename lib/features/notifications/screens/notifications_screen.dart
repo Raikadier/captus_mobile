@@ -6,6 +6,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/notifications_provider.dart';
 import '../../../models/app_notification.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../shared/widgets/captus_pressable.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
@@ -95,7 +96,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                       color: isSelected
                           ? AppColors.primary
                           : AppColors.surface2,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(AppRadius.r8),
                     ),
                     child: Text(
                       e.value,
@@ -180,7 +181,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                         child: Container(
                           color: n.isRead
                               ? Colors.transparent
-                              : AppColors.primary.withAlpha(8),
+                              : AppColors.primary.withAlpha(AppAlpha.a04),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 12),
                           child: Row(

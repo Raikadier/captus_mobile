@@ -38,7 +38,7 @@ class OfflineBanner extends ConsumerWidget {
                 children: [
                   const Icon(Icons.wifi_off_rounded,
                       size: 14, color: AppColors.textOnDark),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.s2),
                   Text(
                     'Sin conexión a internet',
                     style: tt.labelLarge!.copyWith(color: AppColors.textOnDark),

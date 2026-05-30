@@ -123,7 +123,7 @@ class _RegisterAcademicProfileScreenState
                         color: isSelected
                             ? AppColors.primary
                             : AppColors.surface2,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppRadius.r4),
                         border: Border.all(
                           color: isSelected
                               ? AppColors.primary
@@ -215,7 +215,7 @@ class _StepBar extends StatelessWidget {
             margin: EdgeInsets.only(right: i < 2 ? AppSpacing.s1 : 0),
             decoration: BoxDecoration(
               color: active ? AppColors.primary : AppColors.surface2,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(AppRadius.r1),
             ),
           ),
         );

@@ -101,7 +101,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         margin: EdgeInsets.all(AppSpacing.s4),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.r8),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -112,7 +112,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               margin: const EdgeInsets.only(top: AppSpacing.s3),
               decoration: BoxDecoration(
                 color: AppColors.border,
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(AppRadius.r1),
               ),
             ),
             SizedBox(height: AppSpacing.s4),
@@ -215,7 +215,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       Container(
                         decoration: BoxDecoration(
                           color: AppColors.surface2,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(AppRadius.r8),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -370,7 +370,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: AppSpacing.s4),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4),
               child: Row(
@@ -427,7 +427,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                 height: 40,
                                 decoration: BoxDecoration(
                                   color: _getPriorityColor(task.priority),
-                                  borderRadius: BorderRadius.circular(2),
+                                  borderRadius: BorderRadius.circular(AppRadius.r1),
                                 ),
                               ),
                               SizedBox(width: AppSpacing.s3),
@@ -449,7 +449,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                           ),
                                           decoration: BoxDecoration(
                                             color: _getPriorityColor(task.priority).withAlpha(AppAlpha.a10),
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius: BorderRadius.circular(AppRadius.r4),
                                           ),
                                           child: Text(
                                             task.priority.label,
@@ -496,7 +496,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                 height: 40,
                                 decoration: BoxDecoration(
                                   color: eventColor,
-                                  borderRadius: BorderRadius.circular(2),
+                                  borderRadius: BorderRadius.circular(AppRadius.r1),
                                 ),
                               ),
                               SizedBox(width: AppSpacing.s3),
@@ -518,7 +518,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                           ),
                                           decoration: BoxDecoration(
                                             color: eventColor.withAlpha(AppAlpha.a10),
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius: BorderRadius.circular(AppRadius.r4),
                                           ),
                                           child: Text(
                                             event.type,
@@ -584,7 +584,7 @@ class _FormatButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s2),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.r8),
         ),
         child: Text(
           label,

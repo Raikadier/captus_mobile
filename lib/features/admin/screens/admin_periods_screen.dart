@@ -52,7 +52,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
       ),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => Padding(
@@ -307,14 +307,14 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                                       color: isActive
                                           ? AppColors.success.withAlpha(AppAlpha.a20)
                                           : AppColors.primary.withAlpha(AppAlpha.a08),
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(AppRadius.r4),
                                     ),
                                     child: Icon(Icons.date_range_outlined,
                                         color: isActive
                                             ? AppColors.success
                                             : AppColors.primary),
                                   ),
-                                  const SizedBox(width: 14),
+                                  const SizedBox(width: AppSpacing.s3),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -336,7 +336,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                                                 color: AppColors.success
                                                     .withAlpha(AppAlpha.a10),
                                                 borderRadius:
-                                                    BorderRadius.circular(20),
+                                                    BorderRadius.circular(AppRadius.r8),
                                               ),
                                               child: Text('activo',
                                                   style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.success)),

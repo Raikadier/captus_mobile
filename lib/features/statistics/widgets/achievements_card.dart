@@ -68,7 +68,7 @@ class AchievementsCard extends ConsumerWidget {
                     ],
                   ),
                   if (last != null) ...[
-                    const SizedBox(height: 14),
+                    const SizedBox(height: AppSpacing.s3),
                     const Divider(height: 0, color: AppColors.border),
                     const SizedBox(height: AppSpacing.s3),
                     Row(
@@ -92,7 +92,7 @@ class AchievementsCard extends ConsumerWidget {
                         final c = a.definition.difficulty.color;
                         return Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(color: c.withAlpha(AppAlpha.a10), borderRadius: BorderRadius.circular(20), border: Border.all(color: c.withAlpha(80))),
+                          decoration: BoxDecoration(color: c.withAlpha(AppAlpha.a10), borderRadius: BorderRadius.circular(AppRadius.r8), border: Border.all(color: c.withAlpha(AppAlpha.a30))),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -105,7 +105,7 @@ class AchievementsCard extends ConsumerWidget {
                       }).toList(),
                     ),
                   ],
-                  const SizedBox(height: 14),
+                  const SizedBox(height: AppSpacing.s3),
                   CaptusPressable(
                     onTap: () => context.push('/statistics/achievements'),
                     child: Row(

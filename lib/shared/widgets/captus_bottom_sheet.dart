@@ -66,7 +66,7 @@ class CaptusBottomSheet extends StatelessWidget {
       decoration: const BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20),
+          top: Radius.circular(AppRadius.r8),
         ),
       ),
       child: SafeArea(
@@ -79,7 +79,7 @@ class CaptusBottomSheet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (showHandle) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.s3),
                 Center(
                   child: Container(
                     width: 36,
@@ -90,7 +90,7 @@ class CaptusBottomSheet extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s4),
               ] else
                 const SizedBox(height: AppSpacing.s1),
               if (title != null) ...[
@@ -102,7 +102,7 @@ class CaptusBottomSheet extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s4),
               ],
               child,
             ],

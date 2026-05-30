@@ -74,7 +74,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
       ),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => Padding(
@@ -96,7 +96,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                     height: 4,
                     decoration: BoxDecoration(
                       color: AppColors.border,
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(AppRadius.r1),
                     ),
                   ),
                 ),
@@ -105,7 +105,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                   'Agregar miembro',
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s4),
                 Text(
                   'Email del usuario *',
                   style: Theme.of(context).textTheme.titleSmall,
@@ -121,15 +121,15 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                     filled: true,
                     fillColor: AppColors.surface,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppRadius.r4),
                       borderSide: const BorderSide(color: AppColors.border),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppRadius.r4),
                       borderSide: const BorderSide(color: AppColors.border),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppRadius.r4),
                       borderSide: const BorderSide(
                           color: AppColors.primary, width: 1.5),
                     ),
@@ -140,7 +140,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.s3),
                 Text(
                   'Rol',
                   style: Theme.of(context).textTheme.titleSmall,
@@ -153,15 +153,15 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                     filled: true,
                     fillColor: AppColors.surface,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppRadius.r4),
                       borderSide: const BorderSide(color: AppColors.border),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppRadius.r4),
                       borderSide: const BorderSide(color: AppColors.border),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppRadius.r4),
                       borderSide: const BorderSide(
                           color: AppColors.primary, width: 1.5),
                     ),
@@ -244,11 +244,11 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
               filled: true,
               fillColor: AppColors.surface,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppRadius.r4),
                 borderSide: const BorderSide(color: AppColors.border),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppRadius.r4),
                 borderSide: const BorderSide(
                     color: AppColors.primary, width: 1.5),
               ),
@@ -363,7 +363,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
           'Miembros del proyecto',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
-        actions: const [SizedBox(width: 8)],
+        actions: const [SizedBox(width: AppSpacing.s2)],
       ),
       floatingActionButton: CaptusFab(
         onPressed: _showAddMemberSheet,
@@ -427,7 +427,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                                         )
                                       : null,
                                 ),
-                                const SizedBox(width: 12),
+                                const SizedBox(width: AppSpacing.s3),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
@@ -453,7 +453,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                                       color: AppColors.primary
                                           .withAlpha(AppAlpha.a10),
                                       borderRadius:
-                                          BorderRadius.circular(20),
+                                          BorderRadius.circular(AppRadius.r8),
                                     ),
                                     child: Text(
                                       'Propietario',
@@ -478,7 +478,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                                           children: [
                                             const Icon(Icons
                                                 .swap_horiz_rounded),
-                                            const SizedBox(width: 12),
+                                            const SizedBox(width: AppSpacing.s3),
                                             Text('Cambiar rol'),
                                           ],
                                         ),
@@ -492,7 +492,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                                                   .person_remove_outlined,
                                               color: AppColors.error,
                                             ),
-                                            const SizedBox(width: 12),
+                                            const SizedBox(width: AppSpacing.s3),
                                             Text(
                                               'Remover',
                                               style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.error),
@@ -517,18 +517,18 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.error_outline, size: 56, color: AppColors.error),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             'Error al cargar miembros',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             _error!,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleSmall,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
             onPressed: _load,
@@ -552,12 +552,12 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
             size: 56,
             color: AppColors.textSecondary,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             'Sin miembros',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             'Agrega miembros con el botón +',
             style: Theme.of(context).textTheme.titleSmall,

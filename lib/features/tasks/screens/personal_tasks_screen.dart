@@ -79,7 +79,7 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
                   height: 44,
                   decoration: BoxDecoration(
                     color: AppColors.surface2,
-                    borderRadius: BorderRadius.circular(22),
+                    borderRadius: BorderRadius.circular(AppRadius.r8),
                   ),
                   child: TextField(
                     controller: _searchController,
@@ -306,7 +306,7 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
             backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10)),
+                borderRadius: BorderRadius.circular(AppRadius.r4)),
           ),
         );
       }
@@ -356,7 +356,7 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
               backgroundColor: AppColors.error,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+                  borderRadius: BorderRadius.circular(AppRadius.r4)),
             ),
           );
         }

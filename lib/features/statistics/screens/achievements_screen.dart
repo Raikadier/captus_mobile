@@ -232,7 +232,7 @@ class _StatsHeader extends StatelessWidget {
             ),
           ),
           if (last != null && last.unlockedAt != null) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.s2 + 2),
             Row(
               children: [
                 const Icon(Icons.emoji_events_rounded,
@@ -310,7 +310,7 @@ class _FilterChips extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: isActive ? color : AppColors.surface,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.r8),
           border: Border.all(
             color: isActive ? color : AppColors.border,
             width: 1.5,
@@ -403,7 +403,7 @@ class _AchievementTile extends StatelessWidget {
             if (!unlocked) ...[
               const SizedBox(height: AppSpacing.s1),
               ClipRRect(
-                borderRadius: BorderRadius.circular(3),
+                borderRadius: BorderRadius.circular(AppRadius.r1),
                 child: LinearProgressIndicator(
                   value: achievement.progressPercent,
                   minHeight: 4,
@@ -445,7 +445,7 @@ class _LockedEmoji extends StatelessWidget {
               child: Container(
                 width: 36,
                 height: 36,
-                color: AppColors.surface.withAlpha(180),
+                color: AppColors.surface.withAlpha(AppAlpha.a70),
                 alignment: Alignment.center,
                 child: const Icon(
                   Icons.lock_rounded,
@@ -473,7 +473,7 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
     backgroundColor: AppColors.surface,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
     ),
     builder: (_) => Padding(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
@@ -486,7 +486,7 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
             margin: const EdgeInsets.only(bottom: AppSpacing.s5),
             decoration: BoxDecoration(
               color: AppColors.border,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(AppRadius.r1),
             ),
           ),
           if (unlocked)
@@ -519,8 +519,8 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
             decoration: BoxDecoration(
               color: difficulty.color.withAlpha(AppAlpha.a12),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: difficulty.color.withAlpha(80)),
+              borderRadius: BorderRadius.circular(AppRadius.r8),
+              border: Border.all(color: difficulty.color.withAlpha(AppAlpha.a30)),
             ),
             child: Text(
               difficulty.label,
@@ -558,7 +558,7 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
               color: unlocked
                   ? AppColors.primary.withAlpha(AppAlpha.a10)
                   : AppColors.surface2,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadius.r4),
             ),
             child: unlocked
                 ? Row(

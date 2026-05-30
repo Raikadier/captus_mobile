@@ -159,9 +159,9 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(Icons.error_outline, size: 48, color: AppColors.error),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.s4),
                     Text('Error al cargar notas', style: tt.bodyMedium!.copyWith(color: AppColors.textSecondary)),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.s2),
                     ElevatedButton(
                       onPressed: () => ref.read(notesNotifierProvider.notifier).refresh(),
                       child: const Text('Reintentar'),

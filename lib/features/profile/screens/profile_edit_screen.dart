@@ -240,7 +240,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
                     color: AppColors.error.withAlpha(AppAlpha.a08),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.r4),
                     border: Border.all(color: AppColors.error.withAlpha(AppAlpha.a24)),
                   ),
                   child: Text(_error!,
@@ -310,10 +310,10 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: AppSpacing.s7),
 
               _SectionLabel(text: 'INFORMACIÓN PERSONAL'),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.s2),
               _FieldCard(children: [
                 _FormField(
                   controller: _nameCtrl,
@@ -327,7 +327,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
               const SizedBox(height: AppSpacing.s1),
 
               _SectionLabel(text: 'INFORMACIÓN ACADÉMICA'),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.s2),
               _FieldCard(children: [
                 if (_institutionId != null && _institutionName != null) ...[
                   _ReadOnlyField(
@@ -356,7 +356,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                     children: [
                       const Icon(Icons.layers_rounded,
                           size: 18, color: AppColors.textSecondary),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: AppSpacing.s3),
                       Text('Semestre',
                           style: Theme.of(context).textTheme.titleSmall),
                       const Spacer(),
@@ -380,7 +380,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                   maxLines: 3,
                 ),
               ]),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.s8),
             ],
           ),
         ),
@@ -453,7 +453,7 @@ class _FormField extends StatelessWidget {
               padding: EdgeInsets.only(top: maxLines > 1 ? 2 : 0),
               child: Icon(icon, size: 18, color: AppColors.textSecondary),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child: TextFormField(
                 controller: controller,
@@ -492,7 +492,7 @@ class _ReadOnlyField extends StatelessWidget {
         child: Row(
           children: [
             Icon(icon, size: 18, color: AppColors.textSecondary),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

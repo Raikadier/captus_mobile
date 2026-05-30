@@ -208,7 +208,7 @@ class _CalendarEventCreateScreenState
               'Tipo de evento',
               style: tt.titleMedium?.copyWith(color: AppColors.textSecondary),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.s2 + 2),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -225,7 +225,7 @@ class _CalendarEventCreateScreenState
                     ),
                     decoration: BoxDecoration(
                       color: isSelected ? color.withAlpha(AppAlpha.a15) : AppColors.surface2,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(AppRadius.r8),
                       border: Border.all(
                         color: isSelected ? color : AppColors.border,
                         width: isSelected ? 1.5 : 0.5,
@@ -276,7 +276,7 @@ class _CalendarEventCreateScreenState
                   children: [
                     const Icon(Icons.calendar_today_outlined,
                         size: 18, color: AppColors.textSecondary),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: AppSpacing.s2 + 2),
                     Text(
                       DateFormat(_allDay
                               ? "d 'de' MMMM, yyyy"
@@ -305,7 +305,7 @@ class _CalendarEventCreateScreenState
                     children: [
                       const Icon(Icons.access_time_outlined,
                           size: 18, color: AppColors.textSecondary),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: AppSpacing.s2 + 2),
                       Text(
                         _endDate != null
                             ? DateFormat("d 'de' MMMM, yyyy — h:mm a", 'es')

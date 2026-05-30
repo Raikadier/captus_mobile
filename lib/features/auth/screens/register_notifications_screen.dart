@@ -179,7 +179,7 @@ class _StepBar extends StatelessWidget {
             margin: EdgeInsets.only(right: i < 2 ? AppSpacing.s1 : 0),
             decoration: BoxDecoration(
               color: AppColors.primary,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(AppRadius.r1),
             ),
           ),
         );

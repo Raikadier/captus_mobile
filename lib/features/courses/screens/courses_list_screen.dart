@@ -131,7 +131,7 @@ class _CourseCard extends StatelessWidget {
                           height: 36,
                           decoration: BoxDecoration(
                             color: color.withAlpha(AppAlpha.a15),
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(AppRadius.r4),
                           ),
                           child: Icon(Icons.school, color: color, size: 20),
                         ),
@@ -154,7 +154,7 @@ class _CourseCard extends StatelessWidget {
                           ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: AppSpacing.s2 + 2),
                     Text(
                       course.name,
                       style: tt.labelLarge?.copyWith(

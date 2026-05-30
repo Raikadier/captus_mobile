@@ -139,7 +139,7 @@ class CalendarAgendaScreen extends ConsumerWidget {
                             padding: EdgeInsets.all(AppSpacing.s3),
                             decoration: BoxDecoration(
                               color: AppColors.surface,
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(AppRadius.r4),
                               border: Border.all(
                                   color: AppColors.border, width: 0.5),
                             ),
@@ -159,7 +159,7 @@ class CalendarAgendaScreen extends ConsumerWidget {
                                     shape: BoxShape.circle,
                                   ),
                                 ),
-                                const SizedBox(width: 10),
+                                const SizedBox(width: AppSpacing.s2 + 2),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:

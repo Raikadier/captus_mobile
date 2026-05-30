@@ -103,7 +103,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8))),
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => Padding(
           padding: const EdgeInsets.all(AppSpacing.s6),

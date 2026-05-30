@@ -84,7 +84,7 @@ class WeeklyBarChartCard extends StatelessWidget {
                       final count = daily[i].toDouble();
                       final isToday = i == today;
                       final metGoal = daily[i] >= stats.dailyGoal;
-                      final color = metGoal ? AppColors.primary : isToday ? AppColors.warning : AppColors.primary.withAlpha(80);
+                      final color = metGoal ? AppColors.primary : isToday ? AppColors.warning : AppColors.primary.withAlpha(AppAlpha.a30);
                       return BarChartGroupData(x: i, barRods: [
                         BarChartRodData(
                           toY: count == 0 ? 0.15 : count,

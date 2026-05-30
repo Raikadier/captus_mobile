@@ -76,7 +76,7 @@ class _AdminDashboardScreenState
                 style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: AppColors.primary),
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: AppSpacing.s2 + 2),
             Text(
               'Admin',
               style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: AppColors.textPrimary),
@@ -263,7 +263,7 @@ class _StatCard extends StatelessWidget {
             ),
             child: Icon(icon, color: color, size: 22),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpacing.s2 + 2),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

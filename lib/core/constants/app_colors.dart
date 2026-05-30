@@ -176,4 +176,6 @@ class AppAlpha {
   static const int a60 = 153;  // 60% — prominent overlay
   static const int a70 = 178;  // 70% — toast bg
   static const int a80 = 204;  // 80% — dark overlay
+  static const int a90 = 230;  // 90% — near-opaque overlay
+  static const int a94 = 240;  // 94% — heavy tint
 }

@@ -150,7 +150,7 @@ class _SettingsSecurityScreenState extends State<SettingsSecurityScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
       ),
       builder: (_) => Padding(
         padding: EdgeInsets.only(

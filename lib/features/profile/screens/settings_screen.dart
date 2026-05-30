@@ -142,7 +142,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
       ),
       builder: (_) => Column(
         mainAxisSize: MainAxisSize.min,
@@ -153,7 +153,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             height: 4,
             decoration: BoxDecoration(
               color: AppColors.border,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(AppRadius.r1),
             ),
           ),
           const SizedBox(height: AppSpacing.s4),

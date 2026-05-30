@@ -357,7 +357,7 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                     ),
                   ),
                   if (_generated) ...[
-                    const SizedBox(width: 10),
+                    const SizedBox(width: AppSpacing.s2 + 2),
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
@@ -499,7 +499,7 @@ class _LoadingPlaceholderState extends State<_LoadingPlaceholder>
                       decoration: BoxDecoration(
                         color: AppColors.surface2
                             .withAlpha((opacity * 255).round()),
-                        borderRadius: BorderRadius.circular(7),
+                        borderRadius: BorderRadius.circular(AppRadius.r2),
                       ),
                     ),
                   )),

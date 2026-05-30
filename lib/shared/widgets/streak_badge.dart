@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_radius.dart';
 
 enum StreakSize { micro, mini, hero }
 
@@ -33,7 +33,7 @@ class StreakBadge extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             color: AppColors.warning.withAlpha(AppAlpha.a10),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadius.r8),
             border: Border.all(color: AppColors.warning.withAlpha(AppAlpha.a30)),
           ),
           child: Row(
@@ -61,13 +61,13 @@ class StreakBadge extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadius.r8),
             border: Border.all(color: AppColors.warning.withAlpha(AppAlpha.a30)),
           ),
           child: Column(
             children: [
               const Text('🔥', style: TextStyle(fontSize: 48)),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.s2),
               Text(
                 '$days',
                 style: tt.displaySmall!.copyWith(color: AppColors.warning),

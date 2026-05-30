@@ -1,5 +1,4 @@
 /// Spacing token system for Captus — v2.0
-import '../constants/app_spacing.dart';
 ///
 /// Base grid: 4px. Every value is a multiple of 4.
 /// Use named tokens instead of raw double literals in UI code.
@@ -19,11 +18,14 @@ class AppSpacing {
   static const double s4  = 16.0;   // 16px — padding estándar (input, card compact)
   static const double s5  = 20.0;   // 20px — padding cómodo (card standard)
   static const double s6  = 24.0;   // 24px — gap entre cards, sección interna
+  static const double s7  = 28.0;   // 28px — gap modal, dialogs compactos
   static const double s8  = 32.0;   // 32px — gap grande, padding de sección
   static const double s10 = 40.0;   // 40px — gap de página
   static const double s12 = 48.0;   // 48px — padding hero
+  static const double s14 = 56.0;   // 56px — list items, AppBar height
   static const double s16 = 64.0;   // 64px — margen de página
   static const double s20 = 80.0;   // 80px — padding de sección vertical
+  static const double s25 = 100.0;  // 100px — hero images compact
 
   // ─── NAMED ALIASES (léxico de uso) ─────────────────────────────────────────
 
@@ -63,19 +65,19 @@ class AppSpacing {
   // ─── LAYOUT ─────────────────────────────────────────────────────────────────
 
   /// Altura de AppBar
-  static const double appBarHeight = 56.0;
+  static const double appBarHeight = s14;      // 56px
 
   /// Altura del BottomNavigationBar (sin safe area)
-  static const double bottomNavHeight = 64.0;
+  static const double bottomNavHeight = s16;   // 64px
 
   /// Altura mínima de touch target (Apple HIG)
   static const double touchTargetMin = 44.0;
 
   /// Altura estándar de list item
-  static const double listItemHeight = 56.0;
+  static const double listItemHeight = s14;    // 56px
 
   /// Altura de input field estándar
-  static const double inputHeight = 48.0;
+  static const double inputHeight = s12;       // 48px
 
   /// Altura de botón estándar
   static const double buttonHeight = 44.0;

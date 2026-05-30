@@ -191,12 +191,12 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
               hintText: 'Nombre del grupo',
             ),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: AppSpacing.s7),
           _sectionHeader(context, 'Miembros'),
           const SizedBox(height: AppSpacing.s2),
           ...group.members.map((member) =>
               _MemberTile(member: member)),
-          const SizedBox(height: 28),
+          const SizedBox(height: AppSpacing.s7),
           _sectionHeader(context, 'Código de invitación'),
           const SizedBox(height: AppSpacing.s2),
           Container(
@@ -212,7 +212,7 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
                       horizontal: AppSpacing.s4, vertical: 10),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withAlpha(AppAlpha.a10),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.r4),
                     border: Border.all(
                         color: AppColors.primary.withAlpha(AppAlpha.a30)),
                   ),
@@ -249,7 +249,7 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: AppSpacing.s7),
           _sectionHeader(context, 'Notificaciones'),
           const SizedBox(height: AppSpacing.s2),
           Container(
@@ -263,7 +263,7 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
               children: [
                 const Icon(Icons.notifications_outlined,
                     size: 20, color: AppColors.textSecondary),
-                const SizedBox(width: 10),
+                const SizedBox(width: AppSpacing.s2 + 2),
                 Expanded(
                   child: Text(
                     'Notificaciones del grupo',
@@ -371,7 +371,7 @@ class _MemberTileState extends State<_MemberTile> {
               ),
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpacing.s2 + 2),
           Expanded(
             child: Text(
               widget.member.name,

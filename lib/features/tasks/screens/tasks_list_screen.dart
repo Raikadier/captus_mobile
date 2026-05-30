@@ -139,7 +139,7 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
                         height: 40,
                         decoration: BoxDecoration(
                           color: AppColors.textOnPrimary.withAlpha(AppAlpha.a20),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(AppRadius.r4),
                         ),
                         child: const Icon(
                           Icons.assignment_rounded,

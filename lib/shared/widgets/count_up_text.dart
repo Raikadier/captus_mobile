@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/app_animations.dart';
 
 /// Animates a number from 0 to [value] using an easeOut curve.
 /// Used in statistics cards and profile metric tiles.
@@ -30,7 +31,7 @@ class CountUpText extends StatefulWidget {
     this.style,
     this.suffix = '',
     this.prefix = '',
-    this.duration = const Duration(milliseconds: 800),
+    this.duration = AppDurations.medium,
     this.decimals = 0,
   });
 

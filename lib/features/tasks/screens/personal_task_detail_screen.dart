@@ -67,7 +67,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
             backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadius.r4),
             ),
           ),
         );
@@ -116,7 +116,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
               ),
               backgroundColor: AppColors.error,
               behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.r4)),
             ),
           );
           context.pop();
@@ -323,7 +323,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                 'Descripción',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.s2 + 2),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(14),
@@ -356,7 +356,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.s2 + 2),
               ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.pill),
                 child: LinearProgressIndicator(
@@ -437,7 +437,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
       padding: const EdgeInsets.all(AppSpacing.s3),
       decoration: BoxDecoration(
         color: subtask.isCompleted ? AppColors.surface2 : AppColors.surface,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadius.r4),
         border: Border.all(
           color: subtask.isCompleted ? AppColors.border : AppColors.border,
         ),

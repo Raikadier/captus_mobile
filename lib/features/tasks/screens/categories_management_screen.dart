@@ -238,7 +238,7 @@ class _CategoryTile extends StatelessWidget {
             color: category.isGeneral
                 ? AppColors.primaryLight
                 : AppColors.surface2,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(AppRadius.r4),
           ),
           child: Icon(
             category.isGeneral

@@ -26,10 +26,10 @@ class StreakHeroCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.r8),
         border: Border.all(
           color: stats.hasStreak
-              ? AppColors.warning.withAlpha(127)
+              ? AppColors.warning.withAlpha(AppAlpha.a50)
               : AppColors.border,
           width: 1.5,
         ),
@@ -61,8 +61,8 @@ class StreakHeroCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
             decoration: BoxDecoration(
               color: stats.hasStreak ? AppColors.warning.withAlpha(AppAlpha.a12) : AppColors.primary.withAlpha(AppAlpha.a10),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: stats.hasStreak ? AppColors.warning.withAlpha(80) : AppColors.primary.withAlpha(AppAlpha.a24)),
+              borderRadius: BorderRadius.circular(AppRadius.r8),
+              border: Border.all(color: stats.hasStreak ? AppColors.warning.withAlpha(AppAlpha.a30) : AppColors.primary.withAlpha(AppAlpha.a24)),
             ),
             child: Text(
               '🏅 Rango: $title',

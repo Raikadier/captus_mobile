@@ -184,7 +184,7 @@ class HomeDashboardScreen extends ConsumerWidget {
             ),
           ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.s25)),
         ],
       ),
     );
@@ -339,7 +339,7 @@ class _AiSuggestionCard extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.cardPaddingStd),
         decoration: BoxDecoration(
           gradient: AppGradients.brandHero,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.r8),
           boxShadow: AppShadows.brandMd,
         ),
         child: Row(

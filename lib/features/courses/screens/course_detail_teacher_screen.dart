@@ -40,7 +40,7 @@ class _CourseDetailTeacherScreenState
       context: context,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
       ),
       builder: (_) => Padding(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
@@ -52,7 +52,7 @@ class _CourseDetailTeacherScreenState
               height: 4,
               decoration: BoxDecoration(
                 color: AppColors.border,
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(AppRadius.r1),
               ),
             ),
             const SizedBox(height: AppSpacing.s4),
@@ -234,7 +234,7 @@ class _ActivitiesTeacherTab extends StatelessWidget {
     return ListView.separated(
       padding: const EdgeInsets.all(AppSpacing.s4),
       itemCount: course.activities.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.s2 + 2),
       itemBuilder: (context, index) {
         final activity = course.activities[index];
         final daysLeft = activity.dueDate.difference(DateTime.now()).inDays;
@@ -251,7 +251,7 @@ class _ActivitiesTeacherTab extends StatelessWidget {
                 height: 40,
                 decoration: BoxDecoration(
                   color: color.withAlpha(AppAlpha.a10),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.r4),
                 ),
                 child: Icon(Icons.assignment_outlined, color: color, size: 20),
               ),

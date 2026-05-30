@@ -104,7 +104,7 @@ class _GroupCreateScreenState extends ConsumerState<GroupCreateScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.s4, vertical: 8),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                          borderRadius: BorderRadius.circular(AppRadius.r4)),
                     ),
                     child: Text(
                       'Crear',
@@ -129,7 +129,7 @@ class _GroupCreateScreenState extends ConsumerState<GroupCreateScreen> {
                     height: 80,
                     decoration: BoxDecoration(
                       color: AppColors.primary.withAlpha(AppAlpha.a15),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(AppRadius.r8),
                     ),
                     child: const Icon(Icons.group_rounded,
                         color: AppColors.primary, size: 40),
@@ -156,7 +156,7 @@ class _GroupCreateScreenState extends ConsumerState<GroupCreateScreen> {
                 padding: const EdgeInsets.all(AppSpacing.s3),
                 decoration: BoxDecoration(
                   color: AppColors.error.withAlpha(AppAlpha.a10),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.r4),
                   border: Border.all(
                       color: AppColors.error.withAlpha(AppAlpha.a30)),
                 ),
@@ -243,7 +243,7 @@ class _GroupCreateScreenState extends ConsumerState<GroupCreateScreen> {
                               ? AppColors.warning
                               : AppColors.success)
                           .withAlpha(AppAlpha.a15),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppRadius.r4),
                     ),
                     child: Icon(
                       _isPrivate

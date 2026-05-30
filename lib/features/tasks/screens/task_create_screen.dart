@@ -212,7 +212,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
             const SizedBox(height: AppSpacing.s4),
 
             Text('Tipo', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.s2 + 2),
             Row(
               children: [
                 _buildTypeButton(
@@ -220,7 +220,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                   icon: Icons.assignment_outlined,
                   type: AcademicItemType.task,
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: AppSpacing.s2 + 2),
                 _buildTypeButton(
                   label: 'Evaluación',
                   icon: Icons.school_outlined,
@@ -231,7 +231,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
 
             const SizedBox(height: AppSpacing.s6),
             Text('Prioridad', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.s2 + 2),
             Row(
               children: TaskPriority.values.map((p) {
                 final isSelected = _priority == p;
@@ -257,7 +257,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       decoration: BoxDecoration(
                         color: isSelected ? color.withAlpha(AppAlpha.a15) : AppColors.surface2,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppRadius.r4),
                         border: Border.all(
                           color: isSelected ? color : AppColors.border,
                           width: isSelected ? 2 : 0.5,
@@ -280,7 +280,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
 
             const SizedBox(height: AppSpacing.s6),
             Text('Fecha límite', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.s2 + 2),
             CaptusPressable(
               onTap: _pickDate,
               child: Container(
@@ -295,7 +295,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                 child: Row(
                   children: [
                     const Icon(Icons.calendar_today_outlined, size: 18),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: AppSpacing.s2 + 2),
                     Expanded(
                       child: Text(
                         _dueDate != null
@@ -315,7 +315,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
 
             const SizedBox(height: AppSpacing.s6),
             Text('Materia', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.s2 + 2),
             DropdownButtonFormField<String>(
               value: _selectedCourseId,
               hint: Text(
@@ -347,7 +347,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
 
             const SizedBox(height: AppSpacing.s6),
             Text('Grupo', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.s2 + 2),
             DropdownButtonFormField<String>(
               value: _selectedGroupId,
               hint: Text(
@@ -373,7 +373,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
 
             const SizedBox(height: AppSpacing.s6),
             Text('Descripción', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.s2 + 2),
             TextFormField(
               controller: _descCtrl,
               maxLines: 3,
@@ -382,7 +382,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
 
             const SizedBox(height: AppSpacing.s6),
             Text('Subtareas / instrucciones', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.s2 + 2),
             ..._subtasks.map((s) => ListTile(
                   dense: true,
                   leading: const Icon(Icons.check_circle_outline),
@@ -400,7 +400,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
               ),
               onFieldSubmitted: _addSubtask,
             ),
-            const SizedBox(height: 80),
+            const SizedBox(height: AppSpacing.s20),
           ],
         ),
       ),

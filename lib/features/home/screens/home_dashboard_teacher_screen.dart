@@ -57,7 +57,7 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: AppSpacing.s2 + 2),
                   Text(
                     'Captus',
                     style: tt.headlineMedium!
@@ -389,7 +389,7 @@ class _PillButton extends StatelessWidget {
             horizontal: AppSpacing.s3, vertical: 5),
         decoration: BoxDecoration(
           color: AppColors.primary,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.r8),
         ),
         child: Text(
           label,
@@ -415,7 +415,7 @@ class _EmptyState extends StatelessWidget {
       child: Row(
         children: [
           Icon(icon, size: 20, color: AppColors.textSecondary),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpacing.s2 + 2),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -484,7 +484,7 @@ class _CourseRow extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.s3),
         decoration: BoxDecoration(
           color: AppColors.background,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppRadius.r4),
           border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: Row(

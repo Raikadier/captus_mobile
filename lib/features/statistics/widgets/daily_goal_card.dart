@@ -20,7 +20,7 @@ class DailyGoalCard extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.r7),
         border: Border.all(
-          color: isGoalMet ? AppColors.primary.withAlpha(80) : AppColors.border,
+          color: isGoalMet ? AppColors.primary.withAlpha(AppAlpha.a30) : AppColors.border,
           width: isGoalMet ? 1.5 : 0.5,
         ),
       ),
@@ -54,7 +54,7 @@ class DailyGoalCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: AppSpacing.s3),
           ClipRRect(
             borderRadius: BorderRadius.circular(AppRadius.r2),
             child: LinearProgressIndicator(
@@ -64,7 +64,7 @@ class DailyGoalCard extends StatelessWidget {
               valueColor: AlwaysStoppedAnimation<Color>(isGoalMet ? AppColors.primary : AppColors.warning),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.s2 + 2),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

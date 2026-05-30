@@ -137,7 +137,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
       ),
       builder: (ctx) {
         final tt = Theme.of(ctx).textTheme;
@@ -160,7 +160,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                     height: 4,
                     decoration: BoxDecoration(
                       color: AppColors.border,
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(AppRadius.r1),
                     ),
                   ),
                 ),
@@ -377,7 +377,7 @@ class _MembersTab extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: AppColors.primary),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.r4),
                   ),
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.s3),
                 ),
@@ -491,7 +491,7 @@ class _MembersTab extends StatelessWidget {
                                   ? AppColors.primary
                                       .withAlpha(AppAlpha.a10)
                                   : AppColors.surface2,
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(AppRadius.r8),
                             ),
                             child: Text(
                               _roleLabel(role),
@@ -665,7 +665,7 @@ class _CommentsTab extends StatelessWidget {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: AppSpacing.s2 + 2),
                           Text(
                             c['content'] as String? ?? '',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(

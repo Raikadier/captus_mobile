@@ -43,7 +43,7 @@ class _GroupsListScreenState extends ConsumerState<GroupsListScreen> {
             return AlertDialog(
           backgroundColor: AppColors.surface,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadius.r8),
           ),
           title: Text(
             'Unirse con código',
@@ -120,7 +120,7 @@ class _GroupsListScreenState extends ConsumerState<GroupsListScreen> {
       context: context,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
       ),
       builder: (_) {
             return Padding(
@@ -134,7 +134,7 @@ class _GroupsListScreenState extends ConsumerState<GroupsListScreen> {
                 height: 4,
                 decoration: BoxDecoration(
                   color: AppColors.border,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(AppRadius.r1),
                 ),
               ),
               const SizedBox(height: AppSpacing.s5),
@@ -294,7 +294,7 @@ class _GroupCard extends StatelessWidget {
               members: group.members,
               count: group.effectiveMemberCount,
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

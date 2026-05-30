@@ -334,7 +334,7 @@ class _ConversationTile extends StatelessWidget {
             height: 38,
             decoration: BoxDecoration(
               color: AppColors.primary.withAlpha(AppAlpha.a10),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadius.r4),
             ),
             child: const Icon(Icons.chat_bubble_outline_rounded,
                 color: AppColors.primary, size: 18),
@@ -377,7 +377,7 @@ class _EmptyHistoryState extends StatelessWidget {
               height: 72,
               decoration: BoxDecoration(
                 color: AppColors.primary.withAlpha(AppAlpha.a10),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppRadius.r8),
               ),
               child: const Icon(Icons.chat_bubble_outline_rounded,
                   color: AppColors.primary, size: 36),

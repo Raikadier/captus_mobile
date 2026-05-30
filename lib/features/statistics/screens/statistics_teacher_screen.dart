@@ -99,7 +99,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                             color: AppColors.info,
                             size: 20,
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: AppSpacing.s3),
                           Expanded(
                             child: Text(
                               'Ya tienes estudiantes. Crea tareas y califica entregas para activar métricas completas.',
@@ -121,7 +121,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                   ),
                 ),
                 _buildStudentList(context, stats, activeFilter),
-                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.s25)),
               ],
             ],
           ),
@@ -131,7 +131,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CircularProgressIndicator(color: AppColors.primary),
-              SizedBox(height: 16),
+              SizedBox(height: AppSpacing.s4),
               Text(
                 'Cargando estadísticas...',
                 style: TextStyle(color: AppColors.textSecondary),
@@ -151,7 +151,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
       expandedHeight: 120,
       floating: false,
       pinned: true,
-      backgroundColor: AppColors.background.withAlpha(240),
+      backgroundColor: AppColors.background.withAlpha(AppAlpha.a94),
       elevation: 0,
       centerTitle: false,
       leading: canPop
@@ -227,7 +227,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppRadius.r4),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
               child: const Icon(
@@ -384,7 +384,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(AppSpacing.s3),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.r8),
         border: Border.all(color: AppColors.border, width: 0.5),
         boxShadow: [
           BoxShadow(
@@ -448,7 +448,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                 color: AppColors.primary,
                 size: 18,
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.s2),
               Expanded(
                 child: Text(
                   'Distribución',
@@ -467,13 +467,13 @@ class StatisticsTeacherScreen extends ConsumerWidget {
             stats.highPerformancePercentage,
             AppColors.success,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           _buildResponsiveBar(
             'Medio',
             stats.mediumPerformancePercentage,
             AppColors.warning,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           _buildResponsiveBar(
             'Riesgo',
             stats.riskPercentage,
@@ -511,7 +511,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
             ),
           ],
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.s2 + 2),
         LayoutBuilder(
           builder: (context, constraints) {
             return Stack(
@@ -541,7 +541,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(AppRadius.r2),
                     boxShadow: [
                       BoxShadow(
-                        color: color.withAlpha(80),
+                        color: color.withAlpha(AppAlpha.a30),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -597,7 +597,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                       isSelected ? FontWeight.bold : FontWeight.w500,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(AppRadius.r8),
                   side: BorderSide(
                     color: isSelected ? AppColors.primary : AppColors.border,
                     width: 0.5,
@@ -673,10 +673,10 @@ class StatisticsTeacherScreen extends ConsumerWidget {
             height: 16,
             decoration: BoxDecoration(
               color: color,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(AppRadius.r1),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.s2),
           Expanded(
             child: Text(
               title.toUpperCase(),
@@ -704,7 +704,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
               size: 48,
               color: AppColors.textDisabled,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.s4),
             Text(
               'No hay estudiantes en esta categoría.',
               textAlign: TextAlign.center,
@@ -746,13 +746,13 @@ class StatisticsTeacherScreen extends ConsumerWidget {
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s1),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.r8),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.r8),
           onTap: () {
             try {
               context.push('/teacher/student/${student.studentId}');
@@ -771,7 +771,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
             child: Row(
               children: [
                 _buildAvatar(student.studentName, statusColor),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.s3),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -813,7 +813,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.s2),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -950,7 +950,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                 color: AppColors.primary.withAlpha(AppAlpha.a40),
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.s8),
             Text(
               title,
               textAlign: TextAlign.center,
@@ -960,7 +960,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.s3),
             Text(
               message,
               textAlign: TextAlign.center,
@@ -996,7 +996,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                 color: AppColors.error,
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.s6),
             Text(
               'Error al cargar estadísticas',
               style: GoogleFonts.inter(
@@ -1005,7 +1005,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.s3),
             Text(
               'No se pudo conectar con el servidor. Por favor, verifica tu conexión.',
               textAlign: TextAlign.center,
@@ -1014,7 +1014,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                 fontSize: 14,
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.s8),
             ElevatedButton.icon(
               onPressed: () => ref.invalidate(teacherStatsSummaryProvider),
               icon: const Icon(Icons.refresh_rounded),

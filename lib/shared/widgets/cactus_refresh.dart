@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_animations.dart';
 
 /// A [RefreshIndicator] replacement that shows a spinning 🌵 cactus
 /// instead of the default circular progress indicator.
@@ -37,7 +38,7 @@ class _CactusRefreshState extends State<CactusRefresh>
     super.initState();
     _spinCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: AppDurations.medium,
     );
   }
 

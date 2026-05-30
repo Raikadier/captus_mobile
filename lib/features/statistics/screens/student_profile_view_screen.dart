@@ -70,7 +70,7 @@ class StudentProfileViewScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(AppSpacing.s3),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.r4),
                   border: Border.all(color: AppColors.border, width: 0.5),
                 ),
                 child: Row(
@@ -142,7 +142,7 @@ class _StudentStat extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.s3),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppRadius.r4),
           border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: Column(

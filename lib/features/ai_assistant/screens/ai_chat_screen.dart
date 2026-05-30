@@ -206,12 +206,12 @@ class _Header extends ConsumerWidget {
             width: 36,
             decoration: BoxDecoration(
               color: AppColors.primary,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadius.r4),
             ),
             child: const Icon(Icons.auto_awesome_rounded,
                 color: AppColors.textOnPrimary, size: 18),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpacing.s2 + 2),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -442,7 +442,7 @@ class _MessageBubble extends StatelessWidget {
                   _actionLabel(message.actionPerformed!),
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.primary),
                 ),
-                backgroundColor: AppColors.primary.withAlpha(12),
+                backgroundColor: AppColors.primary.withAlpha(AppAlpha.a05),
                 side: BorderSide.none,
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s1),
                 onPressed: null,
@@ -451,7 +451,7 @@ class _MessageBubble extends StatelessWidget {
           ],
           // Quick suggestions after last AI message
           if (showSuggestions) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.s2 + 2),
             Wrap(
               spacing: 8,
               runSpacing: 6,
@@ -524,7 +524,7 @@ class _MarkdownMessage extends StatelessWidget {
         code: TextStyle(
           fontSize: 13,
           color: AppColors.primary,
-          backgroundColor: AppColors.primary.withAlpha(15),
+          backgroundColor: AppColors.primary.withAlpha(AppAlpha.a05),
         ),
         // Code block
         codeblockDecoration: BoxDecoration(
@@ -538,7 +538,7 @@ class _MarkdownMessage extends StatelessWidget {
           border: Border(
             left: BorderSide(color: AppColors.primary, width: 3),
           ),
-          color: AppColors.primary.withAlpha(8),
+          color: AppColors.primary.withAlpha(AppAlpha.a04),
         ),
         blockquotePadding: const EdgeInsets.symmetric(
             horizontal: 12, vertical: 6),
@@ -575,7 +575,7 @@ class _TypingBubbleState extends State<_TypingBubble>
     with SingleTickerProviderStateMixin {
   late final AnimationController _anim = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 900),
+    duration: AppDurations.medium,
   )..repeat(reverse: true);
 
   @override
@@ -665,8 +665,8 @@ class _EmptyState extends StatelessWidget {
             height: 64,
             width: 64,
             decoration: BoxDecoration(
-              color: AppColors.primary.withAlpha(18),
-              borderRadius: BorderRadius.circular(20),
+              color: AppColors.primary.withAlpha(AppAlpha.a08),
+              borderRadius: BorderRadius.circular(AppRadius.r8),
             ),
             child: const Icon(Icons.auto_awesome_rounded,
                 color: AppColors.primary, size: 32),
@@ -680,7 +680,7 @@ class _EmptyState extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppColors.textSecondary, height: 1.5),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: AppSpacing.s7),
           ...suggestions.map((s) => Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: InkWell(
@@ -708,7 +708,7 @@ class _EmptyState extends StatelessWidget {
                   ),
                 ),
               )),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.s2),
           // ── Mode Study / Teacher Tools shortcut ─────────────────────────
           Builder(
             builder: (context) => InkWell(
@@ -735,7 +735,7 @@ class _EmptyState extends StatelessWidget {
                       color: AppColors.primary,
                       size: 18,
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: AppSpacing.s2 + 2),
                     Expanded(
                       child: Text(
                         userRole == 'teacher'
@@ -773,8 +773,8 @@ class _SuggestionChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
-          color: AppColors.primary.withAlpha(12),
-          borderRadius: BorderRadius.circular(20),
+          color: AppColors.primary.withAlpha(AppAlpha.a05),
+          borderRadius: BorderRadius.circular(AppRadius.r8),
           border: Border.all(color: AppColors.primary.withAlpha(AppAlpha.a20)),
         ),
         child: Text(label,
@@ -837,14 +837,14 @@ class _ThinkingStepsState extends State<_ThinkingSteps> {
     return CaptusPressable(
       onTap: () => setState(() => _expanded = !_expanded),
       child: AnimatedSize(
-        duration: const Duration(milliseconds: 220),
+        duration: AppDurations.standard,
         curve: Curves.easeInOut,
         alignment: Alignment.topLeft,
         child: Container(
           decoration: BoxDecoration(
-            color: AppColors.primary.withAlpha(8),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppColors.primary.withAlpha(35)),
+            color: AppColors.primary.withAlpha(AppAlpha.a04),
+            borderRadius: BorderRadius.circular(AppRadius.r4),
+            border: Border.all(color: AppColors.primary.withAlpha(AppAlpha.a15)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -860,7 +860,7 @@ class _ThinkingStepsState extends State<_ThinkingSteps> {
                       size: 14,
                       color: allOk ? AppColors.primary : AppColors.warning,
                     ),
-                    const SizedBox(width: 5),
+                    const SizedBox(width: AppSpacing.s1),
                     Text(
                       '$count ${count == 1 ? 'paso' : 'pasos'} de razonamiento',
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.primary),
@@ -901,10 +901,10 @@ class _ThinkingStepsState extends State<_ThinkingSteps> {
                               size: 12,
                               color: step.success ? AppColors.success : AppColors.error,
                             ),
-                            const SizedBox(width: 5),
+                            const SizedBox(width: AppSpacing.s1),
                             Icon(_iconFor(step.name),
                                 size: 13, color: AppColors.textSecondary),
-                            const SizedBox(width: 5),
+                            const SizedBox(width: AppSpacing.s1),
                             Text(
                               _labelFor(step.name),
                               style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.textSecondary),

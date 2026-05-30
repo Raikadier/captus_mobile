@@ -15,9 +15,9 @@ class QuickStatsRow extends StatelessWidget {
     return Row(
       children: [
         Expanded(child: StatCard(icon: Icons.check_circle_rounded, iconColor: AppColors.primary, label: 'Completadas', value: stats.completedTasks, subtitle: 'en total')),
-        const SizedBox(width: 10),
+        const SizedBox(width: AppSpacing.s2 + 2),
         Expanded(child: StatCard(icon: Icons.assignment_rounded, iconColor: AppColors.info, label: 'Totales', value: stats.totalTasks, subtitle: 'creadas')),
-        const SizedBox(width: 10),
+        const SizedBox(width: AppSpacing.s2 + 2),
         Expanded(child: StatCard(icon: Icons.percent_rounded, iconColor: AppColors.primary, label: 'Éxito', value: (stats.completionPercentage * 100).toInt(), subtitle: 'completado', valueSuffix: '%')),
       ],
     );

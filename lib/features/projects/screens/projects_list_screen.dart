@@ -239,7 +239,7 @@ class _ProjectCard extends StatelessWidget {
                           color: isOwner
                               ? AppColors.primary.withAlpha(AppAlpha.a10)
                               : AppColors.surface2,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(AppRadius.r8),
                         ),
                         child: Text(
                           isOwner ? 'Propietario' : 'Miembro',

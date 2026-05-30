@@ -203,7 +203,7 @@ class _TasksTab extends StatelessWidget {
     return ListView.separated(
       padding: const EdgeInsets.all(AppSpacing.s4),
       itemCount: tasks.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.s2 + 2),
       itemBuilder: (context, index) {
         final task = tasks[index];
         final isDone = checkedTasks.contains(task.id.toString()) ||
@@ -320,7 +320,7 @@ class _MembersTab extends StatelessWidget {
     return ListView.separated(
       padding: const EdgeInsets.all(AppSpacing.s4),
       itemCount: members.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.s2 + 2),
       itemBuilder: (context, index) {
         final member = members[index];
         final contribution = 0.4 + (index * 0.15).clamp(0.0, 0.6);

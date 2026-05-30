@@ -32,6 +32,10 @@ class AppDurations {
 
   /// 600 ms — Count-up numbers, progress bar fill, onboarding.
   static const Duration deliberate = Duration(milliseconds: 600);
+  /// Page transitions, loading animations (800ms)
+  static const Duration medium = Duration(milliseconds: 800);
+  /// Splash screen, onboarding (1200ms)
+  static const Duration splash = Duration(milliseconds: 1200);
 
   /// 900 ms — Looping: typing indicator, spinner dots.
   static const Duration loop = Duration(milliseconds: 900);

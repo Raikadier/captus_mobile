@@ -64,7 +64,7 @@ class CourseGroupsTab extends ConsumerWidget {
                   color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.s2 + 2),
               if (groups.isEmpty)
                 _EmptyInfo(text: 'Aún no hay grupos creados')
               else
@@ -83,7 +83,7 @@ class CourseGroupsTab extends ConsumerWidget {
             ],
           ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: AppSpacing.s3),
         Text(
           'SIN GRUPO ASIGNADO',
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -92,7 +92,7 @@ class CourseGroupsTab extends ConsumerWidget {
             color: AppColors.textSecondary,
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.s2 + 2),
         unassignedAsync.when(
           loading: () => const SizedBox.shrink(),
           error: (_, __) =>
@@ -228,7 +228,7 @@ class _CreateCourseGroupScreenState
                       color: _step == 0
                           ? AppColors.primary
                           : AppColors.primary.withAlpha(AppAlpha.a40),
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(AppRadius.r1),
                     ),
                   ),
                 ),
@@ -240,7 +240,7 @@ class _CreateCourseGroupScreenState
                       color: _step == 1
                           ? AppColors.primary
                           : AppColors.border,
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(AppRadius.r1),
                     ),
                   ),
                 ),
@@ -278,7 +278,7 @@ class _CreateCourseGroupScreenState
                         hintText: 'Notas del grupo...',
                       ),
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: AppSpacing.s4),
                     _GroupPreviewCard(name: _nameCtrl.text.trim()),
                     const Spacer(),
                     SizedBox(
@@ -364,7 +364,7 @@ class _CreateCourseGroupScreenState
                         },
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: AppSpacing.s2 + 2),
                     Row(
                       children: [
                         Expanded(
@@ -373,7 +373,7 @@ class _CreateCourseGroupScreenState
                             child: Text('Atrás', style: Theme.of(context).textTheme.bodyMedium),
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: AppSpacing.s2 + 2),
                         Expanded(
                           child: ElevatedButton(
                             onPressed: _saving ? null : _createGroup,
@@ -623,14 +623,14 @@ class _GeneralAdminTab extends ConsumerWidget {
               Expanded(
                   child: _InfoCounter(
                       title: 'Miembros', value: '${members.length}')),
-              const SizedBox(width: 10),
+              const SizedBox(width: AppSpacing.s2 + 2),
               Expanded(
                 child: _InfoCounter(
                   title: 'Tareas',
                   value: '${assignments.length}',
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: AppSpacing.s2 + 2),
               Expanded(
                 child: _InfoCounter(
                   title: 'Pendiente',
@@ -645,7 +645,7 @@ class _GeneralAdminTab extends ConsumerWidget {
             'Acciones Rápidas',
             style: Theme.of(context).textTheme.headlineMedium,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.s2 + 2),
           GridView.count(
             crossAxisCount: 2,
             childAspectRatio: 1.65,
@@ -749,7 +749,7 @@ class _MembersAdminTab extends ConsumerWidget {
           'Miembros Actuales',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.s2 + 2),
         Container(
           decoration: BoxDecoration(
             color: AppColors.surface,
@@ -809,7 +809,7 @@ class _MembersAdminTab extends ConsumerWidget {
           'Agregar Miembros',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.s2 + 2),
         Container(
           decoration: BoxDecoration(
             color: AppColors.surface,
@@ -901,7 +901,7 @@ class _TasksAdminTab extends ConsumerWidget {
             ),
           ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: AppSpacing.s3),
         assignmentsAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (_, __) =>
@@ -930,7 +930,7 @@ Future<void> _showAssignTaskSheet({
     isScrollControlled: true,
     backgroundColor: AppColors.surface,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
     ),
     builder: (sheetContext) => StatefulBuilder(
       builder: (sheetContext, setSheetState) {
@@ -972,7 +972,7 @@ Future<void> _showAssignTaskSheet({
                   'Se asignará a todos los miembros del grupo.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.s4),
                 TextFormField(
                   controller: titleCtrl,
                   decoration: const InputDecoration(
@@ -1027,7 +1027,7 @@ Future<void> _showAssignTaskSheet({
                         : DateFormat('dd/MM/yyyy').format(dueDate!),
                   ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.s4),
                 Row(
                   children: [
                     Expanded(
@@ -1038,7 +1038,7 @@ Future<void> _showAssignTaskSheet({
                         child: const Text('Cancelar'),
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: AppSpacing.s2 + 2),
                     Expanded(
                       child: ElevatedButton(
                         onPressed: canSubmit
@@ -1176,7 +1176,7 @@ class _GroupAssignmentsList extends StatelessWidget {
                         ? AppColors.success
                         : AppColors.warning,
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: AppSpacing.s2 + 2),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1384,7 +1384,7 @@ class _AdminActionCard extends StatelessWidget {
                 ),
                 child: Icon(icon, color: color),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.s2 + 2),
               Text(
                 label,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -1440,7 +1440,7 @@ class _ErrorBox extends StatelessWidget {
       child: Row(
         children: [
           const Icon(Icons.error_outline, color: AppColors.error),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpacing.s2 + 2),
           Expanded(
             child: Text(
               message,

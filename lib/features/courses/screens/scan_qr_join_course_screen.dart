@@ -6,6 +6,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_animations.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class ScanQRJoinCourseScreen extends StatefulWidget {
   const ScanQRJoinCourseScreen({super.key});
@@ -59,7 +60,7 @@ class _ScanQRJoinCourseScreenState extends State<ScanQRJoinCourseScreen> {
     final isSameAsPrevious = _pendingInviteCode == inviteCode &&
         _pendingInviteAt != null &&
         now.difference(_pendingInviteAt!) <= const Duration(seconds: 2) &&
-        now.difference(_pendingInviteAt!) >= const Duration(milliseconds: 350);
+        now.difference(_pendingInviteAt!) >= AppDurations.comfortable;
 
     if (!isSameAsPrevious) {
       setState(() {
@@ -78,7 +79,7 @@ class _ScanQRJoinCourseScreenState extends State<ScanQRJoinCourseScreen> {
 
     HapticFeedback.mediumImpact();
     await _controller.stop();
-    await Future<void>.delayed(const Duration(milliseconds: 260));
+    await Future<void>.delayed(AppDurations.standard);
     if (!mounted) return;
     context.push('/join?code=${Uri.encodeQueryComponent(inviteCode)}');
   }
@@ -184,7 +185,7 @@ class _PermissionErrorView extends StatelessWidget {
         children: [
           const Icon(Icons.camera_alt_outlined,
               color: AppColors.textSecondary, size: 44),
-          const SizedBox(height: 14),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             'Necesitamos acceso a la cámara',
             textAlign: TextAlign.center,
@@ -247,7 +248,7 @@ class _ScannerOverlay extends StatelessWidget {
                     height: frameSize,
                     decoration: BoxDecoration(
                       color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(AppRadius.r8),
                     ),
                   ),
                 ),
@@ -261,7 +262,7 @@ class _ScannerOverlay extends StatelessWidget {
               width: frameSize,
               height: frameSize,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppRadius.r8),
                 border: Border.all(
                   color: isDetected ? AppColors.success : AppColors.primary,
                   width: isDetected ? 3 : 2,

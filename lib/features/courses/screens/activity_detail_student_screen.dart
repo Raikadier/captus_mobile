@@ -233,7 +233,7 @@ class _ActivityDetailStudentScreenState
               requiresFile: activity.requiresFile,
             ),
           ],
-          const SizedBox(height: 100),
+          const SizedBox(height: AppSpacing.s25),
         ],
       ),
       bottomNavigationBar: _BottomBar(
@@ -306,7 +306,7 @@ class _GradedView extends StatelessWidget {
               padding: const EdgeInsets.all(AppSpacing.s3),
               decoration: BoxDecoration(
                 color: AppColors.surface2,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppRadius.r4),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

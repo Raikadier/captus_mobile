@@ -66,7 +66,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8))),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModal) => Padding(
           padding: EdgeInsets.only(
@@ -82,7 +82,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                 children: [
                   Text(isEdit ? 'Editar curso' : 'Nuevo curso',
                       style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: AppColors.textPrimary)),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.s4),
                   TextFormField(
                     controller: nameCtrl,
                     decoration: const InputDecoration(
@@ -220,7 +220,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8))),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModal) {
           if (loading && students.isEmpty && err == null) {
@@ -371,7 +371,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8))),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
           left: AppSpacing.s5, right: AppSpacing.s5, top: AppSpacing.s5,
@@ -454,7 +454,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8))),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModal) => Padding(
           padding: EdgeInsets.only(
@@ -472,7 +472,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                 const SizedBox(height: AppSpacing.s1),
                 Text('Envía un mensaje a los miembros de la institución',
                     style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary)),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.s4),
                 DropdownButtonFormField<String?>(
                   value: selectedRole,
                   decoration: const InputDecoration(
@@ -622,7 +622,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                   child: ListView.separated(
                     padding: const EdgeInsets.all(AppSpacing.s4),
                     itemCount: _courses.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.s2 + 2),
                     itemBuilder: (_, i) {
                       final c = _courses[i] as Map<String, dynamic>;
                       final hasTeacher = c['teacher_id'] != null;
@@ -649,7 +649,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                     horizontal: 8, vertical: 3),
                                 decoration: BoxDecoration(
                                   color: AppColors.primary.withAlpha(AppAlpha.a08),
-                                  borderRadius: BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(AppRadius.r8),
                                 ),
                                 child: Text('$enrollments alumnos',
                                     style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.primary)),
@@ -726,7 +726,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                     style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.textSecondary)),
                               ]),
                             ],
-                            const SizedBox(height: 10),
+                            const SizedBox(height: AppSpacing.s2 + 2),
                             Row(children: [
                               Expanded(
                                 child: OutlinedButton.icon(

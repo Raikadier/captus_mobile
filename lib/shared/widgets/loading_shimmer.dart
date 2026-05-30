@@ -70,19 +70,19 @@ class TaskCardShimmer extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(height: 14, width: 200, color: AppColors.surface2),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.s2),
                   Container(height: 10, width: 120, color: AppColors.surface2),
                 ],
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s3),
             // Checkbox placeholder
             Container(
               width: 22,
@@ -152,10 +152,10 @@ class CourseCardShimmer extends StatelessWidget {
                       height: 36,
                       decoration: BoxDecoration(
                         color: AppColors.surface2,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppRadius.r4),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: AppSpacing.s2 + 2),
                     // Title lines
                     Container(height: 13, color: AppColors.surface2),
                     const SizedBox(height: AppSpacing.s1),
@@ -236,7 +236,7 @@ class StatTileShimmer extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AppRadius.r3),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.s3),
             // Value
             Container(height: 28, width: 60, color: AppColors.surface2),
             const SizedBox(height: AppSpacing.s1),
@@ -258,9 +258,9 @@ class StatsRowShimmer extends StatelessWidget {
     return Row(
       children: const [
         Expanded(child: StatTileShimmer()),
-        SizedBox(width: 12),
+        SizedBox(width: AppSpacing.s3),
         Expanded(child: StatTileShimmer()),
-        SizedBox(width: 12),
+        SizedBox(width: AppSpacing.s3),
         Expanded(child: StatTileShimmer()),
       ],
     );
@@ -292,7 +292,7 @@ class NotificationItemShimmer extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -342,10 +342,10 @@ class ProfileHeaderShimmer extends StatelessWidget {
           children: [
             // Avatar
             const SkeletonBox(width: 88, height: 88, borderRadius: 999),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.s4),
             // Name
             const SkeletonBox(width: 160, height: 20, borderRadius: 6),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.s2),
             // Role chip
             const SkeletonBox(width: 80, height: 14, borderRadius: 999),
           ],

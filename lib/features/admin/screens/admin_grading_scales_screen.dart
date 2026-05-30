@@ -54,7 +54,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
       ),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
@@ -278,12 +278,12 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
                                     height: 48,
                                     decoration: BoxDecoration(
                                       color: AppColors.primary.withAlpha(AppAlpha.a08),
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(AppRadius.r4),
                                     ),
                                     child: Icon(Icons.grading_outlined,
                                         color: AppColors.primary),
                                   ),
-                                  const SizedBox(width: 14),
+                                  const SizedBox(width: AppSpacing.s3),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -305,7 +305,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
                                                 color: AppColors.primary
                                                     .withAlpha(AppAlpha.a08),
                                                 borderRadius:
-                                                    BorderRadius.circular(20),
+                                                    BorderRadius.circular(AppRadius.r8),
                                               ),
                                               child: Text('predeterminada',
                                                   style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.primary)),

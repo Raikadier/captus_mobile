@@ -16,7 +16,7 @@ class ActivitySummarySection extends StatelessWidget {
       children: [
         Text('RESUMEN DE ACTIVIDAD',
             style: tt.labelMedium),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.s2 + 2),
         Row(
           children: [
             Expanded(child: _ActivityCard(
@@ -24,7 +24,7 @@ class ActivitySummarySection extends StatelessWidget {
               title: 'Notas', main: '${stats.totalNotes}', mainLabel: 'total',
               sub: '${stats.notesCreatedThisWeek} esta semana',
             )),
-            const SizedBox(width: 10),
+            const SizedBox(width: AppSpacing.s2 + 2),
             Expanded(child: _ActivityCard(
               icon: Icons.calendar_today_rounded, iconColor: AppColors.info,
               title: 'Eventos', main: '${stats.totalEvents}', mainLabel: 'total',
