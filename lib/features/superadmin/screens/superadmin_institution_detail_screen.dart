@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/cactus_refresh.dart';
 import '../services/superadmin_service.dart';
@@ -96,39 +95,26 @@ class _SuperAdminInstitutionDetailScreenState
               const SizedBox(height: AppSpacing.s1),
               Text(
                 'Deshabilitar institución',
-                style: GoogleFonts.inter(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: 8),
               Text(
                 'Deshabilitarás "${_detail!['name']}". Escribe el motivo:',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.titleSmall,
               ),
               const SizedBox(height: 16),
               Text(
                 'Motivo',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.titleSmall,
               ),
               const SizedBox(height: AppSpacing.s1),
               TextField(
                 controller: reasonCtrl,
                 maxLines: 3,
-                style: GoogleFonts.inter(
-                    fontSize: 14, color: AppColors.textPrimary),
+                style: Theme.of(context).textTheme.bodyMedium,
                 decoration: InputDecoration(
                   hintText: 'Describe el motivo de deshabilitación…',
-                  hintStyle: GoogleFonts.inter(
-                      fontSize: 14, color: AppColors.textSecondary),
+                  hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary),
                   filled: true,
                   fillColor: AppColors.surface,
                   border: OutlineInputBorder(
@@ -160,11 +146,7 @@ class _SuperAdminInstitutionDetailScreenState
                   onPressed: () => Navigator.pop(ctx, true),
                   child: Text(
                     'Deshabilitar',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textOnPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.textOnPrimary),
                   ),
                 ),
               ),
@@ -237,30 +219,20 @@ class _SuperAdminInstitutionDetailScreenState
               const SizedBox(height: AppSpacing.s1),
               Text(
                 'Editar institución',
-                style: GoogleFonts.inter(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: 16),
               Text(
                 'Nombre',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.titleSmall,
               ),
               const SizedBox(height: AppSpacing.s1),
               TextFormField(
                 controller: nameCtrl,
-                style: GoogleFonts.inter(
-                    fontSize: 14, color: AppColors.textPrimary),
+                style: Theme.of(context).textTheme.bodyMedium,
                 decoration: InputDecoration(
                   hintText: 'Nombre de la institución',
-                  hintStyle: GoogleFonts.inter(
-                      fontSize: 14, color: AppColors.textSecondary),
+                  hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary),
                   filled: true,
                   fillColor: AppColors.surface,
                   border: OutlineInputBorder(
@@ -283,22 +255,16 @@ class _SuperAdminInstitutionDetailScreenState
               const SizedBox(height: 12),
               Text(
                 'Email de contacto',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.titleSmall,
               ),
               const SizedBox(height: AppSpacing.s1),
               TextFormField(
                 controller: emailCtrl,
                 keyboardType: TextInputType.emailAddress,
-                style: GoogleFonts.inter(
-                    fontSize: 14, color: AppColors.textPrimary),
+                style: Theme.of(context).textTheme.bodyMedium,
                 decoration: InputDecoration(
                   hintText: 'contacto@institucion.edu',
-                  hintStyle: GoogleFonts.inter(
-                      fontSize: 14, color: AppColors.textSecondary),
+                  hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary),
                   filled: true,
                   fillColor: AppColors.surface,
                   border: OutlineInputBorder(
@@ -334,11 +300,7 @@ class _SuperAdminInstitutionDetailScreenState
                   },
                   child: Text(
                     'Guardar',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textOnPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.textOnPrimary),
                   ),
                 ),
               ),
@@ -381,11 +343,7 @@ class _SuperAdminInstitutionDetailScreenState
           widget.institutionName.isNotEmpty
               ? widget.institutionName
               : 'Detalle de institución',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
         actions: [
           if (!_loading && _detail != null)
@@ -416,20 +374,13 @@ class _SuperAdminInstitutionDetailScreenState
           const SizedBox(height: 12),
           Text(
             'Error al cargar institución',
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 12),
           Text(
             _error!,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.titleSmall,
           ),
           const SizedBox(height: 16),
           FilledButton(
@@ -437,7 +388,7 @@ class _SuperAdminInstitutionDetailScreenState
             onPressed: _load,
             child: Text(
               'Reintentar',
-              style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textOnPrimary),
             ),
           ),
         ],
@@ -500,11 +451,7 @@ class _SuperAdminInstitutionDetailScreenState
                     children: [
                       Text(
                         d['name'] as String? ?? '',
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: AppSpacing.s1),
                       Container(
@@ -519,13 +466,9 @@ class _SuperAdminInstitutionDetailScreenState
                         ),
                         child: Text(
                           isActive ? 'Activa' : 'Deshabilitada',
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: isActive
+                          style: Theme.of(context).textTheme.labelMedium!.copyWith(color: isActive
                                 ? AppColors.success
-                                : AppColors.error,
-                          ),
+                                : AppColors.error),
                         ),
                       ),
                     ],
@@ -598,12 +541,7 @@ class _SuperAdminInstitutionDetailScreenState
                       const EdgeInsets.fromLTRB(0, 0, 0, 12),
                   child: Text(
                     'ESTADÍSTICAS',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textSecondary,
-                      letterSpacing: 0.5,
-                    ),
+                    style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.textSecondary, letterSpacing: 0.5),
                   ),
                 ),
                 Row(
@@ -636,12 +574,7 @@ class _SuperAdminInstitutionDetailScreenState
                   const SizedBox(height: 12),
                   Text(
                     'Por rol',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textSecondary,
-                      letterSpacing: 0.5,
-                    ),
+                    style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.textSecondary, letterSpacing: 0.5),
                   ),
                   const SizedBox(height: 8),
                   _RoleRow(
@@ -689,12 +622,7 @@ class _InfoCard extends StatelessWidget {
         children: [
           Text(
             'INFORMACIÓN',
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-              letterSpacing: 0.5,
-            ),
+            style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.textSecondary, letterSpacing: 0.5),
           ),
           const SizedBox(height: 12),
           ...children,
@@ -732,18 +660,11 @@ class _InfoRow extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textSecondary),
                 ),
                 Text(
                   value,
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: valueColor ?? AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.titleSmall!.copyWith(color: valueColor ?? AppColors.textPrimary),
                 ),
               ],
             ),
@@ -782,18 +703,11 @@ class _StatTile extends StatelessWidget {
             const SizedBox(height: AppSpacing.s1),
             Text(
               value,
-              style: GoogleFonts.inter(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.headlineLarge,
             ),
             Text(
               label,
-              style: GoogleFonts.inter(
-                fontSize: 10,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.labelSmall,
               textAlign: TextAlign.center,
             ),
           ],
@@ -817,18 +731,11 @@ class _RoleRow extends StatelessWidget {
         children: [
           Text(
             label,
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.titleSmall,
           ),
           Text(
             count,
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.titleSmall,
           ),
         ],
       ),

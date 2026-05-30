@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/services/api_client.dart';
 import '../../../shared/widgets/captus_fab.dart';
@@ -104,31 +103,21 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                 const SizedBox(height: AppSpacing.s1),
                 Text(
                   'Agregar miembro',
-                  style: GoogleFonts.inter(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 16),
                 Text(
                   'Email del usuario *',
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
                 const SizedBox(height: AppSpacing.s1),
                 TextFormField(
                   controller: emailCtrl,
                   keyboardType: TextInputType.emailAddress,
-                  style: GoogleFonts.inter(
-                      fontSize: 14, color: AppColors.textPrimary),
+                  style: Theme.of(context).textTheme.bodyMedium,
                   decoration: InputDecoration(
                     hintText: 'correo@ejemplo.com',
-                    hintStyle: GoogleFonts.inter(
-                        fontSize: 14, color: AppColors.textSecondary),
+                    hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary),
                     filled: true,
                     fillColor: AppColors.surface,
                     border: OutlineInputBorder(
@@ -154,17 +143,12 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                 const SizedBox(height: 12),
                 Text(
                   'Rol',
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
                 const SizedBox(height: AppSpacing.s1),
                 DropdownButtonFormField<String>(
                   value: selectedRole,
-                  style: GoogleFonts.inter(
-                      fontSize: 14, color: AppColors.textPrimary),
+                  style: Theme.of(context).textTheme.bodyMedium,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: AppColors.surface,
@@ -208,11 +192,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                     },
                     child: Text(
                       'Agregar',
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textOnPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(color: AppColors.textOnPrimary),
                     ),
                   ),
                 ),
@@ -253,20 +233,14 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
               borderRadius: BorderRadius.circular(AppRadius.r7)),
           title: Text(
             'Cambiar rol',
-            style: GoogleFonts.inter(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
           content: DropdownButtonFormField<String>(
             value: currentRole,
-            style: GoogleFonts.inter(
-                fontSize: 14, color: AppColors.textPrimary),
+            style: Theme.of(context).textTheme.bodyMedium,
             decoration: InputDecoration(
               labelText: user['name'] ?? user['email'] ?? '',
-              labelStyle: GoogleFonts.inter(
-                  color: AppColors.textSecondary),
+              labelStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary),
               filled: true,
               fillColor: AppColors.surface,
               border: OutlineInputBorder(
@@ -298,7 +272,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
               onPressed: () => Navigator.pop(ctx, currentRole),
               child: Text(
                 'Cambiar',
-                style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textOnPrimary),
               ),
             ),
           ],
@@ -337,19 +311,11 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.r7)),
         title: Text(
           'Remover miembro',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
         content: Text(
           '¿Remover a $name del proyecto?',
-          style: GoogleFonts.inter(
-            fontSize: 14,
-            color: AppColors.textSecondary,
-            height: 1.5,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary, height: 1.5),
         ),
         actions: [
           TextButton(
@@ -362,7 +328,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
             onPressed: () => Navigator.pop(context, true),
             child: Text(
               'Remover',
-              style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textOnPrimary),
             ),
           ),
         ],
@@ -395,11 +361,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
         elevation: 0,
         title: Text(
           'Miembros del proyecto',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
         actions: const [SizedBox(width: 8)],
       ),
@@ -461,10 +423,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                                           avatarUrl.isEmpty
                                       ? Text(
                                           initial,
-                                          style: GoogleFonts.inter(
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColors.primary,
-                                          ),
+                                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.primary),
                                         )
                                       : null,
                                 ),
@@ -476,20 +435,12 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                                     children: [
                                       Text(
                                         name,
-                                        style: GoogleFonts.inter(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppColors.textPrimary,
-                                        ),
+                                        style: Theme.of(context).textTheme.titleLarge,
                                       ),
                                       if (email.isNotEmpty)
                                         Text(
                                           email,
-                                          style: GoogleFonts.inter(
-                                            fontSize: 13,
-                                            color:
-                                                AppColors.textSecondary,
-                                          ),
+                                          style: Theme.of(context).textTheme.titleSmall,
                                         ),
                                     ],
                                   ),
@@ -506,11 +457,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                                     ),
                                     child: Text(
                                       'Propietario',
-                                      style: GoogleFonts.inter(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.primary,
-                                      ),
+                                      style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.primary),
                                     ),
                                   )
                                 else
@@ -548,8 +495,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                                             const SizedBox(width: 12),
                                             Text(
                                               'Remover',
-                                              style: GoogleFonts.inter(
-                                                  color: AppColors.error),
+                                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.error),
                                             ),
                                           ],
                                         ),
@@ -574,20 +520,13 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
           const SizedBox(height: 12),
           Text(
             'Error al cargar miembros',
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 12),
           Text(
             _error!,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.titleSmall,
           ),
           const SizedBox(height: 16),
           FilledButton(
@@ -595,7 +534,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
             onPressed: _load,
             child: Text(
               'Reintentar',
-              style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textOnPrimary),
             ),
           ),
         ],
@@ -616,19 +555,12 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
           const SizedBox(height: 12),
           Text(
             'Sin miembros',
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 12),
           Text(
             'Agrega miembros con el botón +',
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.titleSmall,
           ),
         ],
       ),

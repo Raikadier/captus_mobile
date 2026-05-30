@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_animations.dart';
@@ -223,11 +222,7 @@ class _DashboardAppBar extends StatelessWidget {
               child: user.avatarUrl == null || user.avatarUrl!.isEmpty
                   ? Text(
                       user.firstName[0].toUpperCase(),
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.brand700,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.brand700),
                     )
                   : null,
             ),
@@ -236,12 +231,7 @@ class _DashboardAppBar extends StatelessWidget {
           // Captus wordmark
           Text(
             'Captus',
-            style: GoogleFonts.inter(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              letterSpacing: -0.01 * 22,
-              color: AppColors.primary,
-            ),
+            style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: AppColors.primary, letterSpacing: -0.01 * 22),
           ),
         ],
       ),
@@ -300,7 +290,6 @@ class _GreetingHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     final dateStr =
         DateFormat("EEEE d 'de' MMMM", 'es').format(DateTime.now());
     final dateLabel = dateStr[0].toUpperCase() + dateStr.substring(1);
@@ -315,12 +304,12 @@ class _GreetingHeader extends StatelessWidget {
         children: [
           Text(
             '$_greeting, ${user.firstName}',
-            style: tt.headlineLarge,
+            style: Theme.of(context).textTheme.headlineLarge,
           ),
           const SizedBox(height: AppSpacing.s1),
           Text(
             dateLabel,
-            style: tt.bodySmall,
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
       ),
@@ -374,24 +363,14 @@ class _AiSuggestionCard extends StatelessWidget {
                 children: [
                   Text(
                     'CAPTUS SUGIERE',
-                    style: GoogleFonts.inter(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textOnPrimary.withAlpha(AppAlpha.a70),
-                      letterSpacing: 1.0,
-                    ),
+                    style: Theme.of(context).textTheme.labelSmall!.copyWith(color: AppColors.textOnPrimary.withAlpha(AppAlpha.a70), letterSpacing: 1.0),
                   ),
                   const SizedBox(height: AppSpacing.s1),
                   Text(
                     taskCount > 0
                         ? 'Tienes $taskCount entregas esta semana. Empieza con la más urgente.'
                         : '¡Al día! No tienes tareas pendientes esta semana.',
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textOnPrimary,
-                      height: 1.45,
-                    ),
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(color: AppColors.textOnPrimary, height: 1.45),
                   ),
                 ],
               ),
@@ -479,7 +458,6 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(
@@ -497,17 +475,12 @@ class _StatCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.s1),
             Text(
               value,
-              style: GoogleFonts.inter(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: color,
-                height: 1.2,
-              ),
+              style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: color, height: 1.2),
             ),
             const SizedBox(height: AppSpacing.s1),
             Text(
               label,
-              style: tt.labelSmall,
+              style: Theme.of(context).textTheme.labelSmall,
             ),
           ],
         ),
@@ -590,12 +563,11 @@ class _DayDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     return Column(
       children: [
         Text(
           label,
-          style: tt.labelSmall?.copyWith(
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
             color: isToday ? AppColors.primary : AppColors.textSecondary,
             fontWeight: isToday ? FontWeight.w600 : FontWeight.w500,
           ),
@@ -652,7 +624,6 @@ class _QuickAccessCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     return CaptusPressable(
       onTap: onTap,
       child: Container(
@@ -679,7 +650,7 @@ class _QuickAccessCard extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: tt.titleSmall?.copyWith(color: color),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(color: color),
               ),
             ),
             Icon(
@@ -704,7 +675,6 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
@@ -714,7 +684,7 @@ class _SectionHeader extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(title, style: tt.headlineSmall),
+            Text(title, style: Theme.of(context).textTheme.headlineSmall),
             const Spacer(),
             if (onSeeAll != null)
               TextButton(
@@ -729,7 +699,7 @@ class _SectionHeader extends StatelessWidget {
                 ),
                 child: Text(
                   'Ver todo',
-                  style: tt.labelLarge?.copyWith(
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: AppColors.primary,
                     fontWeight: FontWeight.w500,
                   ),

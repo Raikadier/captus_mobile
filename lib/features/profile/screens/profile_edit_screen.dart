@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/auth_provider.dart';
@@ -117,7 +116,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
             children: [
               ListTile(
                 leading: const Icon(Icons.camera_alt_rounded, color: AppColors.primary),
-                title: Text('Tomar foto', style: GoogleFonts.inter()),
+                title: Text('Tomar foto', style: Theme.of(context).textTheme.bodyMedium),
                 onTap: () {
                   Navigator.pop(context);
                   _pickAvatar(ImageSource.camera);
@@ -125,7 +124,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library_rounded, color: AppColors.primary),
-                title: Text('Elegir de galería', style: GoogleFonts.inter()),
+                title: Text('Elegir de galería', style: Theme.of(context).textTheme.bodyMedium),
                 onTap: () {
                   Navigator.pop(context);
                   _pickAvatar(ImageSource.gallery);
@@ -134,7 +133,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
               if (_currentAvatarUrl != null && _currentAvatarUrl!.isNotEmpty)
                 ListTile(
                   leading: const Icon(Icons.delete_rounded, color: AppColors.error),
-                  title: Text('Eliminar foto', style: GoogleFonts.inter(color: AppColors.error)),
+                  title: Text('Eliminar foto', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.error)),
                   onTap: () async {
                     Navigator.pop(context);
                     setState(() {
@@ -223,8 +222,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                       width: 16, height: 16,
                       child: CircularProgressIndicator(strokeWidth: 2))
                   : Text('Guardar',
-                      style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w600, color: AppColors.primary)),
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.primary)),
             ),
           ),
         ],
@@ -246,7 +244,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                     border: Border.all(color: AppColors.error.withAlpha(AppAlpha.a24)),
                   ),
                   child: Text(_error!,
-                      style: GoogleFonts.inter(fontSize: 13, color: AppColors.error)),
+                      style: Theme.of(context).textTheme.titleSmall!.copyWith(color: AppColors.error)),
                 ),
 
               // Avatar
@@ -360,15 +358,13 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                           size: 18, color: AppColors.textSecondary),
                       const SizedBox(width: 12),
                       Text('Semestre',
-                          style: GoogleFonts.inter(
-                              fontSize: 13, color: AppColors.textSecondary)),
+                          style: Theme.of(context).textTheme.titleSmall),
                       const Spacer(),
                       DropdownButton<int>(
                         value: _semester,
                         dropdownColor: AppColors.surface2,
                         underline: const SizedBox(),
-                        style: GoogleFonts.inter(
-                            fontSize: 13, color: AppColors.textPrimary),
+                        style: Theme.of(context).textTheme.titleSmall,
                         items: List.generate(10, (i) => DropdownMenuItem(
                             value: i + 1, child: Text('${i + 1}°'))),
                         onChanged: (v) => setState(() => _semester = v ?? _semester),
@@ -398,11 +394,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     return Center(
       child: Text(
         initial,
-        style: GoogleFonts.inter(
-          fontSize: 38,
-          fontWeight: FontWeight.bold,
-          color: AppColors.primary,
-        ),
+        style: Theme.of(context).textTheme.displaySmall!.copyWith(color: AppColors.primary),
       ),
     );
   }
@@ -417,10 +409,7 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
         text,
-        style: GoogleFonts.inter(
-          fontSize: 11, fontWeight: FontWeight.w700,
-          color: AppColors.textSecondary, letterSpacing: 0.8,
-        ),
+        style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textSecondary, letterSpacing: 0.8),
       );
 }
 
@@ -470,11 +459,10 @@ class _FormField extends StatelessWidget {
                 controller: controller,
                 validator: validator,
                 maxLines: maxLines,
-                style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary),
+                style: Theme.of(context).textTheme.titleSmall,
                 decoration: InputDecoration(
                   labelText: label,
-                  labelStyle: GoogleFonts.inter(
-                      fontSize: 13, color: AppColors.textSecondary),
+                  labelStyle: Theme.of(context).textTheme.titleSmall,
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
@@ -511,14 +499,12 @@ class _ReadOnlyField extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: GoogleFonts.inter(
-                        fontSize: 11, color: AppColors.textSecondary),
+                    style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: AppSpacing.s1),
                   Text(
                     value,
-                    style: GoogleFonts.inter(
-                        fontSize: 13, color: AppColors.textPrimary),
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
                 ],
               ),
