@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/course_groups_provider.dart';
 import '../../../core/utils/app_errors.dart';
 
@@ -35,7 +36,7 @@ class CourseGroupsTab extends ConsumerWidget {
             style: ElevatedButton.styleFrom(
               elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadius.r6),
               ),
             ),
             icon: const Icon(Icons.add),
@@ -104,7 +105,7 @@ class CourseGroupsTab extends ConsumerWidget {
             return Container(
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadius.r6),
                 border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
               ),
               child: Column(
@@ -327,7 +328,7 @@ class _CreateCourseGroupScreenState
                               return Container(
                                 decoration: BoxDecoration(
                                   color: AppColors.surface,
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(AppRadius.r5),
                                   border: Border.all(
                                     color: selected
                                         ? AppColors.primary
@@ -448,7 +449,7 @@ class GroupDetailTeacherScreen extends ConsumerWidget {
             data: (members) => Container(
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadius.r6),
                 border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
               ),
               child: Column(
@@ -752,7 +753,7 @@ class _MembersAdminTab extends ConsumerWidget {
         Container(
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.r6),
             border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
           ),
           child: currentMembers.isEmpty
@@ -812,7 +813,7 @@ class _MembersAdminTab extends ConsumerWidget {
         Container(
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.r6),
             border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
           ),
           child: addable.isEmpty
@@ -1115,7 +1116,7 @@ class _GroupAssignmentsCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
       ),
       child: Column(
@@ -1162,7 +1163,7 @@ class _GroupAssignmentsList extends StatelessWidget {
               padding: const EdgeInsets.all(AppSpacing.s3),
               decoration: BoxDecoration(
                 color: AppColors.background,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.r5),
                 border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
               ),
               child: Row(
@@ -1218,13 +1219,13 @@ class _GroupTile extends StatelessWidget {
 
     return Material(
       color: AppColors.surface,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(AppRadius.r6),
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.r6),
             border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -1277,7 +1278,7 @@ class _GroupPreviewCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
       ),
       child: Row(
@@ -1321,7 +1322,7 @@ class _InfoCounter extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 18),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a70)),
       ),
       child: Column(
@@ -1362,13 +1363,13 @@ class _AdminActionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: AppColors.surface,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(AppRadius.r6),
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.r6),
             border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
           ),
           child: Column(
@@ -1410,7 +1411,7 @@ class _EmptyInfo extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
       ),
       child: Text(
@@ -1433,7 +1434,7 @@ class _ErrorBox extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.error.withAlpha(AppAlpha.a30)),
       ),
       child: Row(

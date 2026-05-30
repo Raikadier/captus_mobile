@@ -31,9 +31,9 @@ class StreakBadge extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: AppColors.warning.withAlpha(25),
+            color: AppColors.warning.withAlpha(AppAlpha.a10),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.warning.withAlpha(76)),
+            border: Border.all(color: AppColors.warning.withAlpha(AppAlpha.a30)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -54,14 +54,14 @@ class StreakBadge extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                AppColors.warning.withAlpha(38),
+                AppColors.warning.withAlpha(AppAlpha.a15),
                 AppColors.primaryDark,
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.warning.withAlpha(76)),
+            border: Border.all(color: AppColors.warning.withAlpha(AppAlpha.a30)),
           ),
           child: Column(
             children: [

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../statistics/providers/user_statistics_provider.dart';
 import '../../statistics/providers/achievements_provider.dart';
@@ -293,17 +294,17 @@ class ProfileScreen extends ConsumerWidget {
             gradient: LinearGradient(
               colors: hasStreak
                   ? [
-                      AppColors.warning.withAlpha(30),
-                      AppColors.warning.withAlpha(10),
+                      AppColors.warning.withAlpha(AppAlpha.a12),
+                      AppColors.warning.withAlpha(AppAlpha.a04),
                     ]
                   : [AppColors.surface2, AppColors.surface2],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.r6),
             border: Border.all(
               color: hasStreak
-                  ? AppColors.warning.withAlpha(100)
+                  ? AppColors.warning.withAlpha(AppAlpha.a40)
                   : AppColors.border,
               width: 1,
             ),
@@ -332,9 +333,9 @@ class ProfileScreen extends ConsumerWidget {
                               horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
                             color: hasStreak
-                                ? AppColors.warning.withAlpha(25)
+                                ? AppColors.warning.withAlpha(AppAlpha.a10)
                                 : AppColors.surface3,
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: BorderRadius.circular(AppRadius.r2),
                           ),
                           child: Text(
                             title,
@@ -494,7 +495,7 @@ class _InfoCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.r5),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Column(children: children),
@@ -617,7 +618,7 @@ class _StatTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.r5),
           border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: Column(

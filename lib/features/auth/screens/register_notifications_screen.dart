@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class RegisterNotificationsScreen extends StatefulWidget {
   const RegisterNotificationsScreen({super.key});
@@ -47,7 +48,7 @@ class _RegisterNotificationsScreenState
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withAlpha(25),
+                        color: AppColors.primary.withAlpha(AppAlpha.a10),
                         shape: BoxShape.circle,
                       ),
                       child: const Center(
@@ -139,7 +140,7 @@ class _NotifToggle extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.r5),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Row(

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -194,9 +195,9 @@ class _ErrorBanner extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.s3, vertical: AppSpacing.s2 + 2),
       decoration: BoxDecoration(
-        color: AppColors.error.withAlpha(25),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.error.withAlpha(76)),
+        color: AppColors.error.withAlpha(AppAlpha.a10),
+        borderRadius: BorderRadius.circular(AppRadius.r3),
+        border: Border.all(color: AppColors.error.withAlpha(AppAlpha.a30)),
       ),
       child: Row(
         children: [

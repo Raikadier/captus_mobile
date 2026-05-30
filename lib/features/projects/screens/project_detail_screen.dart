@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/services/api_client.dart';
 import '../../../shared/widgets/captus_dialog.dart';
 import '../../../shared/widgets/captus_pressable.dart';
@@ -203,7 +204,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                       backgroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.r5),
                       ),
                     ),
                     onPressed: () {
@@ -438,7 +439,7 @@ class _MembersTab extends StatelessWidget {
                       padding: const EdgeInsets.all(AppSpacing.s3),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(AppRadius.r6),
                         border: Border.all(
                             color: AppColors.border, width: 0.5),
                       ),
@@ -596,7 +597,7 @@ class _CommentsTab extends StatelessWidget {
                       padding: const EdgeInsets.all(AppSpacing.s4),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(AppRadius.r6),
                         border: Border.all(
                             color: AppColors.border, width: 0.5),
                       ),
@@ -707,7 +708,7 @@ class _CommentsTab extends StatelessWidget {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.r5),
                   ),
                   child: IconButton(
                     icon: submitting

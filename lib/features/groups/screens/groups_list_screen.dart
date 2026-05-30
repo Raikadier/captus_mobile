@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/groups_provider.dart';
 import '../../../models/group.dart';
 import '../../../shared/widgets/captus_fab.dart';
@@ -143,7 +144,7 @@ class _GroupsListScreenState extends ConsumerState<GroupsListScreen> {
                   height: 44,
                   decoration: BoxDecoration(
                     color: AppColors.primary.withAlpha(AppAlpha.a10),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.r5),
                   ),
                   child:
                       const Icon(Icons.group_add, color: AppColors.primary, size: 22),
@@ -168,7 +169,7 @@ class _GroupsListScreenState extends ConsumerState<GroupsListScreen> {
                   height: 44,
                   decoration: BoxDecoration(
                     color: AppColors.info.withAlpha(AppAlpha.a10),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.r5),
                   ),
                   child:
                       const Icon(Icons.qr_code, color: AppColors.info, size: 22),
@@ -284,7 +285,7 @@ class _GroupCard extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.s4),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.r7),
           border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a40)),
         ),
         child: Row(
@@ -330,7 +331,7 @@ class _GroupCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.warning.withAlpha(AppAlpha.a15),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppRadius.r3),
                 ),
                 child: Text(
                   '${group.pendingTasks}',

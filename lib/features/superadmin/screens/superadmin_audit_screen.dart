@@ -101,7 +101,7 @@ class _SuperAdminAuditScreenState extends State<SuperAdminAuditScreen> {
                       final date = log['created_at'] as String? ?? '';
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: _colorFor(action).withAlpha(30),
+                          backgroundColor: _colorFor(action).withAlpha(AppAlpha.a12),
                           child: Icon(_iconFor(action),
                               color: _colorFor(action), size: 20),
                         ),

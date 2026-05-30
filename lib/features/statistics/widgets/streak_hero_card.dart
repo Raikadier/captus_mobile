@@ -4,6 +4,7 @@ import '../../../shared/widgets/count_up_text.dart';
 import '../providers/user_statistics_provider.dart';
 import '../utils/streak_messages.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class StreakHeroCard extends StatelessWidget {
   final UserStatisticsState stats;
@@ -20,7 +21,7 @@ class StreakHeroCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: stats.hasStreak
-              ? [AppColors.warning.withAlpha(40), AppColors.primaryDark]
+              ? [AppColors.warning.withAlpha(AppAlpha.a15), AppColors.primaryDark]
               : [AppColors.surface, AppColors.surface2],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -33,7 +34,7 @@ class StreakHeroCard extends StatelessWidget {
           width: 1.5,
         ),
         boxShadow: stats.hasStreak
-            ? [BoxShadow(color: AppColors.warning.withAlpha(40), blurRadius: 16, offset: const Offset(0, 4))]
+            ? [BoxShadow(color: AppColors.warning.withAlpha(AppAlpha.a15), blurRadius: 16, offset: const Offset(0, 4))]
             : null,
       ),
       child: Column(
@@ -59,9 +60,9 @@ class StreakHeroCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
             decoration: BoxDecoration(
-              color: stats.hasStreak ? AppColors.warning.withAlpha(30) : AppColors.primary.withAlpha(25),
+              color: stats.hasStreak ? AppColors.warning.withAlpha(AppAlpha.a12) : AppColors.primary.withAlpha(AppAlpha.a10),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: stats.hasStreak ? AppColors.warning.withAlpha(80) : AppColors.primary.withAlpha(60)),
+              border: Border.all(color: stats.hasStreak ? AppColors.warning.withAlpha(80) : AppColors.primary.withAlpha(AppAlpha.a24)),
             ),
             child: Text(
               '🏅 Rango: $title',
@@ -73,8 +74,8 @@ class StreakHeroCard extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: AppColors.surface.withAlpha(200),
-              borderRadius: BorderRadius.circular(12),
+              color: AppColors.surface.withAlpha(AppAlpha.a70),
+              borderRadius: BorderRadius.circular(AppRadius.r5),
             ),
             child: Text(
               stats.streakMessage,

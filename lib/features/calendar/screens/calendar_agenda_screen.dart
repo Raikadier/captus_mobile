@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../models/task.dart';
 
@@ -111,7 +112,7 @@ class CalendarAgendaScreen extends ConsumerWidget {
                         color: isToday
                             ? AppColors.primary.withAlpha(AppAlpha.a15)
                             : AppColors.surface2,
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(AppRadius.r2),
                       ),
                       child: Text(
                         isToday

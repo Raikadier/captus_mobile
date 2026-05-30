@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class NotificationsSettingsScreen extends StatefulWidget {
   const NotificationsSettingsScreen({super.key});
@@ -94,10 +95,10 @@ class _NotificationsSettingsScreenState
             padding: const EdgeInsets.all(AppSpacing.s4),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.r5),
               border: Border.all(
                 color: _doNotDisturb
-                    ? AppColors.error.withAlpha(76)
+                    ? AppColors.error.withAlpha(AppAlpha.a30)
                     : AppColors.border,
                 width: 0.5,
               ),
@@ -175,7 +176,7 @@ class _SectionCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.r5),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Column(

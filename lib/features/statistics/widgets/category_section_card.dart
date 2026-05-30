@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../providers/user_statistics_provider.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class CategorySectionCard extends StatelessWidget {
   final UserStatisticsState stats;
@@ -13,13 +14,13 @@ class CategorySectionCard extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
     const sectionDecoration = BoxDecoration(
       color: AppColors.surface,
-      borderRadius: BorderRadius.all(Radius.circular(16)),
+      borderRadius: BorderRadius.all(Radius.circular(AppRadius.r7)),
     );
 
     if (stats.categoryTaskCounts.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(AppSpacing.s4),
-        decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.border, width: 0.5)),
+        decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(AppRadius.r7), border: Border.all(color: AppColors.border, width: 0.5)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -33,7 +34,7 @@ class CategorySectionCard extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.s4),
-      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.border, width: 0.5)),
+      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(AppRadius.r7), border: Border.all(color: AppColors.border, width: 0.5)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -102,10 +103,10 @@ class CategorySectionCard extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.s1),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(AppRadius.r1),
                     child: LinearProgressIndicator(
                       value: progress, minHeight: 7,
-                      backgroundColor: color.withAlpha(38),
+                      backgroundColor: color.withAlpha(AppAlpha.a15),
                       valueColor: AlwaysStoppedAnimation<Color>(color),
                     ),
                   ),

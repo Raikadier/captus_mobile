@@ -8,6 +8,7 @@ import '../services/sample_data.dart';
 import '../../models/statistics.dart';
 import '../env/env.dart';
 import 'categories_provider.dart';
+import '../constants/app_animations.dart';
 
 enum AuthStatus { loading, authenticated, unauthenticated }
 
@@ -247,7 +248,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
             AuthState.unauthenticated('Error desconocido al iniciar sesión'));
         return 'Error desconocido al iniciar sesión';
       } else {
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future.delayed(AppDurations.slow);
         final user = LocalStorageService.findUserByEmail(email);
 
         if (user == null) {
@@ -320,7 +321,7 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
             AuthState.unauthenticated('Error al registrar usuario'));
         return 'Error al registrar usuario';
       } else {
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future.delayed(AppDurations.slow);
         final existing = LocalStorageService.findUserByEmail(email);
         if (existing != null) {
           state = const AsyncData(
@@ -360,12 +361,12 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
   }
 
   Future<String?> sendPasswordReset(String email) async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future.delayed(AppDurations.comfortable);
     return null;
   }
 
   Future<String?> resendConfirmation(String email) async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future.delayed(AppDurations.comfortable);
     return null;
   }
 

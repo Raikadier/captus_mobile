@@ -6,6 +6,7 @@ import '../../../core/providers/notes_provider.dart';
 import '../../../models/note.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class NotesScreen extends ConsumerStatefulWidget {
   const NotesScreen({super.key});
@@ -76,15 +77,15 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                 filled: true,
                 fillColor: AppColors.surface2,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                   borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                   borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -223,9 +224,9 @@ class _NoteCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: note.color,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
           border: Border.all(
-            color: note.accentColor.withAlpha(51),
+            color: note.accentColor.withAlpha(AppAlpha.a20),
             width: 1,
           ),
           boxShadow: [
@@ -280,8 +281,8 @@ class _NoteCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                       decoration: BoxDecoration(
-                        color: note.accentColor.withAlpha(38),
-                        borderRadius: BorderRadius.circular(4),
+                        color: note.accentColor.withAlpha(AppAlpha.a15),
+                        borderRadius: BorderRadius.circular(AppRadius.r1),
                       ),
                       child: Text(
                         note.subject!,
@@ -367,9 +368,9 @@ class _PinnedNoteCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         decoration: BoxDecoration(
           color: note.color,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.r5),
           border: Border.all(
-            color: note.accentColor.withAlpha(51),
+            color: note.accentColor.withAlpha(AppAlpha.a20),
             width: 1,
           ),
         ),

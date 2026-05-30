@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
 import '../../../core/constants/app_shadows.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/auth_provider.dart';
@@ -25,7 +26,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: AppDurations.deliberate,
     );
     _fadeAnim = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: const Interval(0, 0.6)),
@@ -46,7 +47,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (authAsync.isLoading) {
       var waited = 0;
       while (ref.read(authProvider).isLoading && waited < 30) {
-        await Future.delayed(const Duration(milliseconds: 100));
+        await Future.delayed(AppDurations.quick);
         waited++;
       }
       if (!mounted) return;
@@ -117,7 +118,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     height: 24,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: AppColors.primary.withAlpha(128),
+                      color: AppColors.primary.withAlpha(AppAlpha.a50),
                     ),
                   ),
                 ],

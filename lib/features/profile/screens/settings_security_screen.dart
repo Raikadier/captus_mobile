@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class SettingsSecurityScreen extends StatefulWidget {
   const SettingsSecurityScreen({super.key});
@@ -34,15 +35,15 @@ class _SettingsSecurityScreenState extends State<SettingsSecurityScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.primary.withAlpha(30),
+                  AppColors.primary.withAlpha(AppAlpha.a12),
                   AppColors.surface,
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadius.r7),
               border: Border.all(
-                  color: AppColors.primary.withAlpha(51), width: 0.5),
+                  color: AppColors.primary.withAlpha(AppAlpha.a20), width: 0.5),
             ),
             child: Row(
               children: [
@@ -50,9 +51,9 @@ class _SettingsSecurityScreenState extends State<SettingsSecurityScreen> {
                   width: 52,
                   height: 52,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withAlpha(25),
+                    color: AppColors.primary.withAlpha(AppAlpha.a10),
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.primary.withAlpha(76)),
+                    border: Border.all(color: AppColors.primary.withAlpha(AppAlpha.a30)),
                   ),
                   child: const Icon(Icons.shield_rounded,
                       color: AppColors.primary, size: 26),
@@ -212,7 +213,7 @@ class _SettingsCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.r5),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Column(children: children),
@@ -337,8 +338,8 @@ class _SessionRow extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: AppColors.primary.withAlpha(25),
-                borderRadius: BorderRadius.circular(6),
+                color: AppColors.primary.withAlpha(AppAlpha.a10),
+                borderRadius: BorderRadius.circular(AppRadius.r2),
               ),
               child: Text('Actual',
                   style: Theme.of(context).textTheme.labelMedium!.copyWith(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class FavoriteCategoryCard extends StatelessWidget {
   final String categoryName;
@@ -12,15 +13,15 @@ class FavoriteCategoryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [AppColors.primary.withAlpha(25), AppColors.primary.withAlpha(10)]),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withAlpha(51)),
+        gradient: LinearGradient(colors: [AppColors.primary.withAlpha(AppAlpha.a10), AppColors.primary.withAlpha(AppAlpha.a04)]),
+        borderRadius: BorderRadius.circular(AppRadius.r7),
+        border: Border.all(color: AppColors.primary.withAlpha(AppAlpha.a20)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(AppSpacing.s3),
-            decoration: BoxDecoration(color: AppColors.primary.withAlpha(38), shape: BoxShape.circle),
+            decoration: BoxDecoration(color: AppColors.primary.withAlpha(AppAlpha.a15), shape: BoxShape.circle),
             child: const Icon(Icons.favorite_rounded, color: AppColors.primary, size: 24),
           ),
           const SizedBox(width: AppSpacing.s4),

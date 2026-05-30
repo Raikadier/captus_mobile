@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../shared/widgets/cactus_refresh.dart';
 import '../../../shared/widgets/captus_dialog.dart';
 import '../../../shared/widgets/captus_fab.dart';
@@ -124,10 +125,10 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
                 AppSpacing.s4, AppSpacing.s3, AppSpacing.s4, 0),
             child: Material(
               color: AppColors.primary,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.r5),
               child: InkWell(
                 onTap: () => context.push('/tasks/personal'),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.r5),
                 splashColor: AppColors.textOnPrimary.withAlpha(AppAlpha.a10),
                 child: Padding(
                   padding: const EdgeInsets.all(AppSpacing.s4),
@@ -264,7 +265,7 @@ class _SwipeableTaskCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: AppSpacing.s3),
         decoration: BoxDecoration(
           color: AppColors.success,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
         ),
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(left: AppSpacing.s5),
@@ -284,7 +285,7 @@ class _SwipeableTaskCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: AppSpacing.s3),
         decoration: BoxDecoration(
           color: AppColors.error,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
         ),
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: AppSpacing.s5),
@@ -343,15 +344,15 @@ class _TaskCardContent extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: AppSpacing.s3),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
           splashColor: AppColors.primary.withAlpha(AppAlpha.a10),
           highlightColor: AppColors.primary.withAlpha(AppAlpha.a05),
           child: Padding(
@@ -367,7 +368,7 @@ class _TaskCardContent extends StatelessWidget {
                     color: isEvaluation
                         ? AppColors.warning
                         : AppColors.primary,
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(AppRadius.r1),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.s3),
@@ -399,7 +400,7 @@ class _TaskCardContent extends StatelessWidget {
                     color: isEvaluation
                         ? AppColors.warningLight
                         : AppColors.primaryLight,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.r3),
                   ),
                   child: Text(
                     isEvaluation ? 'Evaluación' : 'Tarea',

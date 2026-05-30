@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/courses_provider.dart';
 import '../../../shared/widgets/captus_fab.dart';
@@ -46,7 +47,7 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
                     onTap: () => context.push('/profile'),
                     child: CircleAvatar(
                       radius: 18,
-                      backgroundColor: AppColors.primary.withAlpha(38),
+                      backgroundColor: AppColors.primary.withAlpha(AppAlpha.a15),
                       child: Text(
                         user?.name.isNotEmpty == true
                             ? user!.name[0].toUpperCase()
@@ -67,10 +68,10 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.s2, vertical: 3),
                     decoration: BoxDecoration(
-                      color: AppColors.info.withAlpha(25),
-                      borderRadius: BorderRadius.circular(8),
+                      color: AppColors.info.withAlpha(AppAlpha.a10),
+                      borderRadius: BorderRadius.circular(AppRadius.r3),
                       border:
-                          Border.all(color: AppColors.info.withAlpha(76)),
+                          Border.all(color: AppColors.info.withAlpha(AppAlpha.a30)),
                     ),
                     child: Text(
                       'Docente',
@@ -134,7 +135,7 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
                         vertical: AppSpacing.s4),
                     decoration: BoxDecoration(
                       color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(AppRadius.r6),
                       border: Border.all(
                           color: AppColors.border, width: 0.5),
                     ),
@@ -289,7 +290,7 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(AppSpacing.s4),
                     decoration: BoxDecoration(
                       color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(AppRadius.r6),
                     ),
                     child: Row(
                       children: [
@@ -297,8 +298,8 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
                           width: 44,
                           height: 44,
                           decoration: BoxDecoration(
-                            color: AppColors.textOnPrimary.withAlpha(40),
-                            borderRadius: BorderRadius.circular(12),
+                            color: AppColors.textOnPrimary.withAlpha(AppAlpha.a15),
+                            borderRadius: BorderRadius.circular(AppRadius.r5),
                           ),
                           child: const Icon(
                               Icons.auto_awesome_rounded,
@@ -319,7 +320,7 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
                                 'Genera planes, rúbricas y bancos de preguntas',
                                 style: tt.bodySmall!.copyWith(
                                     color: AppColors.textOnPrimary
-                                        .withAlpha(200)),
+                                        .withAlpha(AppAlpha.a70)),
                               ),
                             ],
                           ),
@@ -365,7 +366,7 @@ class _SectionCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: child,
@@ -493,7 +494,7 @@ class _CourseRow extends StatelessWidget {
               height: 40,
               decoration: BoxDecoration(
                 color: color,
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(AppRadius.r1),
               ),
             ),
             const SizedBox(width: AppSpacing.s3),

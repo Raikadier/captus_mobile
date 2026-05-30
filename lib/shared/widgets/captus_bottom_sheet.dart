@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_animations.dart';
+import '../../core/constants/app_radius.dart';
 
 /// Standard Captus bottom sheet wrapper.
 ///
@@ -84,7 +85,7 @@ class CaptusBottomSheet extends StatelessWidget {
                     height: 4,
                     decoration: BoxDecoration(
                       color: AppColors.border,
-                      borderRadius: BorderRadius.circular(999),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
                     ),
                   ),
                 ),

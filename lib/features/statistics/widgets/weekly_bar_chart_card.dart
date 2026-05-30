@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../providers/user_statistics_provider.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class WeeklyBarChartCard extends StatelessWidget {
   final UserStatisticsState stats;
@@ -21,7 +22,7 @@ class WeeklyBarChartCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.r7),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Column(
@@ -33,7 +34,7 @@ class WeeklyBarChartCard extends StatelessWidget {
               Text('Esta Semana', style: tt.bodyMedium!.copyWith(color: AppColors.textPrimary)),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(color: AppColors.info.withAlpha(25), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: AppColors.info.withAlpha(AppAlpha.a10), borderRadius: BorderRadius.circular(AppRadius.r3)),
                 child: Text('$activeDays/7 días activos', style: tt.labelLarge!.copyWith(color: AppColors.info)),
               ),
             ],
@@ -89,7 +90,7 @@ class WeeklyBarChartCard extends StatelessWidget {
                           toY: count == 0 ? 0.15 : count,
                           color: count == 0 ? AppColors.surface2 : color,
                           width: 22,
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.r2)),
                         ),
                       ]);
                     }),

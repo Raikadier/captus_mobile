@@ -5,6 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../providers/achievements_provider.dart';
 import '../../../models/achievement.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class AchievementsCard extends ConsumerWidget {
   const AchievementsCard({super.key});
@@ -32,7 +33,7 @@ class AchievementsCard extends ConsumerWidget {
               padding: const EdgeInsets.all(AppSpacing.s4),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppRadius.r7),
                 border: Border.all(color: AppColors.border),
               ),
               child: Column(
@@ -50,7 +51,7 @@ class AchievementsCard extends ConsumerWidget {
                                 style: tt.bodyMedium!.copyWith(color: AppColors.textPrimary)),
                             const SizedBox(height: 6),
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(4),
+                              borderRadius: BorderRadius.circular(AppRadius.r1),
                               child: LinearProgressIndicator(
                                 value: progress, minHeight: 7,
                                 backgroundColor: AppColors.border,
@@ -90,7 +91,7 @@ class AchievementsCard extends ConsumerWidget {
                         final c = a.definition.difficulty.color;
                         return Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(color: c.withAlpha(25), borderRadius: BorderRadius.circular(20), border: Border.all(color: c.withAlpha(80))),
+                          decoration: BoxDecoration(color: c.withAlpha(AppAlpha.a10), borderRadius: BorderRadius.circular(20), border: Border.all(color: c.withAlpha(80))),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [

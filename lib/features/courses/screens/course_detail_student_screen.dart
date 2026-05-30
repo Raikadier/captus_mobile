@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/courses_provider.dart';
 import '../../../models/course.dart';
 
@@ -127,7 +128,7 @@ class _CourseDetailBody extends StatelessWidget {
                           horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
                         color: AppColors.textOnPrimary.withAlpha(AppAlpha.a20),
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(AppRadius.r2),
                       ),
                       child: Text(
                         course.code,
@@ -259,7 +260,7 @@ class _ActivityTile extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
           border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a50)),
         ),
         child: Row(
@@ -309,7 +310,7 @@ class _ActivityTile extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: chipColor.withAlpha(AppAlpha.a10),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppRadius.r3),
               ),
               child: Text(
                 chipLabel,
@@ -408,7 +409,7 @@ class _InfoCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

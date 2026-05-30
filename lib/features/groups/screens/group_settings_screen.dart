@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/groups_provider.dart';
 import '../../../models/group.dart';
 
@@ -52,7 +53,7 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
             return AlertDialog(
           backgroundColor: AppColors.surface,
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16)),
+              borderRadius: BorderRadius.circular(AppRadius.r7)),
           title: Text(
             'Archivar grupo',
             style: Theme.of(context).textTheme.headlineSmall,
@@ -88,7 +89,7 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
             return AlertDialog(
           backgroundColor: AppColors.surface,
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16)),
+              borderRadius: BorderRadius.circular(AppRadius.r7)),
           title: Text(
             'Salir del grupo',
             style: Theme.of(context).textTheme.headlineSmall,
@@ -202,7 +203,7 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
             padding: const EdgeInsets.all(AppSpacing.s4),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.r6),
             ),
             child: Row(
               children: [
@@ -256,7 +257,7 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
                 horizontal: 14, vertical: 4),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.r5),
             ),
             child: Row(
               children: [
@@ -293,7 +294,7 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
                   color: AppColors.warning.withAlpha(AppAlpha.a50)),
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(AppRadius.r5)),
             ),
           ),
           const SizedBox(height: AppSpacing.s3),
@@ -309,7 +310,7 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
               foregroundColor: AppColors.textOnPrimary,
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(AppRadius.r5)),
             ),
           ),
           const SizedBox(height: AppSpacing.s8),
@@ -354,7 +355,7 @@ class _MemberTileState extends State<_MemberTile> {
       padding: const EdgeInsets.all(AppSpacing.s3),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.r5),
       ),
       child: Row(
         children: [
@@ -382,7 +383,7 @@ class _MemberTileState extends State<_MemberTile> {
                 color: AppColors.textDisabled, size: 18),
             color: AppColors.surface2,
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(AppRadius.r5)),
             onSelected: (value) {
               if (value == 'promote') {
                 setState(() => _isAdmin = !_isAdmin);
@@ -441,7 +442,7 @@ class _MemberTileState extends State<_MemberTile> {
                   horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
                 color: AppColors.primary.withAlpha(AppAlpha.a10),
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(AppRadius.r2),
               ),
               child: Text(
                 'Admin',

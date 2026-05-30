@@ -10,6 +10,7 @@ import '../models/evidence_item.dart';
 import '../services/evidence_local_service.dart';
 import 'qr_scanner_screen.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class EvidenceScreen extends StatefulWidget {
   const EvidenceScreen({super.key});
@@ -177,7 +178,7 @@ class _EvidenceScreenState extends State<EvidenceScreen> {
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
                           color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(AppRadius.r7),
                           border: Border.all(color: AppColors.border),
                         ),
                         child: Row(
@@ -247,14 +248,14 @@ class _ActionCard extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
     return Material(
       color: AppColors.surface,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppRadius.r7),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.r7),
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(color: AppColors.border),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadius.r7),
           ),
           padding: const EdgeInsets.all(14),
           child: Column(
@@ -284,7 +285,7 @@ class _EvidencePreview extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
     if (item.imagePath != null) {
       return ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.r5),
         child: Image.file(
           File(item.imagePath!),
           width: 58,
@@ -309,7 +310,7 @@ class _EvidencePreview extends StatelessWidget {
       height: 58,
       decoration: BoxDecoration(
         color: AppColors.primary.withAlpha(AppAlpha.a10),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.r5),
       ),
       child: Icon(
         item.type == 'location'

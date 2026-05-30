@@ -6,6 +6,7 @@ import '../../core/constants/app_animations.dart';
 import '../../core/constants/app_gradients.dart';
 import '../../core/constants/app_shadows.dart';
 import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_radius.dart';
 import '../../core/providers/auth_provider.dart';
 import '../../shared/widgets/captus_pressable.dart';
 import '../../shared/widgets/offline_banner.dart';
@@ -198,7 +199,7 @@ class _NavItem extends StatelessWidget {
                   color: isSelected
                       ? AppColors.primary.withAlpha(AppAlpha.a20)
                       : Colors.transparent,
-                  borderRadius: BorderRadius.circular(99), // pill indicator
+                  borderRadius: BorderRadius.circular(AppRadius.pill), // pill indicator
                 ),
                 child: AnimatedSwitcher(
                   duration: AppDurations.quick,
@@ -269,7 +270,7 @@ class _CenterNavItem extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: isSelected ? AppGradients.brand : null,
                   color: isSelected ? null : AppColors.shellSurface,
-                  borderRadius: BorderRadius.circular(99),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
                   boxShadow: isSelected ? AppShadows.brandSm : null,
                 ),
                 child: Center(
@@ -319,7 +320,7 @@ class _MoreMenuSheet extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r10)),
       ),
       child: SafeArea(
         child: Padding(
@@ -333,7 +334,7 @@ class _MoreMenuSheet extends StatelessWidget {
                 height: 4,
                 decoration: BoxDecoration(
                   color: AppColors.border,
-                  borderRadius: BorderRadius.circular(99),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
               ),
               const SizedBox(height: AppSpacing.sectionGap),
@@ -392,7 +393,7 @@ class _MenuOption extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.cardPaddingStd),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.r7),
           border: Border.all(color: AppColors.border, width: 1),
           boxShadow: AppShadows.xs,
         ),
@@ -403,7 +404,7 @@ class _MenuOption extends StatelessWidget {
               padding: const EdgeInsets.all(AppSpacing.s3),
               decoration: BoxDecoration(
                 color: iconColor.withAlpha(AppAlpha.a10),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.r5),
               ),
               child: Icon(icon, color: iconColor, size: 22),
             ),

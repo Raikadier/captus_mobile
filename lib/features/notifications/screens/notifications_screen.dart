@@ -189,7 +189,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                                 width: 40,
                                 height: 40,
                                 decoration: BoxDecoration(
-                                  color: color.withAlpha(25),
+                                  color: color.withAlpha(AppAlpha.a10),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(_iconForType(n.type),

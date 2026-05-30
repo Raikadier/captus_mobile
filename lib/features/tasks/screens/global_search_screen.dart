@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/courses_provider.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../models/task.dart';
@@ -171,8 +172,8 @@ class _SearchResults extends StatelessWidget {
                   height: 32,
                   decoration: BoxDecoration(
                     color: AppColors.courseColor(c.colorIndex)
-                        .withAlpha(38),
-                    borderRadius: BorderRadius.circular(6),
+                        .withAlpha(AppAlpha.a15),
+                    borderRadius: BorderRadius.circular(AppRadius.r2),
                   ),
                   child: Center(
                     child: Text(

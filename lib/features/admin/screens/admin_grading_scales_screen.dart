@@ -3,6 +3,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_errors.dart';
 import '../services/admin_service.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class AdminGradingScalesScreen extends StatefulWidget {
   const AdminGradingScalesScreen({super.key});
@@ -262,7 +263,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
                             margin: const EdgeInsets.only(bottom: 12),
                             color: AppColors.surface,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.r5),
                               side: isDefault
                                   ? BorderSide(
                                       color: AppColors.primary, width: 1.5)
@@ -276,7 +277,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
                                     width: 48,
                                     height: 48,
                                     decoration: BoxDecoration(
-                                      color: AppColors.primary.withAlpha(20),
+                                      color: AppColors.primary.withAlpha(AppAlpha.a08),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Icon(Icons.grading_outlined,
@@ -302,7 +303,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
                                                       vertical: 2),
                                               decoration: BoxDecoration(
                                                 color: AppColors.primary
-                                                    .withAlpha(20),
+                                                    .withAlpha(AppAlpha.a08),
                                                 borderRadius:
                                                     BorderRadius.circular(20),
                                               ),

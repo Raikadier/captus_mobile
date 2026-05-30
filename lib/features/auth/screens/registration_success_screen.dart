@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/auth_provider.dart';
 
 class RegistrationSuccessScreen extends ConsumerStatefulWidget {
@@ -66,10 +67,10 @@ class _RegistrationSuccessScreenState
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: AppColors.success.withAlpha(25),
+                  color: AppColors.success.withAlpha(AppAlpha.a10),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: AppColors.success.withAlpha(76),
+                    color: AppColors.success.withAlpha(AppAlpha.a30),
                     width: 2,
                   ),
                 ),
@@ -100,8 +101,8 @@ class _RegistrationSuccessScreenState
                     horizontal: AppSpacing.s4,
                     vertical: AppSpacing.s2 + 2),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withAlpha(25),
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.primary.withAlpha(AppAlpha.a10),
+                  borderRadius: BorderRadius.circular(AppRadius.r3),
                 ),
                 child: Text(
                   widget.email,
@@ -124,10 +125,10 @@ class _RegistrationSuccessScreenState
                       horizontal: AppSpacing.s3,
                       vertical: AppSpacing.s2 + 2),
                   decoration: BoxDecoration(
-                    color: AppColors.success.withAlpha(25),
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.success.withAlpha(AppAlpha.a10),
+                    borderRadius: BorderRadius.circular(AppRadius.r3),
                     border: Border.all(
-                        color: AppColors.success.withAlpha(76)),
+                        color: AppColors.success.withAlpha(AppAlpha.a30)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -151,10 +152,10 @@ class _RegistrationSuccessScreenState
                       horizontal: AppSpacing.s3,
                       vertical: AppSpacing.s2 + 2),
                   decoration: BoxDecoration(
-                    color: AppColors.error.withAlpha(25),
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.error.withAlpha(AppAlpha.a10),
+                    borderRadius: BorderRadius.circular(AppRadius.r3),
                     border: Border.all(
-                        color: AppColors.error.withAlpha(76)),
+                        color: AppColors.error.withAlpha(AppAlpha.a30)),
                   ),
                   child: Row(
                     children: [

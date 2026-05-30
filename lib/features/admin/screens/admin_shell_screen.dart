@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
 import '../../../core/constants/app_spacing.dart';
 
 /// Top-level shell for admin users.
@@ -153,7 +154,7 @@ class _AdminNavItem extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.s1),
           AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: AppDurations.fast,
             width: isSelected ? 4 : 0,
             height: isSelected ? 4 : 0,
             decoration: const BoxDecoration(

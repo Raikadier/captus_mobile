@@ -6,6 +6,7 @@ import '../../../core/providers/auth_provider.dart';
 import '../../../shared/widgets/cactus_refresh.dart';
 import '../services/admin_service.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -247,7 +248,7 @@ class _StatCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Row(
@@ -257,7 +258,7 @@ class _StatCard extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               color: color.withAlpha(AppAlpha.a10),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.r5),
             ),
             child: Icon(icon, color: color, size: 22),
           ),
@@ -303,7 +304,7 @@ class _QuickAction extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.s4),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
           border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: Row(
@@ -313,7 +314,7 @@ class _QuickAction extends StatelessWidget {
               height: 44,
               decoration: BoxDecoration(
                 color: AppColors.primary.withAlpha(AppAlpha.a10),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.r5),
               ),
               child: Icon(icon, color: AppColors.primary, size: 22),
             ),

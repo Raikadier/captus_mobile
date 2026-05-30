@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_radius.dart';
 
 class CountdownChip extends StatelessWidget {
   final DateTime dueDate;
@@ -53,9 +54,9 @@ class CountdownChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.s2, vertical: AppSpacing.s1),
       decoration: BoxDecoration(
-        color: color.withAlpha(25),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color.withAlpha(76)),
+        color: color.withAlpha(AppAlpha.a10),
+        borderRadius: BorderRadius.circular(AppRadius.r2),
+        border: Border.all(color: color.withAlpha(AppAlpha.a30)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

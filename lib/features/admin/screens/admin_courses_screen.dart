@@ -3,6 +3,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_errors.dart';
 import '../services/admin_service.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class AdminCoursesScreen extends StatefulWidget {
   const AdminCoursesScreen({super.key});
@@ -301,7 +302,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                   final email = s['email'] as String? ?? '';
                                   return ListTile(
                                     leading: CircleAvatar(
-                                      backgroundColor: AppColors.primary.withAlpha(25),
+                                      backgroundColor: AppColors.primary.withAlpha(AppAlpha.a10),
                                       child: Text(
                                         name.isNotEmpty ? name[0].toUpperCase() : '?',
                                         style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.primary),
@@ -632,7 +633,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
                           color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.r5),
                           border: Border.all(color: AppColors.border),
                         ),
                         child: Column(
@@ -647,7 +648,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 3),
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary.withAlpha(20),
+                                  color: AppColors.primary.withAlpha(AppAlpha.a08),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text('$enrollments alumnos',

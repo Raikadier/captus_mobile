@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/groups_provider.dart';
 import '../../../models/group.dart';
 import '../../../models/task.dart';
@@ -213,7 +214,7 @@ class _TasksTab extends StatelessWidget {
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.r6),
             ),
             child: Row(
               children: [
@@ -327,7 +328,7 @@ class _MembersTab extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.r6),
           ),
           child: Row(
             children: [
@@ -363,7 +364,7 @@ class _MembersTab extends StatelessWidget {
                               color:
                                   AppColors.primary.withAlpha(AppAlpha.a10),
                               borderRadius:
-                                  BorderRadius.circular(6),
+                                  BorderRadius.circular(AppRadius.r2),
                             ),
                             child: Text(
                               'Admin',
@@ -382,7 +383,7 @@ class _MembersTab extends StatelessWidget {
                         Expanded(
                           child: ClipRRect(
                             borderRadius:
-                                BorderRadius.circular(4),
+                                BorderRadius.circular(AppRadius.r1),
                             child: LinearProgressIndicator(
                               value: contribution,
                               backgroundColor:

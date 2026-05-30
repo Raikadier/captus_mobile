@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/courses_provider.dart';
 import '../../../models/course.dart';
 
@@ -141,7 +142,7 @@ class _ActivityDetailStudentScreenState
                       : dueDiff.inHours < 24
                           ? AppColors.warning.withAlpha(AppAlpha.a15)
                           : color.withAlpha(AppAlpha.a10),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppRadius.r3),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -177,7 +178,7 @@ class _ActivityDetailStudentScreenState
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: AppColors.surface2,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.r3),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -202,7 +203,7 @@ class _ActivityDetailStudentScreenState
               padding: const EdgeInsets.all(AppSpacing.s4),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadius.r6),
               ),
               child: Text(
                 activity.description!,
@@ -265,7 +266,7 @@ class _GradedView extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.s5),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.r7),
         border: Border.all(color: AppColors.primary.withAlpha(AppAlpha.a30)),
       ),
       child: Column(
@@ -339,7 +340,7 @@ class _SubmittedView extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         color: AppColors.info.withAlpha(AppAlpha.a10),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.info.withAlpha(AppAlpha.a30)),
       ),
       child: Row(
@@ -393,7 +394,7 @@ class _UploadView extends StatelessWidget {
               padding: const EdgeInsets.all(AppSpacing.s5),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadius.r6),
                 border: Border.all(
                   color: fileSelected ? AppColors.primary : AppColors.border,
                   style: BorderStyle.solid,
@@ -486,7 +487,7 @@ class _BottomBar extends StatelessWidget {
                 showAiButton ? AppColors.surface2 : AppColors.primary,
             foregroundColor: showAiButton ? AppColors.primary : AppColors.textOnPrimary,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.r6),
               side: showAiButton
                   ? BorderSide(color: AppColors.primary.withAlpha(AppAlpha.a50))
                   : BorderSide.none,

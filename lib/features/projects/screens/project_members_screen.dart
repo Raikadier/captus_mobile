@@ -4,6 +4,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/services/api_client.dart';
 import '../../../shared/widgets/captus_fab.dart';
 import '../../../shared/widgets/cactus_refresh.dart';
+import '../../../core/constants/app_radius.dart';
 
 const _roleOptions = ['owner', 'admin', 'member'];
 const _roleLabels = {
@@ -196,7 +197,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                       backgroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.r5),
                       ),
                     ),
                     onPressed: () {
@@ -248,7 +249,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
         builder: (ctx, setSt) => AlertDialog(
           backgroundColor: AppColors.surface,
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16)),
+              borderRadius: BorderRadius.circular(AppRadius.r7)),
           title: Text(
             'Cambiar rol',
             style: GoogleFonts.inter(
@@ -332,7 +333,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.r7)),
         title: Text(
           'Remover miembro',
           style: GoogleFonts.inter(
@@ -441,7 +442,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: AppColors.surface,
-                              borderRadius: BorderRadius.circular(14),
+                              borderRadius: BorderRadius.circular(AppRadius.r6),
                               border: Border.all(
                                   color: AppColors.border, width: 0.5),
                             ),

@@ -3,6 +3,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_errors.dart';
 import '../services/admin_service.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class AdminPeriodsScreen extends StatefulWidget {
   const AdminPeriodsScreen({super.key});
@@ -289,7 +290,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                             margin: const EdgeInsets.only(bottom: 12),
                             color: AppColors.surface,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.r5),
                               side: isActive
                                   ? const BorderSide(
                                       color: AppColors.success, width: 1.5)
@@ -305,7 +306,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                                     decoration: BoxDecoration(
                                       color: isActive
                                           ? AppColors.success.withAlpha(AppAlpha.a20)
-                                          : AppColors.primary.withAlpha(20),
+                                          : AppColors.primary.withAlpha(AppAlpha.a08),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Icon(Icons.date_range_outlined,
@@ -333,7 +334,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                                                       vertical: 2),
                                               decoration: BoxDecoration(
                                                 color: AppColors.success
-                                                    .withAlpha(25),
+                                                    .withAlpha(AppAlpha.a10),
                                                 borderRadius:
                                                     BorderRadius.circular(20),
                                               ),

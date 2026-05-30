@@ -13,6 +13,7 @@ import '../widgets/category_section_card.dart';
 import '../widgets/activity_summary_section.dart';
 import '../widgets/achievements_card.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class StatisticsScreen extends ConsumerStatefulWidget {
   const StatisticsScreen({super.key});
@@ -124,7 +125,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       decoration: BoxDecoration(
                         color: isSelected ? AppColors.primary : AppColors.surface2,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.r5),
                         border: Border.all(color: isSelected ? AppColors.primary : Colors.transparent),
                       ),
                       child: Text('$goal', style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: isSelected ? AppColors.textOnPrimary : AppColors.textPrimary)),
@@ -144,7 +145,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     backgroundColor: AppColors.primary,
                     foregroundColor: AppColors.textOnPrimary,
                     padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.r5)),
                   ),
                   child: Text('Guardar', style: Theme.of(context).textTheme.titleMedium),
                 ),

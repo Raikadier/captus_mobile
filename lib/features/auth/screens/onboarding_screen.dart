@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_animations.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class _OnboardingPage {
   final String emoji;
@@ -146,10 +147,10 @@ class _OnboardingPageWidget extends StatelessWidget {
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: page.accentColor.withAlpha(25),
+              color: page.accentColor.withAlpha(AppAlpha.a10),
               shape: BoxShape.circle,
               border: Border.all(
-                  color: page.accentColor.withAlpha(76), width: 2),
+                  color: page.accentColor.withAlpha(AppAlpha.a30), width: 2),
             ),
             child: Center(
               child: Text(page.emoji,
@@ -194,7 +195,7 @@ class _DotsIndicator extends StatelessWidget {
           height: 8,
           decoration: BoxDecoration(
             color: i == current ? AppColors.primary : AppColors.surface2,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(AppRadius.r1),
           ),
         );
       }),

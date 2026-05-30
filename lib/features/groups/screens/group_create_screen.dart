@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/groups_provider.dart';
 import '../../../core/providers/courses_provider.dart';
 import '../../../core/services/api_client.dart';
@@ -138,7 +139,7 @@ class _GroupCreateScreenState extends ConsumerState<GroupCreateScreen> {
                     height: 26,
                     decoration: BoxDecoration(
                       color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppRadius.r3),
                       border: Border.all(
                           color: AppColors.background, width: 2),
                     ),
@@ -174,7 +175,7 @@ class _GroupCreateScreenState extends ConsumerState<GroupCreateScreen> {
                 height: 56,
                 decoration: BoxDecoration(
                   color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                   border: Border.all(
                       color: AppColors.border, width: 0.5),
                 ),
@@ -228,7 +229,7 @@ class _GroupCreateScreenState extends ConsumerState<GroupCreateScreen> {
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.r5),
                 border:
                     Border.all(color: AppColors.border, width: 0.5),
               ),
@@ -330,7 +331,7 @@ class _CoursePicker extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.r5),
           border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: Text(

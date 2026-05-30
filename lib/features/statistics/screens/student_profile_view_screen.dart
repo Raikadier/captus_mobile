@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class StudentProfileViewScreen extends StatelessWidget {
   final String studentId;
@@ -90,9 +91,9 @@ class StudentProfileViewScreen extends StatelessWidget {
                           horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: s['status'] == 'Entregada'
-                            ? AppColors.primary.withAlpha(25)
-                            : AppColors.error.withAlpha(25),
-                        borderRadius: BorderRadius.circular(6),
+                            ? AppColors.primary.withAlpha(AppAlpha.a10)
+                            : AppColors.error.withAlpha(AppAlpha.a10),
+                        borderRadius: BorderRadius.circular(AppRadius.r2),
                       ),
                       child: Text(
                         s['status']!,

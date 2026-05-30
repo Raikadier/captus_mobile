@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/services/api_client.dart';
 
 class ProjectCreateScreen extends StatefulWidget {
@@ -105,7 +106,7 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
               padding: const EdgeInsets.all(AppSpacing.s4),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadius.r6),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
               child: Column(
@@ -155,7 +156,7 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.r5),
                   ),
                 ),
                 onPressed: _saving ? null : _save,

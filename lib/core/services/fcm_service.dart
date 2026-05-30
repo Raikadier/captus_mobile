@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import 'api_client.dart';
 import 'router_service.dart';
+import '../constants/app_radius.dart';
 
 // ── Background handler (top-level, required by Firebase) ─────────────────────
 @pragma('vm:entry-point')
@@ -163,7 +164,7 @@ class _InAppBanner extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: AppColors.modalBg,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.r6),
               border: Border.all(color: AppColors.success.withAlpha(AppAlpha.a80)),
               boxShadow: [
                 BoxShadow(

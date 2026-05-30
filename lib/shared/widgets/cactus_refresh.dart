@@ -95,7 +95,7 @@ class CactusSpinner extends StatelessWidget {
           color: AppColors.primaryLight,
           shape: BoxShape.circle,
           border: Border.all(
-            color: AppColors.primary.withAlpha(76),
+            color: AppColors.primary.withAlpha(AppAlpha.a30),
             width: 1.5,
           ),
         ),

@@ -6,7 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/ai_chat_provider.dart';
 import '../../../core/providers/auth_provider.dart';
 
@@ -99,7 +101,7 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
       if (_scrollCtrl.hasClients) {
         _scrollCtrl.animateTo(
           _scrollCtrl.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
+          duration: AppDurations.comfortable,
           curve: Curves.easeOut,
         );
       }
@@ -368,7 +370,7 @@ class _MessageBubble extends StatelessWidget {
                   width: 28,
                   margin: const EdgeInsets.only(right: 6, bottom: 2),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withAlpha(20),
+                    color: AppColors.primary.withAlpha(AppAlpha.a08),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.auto_awesome_rounded,
@@ -387,8 +389,8 @@ class _MessageBubble extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isUser ? AppColors.primary : AppColors.surface,
                       borderRadius: BorderRadius.only(
-                        topLeft: const Radius.circular(16),
-                        topRight: const Radius.circular(16),
+                        topLeft: const Radius.circular(AppRadius.r7),
+                        topRight: const Radius.circular(AppRadius.r7),
                         bottomLeft: Radius.circular(isUser ? 16 : 4),
                         bottomRight: Radius.circular(isUser ? 4 : 16),
                       ),
@@ -525,9 +527,9 @@ class _MarkdownMessage extends StatelessWidget {
         ),
         // Code block
         codeblockDecoration: BoxDecoration(
-          color: AppColors.primary.withAlpha(10),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.primary.withAlpha(40)),
+          color: AppColors.primary.withAlpha(AppAlpha.a04),
+          borderRadius: BorderRadius.circular(AppRadius.r3),
+          border: Border.all(color: AppColors.primary.withAlpha(AppAlpha.a15)),
         ),
         codeblockPadding: EdgeInsets.all(AppSpacing.s3),
         // Blockquote
@@ -592,7 +594,7 @@ class _TypingBubbleState extends State<_TypingBubble>
             width: 28,
             margin: const EdgeInsets.only(right: 6),
             decoration: BoxDecoration(
-              color: AppColors.primary.withAlpha(20),
+              color: AppColors.primary.withAlpha(AppAlpha.a08),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.auto_awesome_rounded,
@@ -604,10 +606,10 @@ class _TypingBubbleState extends State<_TypingBubble>
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-                bottomRight: Radius.circular(16),
-                bottomLeft: Radius.circular(4),
+                topLeft: Radius.circular(AppRadius.r7),
+                topRight: Radius.circular(AppRadius.r7),
+                bottomRight: Radius.circular(AppRadius.r7),
+                bottomLeft: Radius.circular(AppRadius.r1),
               ),
               border: Border.all(color: AppColors.border),
             ),
@@ -682,14 +684,14 @@ class _EmptyState extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 10),
                 child: InkWell(
                   onTap: () => onSuggestion(s),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 14),
                     decoration: BoxDecoration(
                       color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.r5),
                       border: Border.all(color: AppColors.border),
                     ),
                     child: Row(
@@ -712,16 +714,16 @@ class _EmptyState extends StatelessWidget {
               onTap: () => context.push(
                 userRole == 'teacher' ? '/ai/teacher-tools' : '/ai/study',
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.r5),
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(
                     horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withAlpha(10),
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.primary.withAlpha(AppAlpha.a04),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                   border: Border.all(
-                      color: AppColors.primary.withAlpha(50)),
+                      color: AppColors.primary.withAlpha(AppAlpha.a20)),
                 ),
                 child: Row(
                   children: [
@@ -772,7 +774,7 @@ class _SuggestionChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.primary.withAlpha(12),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.primary.withAlpha(50)),
+          border: Border.all(color: AppColors.primary.withAlpha(AppAlpha.a20)),
         ),
         child: Text(label,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
@@ -877,7 +879,7 @@ class _ThinkingStepsState extends State<_ThinkingSteps> {
               if (_expanded) ...[
                 Divider(
                     height: 1,
-                    color: AppColors.primary.withAlpha(30),
+                    color: AppColors.primary.withAlpha(AppAlpha.a12),
                     indent: 10,
                     endIndent: 10),
                 Padding(
@@ -982,14 +984,14 @@ class _InputBar extends StatelessWidget {
           // Mic button (voice input)
           if (sttAvailable)
             AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
+              duration: AppDurations.fast,
               height: 44,
               width: 44,
               decoration: BoxDecoration(
                 color: isListening
                     ? AppColors.error.withAlpha(AppAlpha.a10)
                     : AppColors.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.r5),
                 border: Border.all(
                   color: isListening ? AppColors.error : AppColors.border,
                 ),
@@ -1006,7 +1008,7 @@ class _InputBar extends StatelessWidget {
             ),
           const SizedBox(width: 6),
           AnimatedSwitcher(
-            duration: const Duration(milliseconds: 180),
+            duration: AppDurations.fast,
             transitionBuilder: (child, anim) =>
                 ScaleTransition(scale: anim, child: child),
             child: isLoading
@@ -1032,7 +1034,7 @@ class _SendButton extends StatelessWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: AppColors.primary,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.r5),
           ),
           child: IconButton(
             icon: const Icon(Icons.send_rounded, color: AppColors.textOnPrimary, size: 18),
@@ -1054,7 +1056,7 @@ class _StopButton extends StatelessWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: AppColors.error.withAlpha(AppAlpha.a10),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.r5),
             border: Border.all(color: AppColors.error.withAlpha(AppAlpha.a30)),
           ),
           child: IconButton(

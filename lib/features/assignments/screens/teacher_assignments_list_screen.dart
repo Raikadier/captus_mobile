@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/assignments_provider.dart';
 import '../../../shared/widgets/captus_fab.dart';
 
@@ -72,7 +73,7 @@ class TeacherAssignmentsListScreen extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24, vertical: 12),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                            borderRadius: BorderRadius.circular(AppRadius.r5)),
                       ),
                     ),
                   ],
@@ -88,7 +89,7 @@ class TeacherAssignmentsListScreen extends ConsumerWidget {
                   color: AppColors.surface,
                   margin: const EdgeInsets.only(bottom: AppSpacing.s3),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(AppRadius.r5)),
                   child: ListTile(
                     title: Text(assignment.title,
                         style: tt.titleMedium!.copyWith(color: AppColors.textPrimary)),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
 import '../../../core/utils/app_errors.dart';
 import '../services/admin_service.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class AdminUsersScreen extends StatefulWidget {
   const AdminUsersScreen({super.key});
@@ -184,7 +186,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                     _load();
                   },
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
+                    duration: AppDurations.fast,
                     margin: const EdgeInsets.only(right: 8),
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                     decoration: BoxDecoration(
@@ -226,14 +228,14 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
                             color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppRadius.r5),
                             border: Border.all(color: AppColors.border),
                           ),
                           child: Row(
                             children: [
                               CircleAvatar(
                                 radius: 20,
-                                backgroundColor: AppColors.primary.withAlpha(38),
+                                backgroundColor: AppColors.primary.withAlpha(AppAlpha.a15),
                                 child: Text(
                                   name.isNotEmpty ? name[0].toUpperCase() : '?',
                                   style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.primary),

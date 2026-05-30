@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/services/api_client.dart';
 import '../../../core/providers/courses_provider.dart';
 
@@ -243,7 +244,7 @@ class _ResultView extends StatelessWidget {
                   isSuccess ? AppColors.primary : AppColors.textPrimary,
               foregroundColor: AppColors.textOnPrimary,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadius.r6),
               ),
               elevation: 0,
             ),

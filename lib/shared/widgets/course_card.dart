@@ -4,6 +4,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_gradients.dart';
 import '../../core/constants/app_shadows.dart';
 import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_radius.dart';
 import '../../models/course.dart';
 import 'captus_pressable.dart';
 
@@ -36,7 +37,7 @@ class CourseCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.r7),
           border: Border.all(
             color: AppColors.border,
             width: 1,
@@ -94,7 +95,7 @@ class CourseCard extends StatelessWidget {
                             ),
                             decoration: BoxDecoration(
                               color: AppColors.errorLight,
-                              borderRadius: BorderRadius.circular(99),
+                              borderRadius: BorderRadius.circular(AppRadius.pill),
                             ),
                             child: Text(
                               '${course.pendingActivities}',
@@ -126,7 +127,7 @@ class CourseCard extends StatelessWidget {
 
                     // Progress bar (v2: 6px height, rounded)
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(99),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
                       child: LinearProgressIndicator(
                         value: course.progress,
                         minHeight: 6,

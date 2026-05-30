@@ -2,7 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/services/api_client.dart';
 
 enum _StudyMode { flashcards, quiz, resumen, mapaConceptual }
@@ -174,7 +176,7 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                 padding: EdgeInsets.all(AppSpacing.s4),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withAlpha(AppAlpha.a10),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppRadius.r6),
                   border: Border.all(
                       color: AppColors.primary.withAlpha(AppAlpha.a20),
                       width: 0.5),
@@ -186,7 +188,7 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                       height: 44,
                       decoration: BoxDecoration(
                         color: AppColors.primary.withAlpha(AppAlpha.a20),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.r5),
                       ),
                       child: const Icon(
                         Icons.menu_book_rounded,
@@ -230,14 +232,14 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                   return GestureDetector(
                     onTap: () => setState(() => _selectedMode = mode),
                     child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 150),
+                      duration: AppDurations.fast,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
                         color: selected
                             ? AppColors.primary
                             : AppColors.surface,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.r5),
                         border: Border.all(
                           color: selected
                               ? AppColors.primary
@@ -327,7 +329,7 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                         backgroundColor: AppColors.primary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.r5),
                         ),
                       ),
                       onPressed: _isLoading ? null : _generate,
@@ -360,7 +362,7 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                         padding: const EdgeInsets.symmetric(
                             vertical: 16, horizontal: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.r5),
                         ),
                         side: const BorderSide(
                             color: AppColors.border, width: 0.5),
@@ -388,7 +390,7 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                   padding: EdgeInsets.all(AppSpacing.s4),
                   decoration: BoxDecoration(
                     color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppRadius.r6),
                     border: Border.all(
                         color: AppColors.primary.withAlpha(AppAlpha.a20),
                         width: 0.5),
@@ -447,7 +449,7 @@ class _LoadingPlaceholderState extends State<_LoadingPlaceholder>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1200),
+    duration: AppDurations.deliberate,
   )..repeat(reverse: true);
 
   @override
@@ -467,7 +469,7 @@ class _LoadingPlaceholderState extends State<_LoadingPlaceholder>
           padding: EdgeInsets.all(AppSpacing.s4),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.r6),
             border: Border.all(color: AppColors.border, width: 0.5),
           ),
           child: Column(

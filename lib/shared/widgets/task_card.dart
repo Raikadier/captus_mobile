@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_animations.dart';
 import '../../core/constants/app_shadows.dart';
 import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_radius.dart';
 import '../../models/task.dart';
 import 'captus_pressable.dart';
 import 'countdown_chip.dart';
@@ -58,8 +58,8 @@ class TaskCard extends StatelessWidget {
                   icon: Icons.check_rounded,
                   label: 'Listo',
                   borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(14),
-                    bottomLeft: Radius.circular(14),
+                    topLeft: Radius.circular(AppRadius.r6),
+                    bottomLeft: Radius.circular(AppRadius.r6),
                   ),
                 ),
               ],
@@ -84,8 +84,8 @@ class TaskCard extends StatelessWidget {
                   icon: Icons.delete_outline_rounded,
                   label: 'Eliminar',
                   borderRadius: const BorderRadius.only(
-                    topRight: Radius.circular(14),
-                    bottomRight: Radius.circular(14),
+                    topRight: Radius.circular(AppRadius.r6),
+                    bottomRight: Radius.circular(AppRadius.r6),
                   ),
                 ),
               ],
@@ -108,7 +108,7 @@ class TaskCard extends StatelessWidget {
                   : _isOverdue
                       ? AppColors.errorLight
                       : AppColors.surface,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.r6),
               border: Border.all(
                 color: _isOverdue
                     ? AppColors.error.withAlpha(AppAlpha.a30)
@@ -228,7 +228,7 @@ class TaskCard extends StatelessWidget {
                         const SizedBox(width: AppSpacing.s8),
                         Expanded(
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(99),
+                            borderRadius: BorderRadius.circular(AppRadius.pill),
                             child: LinearProgressIndicator(
                               value: task.completedSubtasks /
                                   task.subtasks.length,
@@ -279,7 +279,7 @@ class _CategoryChip extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: AppColors.surface2,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(AppRadius.r1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -322,7 +322,7 @@ class _PriorityBadge extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(AppRadius.r2),
       ),
       child: Text(
         label,

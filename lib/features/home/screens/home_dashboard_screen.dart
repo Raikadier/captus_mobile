@@ -8,6 +8,7 @@ import '../../../core/constants/app_animations.dart';
 import '../../../core/constants/app_gradients.dart';
 import '../../../core/constants/app_shadows.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../models/task.dart';
@@ -360,7 +361,7 @@ class _AiSuggestionCard extends StatelessWidget {
               height: 44,
               decoration: BoxDecoration(
                 color: AppColors.textOnPrimary.withAlpha(AppAlpha.a20),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.r5),
               ),
               child: const Center(
                 child: Text('🌵', style: TextStyle(fontSize: 24)),
@@ -486,7 +487,7 @@ class _StatCard extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
           border: Border.all(color: AppColors.border),
           boxShadow: AppShadows.xs,
         ),
@@ -550,7 +551,7 @@ class _WeeklyStreak extends ConsumerWidget {
       ),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.border),
         boxShadow: AppShadows.xs,
       ),
@@ -661,7 +662,7 @@ class _QuickAccessCard extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: color.withAlpha(AppAlpha.a08),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
           border: Border.all(color: color.withAlpha(AppAlpha.a20)),
         ),
         child: Row(
@@ -670,7 +671,7 @@ class _QuickAccessCard extends StatelessWidget {
               padding: const EdgeInsets.all(AppSpacing.s2),
               decoration: BoxDecoration(
                 color: color.withAlpha(AppAlpha.a15),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppRadius.r3),
               ),
               child: Icon(icon, color: color, size: 18),
             ),

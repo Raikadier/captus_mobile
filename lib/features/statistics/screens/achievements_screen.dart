@@ -5,10 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
 import '../../../models/achievement.dart';
 import '../providers/achievements_provider.dart';
 import '../../../shared/widgets/loading_shimmer.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class AchievementsScreen extends ConsumerStatefulWidget {
   const AchievementsScreen({super.key});
@@ -183,8 +185,8 @@ class _StatsHeader extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withAlpha(51)),
+        borderRadius: BorderRadius.circular(AppRadius.r7),
+        border: Border.all(color: AppColors.primary.withAlpha(AppAlpha.a20)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,7 +221,7 @@ class _StatsHeader extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.s3),
           ClipRRect(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(AppRadius.r1),
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 8,
@@ -303,7 +305,7 @@ class _FilterChips extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: AppDurations.fast,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: isActive ? color : AppColors.surface,
@@ -361,19 +363,19 @@ class _AchievementTile extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: unlocked
-              ? difficulty.color.withAlpha(30)
+              ? difficulty.color.withAlpha(AppAlpha.a12)
               : AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.r5),
           border: Border.all(
             color: unlocked
-                ? difficulty.color.withAlpha(100)
+                ? difficulty.color.withAlpha(AppAlpha.a40)
                 : AppColors.border,
             width: unlocked ? 1.5 : 0.5,
           ),
           boxShadow: unlocked
               ? [
                   BoxShadow(
-                    color: difficulty.color.withAlpha(40),
+                    color: difficulty.color.withAlpha(AppAlpha.a15),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   )
@@ -404,7 +406,7 @@ class _AchievementTile extends StatelessWidget {
                 child: LinearProgressIndicator(
                   value: achievement.progressPercent,
                   minHeight: 4,
-                  backgroundColor: difficulty.color.withAlpha(40),
+                  backgroundColor: difficulty.color.withAlpha(AppAlpha.a15),
                   valueColor: AlwaysStoppedAnimation<Color>(difficulty.color),
                 ),
               ),
@@ -515,7 +517,7 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
             decoration: BoxDecoration(
-              color: difficulty.color.withAlpha(30),
+              color: difficulty.color.withAlpha(AppAlpha.a12),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: difficulty.color.withAlpha(80)),
             ),
@@ -530,11 +532,11 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
             children: [
               Expanded(
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(AppRadius.r1),
                   child: LinearProgressIndicator(
                     value: achievement.progressPercent,
                     minHeight: 10,
-                    backgroundColor: difficulty.color.withAlpha(40),
+                    backgroundColor: difficulty.color.withAlpha(AppAlpha.a15),
                     valueColor:
                         AlwaysStoppedAnimation<Color>(difficulty.color),
                   ),
@@ -553,7 +555,7 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: unlocked
-                  ? AppColors.primary.withAlpha(25)
+                  ? AppColors.primary.withAlpha(AppAlpha.a10)
                   : AppColors.surface2,
               borderRadius: BorderRadius.circular(10),
             ),

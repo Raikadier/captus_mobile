@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/events_provider.dart';
 import '../../../core/utils/app_errors.dart';
 
@@ -215,13 +217,13 @@ class _CalendarEventCreateScreenState
                 return GestureDetector(
                   onTap: () => setState(() => _typeIndex = e.key),
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 150),
+                    duration: AppDurations.fast,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 14,
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: isSelected ? color.withAlpha(38) : AppColors.surface2,
+                      color: isSelected ? color.withAlpha(AppAlpha.a15) : AppColors.surface2,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isSelected ? color : AppColors.border,
@@ -266,7 +268,7 @@ class _CalendarEventCreateScreenState
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: AppColors.surface2,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                   border: Border.all(color: AppColors.border, width: 0.5),
                 ),
                 child: Row(
@@ -295,7 +297,7 @@ class _CalendarEventCreateScreenState
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: AppColors.surface2,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.r5),
                     border: Border.all(color: AppColors.border, width: 0.5),
                   ),
                   child: Row(

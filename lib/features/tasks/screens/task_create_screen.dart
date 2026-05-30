@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/constants/app_animations.dart';
 import '../../../core/services/api_client.dart';
 import '../../../core/services/local_notification_service.dart';
@@ -254,7 +255,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                       margin: const EdgeInsets.only(right: 8),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       decoration: BoxDecoration(
-                        color: isSelected ? color.withAlpha(38) : AppColors.surface2,
+                        color: isSelected ? color.withAlpha(AppAlpha.a15) : AppColors.surface2,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                           color: isSelected ? color : AppColors.border,
@@ -285,7 +286,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: AppColors.surface2,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                   border: Border.all(
                     color: _dueDate != null ? AppColors.primary : AppColors.border,
                   ),
@@ -419,8 +420,8 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
           duration: AppDurations.fast,
           padding: const EdgeInsets.symmetric(vertical: 13),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.primary.withAlpha(38) : AppColors.surface2,
-            borderRadius: BorderRadius.circular(12),
+            color: isSelected ? AppColors.primary.withAlpha(AppAlpha.a15) : AppColors.surface2,
+            borderRadius: BorderRadius.circular(AppRadius.r5),
             border: Border.all(
               color: isSelected ? AppColors.primary : AppColors.border,
               width: isSelected ? 1.6 : 0.5,

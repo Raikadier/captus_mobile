@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../core/providers/events_provider.dart';
 import '../../../models/task.dart';
@@ -122,8 +124,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               leading: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withAlpha(25),
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.primary.withAlpha(AppAlpha.a10),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                 ),
                 child: const Icon(Icons.assignment_outlined, color: AppColors.primary),
               ),
@@ -139,8 +141,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               leading: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.info.withAlpha(25),
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.info.withAlpha(AppAlpha.a10),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                 ),
                 child: const Icon(Icons.event_outlined, color: AppColors.info),
               ),
@@ -274,7 +276,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               padding: EdgeInsets.all(AppSpacing.s3),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppRadius.r7),
                 border: Border.all(color: AppColors.surface2),
               ),
               child: TableCalendar<dynamic>(
@@ -349,8 +351,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
                               decoration: BoxDecoration(
-                                color: AppColors.textSecondary.withAlpha(50),
-                                borderRadius: BorderRadius.circular(4),
+                                color: AppColors.textSecondary.withAlpha(AppAlpha.a20),
+                                borderRadius: BorderRadius.circular(AppRadius.r1),
                               ),
                               child: Text(
                                 '+$extraCount',
@@ -414,7 +416,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
                             color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(AppRadius.r6),
                             border: Border.all(color: AppColors.surface2),
                           ),
                           child: Row(
@@ -445,7 +447,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                             vertical: 2,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: _getPriorityColor(task.priority).withAlpha(25),
+                                            color: _getPriorityColor(task.priority).withAlpha(AppAlpha.a10),
                                             borderRadius: BorderRadius.circular(10),
                                           ),
                                           child: Text(
@@ -483,7 +485,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
                             color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(AppRadius.r6),
                             border: Border.all(color: AppColors.surface2),
                           ),
                           child: Row(
@@ -514,7 +516,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                             vertical: 2,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: eventColor.withAlpha(25),
+                                            color: eventColor.withAlpha(AppAlpha.a10),
                                             borderRadius: BorderRadius.circular(10),
                                           ),
                                           child: Text(
@@ -577,7 +579,7 @@ class _FormatButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
+        duration: AppDurations.fast,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primary : Colors.transparent,

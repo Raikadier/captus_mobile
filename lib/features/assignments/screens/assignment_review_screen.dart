@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/assignments_provider.dart';
 
 class AssignmentReviewScreen extends ConsumerStatefulWidget {
@@ -107,7 +108,7 @@ class _AssignmentReviewScreenState
                 color: AppColors.surface,
                 margin: const EdgeInsets.only(bottom: AppSpacing.s3),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(AppRadius.r5)),
                 child: ListTile(
                   title: Text('Estudiante: ${sub.studentId.substring(0, 8)}...',
                       style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.textPrimary)),

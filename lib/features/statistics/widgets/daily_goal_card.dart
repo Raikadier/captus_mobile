@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../providers/user_statistics_provider.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class DailyGoalCard extends StatelessWidget {
   final UserStatisticsState stats;
@@ -17,7 +18,7 @@ class DailyGoalCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.r7),
         border: Border.all(
           color: isGoalMet ? AppColors.primary.withAlpha(80) : AppColors.border,
           width: isGoalMet ? 1.5 : 0.5,
@@ -43,8 +44,8 @@ class DailyGoalCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: isGoalMet ? AppColors.primary.withAlpha(25) : AppColors.surface2,
-                  borderRadius: BorderRadius.circular(8),
+                  color: isGoalMet ? AppColors.primary.withAlpha(AppAlpha.a10) : AppColors.surface2,
+                  borderRadius: BorderRadius.circular(AppRadius.r3),
                 ),
                 child: Text(
                   '${stats.dailyCompletedTasks}/${stats.dailyGoal}',
@@ -55,7 +56,7 @@ class DailyGoalCard extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           ClipRRect(
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(AppRadius.r2),
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 10,

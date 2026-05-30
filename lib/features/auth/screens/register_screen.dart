@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_animations.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../shared/widgets/captus_pressable.dart';
 
@@ -114,7 +115,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withAlpha(76),
+                              color: AppColors.primary.withAlpha(AppAlpha.a30),
                               blurRadius: 20,
                             ),
                           ],
@@ -293,7 +294,7 @@ class _RoleCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.s5),
           decoration: BoxDecoration(
             color: isSelected ? AppColors.primaryDark : AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.r5),
             border: Border.all(
               color: isSelected ? AppColors.primary : AppColors.border,
               width: isSelected ? 2 : 0.5,
@@ -330,9 +331,9 @@ class _ErrorBanner extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.s3, vertical: AppSpacing.s2 + 2),
       decoration: BoxDecoration(
-        color: AppColors.error.withAlpha(25),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.error.withAlpha(76)),
+        color: AppColors.error.withAlpha(AppAlpha.a10),
+        borderRadius: BorderRadius.circular(AppRadius.r3),
+        border: Border.all(color: AppColors.error.withAlpha(AppAlpha.a30)),
       ),
       child: Row(
         children: [

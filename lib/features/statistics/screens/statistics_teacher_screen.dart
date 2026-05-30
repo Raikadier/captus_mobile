@@ -4,9 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
 import '../../../core/providers/courses_provider.dart';
 import '../../../models/teacher_stats_model.dart';
 import '../providers/teacher_stats_provider.dart';
+import '../../../core/constants/app_radius.dart';
 
 class StatisticsFilterNotifier extends Notifier<TeacherStudentRiskLevel?> {
   @override
@@ -36,7 +38,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
         data: (stats) => RefreshIndicator(
           onRefresh: () async {
             ref.invalidate(teacherStatsSummaryProvider);
-            await Future<void>.delayed(const Duration(milliseconds: 300));
+            await Future<void>.delayed(AppDurations.comfortable);
           },
           color: AppColors.primary,
           backgroundColor: AppColors.surface,
@@ -83,10 +85,10 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                       margin: const EdgeInsets.all(16),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.info.withAlpha(20),
-                        borderRadius: BorderRadius.circular(16),
+                        color: AppColors.info.withAlpha(AppAlpha.a08),
+                        borderRadius: BorderRadius.circular(AppRadius.r7),
                         border: Border.all(
-                          color: AppColors.info.withAlpha(40),
+                          color: AppColors.info.withAlpha(AppAlpha.a15),
                         ),
                       ),
                       child: Row(
@@ -169,7 +171,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                AppColors.primary.withAlpha(30),
+                AppColors.primary.withAlpha(AppAlpha.a12),
                 AppColors.background,
               ],
             ),
@@ -257,7 +259,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadius.r7),
             border: Border.all(color: AppColors.border, width: 0.5),
           ),
           child: DropdownButtonHideUnderline(
@@ -281,7 +283,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                 color: AppColors.textPrimary,
                 fontSize: 14,
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadius.r7),
               items: [
                 const DropdownMenuItem<String>(
                   value: 'all',
@@ -311,7 +313,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
         height: 54,
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.r7),
         ),
         child: const Center(
           child: SizedBox(
@@ -425,7 +427,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(AppRadius.r9),
         border: Border.all(color: AppColors.border, width: 0.5),
         boxShadow: [
           BoxShadow(
@@ -518,11 +520,11 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: AppColors.surface3,
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(AppRadius.r2),
                   ),
                 ),
                 AnimatedContainer(
-                  duration: const Duration(milliseconds: 1200),
+                  duration: AppDurations.deliberate,
                   curve: Curves.elasticOut,
                   height: 12,
                   width: constraints.maxWidth * safePercentage,
@@ -531,11 +533,11 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                       colors: [
-                        color.withAlpha(100),
+                        color.withAlpha(AppAlpha.a40),
                         color,
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(AppRadius.r2),
                     boxShadow: [
                       BoxShadow(
                         color: color.withAlpha(80),
@@ -820,8 +822,8 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: statusColor.withAlpha(20),
-                        borderRadius: BorderRadius.circular(8),
+                        color: statusColor.withAlpha(AppAlpha.a08),
+                        borderRadius: BorderRadius.circular(AppRadius.r3),
                       ),
                       child: Text(
                         statusLabel,
@@ -860,14 +862,14 @@ class StatisticsTeacherScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            color.withAlpha(60),
-            color.withAlpha(20),
+            color.withAlpha(AppAlpha.a24),
+            color.withAlpha(AppAlpha.a08),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         shape: BoxShape.circle,
-        border: Border.all(color: color.withAlpha(100), width: 1.5),
+        border: Border.all(color: color.withAlpha(AppAlpha.a40), width: 1.5),
       ),
       child: Center(
         child: Text(
@@ -891,10 +893,10 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: filled ? color.withAlpha(30) : Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
+        color: filled ? color.withAlpha(AppAlpha.a12) : Colors.transparent,
+        borderRadius: BorderRadius.circular(AppRadius.r3),
         border: Border.all(
-          color: filled ? color.withAlpha(60) : AppColors.border,
+          color: filled ? color.withAlpha(AppAlpha.a24) : AppColors.border,
           width: 0.5,
         ),
       ),
@@ -935,7 +937,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                 border: Border.all(color: AppColors.border, width: 0.5),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withAlpha(20),
+                    color: AppColors.primary.withAlpha(AppAlpha.a08),
                     blurRadius: 40,
                     spreadRadius: 2,
                   ),
@@ -944,7 +946,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
               child: Icon(
                 icon,
                 size: 80,
-                color: AppColors.primary.withAlpha(100),
+                color: AppColors.primary.withAlpha(AppAlpha.a40),
               ),
             ),
             const SizedBox(height: 32),
@@ -984,7 +986,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppColors.error.withAlpha(20),
+                color: AppColors.error.withAlpha(AppAlpha.a08),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -1024,7 +1026,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                   vertical: 16,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppRadius.r7),
                 ),
                 elevation: 4,
               ),

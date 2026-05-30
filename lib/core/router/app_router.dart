@@ -82,6 +82,7 @@ import '../../features/projects/screens/projects_list_screen.dart';
 import '../../features/projects/screens/project_create_screen.dart';
 import '../../features/projects/screens/project_detail_screen.dart';
 import '../../features/projects/screens/project_members_screen.dart';
+import '../constants/app_radius.dart';
 
 // Use the shared key so FCM / deep-link code can navigate imperatively
 final _rootNavigatorKey  = RouterService.navigatorKey;
@@ -733,7 +734,7 @@ class NotFoundScreen extends ConsumerWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.r5),
                   ),
                 ),
                 child: Text(

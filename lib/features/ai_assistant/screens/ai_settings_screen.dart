@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/ai_chat_provider.dart';
 import '../../../core/providers/ai_settings_provider.dart';
 import '../../../core/providers/conversations_provider.dart';
@@ -125,7 +127,7 @@ class _SettingsBody extends ConsumerWidget {
           padding: EdgeInsets.all(AppSpacing.s4),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.r5),
             border: Border.all(color: AppColors.border, width: 0.5),
           ),
           child: Column(
@@ -148,7 +150,7 @@ class _SettingsBody extends ConsumerWidget {
                       onTap: () =>
                           _update(ref, settings.copyWith(toneIndex: e.key)),
                       child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 150),
+                        duration: AppDurations.fast,
                         margin: EdgeInsets.only(
                             right: e.key < 2 ? 6 : 0),
                         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -156,7 +158,7 @@ class _SettingsBody extends ConsumerWidget {
                           color: isSelected
                               ? AppColors.primaryLight
                               : AppColors.surface2,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(AppRadius.r3),
                           border: Border.all(
                             color: isSelected
                                 ? AppColors.primary
@@ -211,7 +213,7 @@ class _SettingsBody extends ConsumerWidget {
             side: const BorderSide(color: AppColors.error, width: 0.5),
             padding: const EdgeInsets.symmetric(vertical: 14),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(AppRadius.r5)),
           ),
           icon: const Icon(Icons.delete_sweep_outlined, size: 18),
           label: Text(
@@ -271,7 +273,7 @@ class _ToggleItem extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.r5),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Row(

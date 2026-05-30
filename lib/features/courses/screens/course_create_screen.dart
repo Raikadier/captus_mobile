@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/courses_provider.dart';
 
 class CourseCreateScreen extends ConsumerStatefulWidget {
@@ -95,7 +96,7 @@ class _CourseCreateScreenState extends ConsumerState<CourseCreateScreen> {
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.r5),
                     ),
                   ),
                   onPressed: _loading ? null : _submit,

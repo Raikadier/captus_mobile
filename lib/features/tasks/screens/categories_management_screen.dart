@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/categories_provider.dart';
 import '../../../models/category.dart';
 import '../../../shared/widgets/captus_fab.dart';
@@ -224,7 +225,7 @@ class _CategoryTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: AppSpacing.s3),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.r5),
         border: Border.all(color: AppColors.border),
       ),
       child: ListTile(

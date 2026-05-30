@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/courses_provider.dart';
 import '../../../models/course.dart';
 import '../../../shared/widgets/captus_fab.dart';
@@ -241,7 +242,7 @@ class _ActivitiesTeacherTab extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.r6),
           ),
           child: Row(
             children: [
@@ -362,7 +363,7 @@ class _StatCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
       ),
       child: Row(
         children: [
@@ -371,7 +372,7 @@ class _StatCard extends StatelessWidget {
             height: 48,
             decoration: BoxDecoration(
               color: color.withAlpha(AppAlpha.a10),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.r5),
             ),
             child: Icon(icon, color: color, size: 24),
           ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/conversations_provider.dart';
 import '../../../core/providers/ai_chat_provider.dart';
 
@@ -288,7 +289,7 @@ class _ConversationTile extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 3),
         decoration: BoxDecoration(
           color: AppColors.errorLight,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.r5),
         ),
         child: const Icon(Icons.delete_outline_rounded,
             color: AppColors.error, size: 22),
@@ -322,7 +323,7 @@ class _ConversationTile extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 3),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.r5),
           border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: ListTile(
@@ -402,7 +403,7 @@ class _EmptyHistoryState extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 24, vertical: 14),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(AppRadius.r5)),
               ),
               onPressed: onNewChat,
               icon: const Icon(Icons.add_rounded),

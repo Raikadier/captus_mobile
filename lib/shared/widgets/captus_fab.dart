@@ -74,7 +74,7 @@ class _CaptusFabState extends State<CaptusFab>
     );
 
     // Delay entrance so screen content settles first
-    Future.delayed(const Duration(milliseconds: 100), () {
+    Future.delayed(AppDurations.quick, () {
       if (mounted) _entranceCtrl.forward();
     });
   }

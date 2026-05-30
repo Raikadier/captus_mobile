@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/assignments_provider.dart';
 import '../../../core/providers/courses_provider.dart';
@@ -339,7 +340,7 @@ class _TeacherAssignmentCreateScreenState
                       padding: const EdgeInsets.all(AppSpacing.s4),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.r5),
                         border: Border.all(
                           color: _attachedFileName != null ? AppColors.primary : AppColors.border,
                           width: 1,
@@ -398,7 +399,7 @@ class _TeacherAssignmentCreateScreenState
                       onPressed: _isLoading || _selectedCourseId == null ? null : _submit,
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.r5),
                         ),
                         elevation: 0,
                       ),

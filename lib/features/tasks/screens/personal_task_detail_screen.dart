@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/constants/app_animations.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../core/utils/app_errors.dart';
@@ -220,12 +221,12 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                   color: _isCompleted
                       ? AppColors.surface2
                       : _isOverdue
-                          ? AppColors.errorLight.withAlpha(38)
+                          ? AppColors.errorLight.withAlpha(AppAlpha.a15)
                           : AppColors.surface,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppRadius.r7),
                   border: Border.all(
                     color: _isOverdue
-                        ? AppColors.error.withAlpha(76)
+                        ? AppColors.error.withAlpha(AppAlpha.a30)
                         : AppColors.border,
                     width: 1.5,
                   ),
@@ -327,7 +328,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                   border: Border.all(color: AppColors.border),
                 ),
                 child: Text(
@@ -356,7 +357,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
               ),
               const SizedBox(height: 10),
               ClipRRect(
-                borderRadius: BorderRadius.circular(99),
+                borderRadius: BorderRadius.circular(AppRadius.pill),
                 child: LinearProgressIndicator(
                   value: progress,
                   minHeight: 8,
@@ -380,8 +381,8 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: AppColors.primaryLight,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.primary.withAlpha(76)),
+                    borderRadius: BorderRadius.circular(AppRadius.r5),
+                    border: Border.all(color: AppColors.primary.withAlpha(AppAlpha.a30)),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -412,8 +413,8 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withAlpha(25),
-        borderRadius: BorderRadius.circular(8),
+        color: color.withAlpha(AppAlpha.a10),
+        borderRadius: BorderRadius.circular(AppRadius.r3),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

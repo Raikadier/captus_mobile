@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/courses_provider.dart';
 import '../../../models/course.dart';
 import '../../../shared/widgets/captus_fab.dart';
@@ -106,7 +107,7 @@ class _CourseCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.r7),
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -141,7 +142,7 @@ class _CourseCard extends StatelessWidget {
                             decoration: BoxDecoration(
                               color:
                                   AppColors.warning.withAlpha(AppAlpha.a15),
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(AppRadius.r3),
                             ),
                             child: Text(
                               '${course.pendingActivities}',
@@ -194,7 +195,7 @@ class _CourseCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(AppRadius.r1),
                           child: LinearProgressIndicator(
                             value: course.progress,
                             backgroundColor: AppColors.surface2,

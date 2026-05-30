@@ -25,7 +25,7 @@ class NoteModel {
 
   Color get color {
     final index = (id ?? Random().nextInt(100)) % AppColors.courseColors.length;
-    return AppColors.courseColors[index].withAlpha(38);
+    return AppColors.courseColors[index].withAlpha(AppAlpha.a15);
   }
 
   Color get accentColor {

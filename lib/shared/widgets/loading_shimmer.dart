@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_radius.dart';
 
 // ─── Base ────────────────────────────────────────────────────────────────────
 
@@ -53,7 +54,7 @@ class TaskCardShimmer extends StatelessWidget {
         height: 76,
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.r5),
         ),
         child: Row(
           children: [
@@ -63,8 +64,8 @@ class TaskCardShimmer extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.surface2,
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  bottomLeft: Radius.circular(12),
+                  topLeft: Radius.circular(AppRadius.r5),
+                  bottomLeft: Radius.circular(AppRadius.r5),
                 ),
               ),
             ),
@@ -88,7 +89,7 @@ class TaskCardShimmer extends StatelessWidget {
               margin: const EdgeInsets.only(right: 16),
               decoration: BoxDecoration(
                 color: AppColors.surface2,
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(AppRadius.r1),
               ),
             ),
           ],
@@ -125,7 +126,7 @@ class CourseCardShimmer extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.r7),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,7 +136,7 @@ class CourseCardShimmer extends StatelessWidget {
               height: 8,
               decoration: const BoxDecoration(
                 color: AppColors.surface2,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r7)),
               ),
             ),
             Expanded(
@@ -165,7 +166,7 @@ class CourseCardShimmer extends StatelessWidget {
                       height: 4,
                       decoration: BoxDecoration(
                         color: AppColors.surface2,
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(AppRadius.r1),
                       ),
                     ),
                   ],
@@ -219,7 +220,7 @@ class StatTileShimmer extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
           border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: Column(
@@ -231,7 +232,7 @@ class StatTileShimmer extends StatelessWidget {
               height: 28,
               decoration: BoxDecoration(
                 color: AppColors.surface2,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppRadius.r3),
               ),
             ),
             const SizedBox(height: 12),

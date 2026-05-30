@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
 import '../../../core/constants/app_spacing.dart';
 
 class ScanQRJoinCourseScreen extends StatefulWidget {
@@ -47,7 +48,7 @@ class _ScanQRJoinCourseScreenState extends State<ScanQRJoinCourseScreen> {
       final now = DateTime.now();
       if (_lastInvalidFeedbackAt == null ||
           now.difference(_lastInvalidFeedbackAt!) >
-              const Duration(milliseconds: 1200)) {
+              AppDurations.deliberate) {
         _lastInvalidFeedbackAt = now;
         _showInvalidQR();
       }
@@ -256,7 +257,7 @@ class _ScannerOverlay extends StatelessWidget {
           Align(
             alignment: Alignment.center,
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
+              duration: AppDurations.fast,
               width: frameSize,
               height: frameSize,
               decoration: BoxDecoration(

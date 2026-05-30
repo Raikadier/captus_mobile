@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../core/providers/categories_provider.dart';
 import '../../../shared/widgets/captus_fab.dart';
@@ -183,10 +184,10 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
                                 horizontal: AppSpacing.s3,
                                 vertical: AppSpacing.s2),
                             decoration: BoxDecoration(
-                              color: AppColors.error.withAlpha(25),
-                              borderRadius: BorderRadius.circular(8),
+                              color: AppColors.error.withAlpha(AppAlpha.a10),
+                              borderRadius: BorderRadius.circular(AppRadius.r3),
                               border: Border.all(
-                                  color: AppColors.error.withAlpha(76)),
+                                  color: AppColors.error.withAlpha(AppAlpha.a30)),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -395,7 +396,7 @@ class _FilterDropdown extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3),
       decoration: BoxDecoration(
         color: isActive ? AppColors.primaryLight : AppColors.surface2,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.r3),
         border: Border.all(
             color: isActive ? AppColors.primary : AppColors.border),
       ),
@@ -454,7 +455,7 @@ class _DateFilterChip extends StatelessWidget {
             horizontal: AppSpacing.s3, vertical: AppSpacing.s2),
         decoration: BoxDecoration(
           color: isActive ? AppColors.primaryLight : AppColors.surface2,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppRadius.r3),
           border: Border.all(
               color: isActive ? AppColors.primary : AppColors.border),
         ),

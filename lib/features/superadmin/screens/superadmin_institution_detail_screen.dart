@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/cactus_refresh.dart';
 import '../services/superadmin_service.dart';
+import '../../../core/constants/app_radius.dart';
 
 class SuperAdminInstitutionDetailScreen extends StatefulWidget {
   final String institutionId;
@@ -152,7 +153,7 @@ class _SuperAdminInstitutionDetailScreenState
                     backgroundColor: AppColors.error,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.r5),
                     ),
                   ),
                   onPressed: () => Navigator.pop(ctx, true),
@@ -322,7 +323,7 @@ class _SuperAdminInstitutionDetailScreenState
                     backgroundColor: AppColors.primary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.r5),
                     ),
                   ),
                   onPressed: () {
@@ -469,7 +470,7 @@ class _SuperAdminInstitutionDetailScreenState
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.r6),
               border: Border.all(
                 color: isActive ? AppColors.success : AppColors.error,
                 width: 1.5,
@@ -483,7 +484,7 @@ class _SuperAdminInstitutionDetailScreenState
                   decoration: BoxDecoration(
                     color: (isActive ? AppColors.success : AppColors.error)
                         .withAlpha(AppAlpha.a10),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.r5),
                   ),
                   child: Icon(
                     Icons.business_rounded,
@@ -585,7 +586,7 @@ class _SuperAdminInstitutionDetailScreenState
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.r6),
               border: Border.all(color: AppColors.border, width: 0.5),
             ),
             child: Column(
@@ -679,7 +680,7 @@ class _InfoCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Column(
@@ -772,7 +773,7 @@ class _StatTile extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: color.withAlpha(AppAlpha.a10),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.r5),
         ),
         child: Column(
           children: [

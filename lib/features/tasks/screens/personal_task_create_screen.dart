@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/constants/app_animations.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../core/providers/categories_provider.dart';
@@ -212,7 +213,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
         _showSuccessSnackBar(
           _isEditing ? 'Tarea actualizada correctamente' : 'Tarea creada correctamente',
         );
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future.delayed(AppDurations.slow);
         context.pop();
       }
     } catch (e) {
@@ -370,7 +371,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                         margin: const EdgeInsets.only(right: 8),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         decoration: BoxDecoration(
-                          color: isSelected ? color.withAlpha(38) : AppColors.surface2,
+                          color: isSelected ? color.withAlpha(AppAlpha.a15) : AppColors.surface2,
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                             color: isSelected ? color : AppColors.border,
@@ -403,7 +404,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: AppColors.surface2,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.r5),
                     border: Border.all(
                       color: _dueDate != null ? AppColors.primary : AppColors.border,
                     ),
@@ -478,7 +479,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                   padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3),
                   decoration: BoxDecoration(
                     color: AppColors.surface2,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.r5),
                     border: Border.all(color: AppColors.border),
                   ),
                   child: DropdownButtonHideUnderline(
@@ -558,7 +559,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                       height: 44,
                       decoration: BoxDecoration(
                         color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.r5),
                       ),
                       child: const Icon(Icons.add, color: AppColors.textOnPrimary),
                     ),

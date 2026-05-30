@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_animations.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../shared/widgets/captus_pressable.dart';
 
 class RegisterAcademicProfileScreen extends ConsumerStatefulWidget {
@@ -235,7 +236,7 @@ class _ErrorBanner extends StatelessWidget {
           horizontal: AppSpacing.s3, vertical: AppSpacing.s2 + 2),
       decoration: BoxDecoration(
         color: AppColors.error.withAlpha(AppAlpha.a10),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.r3),
         border:
             Border.all(color: AppColors.error.withAlpha(AppAlpha.a30)),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_animations.dart';
+import '../../core/constants/app_radius.dart';
 
 /// Standard Captus dialog wrapper.
 ///
@@ -101,7 +102,7 @@ class CaptusDialog extends StatelessWidget {
     return Dialog(
       backgroundColor: AppColors.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.r7),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),

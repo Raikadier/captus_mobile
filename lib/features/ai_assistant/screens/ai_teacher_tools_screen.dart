@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/ai_chat_provider.dart';
 
 class AiTeacherToolsScreen extends ConsumerStatefulWidget {
@@ -135,7 +136,7 @@ class _AiTeacherToolsScreenState
               padding: EdgeInsets.all(AppSpacing.s4),
               decoration: BoxDecoration(
                 color: AppColors.primary.withAlpha(AppAlpha.a10),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadius.r6),
                 border: Border.all(
                     color: AppColors.primary.withAlpha(AppAlpha.a20),
                     width: 0.5),
@@ -147,7 +148,7 @@ class _AiTeacherToolsScreenState
                     height: 44,
                     decoration: BoxDecoration(
                       color: AppColors.primary.withAlpha(AppAlpha.a20),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.r5),
                     ),
                     child: const Icon(
                       Icons.auto_awesome_rounded,
@@ -514,7 +515,7 @@ class _ToolCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(
           color: expanded ? AppColors.primary : AppColors.border,
           width: expanded ? 1.5 : 0.5,
@@ -524,7 +525,7 @@ class _ToolCard extends StatelessWidget {
         children: [
           InkWell(
             onTap: onToggle,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.r6),
             child: Padding(
               padding: EdgeInsets.all(AppSpacing.s4),
               child: Row(
@@ -534,7 +535,7 @@ class _ToolCard extends StatelessWidget {
                     height: 44,
                     decoration: BoxDecoration(
                       color: AppColors.primary.withAlpha(AppAlpha.a10),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.r5),
                     ),
                     child: Center(
                       child: Text(
@@ -679,7 +680,7 @@ class _GenerateButton extends StatelessWidget {
           backgroundColor: AppColors.primary,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.r5),
           ),
         ),
         onPressed: sending ? null : onPressed,

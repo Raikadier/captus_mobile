@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/courses_provider.dart';
 import '../../../models/course.dart';
 import '../../../shared/widgets/empty_state.dart';
@@ -105,7 +106,7 @@ class _TeacherCourseCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.r7),
           border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a40)),
         ),
         child: Row(
@@ -116,8 +117,8 @@ class _TeacherCourseCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: color,
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  bottomLeft: Radius.circular(16),
+                  topLeft: Radius.circular(AppRadius.r7),
+                  bottomLeft: Radius.circular(AppRadius.r7),
                 ),
               ),
             ),
@@ -135,7 +136,7 @@ class _TeacherCourseCard extends StatelessWidget {
                               horizontal: 7, vertical: 2),
                           decoration: BoxDecoration(
                             color: color.withAlpha(AppAlpha.a15),
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: BorderRadius.circular(AppRadius.r2),
                           ),
                           child: Text(
                             course.code.isNotEmpty ? course.code : '—',
@@ -150,7 +151,7 @@ class _TeacherCourseCard extends StatelessWidget {
                             decoration: BoxDecoration(
                               color:
                                   AppColors.warning.withAlpha(AppAlpha.a15),
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(AppRadius.r3),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,

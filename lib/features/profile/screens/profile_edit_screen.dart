@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/services/avatar_service.dart';
+import '../../../core/constants/app_radius.dart';
 
 class ProfileEditScreen extends ConsumerStatefulWidget {
   const ProfileEditScreen({super.key});
@@ -104,7 +105,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       context: context,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r7)),
       ),
       builder: (context) => SafeArea(
         child: Padding(
@@ -238,9 +239,9 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                   margin: const EdgeInsets.only(bottom: 16),
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
-                    color: AppColors.error.withAlpha(20),
+                    color: AppColors.error.withAlpha(AppAlpha.a08),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.error.withAlpha(60)),
+                    border: Border.all(color: AppColors.error.withAlpha(AppAlpha.a24)),
                   ),
                   child: Text(_error!,
                       style: GoogleFonts.inter(fontSize: 13, color: AppColors.error)),
@@ -429,7 +430,7 @@ class _FieldCard extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.r5),
           border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: Column(children: children),
