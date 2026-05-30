@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../services/superadmin_service.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class SuperAdminAuditScreen extends StatefulWidget {
   const SuperAdminAuditScreen({super.key});
@@ -59,6 +59,7 @@ class _SuperAdminAuditScreenState extends State<SuperAdminAuditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -105,10 +106,10 @@ class _SuperAdminAuditScreenState extends State<SuperAdminAuditScreen> {
                               color: _colorFor(action), size: 20),
                         ),
                         title: Text(action,
-                            style: GoogleFonts.inter(fontSize: 13)),
+                            style: tt.titleSmall),
                         subtitle: Text(
                           '$actor · ${date.length > 10 ? date.substring(0, 10) : date}',
-                          style: GoogleFonts.inter(fontSize: 11),
+                          style: tt.labelMedium,
                         ),
                         onTap: () => _showPayload(log),
                       );
@@ -126,7 +127,7 @@ class _SuperAdminAuditScreenState extends State<SuperAdminAuditScreen> {
         content: SingleChildScrollView(
           child: Text(
             (log['payload'] ?? {}).toString(),
-            style: GoogleFonts.inter(fontSize: 12),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         ),
         actions: [

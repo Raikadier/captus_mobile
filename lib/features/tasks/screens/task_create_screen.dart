@@ -176,7 +176,6 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -199,7 +198,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
           children: [
             TextField(
               controller: _titleCtrl,
-              style: tt.displaySmall,
+              style: Theme.of(context).textTheme.displaySmall,
               decoration: InputDecoration(
                 hintText: _type == AcademicItemType.task
                     ? 'Título de la tarea'
@@ -265,7 +264,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                       child: Center(
                         child: Text(
                           label,
-                          style: tt.titleMedium?.copyWith(
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w700,
                             color: isSelected ? color : AppColors.textSecondary,
                           ),
@@ -411,7 +410,6 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
     required IconData icon,
     required AcademicItemType type,
   }) {
-    final tt = Theme.of(context).textTheme;
     final isSelected = _type == type;
 
     return Expanded(
@@ -434,7 +432,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
               const SizedBox(height: 6),
               Text(
                 label,
-                style: tt.titleMedium?.copyWith(
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: isSelected ? AppColors.primary : AppColors.textSecondary,
                 ),

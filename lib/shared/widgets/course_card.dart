@@ -24,6 +24,7 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final gradient = AppGradients.courseGradient(course.colorIndex);
     final color = AppColors.courseColor(course.colorIndex);
     final trimmedName = course.name.trim();
@@ -79,11 +80,7 @@ class CourseCard extends StatelessWidget {
                           child: Center(
                             child: Text(
                               displayInitial,
-                              style: GoogleFonts.inter(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: color,
-                              ),
+                              style: tt.headlineMedium,
                             ),
                           ),
                         ),
@@ -101,11 +98,7 @@ class CourseCard extends StatelessWidget {
                             ),
                             child: Text(
                               '${course.pendingActivities}',
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.error,
-                              ),
+                              style: tt.labelMedium!.copyWith(color: AppColors.error),
                             ),
                           ),
                       ],
@@ -116,12 +109,7 @@ class CourseCard extends StatelessWidget {
                     // Course name
                     Text(
                       displayName,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                        height: 1.35,
-                      ),
+                      style: tt.titleSmall!.copyWith(color: AppColors.textPrimary),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -131,11 +119,7 @@ class CourseCard extends StatelessWidget {
                     // Course code
                     Text(
                       course.code,
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
-                        color: AppColors.textSecondary,
-                        letterSpacing: 0.2,
-                      ),
+                      style: tt.labelMedium!.copyWith(color: AppColors.textSecondary),
                     ),
 
                     const Spacer(),
@@ -156,11 +140,7 @@ class CourseCard extends StatelessWidget {
                     // Progress label
                     Text(
                       '${(course.progress * 100).toInt()}% completado',
-                      style: GoogleFonts.inter(
-                        fontSize: 10,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: tt.labelSmall,
                     ),
                   ],
                 ),

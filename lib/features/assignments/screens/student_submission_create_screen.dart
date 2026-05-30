@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/assignments_provider.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/utils/app_errors.dart';
@@ -60,51 +60,38 @@ class _StudentSubmissionCreateScreenState
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
           'Entregar Tarea',
-          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+          style: tt.headlineSmall,
         ),
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.s5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text('Escribe tu respuesta o contenido adjunto:',
-                style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
-            const SizedBox(height: 12),
+                style: tt.titleMedium!.copyWith(color: AppColors.textPrimary)),
+            SizedBox(height: AppSpacing.s3),
             Expanded(
               child: TextField(
                 controller: _contentController,
                 maxLines: null,
                 expands: true,
                 textAlignVertical: TextAlignVertical.top,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Tu respuesta aquí...',
-                  hintStyle: GoogleFonts.inter(color: AppColors.textSecondary),
-                  filled: true,
-                  fillColor: AppColors.surface,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: AppSpacing.s5),
             ElevatedButton(
               onPressed: _isLoading ? null : _submit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-              ),
               child: _isLoading
                   ? const SizedBox(
                       height: 20,
@@ -112,10 +99,7 @@ class _StudentSubmissionCreateScreenState
                       child: CircularProgressIndicator(
                           color: AppColors.textOnPrimary, strokeWidth: 2))
                   : Text('Enviar Entrega',
-                      style: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textOnPrimary)),
+                      style: tt.headlineSmall),
             ),
           ],
         ),

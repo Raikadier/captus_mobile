@@ -76,6 +76,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -181,6 +182,7 @@ class _DotsIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(count, (i) {

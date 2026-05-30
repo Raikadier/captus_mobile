@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../providers/user_statistics_provider.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class DailyGoalCard extends StatelessWidget {
   final UserStatisticsState stats;
@@ -9,11 +9,12 @@ class DailyGoalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final progress = stats.dailyProgress;
     final isGoalMet = stats.dailyGoalMet;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
@@ -35,8 +36,8 @@ class DailyGoalCard extends StatelessWidget {
                     color: isGoalMet ? AppColors.primary : AppColors.warning,
                     size: 18,
                   ),
-                  const SizedBox(width: 8),
-                  Text('Meta Diaria', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                  const SizedBox(width: AppSpacing.s2),
+                  Text('Meta Diaria', style: tt.bodyMedium!.copyWith(color: AppColors.textPrimary)),
                 ],
               ),
               Container(
@@ -47,7 +48,7 @@ class DailyGoalCard extends StatelessWidget {
                 ),
                 child: Text(
                   '${stats.dailyCompletedTasks}/${stats.dailyGoal}',
-                  style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.bold, color: isGoalMet ? AppColors.primary : AppColors.textSecondary),
+                  style: tt.titleSmall!.copyWith(color: isGoalMet ? AppColors.primary : AppColors.textSecondary),
                 ),
               ),
             ],
@@ -68,11 +69,11 @@ class DailyGoalCard extends StatelessWidget {
             children: [
               Text(
                 isGoalMet ? '¡Meta alcanzada! 🎉' : '${stats.dailyGoal - stats.dailyCompletedTasks} tarea(s) para completar la meta',
-                style: GoogleFonts.inter(fontSize: 12, color: isGoalMet ? AppColors.primary : AppColors.textSecondary),
+                style: tt.bodySmall!.copyWith(color: isGoalMet ? AppColors.primary : AppColors.textSecondary),
               ),
               Text(
                 '${(progress * 100).toInt()}%',
-                style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: isGoalMet ? AppColors.primary : AppColors.textSecondary),
+                style: tt.labelLarge!.copyWith(color: isGoalMet ? AppColors.primary : AppColors.textSecondary),
               ),
             ],
           ),

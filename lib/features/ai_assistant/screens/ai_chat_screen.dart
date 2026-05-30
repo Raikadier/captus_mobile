@@ -4,9 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/ai_chat_provider.dart';
 import '../../../core/providers/auth_provider.dart';
 
@@ -215,18 +215,14 @@ class _Header extends ConsumerWidget {
               children: [
                 Text(
                   title != null && title.isNotEmpty ? title : 'Captus IA',
-                  style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
-                      color: AppColors.textPrimary),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   userRole == 'teacher'
                       ? 'Asistente docente · Gemini'
                       : 'Asistente académico · Gemini',
-                  style: GoogleFonts.inter(
-                      fontSize: 11, color: AppColors.textSecondary),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -249,7 +245,7 @@ class _Header extends ConsumerWidget {
             icon: const Icon(Icons.history_rounded,
                 color: AppColors.textSecondary),
             tooltip: 'Historial',
-            onPressed: () => context.push('/ai/history'),
+            onPressed: () => context.pop(), // back to history (/ai)
           ),
           IconButton(
             icon: const Icon(Icons.tune_rounded,
@@ -342,7 +338,7 @@ class _MessageBubble extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Mensaje copiado',
-            style: GoogleFonts.inter(fontSize: 13)),
+            style: Theme.of(context).textTheme.labelLarge),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.textPrimary,
@@ -403,8 +399,7 @@ class _MessageBubble extends StatelessWidget {
                     child: isUser
                         ? SelectableText(
                             message.text,
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: AppColors.textOnPrimary,
                               height: 1.45,
                             ),
@@ -423,8 +418,7 @@ class _MessageBubble extends StatelessWidget {
             ),
             child: Text(
               timeStr,
-              style: GoogleFonts.inter(
-                  fontSize: 10, color: AppColors.textSecondary),
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.textSecondary),
             ),
           ),
           // Reasoning steps (collapsible)
@@ -443,8 +437,7 @@ class _MessageBubble extends StatelessWidget {
                     size: 14, color: AppColors.primary),
                 label: Text(
                   _actionLabel(message.actionPerformed!),
-                  style: GoogleFonts.inter(
-                      fontSize: 11, color: AppColors.primary),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.primary),
                 ),
                 backgroundColor: AppColors.primary.withAlpha(12),
                 side: BorderSide.none,
@@ -507,11 +500,7 @@ class _MarkdownMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final baseStyle = GoogleFonts.inter(
-      fontSize: 14,
-      color: AppColors.textPrimary,
-      height: 1.5,
-    );
+    final baseStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5);
 
     return MarkdownBody(
       data: text,
@@ -521,21 +510,15 @@ class _MarkdownMessage extends StatelessWidget {
         // Paragraph
         p: baseStyle,
         // Bold
-        strong: baseStyle.copyWith(fontWeight: FontWeight.w700),
+        strong: baseStyle?.copyWith(fontWeight: FontWeight.w700),
         // Italic
-        em: baseStyle.copyWith(fontStyle: FontStyle.italic),
+        em: baseStyle?.copyWith(fontStyle: FontStyle.italic),
         // Headings
-        h1: GoogleFonts.inter(
-            fontSize: 17, fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary, height: 1.4),
-        h2: GoogleFonts.inter(
-            fontSize: 15, fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary, height: 1.4),
-        h3: GoogleFonts.inter(
-            fontSize: 14, fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary, height: 1.4),
+        h1: Theme.of(context).textTheme.headlineMedium?.copyWith(height: 1.4),
+        h2: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700, height: 1.4),
+        h3: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, height: 1.4),
         // Inline code
-        code: GoogleFonts.sourceCodePro(
+        code: TextStyle(
           fontSize: 13,
           color: AppColors.primary,
           backgroundColor: AppColors.primary.withAlpha(15),
@@ -546,7 +529,7 @@ class _MarkdownMessage extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: AppColors.primary.withAlpha(40)),
         ),
-        codeblockPadding: const EdgeInsets.all(12),
+        codeblockPadding: EdgeInsets.all(AppSpacing.s3),
         // Blockquote
         blockquoteDecoration: BoxDecoration(
           border: Border(
@@ -671,10 +654,10 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(AppSpacing.s6),
       child: Column(
         children: [
-          const SizedBox(height: 16),
+          SizedBox(height: AppSpacing.s4),
           Container(
             height: 64,
             width: 64,
@@ -685,18 +668,14 @@ class _EmptyState extends StatelessWidget {
             child: const Icon(Icons.auto_awesome_rounded,
                 color: AppColors.primary, size: 32),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: AppSpacing.s4),
           Text('¿En qué puedo ayudarte?',
-              style: GoogleFonts.inter(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary)),
-          const SizedBox(height: 8),
+              style: Theme.of(context).textTheme.headlineMedium),
+          SizedBox(height: AppSpacing.s2),
           Text(
             'Puedo gestionar tus tareas, eventos, notas y responderte preguntas académicas.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-                fontSize: 13, color: AppColors.textSecondary, height: 1.5),
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppColors.textSecondary, height: 1.5),
           ),
           const SizedBox(height: 28),
           ...suggestions.map((s) => Padding(
@@ -717,9 +696,7 @@ class _EmptyState extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(s,
-                              style: GoogleFonts.inter(
-                                  fontSize: 14,
-                                  color: AppColors.textPrimary)),
+                              style: Theme.of(context).textTheme.bodyMedium),
                         ),
                         const Icon(Icons.arrow_forward_ios_rounded,
                             size: 14, color: AppColors.textSecondary),
@@ -761,8 +738,7 @@ class _EmptyState extends StatelessWidget {
                         userRole == 'teacher'
                             ? 'Herramientas IA Docente'
                             : 'Modo Estudio IA',
-                        style: GoogleFonts.inter(
-                            fontSize: 14,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.w600),
                       ),
@@ -799,8 +775,7 @@ class _SuggestionChip extends StatelessWidget {
           border: Border.all(color: AppColors.primary.withAlpha(50)),
         ),
         child: Text(label,
-            style: GoogleFonts.inter(
-                fontSize: 12,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w500)),
       ),
@@ -885,10 +860,7 @@ class _ThinkingStepsState extends State<_ThinkingSteps> {
                     const SizedBox(width: 5),
                     Text(
                       '$count ${count == 1 ? 'paso' : 'pasos'} de razonamiento',
-                      style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.primary),
                     ),
                     const SizedBox(width: 4),
                     Icon(
@@ -932,9 +904,7 @@ class _ThinkingStepsState extends State<_ThinkingSteps> {
                             const SizedBox(width: 5),
                             Text(
                               _labelFor(step.name),
-                              style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  color: AppColors.textSecondary),
+                              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.textSecondary),
                             ),
                           ],
                         ),
@@ -1001,29 +971,9 @@ class _InputBar extends StatelessWidget {
                 maxLines: 4,
                 minLines: 1,
                 textInputAction: TextInputAction.newline,
-                style: GoogleFonts.inter(
-                    fontSize: 14, color: AppColors.textPrimary),
-                decoration: InputDecoration(
+                style: Theme.of(context).textTheme.bodyMedium,
+                decoration: const InputDecoration(
                   hintText: 'Escribe un mensaje…',
-                  hintStyle: GoogleFonts.inter(
-                      fontSize: 14, color: AppColors.textSecondary),
-                  filled: true,
-                  fillColor: AppColors.surface,
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 10),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide:
-                        const BorderSide(color: AppColors.primary, width: 1.5),
-                  ),
                 ),
               ),
             ),

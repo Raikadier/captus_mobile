@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -10,6 +9,7 @@ import '../../../core/constants/app_colors.dart';
 import '../models/evidence_item.dart';
 import '../services/evidence_local_service.dart';
 import 'qr_scanner_screen.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class EvidenceScreen extends StatefulWidget {
   const EvidenceScreen({super.key});
@@ -115,6 +115,7 @@ class _EvidenceScreenState extends State<EvidenceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -125,7 +126,7 @@ class _EvidenceScreenState extends State<EvidenceScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.s4),
             child: GridView.count(
               shrinkWrap: true,
               crossAxisCount: 2,
@@ -162,7 +163,7 @@ class _EvidenceScreenState extends State<EvidenceScreen> {
                 ? Center(
                     child: Text(
                       'Aún no hay evidencias guardadas',
-                      style: GoogleFonts.inter(color: AppColors.textSecondary),
+                      style: tt.bodyMedium!.copyWith(color: AppColors.textSecondary),
                     ),
                   )
                 : ListView.builder(
@@ -182,25 +183,19 @@ class _EvidenceScreenState extends State<EvidenceScreen> {
                         child: Row(
                           children: [
                             _EvidencePreview(item: item),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: AppSpacing.s3),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     item.title,
-                                    style: GoogleFonts.inter(
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.textPrimary,
-                                    ),
+                                    style: tt.titleMedium!.copyWith(color: AppColors.textPrimary),
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: AppSpacing.s1),
                                   Text(
                                     _subtitle(item),
-                                    style: GoogleFonts.inter(
-                                      fontSize: 12,
-                                      color: AppColors.textSecondary,
-                                    ),
+                                    style: tt.bodySmall,
                                   ),
                                 ],
                               ),
@@ -249,6 +244,7 @@ class _ActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Material(
       color: AppColors.surface,
       borderRadius: BorderRadius.circular(16),
@@ -268,7 +264,7 @@ class _ActionCard extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 title,
-                style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                style: tt.titleMedium!.copyWith(color: AppColors.textPrimary),
               ),
             ],
           ),
@@ -285,6 +281,7 @@ class _EvidencePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     if (item.imagePath != null) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(12),

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/notifications_provider.dart';
 import '../../../models/app_notification.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
@@ -58,13 +58,12 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final asyncNotifs = ref.watch(notificationsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: const Text('Notificaciones'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -74,7 +73,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           TextButton(
             onPressed: () =>
                 ref.read(notificationsProvider.notifier).markAllRead(),
-            child: Text('Todo leído', style: GoogleFonts.inter(fontSize: 13)),
+            child: Text('Todo leído', style: tt.titleSmall),
           ),
         ],
       ),
@@ -99,20 +98,16 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                     ),
                     child: Text(
                       e.value,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: isSelected
+                      style: tt.titleSmall!.copyWith(color: isSelected
                             ? AppColors.textOnPrimary
-                            : AppColors.textSecondary,
-                      ),
+                            : AppColors.textSecondary),
                     ),
                   ),
                 );
               }).toList(),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.s2),
           Expanded(
             child: asyncNotifs.when(
               loading: () =>
@@ -122,13 +117,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(Icons.wifi_off_rounded, size: 48, color: AppColors.textSecondary),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.s3),
                     Text('No se pudieron cargar las notificaciones',
-                        style: GoogleFonts.inter(color: AppColors.textSecondary)),
-                    const SizedBox(height: 8),
+                        style: tt.bodyMedium!.copyWith(color: AppColors.textSecondary)),
+                    const SizedBox(height: AppSpacing.s2),
                     FilledButton.tonal(
                       onPressed: () => ref.invalidate(notificationsProvider),
-                      child: Text('Reintentar', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                      child: Text('Reintentar', style: tt.titleMedium),
                     ),
                   ],
                 ),
@@ -144,14 +139,10 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Text('✅', style: TextStyle(fontSize: 48)),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.s3),
                         Text(
                           'Estás al día.',
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
+                          style: tt.headlineSmall!.copyWith(color: AppColors.textPrimary),
                         ),
                       ],
                     ),
@@ -159,7 +150,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 }
 
                 return ListView.separated(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.s2),
                   itemCount: notifs.length,
                   separatorBuilder: (_, __) => const Divider(
                       color: AppColors.border, height: 1),
@@ -204,7 +195,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                                 child: Icon(_iconForType(n.type),
                                     size: 20, color: color),
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: AppSpacing.s3),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment:
@@ -215,32 +206,19 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                                         Expanded(
                                           child: Text(
                                             n.title,
-                                            style: GoogleFonts.inter(
-                                              fontSize: 13,
-                                              fontWeight: n.isRead
-                                                  ? FontWeight.normal
-                                                  : FontWeight.w700,
-                                              color: AppColors.textPrimary,
-                                            ),
+                                            style: tt.bodySmall!.copyWith(color: AppColors.textPrimary),
                                           ),
                                         ),
                                         Text(
                                           _timeLabel(n.createdAt),
-                                          style: GoogleFonts.inter(
-                                              fontSize: 11,
-                                              color:
-                                                  AppColors.textSecondary),
+                                          style: tt.labelMedium!.copyWith(color: AppColors.textSecondary),
                                         ),
                                       ],
                                     ),
                                     const SizedBox(height: 3),
                                     Text(
                                       n.body,
-                                      style: GoogleFonts.inter(
-                                        fontSize: 12,
-                                        color: AppColors.textSecondary,
-                                        height: 1.4,
-                                      ),
+                                      style: tt.bodySmall,
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -248,7 +226,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                                 ),
                               ),
                               if (!n.isRead) ...[
-                                const SizedBox(width: 8),
+                                const SizedBox(width: AppSpacing.s2),
                                 Container(
                                   width: 8,
                                   height: 8,

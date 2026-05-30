@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class StudentProfileViewScreen extends StatelessWidget {
   final String studentId;
@@ -9,6 +9,7 @@ class StudentProfileViewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -19,7 +20,7 @@ class StudentProfileViewScreen extends StatelessWidget {
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.s4),
         children: [
           Center(
             child: Column(
@@ -29,57 +30,43 @@ class StudentProfileViewScreen extends StatelessWidget {
                   backgroundColor: AppColors.primaryDark,
                   child: Text(
                     'C',
-                    style: GoogleFonts.inter(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
+                    style: tt.displaySmall!.copyWith(color: AppColors.primary),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.s3),
                 Text(
                   'Carlos Mendoza',
-                  style: GoogleFonts.inter(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: tt.headlineMedium!.copyWith(color: AppColors.textPrimary),
                 ),
                 Text(
                   'carlos.mendoza@unicesar.edu.co',
-                  style: GoogleFonts.inter(
-                      fontSize: 13, color: AppColors.textSecondary),
+                  style: tt.bodySmall!.copyWith(color: AppColors.textSecondary),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.s6),
 
           // Stats
           Row(
             children: [
               _StudentStat(label: 'Entregas', value: '6/10'),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.s3),
               _StudentStat(label: 'A tiempo', value: '60%'),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.s3),
               _StudentStat(label: 'Promedio', value: '3.5'),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.s6),
 
           Text(
             'ENTREGAS EN ESTE CURSO',
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textSecondary,
-              letterSpacing: 0.8,
-            ),
+            style: tt.labelMedium!.copyWith(color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           ..._submissions.map((s) => Container(
                 margin: const EdgeInsets.only(bottom: 8),
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.s3),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(10),
@@ -92,12 +79,9 @@ class StudentProfileViewScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(s['title']!,
-                              style: GoogleFonts.inter(
-                                  fontSize: 13, fontWeight: FontWeight.w600)),
+                              style: tt.titleSmall),
                           Text(s['date']!,
-                              style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  color: AppColors.textSecondary)),
+                              style: tt.labelMedium!.copyWith(color: AppColors.textSecondary)),
                         ],
                       ),
                     ),
@@ -112,13 +96,9 @@ class StudentProfileViewScreen extends StatelessWidget {
                       ),
                       child: Text(
                         s['status']!,
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: s['status'] == 'Entregada'
+                        style: tt.labelMedium!.copyWith(color: s['status'] == 'Entregada'
                               ? AppColors.primary
-                              : AppColors.error,
-                        ),
+                              : AppColors.error),
                       ),
                     ),
                   ],
@@ -155,9 +135,10 @@ class _StudentStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(AppSpacing.s3),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(10),
@@ -167,15 +148,10 @@ class _StudentStat extends StatelessWidget {
           children: [
             Text(
               value,
-              style: GoogleFonts.inter(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: tt.headlineLarge!.copyWith(color: AppColors.textPrimary),
             ),
             Text(label,
-                style: GoogleFonts.inter(
-                    fontSize: 11, color: AppColors.textSecondary)),
+                style: tt.labelMedium!.copyWith(color: AppColors.textSecondary)),
           ],
         ),
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../services/superadmin_service.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class SuperAdminDashboardScreen extends StatefulWidget {
   const SuperAdminDashboardScreen({super.key});
@@ -42,15 +42,9 @@ class _SuperAdminDashboardScreenState
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: Text(
           'Panel de Plataforma',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: AppColors.textPrimary),
         ),
         actions: [
           IconButton(
@@ -71,19 +65,17 @@ class _SuperAdminDashboardScreenState
                       children: [
                         const Icon(Icons.error_outline_rounded,
                             size: 48, color: AppColors.error),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.s3),
                         Text(
                           _error!,
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.inter(
-                              color: AppColors.textSecondary, fontSize: 14),
+                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppSpacing.s4),
                         FilledButton.tonal(
                           onPressed: _load,
                           child: Text('Reintentar',
-                              style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w600)),
+                              style: Theme.of(context).textTheme.titleMedium),
                         ),
                       ],
                     ),
@@ -93,7 +85,7 @@ class _SuperAdminDashboardScreenState
                   color: AppColors.primary,
                   onRefresh: _load,
                   child: ListView(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(AppSpacing.s4),
                     children: [
                       _SectionLabel('INSTITUCIONES'),
                       _KpiRow([
@@ -117,7 +109,7 @@ class _SuperAdminDashboardScreenState
                           color: AppColors.error,
                         ),
                       ]),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: AppSpacing.s5),
                       _SectionLabel('USUARIOS'),
                       _KpiRow([
                         _Kpi(
@@ -148,7 +140,7 @@ class _SuperAdminDashboardScreenState
                           color: AppColors.success,
                         ),
                       ]),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: AppSpacing.s5),
                       _SectionLabel('ACTIVIDAD'),
                       _KpiRow([
                         _Kpi(
@@ -164,7 +156,7 @@ class _SuperAdminDashboardScreenState
                           color: AppColors.info,
                         ),
                       ]),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: AppSpacing.s8),
                     ],
                   ),
                 ),
@@ -181,12 +173,7 @@ class _SectionLabel extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 10, top: 4),
         child: Text(
           text,
-          style: GoogleFonts.inter(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textSecondary,
-            letterSpacing: 0.8,
-          ),
+          style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textSecondary),
         ),
       );
 }
@@ -240,23 +227,16 @@ class _KpiCard extends StatelessWidget {
             ),
             child: Icon(kpi.icon, color: kpi.color, size: 22),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.s2),
           Text(
             kpi.value,
-            style: GoogleFonts.inter(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.displaySmall!.copyWith(color: AppColors.textPrimary),
           ),
           const SizedBox(height: 2),
           Text(
             kpi.label,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textSecondary),
           ),
         ],
       ),

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class ScanQRJoinCourseScreen extends StatefulWidget {
   const ScanQRJoinCourseScreen({super.key});
@@ -115,6 +115,7 @@ class _ScanQRJoinCourseScreenState extends State<ScanQRJoinCourseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final hasPendingConfirmation = _pendingInviteCode != null && !_isProcessingScan;
 
     return Scaffold(
@@ -128,11 +129,7 @@ class _ScanQRJoinCourseScreenState extends State<ScanQRJoinCourseScreen> {
         ),
         title: Text(
           'Escanear QR',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textOnPrimary,
-          ),
+          style: tt.headlineMedium?.copyWith(color: AppColors.textOnPrimary),
         ),
       ),
       body: Stack(
@@ -160,11 +157,7 @@ class _ScanQRJoinCourseScreenState extends State<ScanQRJoinCourseScreen> {
                       ? 'Mantener enfoque para confirmar QR'
                       : 'Escanea el QR del curso',
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textOnPrimary,
-              ),
+              style: tt.titleLarge?.copyWith(color: AppColors.textOnPrimary),
             ),
           ),
         ],
@@ -180,6 +173,7 @@ class _PermissionErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Container(
       color: AppColors.background,
       alignment: Alignment.center,
@@ -193,29 +187,20 @@ class _PermissionErrorView extends StatelessWidget {
           Text(
             'Necesitamos acceso a la cámara',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
+            style: tt.headlineSmall,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.s2),
           Text(
             'Activa el permiso de cámara para escanear el QR del curso.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 14,
+            style: tt.bodyLarge?.copyWith(
               color: AppColors.textSecondary,
               height: 1.4,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.s5),
           ElevatedButton.icon(
             onPressed: onRetry,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: AppColors.textOnPrimary,
-            ),
             icon: const Icon(Icons.refresh),
             label: const Text('Reintentar'),
           ),
@@ -236,6 +221,7 @@ class _ScannerOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return IgnorePointer(
       child: Stack(
         children: [

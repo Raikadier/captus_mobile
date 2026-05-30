@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/events_provider.dart';
 import '../../../core/utils/app_errors.dart';
 
@@ -141,6 +141,7 @@ class _CalendarEventCreateScreenState
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -163,18 +164,16 @@ class _CalendarEventCreateScreenState
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(AppSpacing.s5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextFormField(
               controller: _titleCtrl,
-              style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w600),
+              style: tt.headlineLarge,
               decoration: InputDecoration(
                 hintText: 'Título del evento',
-                hintStyle: GoogleFonts.inter(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
+                hintStyle: tt.headlineLarge?.copyWith(
                   color: AppColors.textDisabled,
                 ),
                 border: InputBorder.none,
@@ -185,42 +184,26 @@ class _CalendarEventCreateScreenState
               ),
             ),
             const Divider(color: AppColors.border),
-            const SizedBox(height: 20),
+            SizedBox(height: AppSpacing.s5),
 
             Text(
               'Descripción (opcional)',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
-              ),
+              style: tt.titleMedium?.copyWith(color: AppColors.textSecondary),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: AppSpacing.s2),
             TextFormField(
               controller: _descriptionCtrl,
-              style: GoogleFonts.inter(fontSize: 15),
+              style: tt.bodyLarge,
               maxLines: 3,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Agrega una descripción...',
-                hintStyle: GoogleFonts.inter(color: AppColors.textDisabled),
-                filled: true,
-                fillColor: AppColors.surface2,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.all(12),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: AppSpacing.s6),
 
             Text(
               'Tipo de evento',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
-              ),
+              style: tt.titleMedium?.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 10),
             Wrap(
@@ -247,9 +230,7 @@ class _CalendarEventCreateScreenState
                     ),
                     child: Text(
                       e.value,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                      style: tt.labelLarge?.copyWith(
                         color: isSelected ? color : AppColors.textSecondary,
                       ),
                     ),
@@ -257,18 +238,14 @@ class _CalendarEventCreateScreenState
                 );
               }).toList(),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: AppSpacing.s6),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Todo el día',
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: tt.titleMedium?.copyWith(color: AppColors.textSecondary),
                 ),
                 Switch(
                   value: _allDay,
@@ -281,7 +258,7 @@ class _CalendarEventCreateScreenState
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: AppSpacing.s4),
 
             GestureDetector(
               onTap: _pickStartDate,
@@ -303,13 +280,13 @@ class _CalendarEventCreateScreenState
                               : "d 'de' MMMM, yyyy — h:mm a",
                           'es')
                           .format(_startDate),
-                      style: GoogleFonts.inter(fontSize: 14),
+                      style: tt.bodyMedium,
                     ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: AppSpacing.s4),
 
             if (!_allDay) ...[
               GestureDetector(
@@ -331,8 +308,7 @@ class _CalendarEventCreateScreenState
                             ? DateFormat("d 'de' MMMM, yyyy — h:mm a", 'es')
                                 .format(_endDate!)
                             : 'Agregar hora de fin',
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
+                        style: tt.bodyMedium?.copyWith(
                           color: _endDate != null
                               ? AppColors.textPrimary
                               : AppColors.textDisabled,
@@ -342,7 +318,7 @@ class _CalendarEventCreateScreenState
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: AppSpacing.s6),
             ],
 
             Row(
@@ -350,11 +326,7 @@ class _CalendarEventCreateScreenState
               children: [
                 Text(
                   'Notificar',
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: tt.titleMedium?.copyWith(color: AppColors.textSecondary),
                 ),
                 Switch(
                   value: _notify,

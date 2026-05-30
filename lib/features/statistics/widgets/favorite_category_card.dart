@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class FavoriteCategoryCard extends StatelessWidget {
   final String categoryName;
@@ -8,8 +8,9 @@ class FavoriteCategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         gradient: LinearGradient(colors: [AppColors.primary.withAlpha(25), AppColors.primary.withAlpha(10)]),
         borderRadius: BorderRadius.circular(16),
@@ -18,19 +19,19 @@ class FavoriteCategoryCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(AppSpacing.s3),
             decoration: BoxDecoration(color: AppColors.primary.withAlpha(38), shape: BoxShape.circle),
             child: const Icon(Icons.favorite_rounded, color: AppColors.primary, size: 24),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.s4),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Categoría Favorita', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary, letterSpacing: 0.5)),
-                const SizedBox(height: 4),
-                Text(categoryName, style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                Text('donde más completas tareas', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary)),
+                Text('Categoría Favorita', style: tt.labelMedium),
+                const SizedBox(height: AppSpacing.s1),
+                Text(categoryName, style: tt.headlineSmall!.copyWith(color: AppColors.textPrimary)),
+                Text('donde más completas tareas', style: tt.labelMedium!.copyWith(color: AppColors.textSecondary)),
               ],
             ),
           ),

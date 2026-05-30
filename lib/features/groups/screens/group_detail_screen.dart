@@ -1,45 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/providers/groups_provider.dart';
 import '../../../models/group.dart';
 import '../../../models/task.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
-class GroupDetailScreen extends StatefulWidget {
+class GroupDetailScreen extends ConsumerStatefulWidget {
   final String groupId;
 
   const GroupDetailScreen({super.key, required this.groupId});
 
   @override
-  State<GroupDetailScreen> createState() => _GroupDetailScreenState();
+  ConsumerState<GroupDetailScreen> createState() => _GroupDetailScreenState();
 }
 
-class _GroupDetailScreenState extends State<GroupDetailScreen>
+class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late GroupModel _group;
-  late List<TaskModel> _tasks;
   final Set<String> _checkedTasks = {};
 
   static const _activityFeed = [
     _ActivityEntry('Harold Flórez', 'creó la tarea', '"Revisar mockups"', '2h'),
-    _ActivityEntry('Isabella Manjarrez', 'completó', '"Diagrama de clases"', '5h'),
+    _ActivityEntry(
+        'Isabella Manjarrez', 'completó', '"Diagrama de clases"', '5h'),
     _ActivityEntry('David Barceló', 'comentó en', '"Informe final"', 'Ayer'),
-    _ActivityEntry('Harold Flórez', 'adjuntó un archivo a', '"Informe final"', 'Ayer'),
+    _ActivityEntry(
+        'Harold Flórez', 'adjuntó un archivo a', '"Informe final"', 'Ayer'),
   ];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _group = GroupModel.mockList.firstWhere(
-      (g) => g.id == widget.groupId,
-      orElse: () => GroupModel.mockList.first,
-    );
-    _tasks = TaskModel.mockList
-        .where((t) => t.groupId == widget.groupId)
-        .toList();
-    if (_tasks.isEmpty) _tasks = TaskModel.mockList.take(3).toList();
   }
 
   @override
@@ -50,11 +45,59 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    final groupsAsync = ref.watch(myGroupsProvider);
+
+    return groupsAsync.when(
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (_, __) => Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            onPressed: () => context.pop(),
+          ),
+        ),
+        body: Center(
+          child: Text('No se pudo cargar el grupo',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+        ),
+      ),
+      data: (groups) {
+        GroupModel? group;
+        try {
+          group = groups.firstWhere((g) => g.id == widget.groupId);
+        } catch (_) {
+          group = null;
+        }
+
+        if (group == null) {
+          return Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                icon:
+                    const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                onPressed: () => context.pop(),
+              ),
+            ),
+            body: Center(
+              child: Text('Grupo no encontrado',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+            ),
+          );
+        }
+
+        return _buildBody(context, group);
+      },
+    );
+  }
+
+  Widget _buildBody(BuildContext context, GroupModel group) {
+    final tasks = <TaskModel>[];
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => context.pop(),
@@ -63,20 +106,13 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              _group.name,
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
+              group.name,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
-            if (_group.courseName != null)
+            if (group.courseName != null)
               Text(
-                _group.courseName!,
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  color: AppColors.textSecondary,
-                ),
+                group.courseName!,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.textSecondary),
               ),
           ],
         ),
@@ -94,9 +130,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
           unselectedLabelColor: AppColors.textSecondary,
           indicatorColor: AppColors.primary,
           indicatorWeight: 2,
-          labelStyle:
-              GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
-          unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
+          labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
+          unselectedLabelStyle: Theme.of(context).textTheme.labelLarge,
           tabs: const [
             Tab(text: 'Tareas'),
             Tab(text: 'Miembros'),
@@ -108,7 +143,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
         controller: _tabController,
         children: [
           _TasksTab(
-            tasks: _tasks,
+            tasks: tasks,
             checkedTasks: _checkedTasks,
             onToggle: (id) => setState(() {
               if (_checkedTasks.contains(id)) {
@@ -118,7 +153,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
               }
             }),
           ),
-          _MembersTab(members: _group.members),
+          _MembersTab(members: group.members),
           const _ActivityTab(feed: _activityFeed),
         ],
       ),
@@ -133,8 +168,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
             icon: const Icon(Icons.add_rounded),
             label: Text(
               'Nueva tarea',
-              style: GoogleFonts.inter(
-                  fontSize: 14, fontWeight: FontWeight.w600),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           );
         },
@@ -160,20 +194,20 @@ class _TasksTab extends StatelessWidget {
       return Center(
         child: Text(
           'Sin tareas en este grupo.',
-          style: GoogleFonts.inter(color: AppColors.textSecondary),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
         ),
       );
     }
 
     return ListView.separated(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       itemCount: tasks.length,
       separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
         final task = tasks[index];
         final isDone = checkedTasks.contains(task.id.toString()) ||
             task.status == TaskStatus.completed;
-        return GestureDetector(
+        return CaptusPressable(
           onTap: () => onToggle(task.id.toString()),
           child: Container(
             padding: const EdgeInsets.all(14),
@@ -203,16 +237,14 @@ class _TasksTab extends StatelessWidget {
                           size: 13, color: AppColors.textPrimary)
                       : null,
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.s3),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         task.title,
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: isDone
                               ? AppColors.textDisabled
                               : AppColors.textPrimary,
@@ -225,8 +257,7 @@ class _TasksTab extends StatelessWidget {
                         const SizedBox(height: 2),
                         Text(
                           _formatDue(task.dueDate!),
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
                             color: task.isOverdue
                                 ? AppColors.error
                                 : AppColors.textSecondary,
@@ -286,7 +317,7 @@ class _MembersTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       itemCount: members.length,
       separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
@@ -306,14 +337,13 @@ class _MembersTab extends StatelessWidget {
                     AppColors.courseColor(index),
                 child: Text(
                   member.name[0],
-                  style: GoogleFonts.inter(
-                    fontSize: 15,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: AppColors.textOnPrimary,
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.s3),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,11 +352,7 @@ class _MembersTab extends StatelessWidget {
                       children: [
                         Text(
                           member.name,
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
                         if (member.isAdmin) ...[
                           const SizedBox(width: 6),
@@ -341,8 +367,7 @@ class _MembersTab extends StatelessWidget {
                             ),
                             child: Text(
                               'Admin',
-                              style: GoogleFonts.inter(
-                                fontSize: 10,
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.primary,
                               ),
@@ -370,13 +395,10 @@ class _MembersTab extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: AppSpacing.s2),
                         Text(
                           '${(contribution * 100).toInt()}%',
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            color: AppColors.textSecondary,
-                          ),
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.textSecondary),
                         ),
                       ],
                     ),
@@ -399,7 +421,7 @@ class _ActivityTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       itemCount: feed.length,
       separatorBuilder: (_, __) => Padding(
         padding: const EdgeInsets.only(left: 52),
@@ -408,7 +430,7 @@ class _ActivityTab extends StatelessWidget {
       itemBuilder: (context, index) {
         final entry = feed[index];
         return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.s3),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -418,24 +440,21 @@ class _ActivityTab extends StatelessWidget {
                     AppColors.courseColor(index),
                 child: Text(
                   entry.actor[0],
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: AppColors.textOnPrimary,
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.s3),
               Expanded(
                 child: RichText(
                   text: TextSpan(
-                    style: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: AppColors.textSecondary),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                     children: [
                       TextSpan(
                         text: entry.actor,
-                        style: GoogleFonts.inter(
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w600,
                         ),
@@ -443,7 +462,7 @@ class _ActivityTab extends StatelessWidget {
                       TextSpan(text: ' ${entry.action} '),
                       TextSpan(
                         text: entry.target,
-                        style: GoogleFonts.inter(
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.primary,
                         ),
                       ),
@@ -451,13 +470,10 @@ class _ActivityTab extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.s2),
               Text(
                 entry.time,
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  color: AppColors.textDisabled,
-                ),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.textDisabled),
               ),
             ],
           ),

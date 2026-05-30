@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../core/providers/events_provider.dart';
 import '../../../models/task.dart';
+import '../../../shared/widgets/captus_fab.dart';
 import '../../../shared/widgets/empty_state.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
@@ -94,7 +95,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        margin: const EdgeInsets.all(16),
+        margin: EdgeInsets.all(AppSpacing.s4),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(20),
@@ -111,15 +112,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: AppSpacing.s4),
             Text(
               'Crear',
-              style: GoogleFonts.inter(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: AppSpacing.s4),
             ListTile(
               leading: Container(
                 padding: const EdgeInsets.all(10),
@@ -154,7 +152,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 context.push('/calendar/event/create?date=$dateStr');
               },
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: AppSpacing.s6),
           ],
         ),
       ),
@@ -179,6 +177,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final tasksAsync = ref.watch(tasksNotifierProvider);
     final dayEvents = _getEventsForDay(_selectedDay);
 
@@ -188,7 +187,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(AppSpacing.s4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -198,11 +197,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       children: [
                         Text(
                           DateFormat('MMMM yyyy', 'es').format(_focusedDay).toUpperCase(),
-                          style: GoogleFonts.inter(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
+                          style: tt.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(width: 4),
                         Icon(
@@ -235,7 +230,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: AppSpacing.s2),
                       IconButton(
                         icon: const Icon(Icons.chevron_left_rounded),
                         onPressed: () {
@@ -276,7 +271,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             ),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(AppSpacing.s3),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(16),
@@ -303,18 +298,18 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     color: AppColors.primary.withAlpha(AppAlpha.a20),
                     shape: BoxShape.circle,
                   ),
-                  todayTextStyle: GoogleFonts.inter(
+                  todayTextStyle: tt.bodyMedium?.copyWith(
                     color: AppColors.primary,
                     fontWeight: FontWeight.bold,
-                  ),
+                  ) ?? const TextStyle(),
                   selectedDecoration: BoxDecoration(
                     color: AppColors.primary,
                     shape: BoxShape.circle,
                   ),
-                  selectedTextStyle: GoogleFonts.inter(
+                  selectedTextStyle: tt.bodyMedium?.copyWith(
                     color: AppColors.textOnPrimary,
                     fontWeight: FontWeight.bold,
-                  ),
+                  ) ?? const TextStyle(),
                   markerDecoration: BoxDecoration(
                     color: AppColors.primary,
                     shape: BoxShape.circle,
@@ -359,8 +354,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                               ),
                               child: Text(
                                 '+$extraCount',
-                                style: GoogleFonts.inter(
-                                  fontSize: 8,
+                                style: tt.labelSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.textSecondary,
                                 ),
@@ -381,23 +375,17 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 children: [
                   Text(
                     'Actividades del ${DateFormat('d MMM', 'es').format(_selectedDay)}',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: tt.headlineSmall,
                   ),
                   if (dayEvents.isNotEmpty)
                     Text(
                       '${dayEvents.length} actividad${dayEvents.length > 1 ? 'es' : ''}',
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
                     ),
                 ],
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: AppSpacing.s2),
             Expanded(
               child: tasksAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
@@ -413,7 +401,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     );
                   }
                   return ListView.builder(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(AppSpacing.s4),
                     itemCount: dayEvents.length,
                     itemBuilder: (context, index) {
                       final item = dayEvents[index];
@@ -439,17 +427,14 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                   borderRadius: BorderRadius.circular(2),
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              SizedBox(width: AppSpacing.s3),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       task.title,
-                                      style: GoogleFonts.inter(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 14,
-                                      ),
+                                      style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                                     ),
                                     const SizedBox(height: 4),
                                     Row(
@@ -465,21 +450,17 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                           ),
                                           child: Text(
                                             task.priority.label,
-                                            style: GoogleFonts.inter(
-                                              fontSize: 11,
+                                            style: tt.labelMedium?.copyWith(
                                               fontWeight: FontWeight.w600,
                                               color: _getPriorityColor(task.priority),
                                             ),
                                           ),
                                         ),
                                         if (task.courseName != null) ...[
-                                          const SizedBox(width: 8),
+                                          SizedBox(width: AppSpacing.s2),
                                           Text(
                                             task.courseName!,
-                                            style: GoogleFonts.inter(
-                                              fontSize: 12,
-                                              color: AppColors.textSecondary,
-                                            ),
+                                            style: tt.bodySmall,
                                           ),
                                         ],
                                       ],
@@ -515,17 +496,14 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                   borderRadius: BorderRadius.circular(2),
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              SizedBox(width: AppSpacing.s3),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       event.title,
-                                      style: GoogleFonts.inter(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 14,
-                                      ),
+                                      style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                                     ),
                                     const SizedBox(height: 4),
                                     Row(
@@ -541,21 +519,17 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                           ),
                                           child: Text(
                                             event.type,
-                                            style: GoogleFonts.inter(
-                                              fontSize: 11,
+                                            style: tt.labelMedium?.copyWith(
                                               fontWeight: FontWeight.w600,
                                               color: eventColor,
                                             ),
                                           ),
                                         ),
                                         if (event.endDate != null) ...[
-                                          const SizedBox(width: 8),
+                                          SizedBox(width: AppSpacing.s2),
                                           Text(
                                             '${DateFormat('h:mm a', 'es').format(event.startDate)} - ${DateFormat('h:mm a', 'es').format(event.endDate!)}',
-                                            style: GoogleFonts.inter(
-                                              fontSize: 12,
-                                              color: AppColors.textSecondary,
-                                            ),
+                                            style: tt.bodySmall,
                                           ),
                                         ],
                                       ],
@@ -579,10 +553,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: CaptusFab(
         onPressed: _showCreateMenu,
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: AppColors.textOnPrimary),
       ),
     );
   }
@@ -601,6 +573,7 @@ class _FormatButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -612,9 +585,7 @@ class _FormatButton extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: GoogleFonts.inter(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
+          style: tt.labelLarge?.copyWith(
             color: isSelected ? AppColors.textOnPrimary : AppColors.textSecondary,
           ),
         ),
@@ -654,12 +625,13 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Theme(
       data: Theme.of(context).copyWith(dialogBackgroundColor: AppColors.surface),
       child: AlertDialog(
         title: Text(
           'Seleccionar mes y año',
-          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+          style: tt.headlineSmall,
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -680,7 +652,7 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
                 }
               },
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: AppSpacing.s4),
             DropdownButtonFormField<int>(
               value: _selectedYear,
               decoration: const InputDecoration(

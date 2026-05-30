@@ -148,7 +148,6 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     if (_isLoading) {
       return Scaffold(
         backgroundColor: AppColors.background,
@@ -169,7 +168,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
               const SizedBox(height: AppSpacing.s4),
               Text(
                 'Tarea no encontrada',
-                style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
               ),
               const SizedBox(height: AppSpacing.s4),
               ElevatedButton(
@@ -268,7 +267,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                         Expanded(
                           child: Text(
                             _task!.title,
-                            style: tt.headlineLarge?.copyWith(
+                            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                               color: _isCompleted
                                   ? AppColors.textDisabled
                                   : _isOverdue
@@ -320,7 +319,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
               const SizedBox(height: AppSpacing.s6),
               Text(
                 'Descripción',
-                style: tt.headlineSmall,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 10),
               Container(
@@ -333,7 +332,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                 ),
                 child: Text(
                   _task!.description!,
-                  style: tt.bodyMedium?.copyWith(
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                     height: 1.5,
                   ),
@@ -347,11 +346,11 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                 children: [
                   Text(
                     'Subtareas',
-                    style: tt.headlineSmall,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   Text(
                     '${_task!.completedSubtasks} de ${_task!.subtasks.length}',
-                    style: tt.titleMedium?.copyWith(color: AppColors.textSecondary),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.textSecondary),
                   ),
                 ],
               ),
@@ -391,7 +390,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                       const SizedBox(width: AppSpacing.s2),
                       Text(
                         'Agregar subtarea',
-                        style: tt.titleMedium?.copyWith(color: AppColors.primary),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.primary),
                       ),
                     ],
                   ),
@@ -410,7 +409,6 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
     required String label,
     required Color color,
   }) {
-    final tt = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
@@ -424,7 +422,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
           const SizedBox(width: 6),
           Text(
             label,
-            style: tt.labelLarge?.copyWith(color: color),
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(color: color),
           ),
         ],
       ),
@@ -432,7 +430,6 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
   }
 
   Widget _buildSubtaskItem(SubTask subtask) {
-    final tt = Theme.of(context).textTheme;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(AppSpacing.s3),
@@ -474,7 +471,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
           Expanded(
             child: Text(
               subtask.title,
-              style: tt.bodyMedium?.copyWith(
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: subtask.isCompleted
                     ? AppColors.textDisabled
                     : AppColors.textPrimary,

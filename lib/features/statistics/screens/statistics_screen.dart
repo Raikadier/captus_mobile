@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/cactus_refresh.dart';
 import '../providers/user_statistics_provider.dart';
@@ -13,6 +12,7 @@ import '../widgets/weekly_bar_chart_card.dart';
 import '../widgets/category_section_card.dart';
 import '../widgets/activity_summary_section.dart';
 import '../widgets/achievements_card.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class StatisticsScreen extends ConsumerStatefulWidget {
   const StatisticsScreen({super.key});
@@ -50,26 +50,26 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         data: (stats) => CactusRefresh(
           onRefresh: () async => ref.invalidate(userStatisticsProvider),
           child: ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.s4),
             children: [
               StreakHeroCard(stats: stats),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s5),
               DailyGoalCard(stats: stats),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s5),
               QuickStatsRow(stats: stats),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s5),
               if (stats.favoriteCategoryName != null) ...[
                 FavoriteCategoryCard(categoryName: stats.favoriteCategoryName!),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.s5),
               ],
               WeeklyBarChartCard(stats: stats),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s5),
               CategorySectionCard(stats: stats),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s5),
               ActivitySummarySection(stats: stats),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s5),
               const AchievementsCard(),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.s8),
             ],
           ),
         ),
@@ -83,9 +83,9 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.error_outline, color: AppColors.error, size: 48),
-          const SizedBox(height: 12),
-          Text('Error al cargar estadísticas', style: GoogleFonts.inter(color: AppColors.textSecondary)),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
+          Text('Error al cargar estadísticas', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary)),
+          const SizedBox(height: AppSpacing.s3),
           TextButton(onPressed: () => ref.invalidate(userStatisticsProvider), child: const Text('Reintentar')),
         ],
       ),
@@ -109,11 +109,11 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Meta Diaria', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-              const SizedBox(height: 8),
+              Text('Meta Diaria', style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: AppColors.textPrimary)),
+              const SizedBox(height: AppSpacing.s2),
               Text('Establece cuántas tareas quieres completar cada día para mantener tu racha.',
-                  style: GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary)),
-              const SizedBox(height: 24),
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary)),
+              const SizedBox(height: AppSpacing.s6),
               Wrap(
                 spacing: 8, runSpacing: 8,
                 children: [3, 5, 7, 10, 15, 20].map((goal) {
@@ -127,12 +127,12 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: isSelected ? AppColors.primary : Colors.transparent),
                       ),
-                      child: Text('$goal', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold, color: isSelected ? AppColors.textOnPrimary : AppColors.textPrimary)),
+                      child: Text('$goal', style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: isSelected ? AppColors.textOnPrimary : AppColors.textPrimary)),
                     ),
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -143,13 +143,13 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: AppColors.textOnPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: Text('Guardar', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600)),
+                  child: Text('Guardar', style: Theme.of(context).textTheme.titleMedium),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.s4),
             ],
           ),
         ),

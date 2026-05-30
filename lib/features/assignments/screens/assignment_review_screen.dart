@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/assignments_provider.dart';
 
 class AssignmentReviewScreen extends ConsumerStatefulWidget {
@@ -25,7 +25,7 @@ class _AssignmentReviewScreenState
         return AlertDialog(
           backgroundColor: AppColors.surface,
           title: Text('Calificar Entrega',
-              style: GoogleFonts.inter(color: AppColors.textPrimary)),
+              style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: AppColors.textPrimary)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -35,7 +35,7 @@ class _AssignmentReviewScreenState
                 decoration: const InputDecoration(labelText: 'Nota'),
                 onChanged: (val) => grade = double.tryParse(val) ?? 0.0,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: AppSpacing.s3),
               TextField(
                 maxLines: 3,
                 decoration: const InputDecoration(labelText: 'Feedback'),
@@ -71,10 +71,8 @@ class _AssignmentReviewScreenState
       appBar: AppBar(
         title: Text(
           'Revisar Entregas',
-          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
       body: submissionsAsync.when(
@@ -84,13 +82,13 @@ class _AssignmentReviewScreenState
             mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
-              const SizedBox(height: 12),
+              SizedBox(height: AppSpacing.s3),
               Text('No se pudo cargar la entrega',
-                  style: GoogleFonts.inter(color: AppColors.textSecondary)),
-              const SizedBox(height: 8),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary)),
+              SizedBox(height: AppSpacing.s2),
               FilledButton.tonal(
                 onPressed: () => ref.invalidate(submissionsProvider(widget.assignmentId)),
-                child: Text('Reintentar', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                child: Text('Reintentar', style: Theme.of(context).textTheme.titleMedium),
               ),
             ],
           ),
@@ -101,23 +99,21 @@ class _AssignmentReviewScreenState
                 child: Text('Aún no hay entregas para esta asignación.'));
           }
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.s4),
             itemCount: submissions.length,
             itemBuilder: (context, index) {
               final sub = submissions[index];
               return Card(
                 color: AppColors.surface,
-                margin: const EdgeInsets.only(bottom: 12),
+                margin: const EdgeInsets.only(bottom: AppSpacing.s3),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
                 child: ListTile(
                   title: Text('Estudiante: ${sub.studentId.substring(0, 8)}...',
-                      style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary)),
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.textPrimary)),
                   subtitle: Text(
                       'Estado: ${sub.status}\nNota: ${sub.grade ?? "Sin nota"}',
-                      style: GoogleFonts.inter(color: AppColors.textSecondary)),
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary)),
                   trailing: const Icon(Icons.grading, color: AppColors.primary),
                   onTap: () => _showGradeDialog(context, sub.id),
                 ),

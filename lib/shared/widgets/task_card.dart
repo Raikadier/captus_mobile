@@ -271,6 +271,7 @@ class _CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.s2 - 2, // 6px
@@ -291,10 +292,7 @@ class _CategoryChip extends StatelessWidget {
           const SizedBox(width: AppSpacing.s1),
           Text(
             label,
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              color: AppColors.textSecondary,
-            ),
+            style: tt.labelMedium!.copyWith(color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -310,6 +308,7 @@ class _PriorityBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final (String label, Color text, Color bg) = switch (priority) {
       TaskPriority.high   => ('Alta',  AppColors.error,   AppColors.errorLight),
       TaskPriority.medium => ('Media', AppColors.warning, AppColors.warningLight),
@@ -327,11 +326,7 @@ class _PriorityBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.inter(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: text,
-        ),
+        style: tt.labelMedium,
       ),
     );
   }

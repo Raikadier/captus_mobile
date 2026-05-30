@@ -204,6 +204,7 @@ class _StepBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Row(
       children: List.generate(3, (i) {
         final active = i + 1 <= current;

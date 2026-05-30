@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../statistics/providers/user_statistics_provider.dart';
 import '../../statistics/providers/achievements_provider.dart';
@@ -45,7 +45,7 @@ class ProfileScreen extends ConsumerWidget {
         children: [
           // Header
           Container(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(AppSpacing.s6),
             decoration: BoxDecoration(
               color: AppColors.surface,
               border: Border(
@@ -95,55 +95,47 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: AppSpacing.s3),
                 Text(
                   user.name,
-                  style: GoogleFonts.inter(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.headlineLarge,
                 ),
                 const SizedBox(height: 4),
                 Text(
                   user.email,
-                  style: GoogleFonts.inter(
-                      fontSize: 13, color: AppColors.textSecondary),
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   _roleDisplayText(user.role),
-                  style: GoogleFonts.inter(
-                      fontSize: 11,
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: AppSpacing.s4),
                 // Streak section is only meaningful for students and teachers.
                 if (user.role == 'student' || user.role == 'teacher')
-                  _buildStreakSection(ref),
+                  _buildStreakSection(context, ref),
               ],
             ),
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: AppSpacing.s4),
 
           // Academic info
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'INFORMACIÓN ACADÉMICA',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
                     color: AppColors.textSecondary,
                     letterSpacing: 0.8,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: AppSpacing.s2),
                 _InfoCard(children: [
                   if (user.institutionName != null)
                     _InfoRow(
@@ -182,32 +174,28 @@ class ProfileScreen extends ConsumerWidget {
                 // Stats and quick-access links are only relevant for
                 // students and teachers. Admins go straight to CUENTA.
                 if (user.role == 'student' || user.role == 'teacher') ...[
-                  const SizedBox(height: 24),
+                  SizedBox(height: AppSpacing.s6),
 
                   Text(
                     'MIS ESTADÍSTICAS',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
+                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
                       color: AppColors.textSecondary,
                       letterSpacing: 0.8,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  _buildRealStats(ref),
+                  SizedBox(height: AppSpacing.s2),
+                  _buildRealStats(context, ref),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: AppSpacing.s6),
 
                   Text(
                     'ACCESO RÁPIDO',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
+                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
                       color: AppColors.textSecondary,
                       letterSpacing: 0.8,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: AppSpacing.s2),
                   _InfoCard(children: [
                     _LinkRow(
                       icon: Icons.bar_chart_rounded,
@@ -241,19 +229,17 @@ class ProfileScreen extends ConsumerWidget {
                   ]),
                 ],
 
-                const SizedBox(height: 24),
+                SizedBox(height: AppSpacing.s6),
 
                 // Settings
                 Text(
                   'CUENTA',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
                     color: AppColors.textSecondary,
                     letterSpacing: 0.8,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: AppSpacing.s2),
                 _InfoCard(children: [
                   _LinkRow(
                     icon: Icons.settings_outlined,
@@ -274,7 +260,7 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ]),
 
-                const SizedBox(height: 32),
+                SizedBox(height: AppSpacing.s8),
               ],
             ),
           ),
@@ -284,7 +270,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   /// Sección de racha compacta que aparece debajo del avatar.
-  Widget _buildStreakSection(WidgetRef ref) {
+  Widget _buildStreakSection(BuildContext context, WidgetRef ref) {
     final statsAsync = ref.watch(userStatisticsProvider);
 
     return statsAsync.when(
@@ -302,7 +288,7 @@ class ProfileScreen extends ConsumerWidget {
 
         return Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: 14),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: hasStreak
@@ -325,7 +311,7 @@ class ProfileScreen extends ConsumerWidget {
           child: Row(
             children: [
               Text(emoji, style: const TextStyle(fontSize: 28)),
-              const SizedBox(width: 12),
+              SizedBox(width: AppSpacing.s3),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -334,9 +320,7 @@ class ProfileScreen extends ConsumerWidget {
                       children: [
                         Text(
                           hasStreak ? '$streak días' : 'Sin racha',
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                          style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                             color: hasStreak
                                 ? AppColors.warning
                                 : AppColors.textPrimary,
@@ -354,9 +338,7 @@ class ProfileScreen extends ConsumerWidget {
                           ),
                           child: Text(
                             title,
-                            style: GoogleFonts.inter(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
+                            style: Theme.of(context).textTheme.labelSmall!.copyWith(
                               color: hasStreak
                                   ? AppColors.warning
                                   : AppColors.textSecondary,
@@ -368,8 +350,7 @@ class ProfileScreen extends ConsumerWidget {
                     const SizedBox(height: 2),
                     Text(
                       message,
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
+                      style: Theme.of(context).textTheme.labelMedium!.copyWith(
                         color: AppColors.textSecondary,
                         fontStyle: FontStyle.italic,
                       ),
@@ -380,25 +361,21 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               ),
               if (stats.bestStreak > 0) ...[
-                const SizedBox(width: 8),
+                SizedBox(width: AppSpacing.s2),
                 Column(
                   children: [
                     const Icon(Icons.emoji_events_rounded,
                         color: AppColors.warning, size: 16),
                     Text(
                       '${stats.bestStreak}',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.warning,
                       ),
                     ),
                     Text(
                       'mejor',
-                      style: GoogleFonts.inter(
-                        fontSize: 9,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.labelSmall!.copyWith(color: AppColors.textSecondary),
                     ),
                   ],
                 ),
@@ -411,7 +388,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   /// Tiles de estadísticas con datos reales del proveedor.
-  Widget _buildRealStats(WidgetRef ref) {
+  Widget _buildRealStats(BuildContext context, WidgetRef ref) {
     final statsAsync = ref.watch(userStatisticsProvider);
 
     return statsAsync.when(
@@ -422,13 +399,13 @@ class ProfileScreen extends ConsumerWidget {
               label: 'Completadas',
               value: '…',
               color: AppColors.primary),
-          const SizedBox(width: 8),
+          SizedBox(width: AppSpacing.s2),
           _StatTile(
               icon: Icons.local_fire_department_rounded,
               label: 'Racha',
               value: '…',
               color: AppColors.warning),
-          const SizedBox(width: 8),
+          SizedBox(width: AppSpacing.s2),
           _StatTile(
               icon: Icons.percent_rounded,
               label: 'Éxito',
@@ -443,13 +420,13 @@ class ProfileScreen extends ConsumerWidget {
               label: 'Completadas',
               value: '-',
               color: AppColors.primary),
-          const SizedBox(width: 8),
+          SizedBox(width: AppSpacing.s2),
           _StatTile(
               icon: Icons.local_fire_department_rounded,
               label: 'Racha',
               value: '-',
               color: AppColors.warning),
-          const SizedBox(width: 8),
+          SizedBox(width: AppSpacing.s2),
           _StatTile(
               icon: Icons.percent_rounded,
               label: 'Éxito',
@@ -464,13 +441,13 @@ class ProfileScreen extends ConsumerWidget {
               label: 'Completadas',
               value: '${stats.completedTasks}',
               color: AppColors.primary),
-          const SizedBox(width: 8),
+          SizedBox(width: AppSpacing.s2),
           _StatTile(
               icon: Icons.local_fire_department_rounded,
               label: 'Racha',
               value: '${stats.currentStreak}d',
               color: AppColors.warning),
-          const SizedBox(width: 8),
+          SizedBox(width: AppSpacing.s2),
           _StatTile(
               icon: Icons.percent_rounded,
               label: 'Éxito',
@@ -488,9 +465,9 @@ class ProfileScreen extends ConsumerWidget {
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surface,
         title: Text('Cerrar sesión',
-            style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+            style: Theme.of(context).textTheme.headlineMedium),
         content: Text('¿Seguro que quieres salir?',
-            style: GoogleFonts.inter(color: AppColors.textSecondary)),
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary)),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context),
@@ -500,7 +477,7 @@ class ProfileScreen extends ConsumerWidget {
               Navigator.pop(context);
               ref.read(authProvider.notifier).signOut();
             },
-            child: Text('Salir', style: GoogleFonts.inter(color: AppColors.error)),
+            child: Text('Salir', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.error)),
           ),
         ],
       ),
@@ -547,14 +524,12 @@ class _InfoRow extends StatelessWidget {
           child: Row(
             children: [
               Icon(icon, size: 18, color: AppColors.textSecondary),
-              const SizedBox(width: 12),
+              SizedBox(width: AppSpacing.s3),
               Text(label,
-                  style: GoogleFonts.inter(
-                      fontSize: 13, color: AppColors.textSecondary)),
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary)),
               const Spacer(),
               Text(value,
-                  style: GoogleFonts.inter(
-                      fontSize: 13, color: AppColors.textPrimary)),
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textPrimary)),
             ],
           ),
         ),
@@ -595,17 +570,15 @@ class _LinkRow extends StatelessWidget {
             child: Row(
               children: [
                 Icon(icon, size: 18, color: c),
-                const SizedBox(width: 12),
+                SizedBox(width: AppSpacing.s3),
                 Expanded(
                   child: Text(label,
-                      style: GoogleFonts.inter(fontSize: 13, color: c)),
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(color: c)),
                 ),
                 if (trailingLabel != null && trailingLabel!.isNotEmpty) ...[
                   Text(
                     trailingLabel!,
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                    style: Theme.of(context).textTheme.labelLarge!.copyWith(
                       color: AppColors.textSecondary,
                     ),
                   ),
@@ -652,13 +625,9 @@ class _StatTile extends StatelessWidget {
             Icon(icon, color: color, size: 22),
             const SizedBox(height: 6),
             Text(value,
-                style: GoogleFonts.inter(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary)),
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: AppColors.textPrimary)),
             Text(label,
-                style: GoogleFonts.inter(
-                    fontSize: 10, color: AppColors.textSecondary)),
+                style: Theme.of(context).textTheme.labelSmall!.copyWith(color: AppColors.textSecondary)),
           ],
         ),
       ),
@@ -683,7 +652,7 @@ Widget _buildAvatarInitial(String initial) {
   return Center(
     child: Text(
       initial,
-      style: GoogleFonts.inter(
+      style: const TextStyle(
         fontSize: 36,
         fontWeight: FontWeight.bold,
         color: AppColors.primary,

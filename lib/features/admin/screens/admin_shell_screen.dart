@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 
 /// Top-level shell for admin users.
 /// Bottom nav: Panel · Usuarios · Cursos · Escalas · Períodos · Cuenta
@@ -34,6 +34,7 @@ class AdminShellScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final idx = _selectedIndex(context);
     return Scaffold(
       body: child,
@@ -133,6 +134,7 @@ class _AdminNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -147,13 +149,9 @@ class _AdminNavItem extends StatelessWidget {
           const SizedBox(height: 3),
           Text(
             label,
-            style: GoogleFonts.inter(
-              fontSize: 9,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-              color: isSelected ? AppColors.primary : AppColors.textSecondary,
-            ),
+            style: tt.labelSmall!.copyWith(color: isSelected ? AppColors.primary : AppColors.textSecondary),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.s1),
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             width: isSelected ? 4 : 0,

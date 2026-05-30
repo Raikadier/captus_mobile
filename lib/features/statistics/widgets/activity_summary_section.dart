@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../providers/user_statistics_provider.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class ActivitySummarySection extends StatelessWidget {
   final UserStatisticsState stats;
@@ -9,11 +9,12 @@ class ActivitySummarySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('RESUMEN DE ACTIVIDAD',
-            style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textSecondary, letterSpacing: 0.8)),
+            style: tt.labelMedium),
         const SizedBox(height: 10),
         Row(
           children: [
@@ -50,6 +51,7 @@ class _ActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -63,23 +65,23 @@ class _ActivityCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(AppSpacing.s2),
                 decoration: BoxDecoration(color: iconColor.withAlpha(25), borderRadius: BorderRadius.circular(8)),
                 child: Icon(icon, color: iconColor, size: 18),
               ),
-              const SizedBox(width: 8),
-              Text(title, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+              const SizedBox(width: AppSpacing.s2),
+              Text(title, style: tt.bodySmall!.copyWith(color: AppColors.textPrimary)),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           RichText(
             text: TextSpan(children: [
-              TextSpan(text: main, style: GoogleFonts.inter(fontSize: 28, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-              TextSpan(text: ' $mainLabel', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textSecondary)),
+              TextSpan(text: main, style: tt.displaySmall!.copyWith(color: AppColors.textPrimary)),
+              TextSpan(text: ' $mainLabel', style: tt.labelLarge!.copyWith(color: AppColors.textSecondary)),
             ]),
           ),
           const SizedBox(height: 2),
-          Text(sub, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary)),
+          Text(sub, style: tt.labelMedium!.copyWith(color: AppColors.textSecondary)),
         ],
       ),
     );

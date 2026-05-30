@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/providers/groups_provider.dart';
+import '../../../core/providers/courses_provider.dart';
+import '../../../core/services/api_client.dart';
+import '../../../models/course.dart';
 
-class GroupCreateScreen extends StatefulWidget {
+class GroupCreateScreen extends ConsumerStatefulWidget {
   const GroupCreateScreen({super.key});
 
   @override
-  State<GroupCreateScreen> createState() => _GroupCreateScreenState();
+  ConsumerState<GroupCreateScreen> createState() => _GroupCreateScreenState();
 }
 
-class _GroupCreateScreenState extends State<GroupCreateScreen> {
+class _GroupCreateScreenState extends ConsumerState<GroupCreateScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _descriptionCtrl = TextEditingController();
   bool _isPrivate = false;
   bool _loading = false;
+  String? _selectedCourseId;
+  String? _error;
 
   @override
   void dispose() {
@@ -26,32 +33,49 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _loading = true);
+    if (_selectedCourseId == null) {
+      setState(() => _error = 'Selecciona un curso para el grupo');
+      return;
+    }
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
 
-    // TODO: wire to real API when groups backend is ready
-    await Future.delayed(const Duration(milliseconds: 800));
+    try {
+      await ref.read(createGroupNotifierProvider.notifier).createGroup(
+            name: _nameCtrl.text.trim(),
+            courseId: _selectedCourseId!,
+            description: _descriptionCtrl.text.trim(),
+          );
 
-    if (!mounted) return;
-    setState(() => _loading = false);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Grupo "${_nameCtrl.text.trim()}" creado.',
-          style: GoogleFonts.inter(color: AppColors.textPrimary),
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Grupo "${_nameCtrl.text.trim()}" creado.',
+          ),
+          backgroundColor: AppColors.surface2,
         ),
-        backgroundColor: AppColors.surface2,
-      ),
-    );
-    context.pop();
+      );
+      context.pop();
+    } on ApiException catch (e) {
+      setState(() => _error = e.message);
+    } catch (e) {
+      setState(() => _error = 'Error inesperado');
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    final coursesAsync = ref.watch(coursesProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded,
               color: AppColors.textPrimary),
@@ -59,15 +83,11 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
         ),
         title: Text(
           'Nuevo grupo',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+          style: tt.headlineMedium,
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.only(right: AppSpacing.s3),
             child: _loading
                 ? const SizedBox(
                     width: 20,
@@ -81,14 +101,13 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                       backgroundColor: AppColors.primary,
                       foregroundColor: AppColors.textOnPrimary,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
+                          horizontal: AppSpacing.s4, vertical: 8),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                     ),
                     child: Text(
                       'Crear',
-                      style: GoogleFonts.inter(
-                          fontSize: 14, fontWeight: FontWeight.w600),
+                      style: tt.titleMedium,
                     ),
                   ),
           ),
@@ -97,7 +116,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.s4),
           children: [
             // ── Avatar placeholder ─────────────────────────────────────
             Center(
@@ -120,8 +139,8 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.primary,
                       borderRadius: BorderRadius.circular(8),
-                      border:
-                          Border.all(color: AppColors.background, width: 2),
+                      border: Border.all(
+                          color: AppColors.background, width: 2),
                     ),
                     child: const Icon(Icons.camera_alt_rounded,
                         color: AppColors.textOnPrimary, size: 14),
@@ -129,7 +148,50 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.s6),
+
+            if (_error != null) ...[
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.s3),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withAlpha(AppAlpha.a10),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                      color: AppColors.error.withAlpha(AppAlpha.a30)),
+                ),
+                child: Text(
+                  _error!,
+                  style: tt.bodySmall?.copyWith(color: AppColors.error),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.s4),
+            ],
+
+            // ── Curso ──────────────────────────────────────────────────
+            _SectionLabel('CURSO'),
+            coursesAsync.when(
+              loading: () => Container(
+                height: 56,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                      color: AppColors.border, width: 0.5),
+                ),
+                child: const Center(child: LinearProgressIndicator()),
+              ),
+              error: (_, __) => Text(
+                'No se pudieron cargar los cursos',
+                style: tt.bodySmall?.copyWith(color: AppColors.error),
+              ),
+              data: (courses) => _CoursePicker(
+                courses: courses,
+                selectedId: _selectedCourseId,
+                onChanged: (id) =>
+                    setState(() => _selectedCourseId = id),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.s5),
 
             // ── Nombre ────────────────────────────────────────────────
             _SectionLabel('INFORMACIÓN DEL GRUPO'),
@@ -148,7 +210,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                 return null;
               },
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.s3),
 
             // ── Descripción ───────────────────────────────────────────
             _buildField(
@@ -158,7 +220,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
               icon: Icons.notes_rounded,
               maxLines: 3,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.s5),
 
             // ── Privacidad ────────────────────────────────────────────
             _SectionLabel('PRIVACIDAD'),
@@ -167,7 +229,8 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border, width: 0.5),
+                border:
+                    Border.all(color: AppColors.border, width: 0.5),
               ),
               child: Row(
                 children: [
@@ -185,31 +248,26 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                       _isPrivate
                           ? Icons.lock_rounded
                           : Icons.lock_open_rounded,
-                      color:
-                          _isPrivate ? AppColors.warning : AppColors.success,
+                      color: _isPrivate
+                          ? AppColors.warning
+                          : AppColors.success,
                       size: 20,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.s3),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           _isPrivate ? 'Privado' : 'Público',
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
+                          style: tt.titleMedium,
                         ),
                         Text(
                           _isPrivate
                               ? 'Solo por invitación'
                               : 'Cualquiera puede unirse con código',
-                          style: GoogleFonts.inter(
-                              fontSize: 12,
-                              color: AppColors.textSecondary),
+                          style: tt.bodySmall,
                         ),
                       ],
                     ),
@@ -225,7 +283,7 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.s8),
           ],
         ),
       ),
@@ -244,40 +302,62 @@ class _GroupCreateScreenState extends State<GroupCreateScreen> {
       controller: controller,
       maxLines: maxLines,
       validator: validator,
-      style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle:
-            GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary),
         hintText: hint,
-        hintStyle:
-            GoogleFonts.inter(fontSize: 13, color: AppColors.textDisabled),
         prefixIcon: Icon(icon, color: AppColors.textSecondary, size: 20),
-        filled: true,
-        fillColor: AppColors.surface,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border, width: 0.5),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.error, width: 1),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
-        ),
       ),
+    );
+  }
+}
+
+class _CoursePicker extends StatelessWidget {
+  final List<CourseModel> courses;
+  final String? selectedId;
+  final ValueChanged<String?> onChanged;
+
+  const _CoursePicker({
+    required this.courses,
+    required this.selectedId,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    if (courses.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border, width: 0.5),
+        ),
+        child: Text(
+          'No tienes cursos disponibles',
+          style: tt.bodySmall,
+        ),
+      );
+    }
+
+    return DropdownButtonFormField<String>(
+      value: selectedId,
+      onChanged: onChanged,
+      dropdownColor: AppColors.surface,
+      decoration: const InputDecoration(
+        prefixIcon: Icon(Icons.school_rounded,
+            color: AppColors.textSecondary, size: 20),
+        hintText: 'Selecciona un curso',
+      ),
+      items: courses
+          .map((c) => DropdownMenuItem<String>(
+                value: c.id,
+                child: Text(
+                  c.name,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ))
+          .toList(),
     );
   }
 }
@@ -288,13 +368,12 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10, top: 4),
       child: Text(
         label,
-        style: GoogleFonts.inter(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
+        style: tt.labelMedium?.copyWith(
           color: AppColors.textSecondary,
           letterSpacing: 0.8,
         ),

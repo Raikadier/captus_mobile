@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_errors.dart';
 import '../services/admin_service.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class AdminUsersScreen extends StatefulWidget {
   const AdminUsersScreen({super.key});
@@ -63,8 +63,8 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Invitar usuario',
-                style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
+                style: Theme.of(context).textTheme.headlineMedium),
+              const SizedBox(height: AppSpacing.s4),
               TextField(
                 decoration: const InputDecoration(
                   labelText: 'Email del usuario',
@@ -74,7 +74,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 onChanged: (v) => email = v,
                 keyboardType: TextInputType.emailAddress,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.s3),
               DropdownButtonFormField<String>(
                 value: role,
                 decoration: const InputDecoration(
@@ -88,7 +88,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 ],
                 onChanged: (v) => setModal(() => role = v ?? role),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.s4),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -111,7 +111,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                     }
                   },
                   child: Text('Invitar',
-                    style: GoogleFonts.inter(color: AppColors.textOnPrimary, fontWeight: FontWeight.w600)),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.textOnPrimary)),
                 ),
               ),
             ],
@@ -131,7 +131,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Remover', style: GoogleFonts.inter(color: AppColors.error)),
+            child: Text('Remover', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.error)),
           ),
         ],
       ),
@@ -160,7 +160,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         backgroundColor: AppColors.background,
         elevation: 0,
         title: Text('Usuarios',
-          style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.textPrimary)),
         actions: [
           IconButton(
             icon: const Icon(Icons.person_add_rounded, color: AppColors.primary),
@@ -196,11 +196,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                     ),
                     child: Text(
                       e.value,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: selected ? AppColors.textOnPrimary : AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(color: selected ? AppColors.textOnPrimary : AppColors.textSecondary),
                     ),
                   ),
                 );
@@ -214,14 +210,14 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
               : _members.isEmpty
                 ? Center(
                     child: Text('Sin resultados',
-                      style: GoogleFonts.inter(color: AppColors.textSecondary)))
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary)))
                 : RefreshIndicator(
                     onRefresh: _load,
                     color: AppColors.primary,
                     child: ListView.separated(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(AppSpacing.s4),
                       itemCount: _members.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 8),
+                      separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.s2),
                       itemBuilder: (_, i) {
                         final u = _members[i] as Map<String, dynamic>;
                         final name = u['name'] ?? u['email'] ?? 'Sin nombre';
@@ -240,32 +236,23 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                 backgroundColor: AppColors.primary.withAlpha(38),
                                 child: Text(
                                   name.isNotEmpty ? name[0].toUpperCase() : '?',
-                                  style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.primary,
-                                  ),
+                                  style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.primary),
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: AppSpacing.s3),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(name,
-                                      style: GoogleFonts.inter(
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.textPrimary,
-                                      )),
+                                      style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.textPrimary)),
                                     Text(u['email'] ?? '',
-                                      style: GoogleFonts.inter(
-                                        fontSize: 12,
-                                        color: AppColors.textSecondary,
-                                      )),
+                                      style: Theme.of(context).textTheme.bodySmall),
                                   ],
                                 ),
                               ),
                               _RoleBadge(role: role),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: AppSpacing.s2),
                               GestureDetector(
                                 onTap: () => _confirmRemove(u['id'].toString(), name),
                                 child: const Icon(Icons.remove_circle_outline,
@@ -302,7 +289,7 @@ class _RoleBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(label,
-        style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: fg)),
+        style: Theme.of(context).textTheme.labelMedium),
     );
   }
 }

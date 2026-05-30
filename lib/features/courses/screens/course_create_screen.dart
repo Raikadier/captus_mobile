@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/courses_provider.dart';
 
 class CourseCreateScreen extends ConsumerStatefulWidget {
@@ -41,26 +41,22 @@ class _CourseCreateScreenState extends ConsumerState<CourseCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
-        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => context.pop(),
         ),
         title: Text(
           'Nuevo curso',
-          style: GoogleFonts.inter(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+          style: tt.headlineLarge,
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.s6),
         child: Form(
           key: _formKey,
           child: Column(
@@ -68,15 +64,12 @@ class _CourseCreateScreenState extends ConsumerState<CourseCreateScreen> {
             children: [
               Text(
                 'Información del curso',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
               TextFormField(
                 controller: _titleCtrl,
-                style: GoogleFonts.inter(color: AppColors.textPrimary),
+                style: tt.bodyMedium?.copyWith(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                   labelText: 'Nombre del curso',
                   hintText: 'Ej. Estructuras de Datos',
@@ -85,24 +78,22 @@ class _CourseCreateScreenState extends ConsumerState<CourseCreateScreen> {
                     ? 'El nombre es requerido'
                     : null,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s5),
               TextFormField(
                 controller: _descCtrl,
                 maxLines: 4,
-                style: GoogleFonts.inter(color: AppColors.textPrimary),
+                style: tt.bodyMedium?.copyWith(color: AppColors.textPrimary),
                 decoration: const InputDecoration(
                   labelText: 'Descripción',
                   hintText: 'Descripción del curso...',
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.s8),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.textOnPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -116,14 +107,11 @@ class _CourseCreateScreenState extends ConsumerState<CourseCreateScreen> {
                         )
                       : Text(
                           'Crear curso',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
+                          style: tt.headlineSmall,
                         ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
             ],
           ),
         ),

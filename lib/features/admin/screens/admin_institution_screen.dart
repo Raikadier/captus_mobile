@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_errors.dart';
 import '../services/admin_service.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class AdminInstitutionScreen extends StatefulWidget {
   const AdminInstitutionScreen({super.key});
@@ -101,22 +101,18 @@ class _AdminInstitutionScreenState extends State<AdminInstitutionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: Text('Institución',
-          style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+          style: tt.titleMedium!.copyWith(color: AppColors.textPrimary)),
         actions: [
           TextButton(
             onPressed: _saving ? null : _save,
             child: Text(
               _saving ? 'Guardando…' : 'Guardar',
-              style: GoogleFonts.inter(
-                color: _saving ? AppColors.textDisabled : AppColors.primary,
-                fontWeight: FontWeight.w600,
-              ),
+              style: tt.titleMedium!.copyWith(color: _saving ? AppColors.textDisabled : AppColors.primary),
             ),
           ),
         ],
@@ -124,7 +120,7 @@ class _AdminInstitutionScreenState extends State<AdminInstitutionScreen> {
       body: _loading
         ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
         : SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.s4),
             child: Column(
               children: [
                 _Field(ctrl: _nameCtrl,    label: 'Nombre de la institución', hint: 'Colegio San Marcos'),
@@ -157,6 +153,7 @@ class _Field extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextField(
@@ -166,8 +163,6 @@ class _Field extends StatelessWidget {
           labelText: label,
           hintText: hint,
           border: const OutlineInputBorder(),
-          filled: true,
-          fillColor: AppColors.surface,
         ),
       ),
     );

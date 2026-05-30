@@ -1,8 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../providers/user_statistics_provider.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class CategorySectionCard extends StatelessWidget {
   final UserStatisticsState stats;
@@ -10,6 +10,7 @@ class CategorySectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     const sectionDecoration = BoxDecoration(
       color: AppColors.surface,
       borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -17,27 +18,27 @@ class CategorySectionCard extends StatelessWidget {
 
     if (stats.categoryTaskCounts.isEmpty) {
       return Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.s4),
         decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.border, width: 0.5)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Tareas por Categoría', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
-            const SizedBox(height: 16),
-            Center(child: Text('Completa tareas para ver estadísticas por categoría', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary), textAlign: TextAlign.center)),
+            Text('Tareas por Categoría', style: tt.bodyMedium!.copyWith(color: AppColors.textPrimary)),
+            const SizedBox(height: AppSpacing.s4),
+            Center(child: Text('Completa tareas para ver estadísticas por categoría', style: tt.bodySmall!.copyWith(color: AppColors.textSecondary), textAlign: TextAlign.center)),
           ],
         ),
       );
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.border, width: 0.5)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Tareas por Categoría', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
-          const SizedBox(height: 16),
+          Text('Tareas por Categoría', style: tt.bodyMedium!.copyWith(color: AppColors.textPrimary)),
+          const SizedBox(height: AppSpacing.s4),
           SizedBox(
             height: 180,
             child: Row(
@@ -52,12 +53,12 @@ class CategorySectionCard extends StatelessWidget {
                       return PieChartSectionData(
                         color: color, value: cat.completedCount.toDouble(),
                         title: '${cat.completedCount}', radius: 50,
-                        titleStyle: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.textOnPrimary),
+                        titleStyle: tt.labelMedium!.copyWith(color: AppColors.textOnPrimary),
                       );
                     }).toList(),
                   )),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.s4),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,7 +73,7 @@ class CategorySectionCard extends StatelessWidget {
                           const SizedBox(width: 6),
                           Text(
                             cat.categoryName.length > 14 ? '${cat.categoryName.substring(0, 12)}…' : cat.categoryName,
-                            style: GoogleFonts.inter(fontSize: 11, color: AppColors.textPrimary),
+                            style: tt.labelMedium!.copyWith(color: AppColors.textPrimary),
                           ),
                         ],
                       ),
@@ -82,7 +83,7 @@ class CategorySectionCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           ...stats.categoryTaskCounts.take(5).map((cat) {
             final maxCount = stats.categoryTaskCounts.first.completedCount;
             final progress = maxCount > 0 ? cat.completedCount / maxCount : 0.0;
@@ -95,11 +96,11 @@ class CategorySectionCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(child: Text(cat.categoryName, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textPrimary), overflow: TextOverflow.ellipsis)),
-                      Text('${cat.completedCount} completadas', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: color)),
+                      Expanded(child: Text(cat.categoryName, style: tt.labelLarge!.copyWith(color: AppColors.textPrimary), overflow: TextOverflow.ellipsis)),
+                      Text('${cat.completedCount} completadas', style: tt.labelMedium),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.s1),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(

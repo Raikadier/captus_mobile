@@ -255,10 +255,11 @@ GoRouter createRouter(WidgetRef ref) {
             name: 'calendar',
             builder: (_, __) => const CalendarScreen(),
           ),
+          // /ai → history as entry point (BRE-04)
           GoRoute(
             path: '/ai',
             name: 'ai_assistant',
-            builder: (_, __) => const AiChatScreen(),
+            builder: (_, __) => const AiChatHistoryScreen(),
           ),
           GoRoute(
             path: '/groups',
@@ -289,6 +290,17 @@ GoRouter createRouter(WidgetRef ref) {
         ],
       ),
 
+      // AI chat (full-screen, outside shell — no bottom nav while chatting)
+      GoRoute(
+        path: '/ai/chat',
+        name: 'ai_chat',
+        builder: (_, __) => const AiChatScreen(),
+      ),
+      GoRoute(
+        path: '/ai/history',
+        name: 'ai_history',
+        builder: (_, __) => const AiChatHistoryScreen(),
+      ),
       GoRoute(
         path: '/notes/new',
         name: 'note_create',
@@ -465,11 +477,6 @@ GoRouter createRouter(WidgetRef ref) {
         path: '/ai/teacher-tools',
         name: 'ai_teacher_tools',
         builder: (_, __) => const AiTeacherToolsScreen(),
-      ),
-      GoRoute(
-        path: '/ai/history',
-        name: 'ai_chat_history',
-        builder: (_, __) => const AiChatHistoryScreen(),
       ),
       GoRoute(
         path: '/ai/settings',
@@ -678,6 +685,7 @@ class NotFoundScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tt = Theme.of(context).textTheme;
     final authState = ref.watch(authProvider).asData?.value;
     final role = authState?.role ?? 'student';
 
@@ -694,20 +702,13 @@ class NotFoundScreen extends ConsumerWidget {
               const SizedBox(height: 24),
               Text(
                 'Página no encontrada',
-                style: GoogleFonts.inter(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: tt.displaySmall!.copyWith(color: AppColors.textPrimary),
               ),
               const SizedBox(height: 12),
               Text(
                 'No pudimos encontrar la ruta: $location',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  color: AppColors.textSecondary,
-                ),
+                style: tt.headlineSmall,
               ),
               const SizedBox(height: 32),
               FilledButton(
@@ -737,7 +738,7 @@ class NotFoundScreen extends ConsumerWidget {
                 ),
                 child: Text(
                   'Ir al inicio',
-                  style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                  style: tt.titleMedium,
                 ),
               ),
             ],

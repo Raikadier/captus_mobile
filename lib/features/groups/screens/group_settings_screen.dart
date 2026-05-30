@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/groups_provider.dart';
 import '../../../models/group.dart';
 
@@ -48,88 +48,79 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
   void _confirmArchive() {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Archivar grupo',
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+      builder: (_) {
+            return AlertDialog(
+          backgroundColor: AppColors.surface,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            'Archivar grupo',
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
-        ),
-        content: Text(
-          'El grupo quedará archivado y no aparecerá en tu lista activa.',
-          style: GoogleFonts.inter(
-              fontSize: 14, color: AppColors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancelar',
-                style:
-                    GoogleFonts.inter(color: AppColors.textSecondary)),
+          content: Text(
+            'El grupo quedará archivado y no aparecerá en tu lista activa.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.go('/groups');
-            },
-            child: Text('Archivar',
-                style: GoogleFonts.inter(color: AppColors.warning)),
-          ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancelar',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                context.go('/groups');
+              },
+              child: Text('Archivar',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.warning)),
+            ),
+          ],
+        );
+      },
     );
   }
 
   void _confirmLeave() {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Salir del grupo',
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+      builder: (_) {
+            return AlertDialog(
+          backgroundColor: AppColors.surface,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            'Salir del grupo',
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
-        ),
-        content: Text(
-          '¿Seguro que deseas salir de "${_group?.name ?? 'este grupo'}"?',
-          style: GoogleFonts.inter(
-              fontSize: 14, color: AppColors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancelar',
-                style:
-                    GoogleFonts.inter(color: AppColors.textSecondary)),
+          content: Text(
+            '¿Seguro que deseas salir de "${_group?.name ?? 'este grupo'}"?',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.go('/groups');
-            },
-            child: Text('Salir',
-                style: GoogleFonts.inter(color: AppColors.error)),
-          ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancelar',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                context.go('/groups');
+              },
+              child: Text('Salir',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.error)),
+            ),
+          ],
+        );
+      },
     );
   }
 
   void _regenerateCode() {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Código regenerado',
-            style: GoogleFonts.inter(color: AppColors.textPrimary)),
+      const SnackBar(
+        content: Text('Código regenerado'),
         backgroundColor: AppColors.surface2,
       ),
     );
@@ -147,8 +138,6 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
     if (group == null) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: AppColors.surface,
-          elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
             onPressed: () => context.pop(),
@@ -156,7 +145,7 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
         ),
         body: Center(
           child: Text('Grupo no encontrado',
-              style: GoogleFonts.inter(color: AppColors.textSecondary)),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
         ),
       );
     }
@@ -164,8 +153,6 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back,
               color: AppColors.textPrimary),
@@ -173,73 +160,46 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
         ),
         title: Text(
           'Configuración del grupo',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
         actions: [
           TextButton(
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Guardado',
-                      style: GoogleFonts.inter(
-                          color: AppColors.textPrimary)),
+                const SnackBar(
+                  content: Text('Guardado'),
                   backgroundColor: AppColors.surface2,
                 ),
               );
             },
             child: Text(
               'Guardar',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.primary,
-              ),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.primary),
             ),
           ),
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.s4),
         children: [
-          _sectionHeader('Nombre del grupo'),
-          const SizedBox(height: 8),
+          _sectionHeader(context, 'Nombre del grupo'),
+          const SizedBox(height: AppSpacing.s2),
           TextField(
             controller: _nameController,
-            style: GoogleFonts.inter(
-                fontSize: 14, color: AppColors.textPrimary),
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: 'Nombre del grupo',
-              hintStyle: GoogleFonts.inter(
-                  fontSize: 14, color: AppColors.textDisabled),
-              filled: true,
-              fillColor: AppColors.surface,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide:
-                    const BorderSide(color: AppColors.primary),
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 14, vertical: 12),
             ),
           ),
           const SizedBox(height: 28),
-          _sectionHeader('Miembros'),
-          const SizedBox(height: 8),
+          _sectionHeader(context, 'Miembros'),
+          const SizedBox(height: AppSpacing.s2),
           ...group.members.map((member) =>
               _MemberTile(member: member)),
           const SizedBox(height: 28),
-          _sectionHeader('Código de invitación'),
-          const SizedBox(height: 8),
+          _sectionHeader(context, 'Código de invitación'),
+          const SizedBox(height: AppSpacing.s2),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.s4),
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(14),
@@ -248,7 +208,7 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 10),
+                      horizontal: AppSpacing.s4, vertical: 10),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withAlpha(AppAlpha.a10),
                     borderRadius: BorderRadius.circular(10),
@@ -257,15 +217,13 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
                   ),
                   child: Text(
                     group.inviteCode,
-                    style: GoogleFonts.inter(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
+                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
                       color: AppColors.primary,
                       letterSpacing: 4,
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.s3),
                 IconButton(
                   icon: const Icon(Icons.copy,
                       color: AppColors.textSecondary, size: 20),
@@ -274,10 +232,8 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
                     Clipboard.setData(
                         ClipboardData(text: group.inviteCode));
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Código copiado',
-                            style: GoogleFonts.inter(
-                                color: AppColors.textPrimary)),
+                      const SnackBar(
+                        content: Text('Código copiado'),
                         backgroundColor: AppColors.surface2,
                       ),
                     );
@@ -293,8 +249,8 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
             ),
           ),
           const SizedBox(height: 28),
-          _sectionHeader('Notificaciones'),
-          const SizedBox(height: 8),
+          _sectionHeader(context, 'Notificaciones'),
+          const SizedBox(height: AppSpacing.s2),
           Container(
             padding: const EdgeInsets.symmetric(
                 horizontal: 14, vertical: 4),
@@ -310,10 +266,7 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
                 Expanded(
                   child: Text(
                     'Notificaciones del grupo',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 Switch(
@@ -326,18 +279,14 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: AppSpacing.s10),
           OutlinedButton.icon(
             onPressed: _confirmArchive,
             icon: const Icon(Icons.archive_outlined,
                 size: 18, color: AppColors.warning),
             label: Text(
               'Archivar grupo',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.warning,
-              ),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.warning),
             ),
             style: OutlinedButton.styleFrom(
               side: BorderSide(
@@ -347,16 +296,13 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
                   borderRadius: BorderRadius.circular(12)),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           ElevatedButton.icon(
             onPressed: _confirmLeave,
             icon: const Icon(Icons.exit_to_app, size: 18),
             label: Text(
               'Salir del grupo',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
@@ -366,18 +312,16 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
                   borderRadius: BorderRadius.circular(12)),
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: AppSpacing.s8),
         ],
       ),
     );
   }
 
-  Widget _sectionHeader(String text) {
+  Widget _sectionHeader(BuildContext context, String text) {
     return Text(
       text.toUpperCase(),
-      style: GoogleFonts.inter(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
+      style: Theme.of(context).textTheme.labelMedium?.copyWith(
         color: AppColors.textDisabled,
         letterSpacing: 1.2,
       ),
@@ -406,8 +350,8 @@ class _MemberTileState extends State<_MemberTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.s2),
+      padding: const EdgeInsets.all(AppSpacing.s3),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
@@ -420,8 +364,7 @@ class _MemberTileState extends State<_MemberTile> {
                 widget.member.id.hashCode),
             child: Text(
               widget.member.name[0],
-              style: GoogleFonts.inter(
-                fontSize: 13,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: AppColors.textOnPrimary,
               ),
@@ -431,11 +374,7 @@ class _MemberTileState extends State<_MemberTile> {
           Expanded(
             child: Text(
               widget.member.name,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
           PopupMenuButton<String>(
@@ -452,8 +391,6 @@ class _MemberTileState extends State<_MemberTile> {
                   SnackBar(
                     content: Text(
                       '${widget.member.name} eliminado',
-                      style: GoogleFonts.inter(
-                          color: AppColors.textPrimary),
                     ),
                     backgroundColor: AppColors.surface2,
                   ),
@@ -472,14 +409,12 @@ class _MemberTileState extends State<_MemberTile> {
                       size: 16,
                       color: AppColors.textSecondary,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.s2),
                     Text(
                       _isAdmin
                           ? 'Quitar admin'
                           : 'Hacer admin',
-                      style: GoogleFonts.inter(
-                          color: AppColors.textPrimary,
-                          fontSize: 13),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textPrimary),
                     ),
                   ],
                 ),
@@ -490,12 +425,10 @@ class _MemberTileState extends State<_MemberTile> {
                   children: [
                     const Icon(Icons.person_remove,
                         size: 16, color: AppColors.error),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.s2),
                     Text(
                       'Eliminar',
-                      style: GoogleFonts.inter(
-                          color: AppColors.error,
-                          fontSize: 13),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.error),
                     ),
                   ],
                 ),
@@ -512,8 +445,7 @@ class _MemberTileState extends State<_MemberTile> {
               ),
               child: Text(
                 'Admin',
-                style: GoogleFonts.inter(
-                  fontSize: 10,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: AppColors.primary,
                 ),

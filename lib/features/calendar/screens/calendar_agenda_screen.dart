@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../models/task.dart';
 
@@ -25,20 +25,15 @@ class CalendarAgendaScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tt = Theme.of(context).textTheme;
     final tasksAsync = ref.watch(tasksNotifierProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: Text(
           'Agenda',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+          style: tt.headlineMedium,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
@@ -55,14 +50,14 @@ class CalendarAgendaScreen extends ConsumerWidget {
             children: [
               const Icon(Icons.error_outline_rounded,
                   size: 48, color: AppColors.error),
-              const SizedBox(height: 12),
+              SizedBox(height: AppSpacing.s3),
               Text('No se pudo cargar la agenda',
-                  style: GoogleFonts.inter(color: AppColors.textSecondary)),
-              const SizedBox(height: 8),
+                  style: tt.bodySmall),
+              SizedBox(height: AppSpacing.s2),
               FilledButton.tonal(
                 onPressed: () => ref.invalidate(tasksNotifierProvider),
                 child: Text('Reintentar',
-                    style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                    style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
               ),
             ],
           ),
@@ -81,20 +76,15 @@ class CalendarAgendaScreen extends ConsumerWidget {
                 children: [
                   const Icon(Icons.event_available_rounded,
                       size: 64, color: AppColors.textSecondary),
-                  const SizedBox(height: 16),
+                  SizedBox(height: AppSpacing.s4),
                   Text(
                     'Sin tareas próximas',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: tt.headlineSmall,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: AppSpacing.s2),
                   Text(
                     'Todas tus tareas están al día.',
-                    style: GoogleFonts.inter(
-                        fontSize: 14, color: AppColors.textSecondary),
+                    style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
                   ),
                 ],
               ),
@@ -105,7 +95,7 @@ class CalendarAgendaScreen extends ConsumerWidget {
             color: AppColors.primary,
             onRefresh: () => ref.refresh(tasksNotifierProvider.future),
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(AppSpacing.s4),
               children: grouped.entries.map((entry) {
                 final isToday = entry.key.day == DateTime.now().day &&
                     entry.key.month == DateTime.now().month &&
@@ -128,8 +118,7 @@ class CalendarAgendaScreen extends ConsumerWidget {
                             ? "Hoy — ${DateFormat("d 'de' MMMM", 'es').format(entry.key)}"
                             : DateFormat("EEEE d 'de' MMMM", 'es')
                                 .format(entry.key),
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
+                        style: tt.labelLarge?.copyWith(
                           fontWeight: FontWeight.w700,
                           color: isToday
                               ? AppColors.primary
@@ -145,7 +134,7 @@ class CalendarAgendaScreen extends ConsumerWidget {
                           },
                           child: Container(
                             margin: const EdgeInsets.only(bottom: 8),
-                            padding: const EdgeInsets.all(12),
+                            padding: EdgeInsets.all(AppSpacing.s3),
                             decoration: BoxDecoration(
                               color: AppColors.surface,
                               borderRadius: BorderRadius.circular(10),
@@ -175,14 +164,11 @@ class CalendarAgendaScreen extends ConsumerWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(task.title,
-                                          style: GoogleFonts.inter(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w600,
-                                              color: AppColors.textPrimary)),
+                                          style: tt.labelLarge?.copyWith(
+                                              fontWeight: FontWeight.w600)),
                                       if (task.courseName != null)
                                         Text(task.courseName!,
-                                            style: GoogleFonts.inter(
-                                                fontSize: 11,
+                                            style: tt.labelMedium?.copyWith(
                                                 color:
                                                     AppColors.textSecondary)),
                                     ],
@@ -191,8 +177,7 @@ class CalendarAgendaScreen extends ConsumerWidget {
                                 if (task.dueDate != null)
                                   Text(
                                     DateFormat('h:mm a').format(task.dueDate!),
-                                    style: GoogleFonts.inter(
-                                        fontSize: 11,
+                                    style: tt.labelMedium?.copyWith(
                                         color: AppColors.textSecondary),
                                   ),
                               ],

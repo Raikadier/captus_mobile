@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../providers/achievements_provider.dart';
 import '../../../models/achievement.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class AchievementsCard extends ConsumerWidget {
   const AchievementsCard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tt = Theme.of(context).textTheme;
     final achievementsAsync = ref.watch(achievementsProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Logros', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-        const SizedBox(height: 12),
+        Text('Logros', style: tt.headlineSmall!.copyWith(color: AppColors.textPrimary)),
+        const SizedBox(height: AppSpacing.s3),
         achievementsAsync.when(
-          loading: () => const Center(child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator())),
+          loading: () => const Center(child: Padding(padding: EdgeInsets.all(AppSpacing.s4), child: CircularProgressIndicator())),
           error: (_, __) => const SizedBox.shrink(),
           data: (state) {
             final unlocked = state.totalUnlocked;
@@ -28,7 +29,7 @@ class AchievementsCard extends ConsumerWidget {
             final recentlyUnlocked = state.achievements.where((a) => a.isCompleted).take(3).toList();
 
             return Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.s4),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(16),
@@ -40,13 +41,13 @@ class AchievementsCard extends ConsumerWidget {
                   Row(
                     children: [
                       const Text('🏅', style: TextStyle(fontSize: 28)),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: AppSpacing.s3),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('$unlocked / $kTotalAchievements desbloqueados',
-                                style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                                style: tt.bodyMedium!.copyWith(color: AppColors.textPrimary)),
                             const SizedBox(height: 6),
                             ClipRRect(
                               borderRadius: BorderRadius.circular(4),
@@ -56,9 +57,9 @@ class AchievementsCard extends ConsumerWidget {
                                 valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: AppSpacing.s1),
                             Text('${(progress * 100).toStringAsFixed(0)}% completado',
-                                style: GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary)),
+                                style: tt.labelMedium!.copyWith(color: AppColors.textSecondary)),
                           ],
                         ),
                       ),
@@ -67,22 +68,22 @@ class AchievementsCard extends ConsumerWidget {
                   if (last != null) ...[
                     const SizedBox(height: 14),
                     const Divider(height: 0, color: AppColors.border),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.s3),
                     Row(
                       children: [
                         const Icon(Icons.access_time_rounded, size: 14, color: AppColors.textSecondary),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text('Último logro: ${last.definition.name}',
-                              style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                              style: tt.labelLarge!.copyWith(color: AppColors.textPrimary)),
                         ),
                         if (last.unlockedAt != null)
-                          Text(_fmtDate(last.unlockedAt!), style: GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary)),
+                          Text(_fmtDate(last.unlockedAt!), style: tt.labelMedium!.copyWith(color: AppColors.textSecondary)),
                       ],
                     ),
                   ],
                   if (recentlyUnlocked.isNotEmpty) ...[
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.s3),
                     Wrap(
                       spacing: 8, runSpacing: 6,
                       children: recentlyUnlocked.map((a) {
@@ -94,8 +95,8 @@ class AchievementsCard extends ConsumerWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(a.definition.icon, style: const TextStyle(fontSize: 14)),
-                              const SizedBox(width: 4),
-                              Text(a.definition.name, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: c)),
+                              const SizedBox(width: AppSpacing.s1),
+                              Text(a.definition.name, style: tt.labelMedium),
                             ],
                           ),
                         );
@@ -108,8 +109,8 @@ class AchievementsCard extends ConsumerWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Ver todos los logros', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.primary)),
-                        const SizedBox(width: 4),
+                        Text('Ver todos los logros', style: tt.bodySmall!.copyWith(color: AppColors.primary)),
+                        const SizedBox(width: AppSpacing.s1),
                         const Icon(Icons.arrow_forward_rounded, size: 14, color: AppColors.primary),
                       ],
                     ),

@@ -264,7 +264,6 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
 
     if (_isLoadingTask) {
@@ -325,7 +324,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                     Expanded(
                       child: Text(
                         'Subtarea de: ${_existingTask!.title}',
-                        style: tt.bodySmall,
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
                   ],
@@ -335,7 +334,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
             ],
             TextField(
               controller: _titleCtrl,
-              style: tt.displaySmall,
+              style: Theme.of(context).textTheme.displaySmall,
               decoration: InputDecoration(
                 hintText: _isSubtask ? 'Título de la subtarea' : 'Título de la tarea',
               ),
@@ -346,7 +345,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
             if (!_isSubtask) ...[
               Text(
                 'Prioridad',
-                style: tt.headlineSmall,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 10),
               Row(
@@ -381,7 +380,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                         child: Center(
                           child: Text(
                             label,
-                            style: tt.titleMedium?.copyWith(
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w700,
                               color: isSelected ? color : AppColors.textSecondary,
                             ),
@@ -395,7 +394,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
               const SizedBox(height: AppSpacing.s6),
               Text(
                 'Fecha de vencimiento',
-                style: tt.headlineSmall,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 10),
               GestureDetector(
@@ -424,7 +423,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                           _dueDate != null
                               ? DateFormat("d 'de' MMMM, h:mm a", 'es').format(_dueDate!)
                               : 'Seleccionar fecha',
-                          style: tt.bodyMedium?.copyWith(
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: _dueDate != null
                                 ? AppColors.textPrimary
                                 : AppColors.textSecondary,
@@ -471,7 +470,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
               const SizedBox(height: AppSpacing.s6),
               Text(
                 'Categoría',
-                style: tt.headlineSmall,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 10),
               categoriesAsync.when(
@@ -488,7 +487,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                       dropdownColor: AppColors.surface,
                       hint: Text(
                         'Sin categoría',
-                        style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
                       ),
                       isExpanded: true,
                       icon: Icon(
@@ -500,7 +499,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                           value: null,
                           child: Text(
                             'Sin categoría',
-                            style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
                           ),
                         ),
                         ...categories.map((c) => DropdownMenuItem<int?>(
@@ -519,7 +518,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
             ],
             Text(
               'Descripción',
-              style: tt.headlineSmall,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 10),
             TextFormField(
@@ -533,7 +532,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
               const SizedBox(height: AppSpacing.s6),
               Text(
                 'Subtareas',
-                style: tt.headlineSmall,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 10),
               if (_subtasks.isNotEmpty) ...[
@@ -575,7 +574,6 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
   }
 
   Widget _buildSubtaskItem(int index) {
-    final tt = Theme.of(context).textTheme;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3, vertical: 10),
@@ -594,7 +592,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
           Expanded(
             child: Text(
               _subtasks[index],
-              style: tt.bodyMedium,
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
           GestureDetector(
@@ -626,7 +624,6 @@ class _QuickDateChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -650,7 +647,7 @@ class _QuickDateChip extends StatelessWidget {
             const SizedBox(width: 6),
             Text(
               label,
-              style: tt.labelLarge?.copyWith(
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 color: isSelected ? AppColors.primary : AppColors.textSecondary,
               ),
             ),

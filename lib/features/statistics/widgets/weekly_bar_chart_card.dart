@@ -1,8 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../providers/user_statistics_provider.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class WeeklyBarChartCard extends StatelessWidget {
   final UserStatisticsState stats;
@@ -10,6 +10,7 @@ class WeeklyBarChartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final daily = stats.weeklyDailyCompletions;
     final maxY = daily.fold(0, (a, b) => a > b ? a : b).toDouble();
     final today = DateTime.now().weekday - 1;
@@ -17,7 +18,7 @@ class WeeklyBarChartCard extends StatelessWidget {
     const labels = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
@@ -29,21 +30,21 @@ class WeeklyBarChartCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Esta Semana', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+              Text('Esta Semana', style: tt.bodyMedium!.copyWith(color: AppColors.textPrimary)),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(color: AppColors.info.withAlpha(25), borderRadius: BorderRadius.circular(8)),
-                child: Text('$activeDays/7 días activos', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.info)),
+                child: Text('$activeDays/7 días activos', style: tt.labelLarge!.copyWith(color: AppColors.info)),
               ),
             ],
           ),
-          const SizedBox(height: 4),
-          Text('${stats.tasksCompletedThisWeek} tareas completadas esta semana', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textSecondary)),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.s1),
+          Text('${stats.tasksCompletedThisWeek} tareas completadas esta semana', style: tt.labelLarge!.copyWith(color: AppColors.textSecondary)),
+          const SizedBox(height: AppSpacing.s5),
           SizedBox(
             height: 140,
             child: maxY == 0
-                ? Center(child: Text('Completa tareas para ver el progreso semanal', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary), textAlign: TextAlign.center))
+                ? Center(child: Text('Completa tareas para ver el progreso semanal', style: tt.bodySmall!.copyWith(color: AppColors.textSecondary), textAlign: TextAlign.center))
                 : BarChart(BarChartData(
                     maxY: maxY + 1,
                     minY: 0,
@@ -59,7 +60,7 @@ class WeeklyBarChartCard extends StatelessWidget {
                           showTitles: true,
                           reservedSize: 24,
                           interval: maxY > 0 ? (maxY / 4).ceilToDouble() : 1,
-                          getTitlesWidget: (val, _) => Text(val.toInt().toString(), style: GoogleFonts.inter(fontSize: 10, color: AppColors.textSecondary)),
+                          getTitlesWidget: (val, _) => Text(val.toInt().toString(), style: tt.labelSmall),
                         ),
                       ),
                       rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -72,11 +73,7 @@ class WeeklyBarChartCard extends StatelessWidget {
                             final isToday = idx == today;
                             return Padding(
                               padding: const EdgeInsets.only(top: 6),
-                              child: Text(labels[idx], style: GoogleFonts.inter(
-                                fontSize: 11,
-                                fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-                                color: isToday ? AppColors.primary : AppColors.textSecondary,
-                              )),
+                              child: Text(labels[idx], style: tt.labelMedium!.copyWith(color: isToday ? AppColors.primary : AppColors.textSecondary)),
                             );
                           },
                         ),
@@ -99,11 +96,11 @@ class WeeklyBarChartCard extends StatelessWidget {
                   )),
           ),
           if (maxY > 0) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.s3),
             Row(
               children: [
                 _LegendDot(color: AppColors.primary, label: 'Meta cumplida'),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.s4),
                 _LegendDot(color: AppColors.warning, label: 'Hoy (en progreso)'),
               ],
             ),
@@ -121,12 +118,13 @@ class _LegendDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(width: 10, height: 10, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-        const SizedBox(width: 4),
-        Text(label, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textSecondary)),
+        const SizedBox(width: AppSpacing.s1),
+        Text(label, style: tt.labelMedium!.copyWith(color: AppColors.textSecondary)),
       ],
     );
   }

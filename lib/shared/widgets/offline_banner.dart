@@ -19,6 +19,7 @@ class OfflineBanner extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tt = Theme.of(context).textTheme;
     final online = ref.watch(isOnlineProvider);
 
     return AnimatedSwitcher(
@@ -39,11 +40,7 @@ class OfflineBanner extends ConsumerWidget {
                   const SizedBox(width: 8),
                   Text(
                     'Sin conexión a internet',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textOnDark,
-                    ),
+                    style: tt.labelLarge!.copyWith(color: AppColors.textOnDark),
                   ),
                 ],
               ),

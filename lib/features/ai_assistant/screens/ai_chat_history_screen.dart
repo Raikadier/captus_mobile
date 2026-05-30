@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/conversations_provider.dart';
 import '../../../core/providers/ai_chat_provider.dart';
 
@@ -42,10 +42,10 @@ class _AiChatHistoryScreenState extends ConsumerState<AiChatHistoryScreen> {
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surface,
         title: Text('Borrar historial',
-            style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
         content: Text(
           'Se eliminarán todas las conversaciones. Esta acción no se puede deshacer.',
-          style: GoogleFonts.inter(color: AppColors.textSecondary),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         actions: [
           TextButton(
@@ -93,7 +93,8 @@ class _AiChatHistoryScreenState extends ConsumerState<AiChatHistoryScreen> {
         .loadConversation(conv.id, title: conv.title);
     if (!mounted) return;
     if (ok) {
-      context.pop();
+      // Navigate to the chat screen (history is the entry point now)
+      context.push('/ai/chat');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No se pudo cargar la conversación.')),
@@ -109,19 +110,10 @@ class _AiChatHistoryScreenState extends ConsumerState<AiChatHistoryScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
+        automaticallyImplyLeading: false, // entry-point: no back button in shell
         title: Text(
-          'Historial',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () => context.pop(),
+          'Captus IA',
+          style: Theme.of(context).textTheme.headlineLarge,
         ),
         actions: [
           asyncConversations.maybeWhen(
@@ -135,6 +127,12 @@ class _AiChatHistoryScreenState extends ConsumerState<AiChatHistoryScreen> {
                 : const SizedBox.shrink(),
             orElse: () => const SizedBox.shrink(),
           ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined,
+                color: AppColors.textSecondary),
+            tooltip: 'Configuración IA',
+            onPressed: () => context.push('/ai/settings'),
+          ),
         ],
       ),
       body: Column(
@@ -145,12 +143,9 @@ class _AiChatHistoryScreenState extends ConsumerState<AiChatHistoryScreen> {
             child: TextField(
               controller: _searchCtrl,
               onChanged: (v) => setState(() => _searchQuery = v),
-              style: GoogleFonts.inter(
-                  fontSize: 14, color: AppColors.textPrimary),
+              style: Theme.of(context).textTheme.bodyMedium,
               decoration: InputDecoration(
                 hintText: 'Buscar conversaciones…',
-                hintStyle: GoogleFonts.inter(
-                    fontSize: 14, color: AppColors.textSecondary),
                 prefixIcon: const Icon(Icons.search_rounded,
                     color: AppColors.textSecondary, size: 20),
                 suffixIcon: query.isNotEmpty
@@ -163,23 +158,6 @@ class _AiChatHistoryScreenState extends ConsumerState<AiChatHistoryScreen> {
                         },
                       )
                     : null,
-                filled: true,
-                fillColor: AppColors.surface,
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 14, vertical: 10),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                      color: AppColors.primary, width: 1.5),
-                ),
               ),
             ),
           ),
@@ -195,11 +173,10 @@ class _AiChatHistoryScreenState extends ConsumerState<AiChatHistoryScreen> {
                   children: [
                     const Icon(Icons.wifi_off_rounded,
                         size: 48, color: AppColors.textSecondary),
-                    const SizedBox(height: 12),
+                    SizedBox(height: AppSpacing.s3),
                     Text('No se pudo cargar el historial',
-                        style: GoogleFonts.inter(
-                            color: AppColors.textSecondary)),
-                    const SizedBox(height: 8),
+                        style: Theme.of(context).textTheme.bodySmall),
+                    SizedBox(height: AppSpacing.s2),
                     FilledButton.tonal(
                       onPressed: () => ref
                           .read(conversationsProvider.notifier)
@@ -221,7 +198,7 @@ class _AiChatHistoryScreenState extends ConsumerState<AiChatHistoryScreen> {
                   return _EmptyHistoryState(
                     onNewChat: () {
                       ref.read(aiChatProvider.notifier).clear();
-                      context.pop();
+                      context.push('/ai/chat');
                     },
                   );
                 }
@@ -233,10 +210,9 @@ class _AiChatHistoryScreenState extends ConsumerState<AiChatHistoryScreen> {
                       children: [
                         const Icon(Icons.search_off_rounded,
                             size: 48, color: AppColors.textSecondary),
-                        const SizedBox(height: 12),
+                        SizedBox(height: AppSpacing.s3),
                         Text('Sin resultados para "$query"',
-                            style: GoogleFonts.inter(
-                                color: AppColors.textSecondary)),
+                            style: Theme.of(context).textTheme.bodySmall),
                       ],
                     ),
                   );
@@ -274,13 +250,12 @@ class _AiChatHistoryScreenState extends ConsumerState<AiChatHistoryScreen> {
         elevation: 2,
         onPressed: () {
           ref.read(aiChatProvider.notifier).clear();
-          context.pop();
+          context.push('/ai/chat');
         },
         icon: const Icon(Icons.add_rounded),
         label: Text(
           'Nueva conversación',
-          style: GoogleFonts.inter(
-              fontSize: 14, fontWeight: FontWeight.w600),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
       ),
     );
@@ -324,11 +299,10 @@ class _ConversationTile extends StatelessWidget {
           builder: (_) => AlertDialog(
             backgroundColor: AppColors.surface,
             title: Text('Eliminar conversación',
-                style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
             content: Text(
               '¿Eliminar "${conv.title}"? Esta acción no se puede deshacer.',
-              style:
-                  GoogleFonts.inter(color: AppColors.textSecondary),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
             actions: [
               TextButton(
@@ -366,17 +340,13 @@ class _ConversationTile extends StatelessWidget {
           ),
           title: Text(
             conv.title,
-            style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
           ),
           subtitle: Text(
             relativeDate,
-            style: GoogleFonts.inter(
-                fontSize: 11, color: AppColors.textSecondary),
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.textSecondary),
           ),
           trailing: const Icon(Icons.chevron_right_rounded,
               size: 18, color: AppColors.textSecondary),
@@ -397,7 +367,7 @@ class _EmptyHistoryState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(AppSpacing.s8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -411,25 +381,20 @@ class _EmptyHistoryState extends StatelessWidget {
               child: const Icon(Icons.chat_bubble_outline_rounded,
                   color: AppColors.primary, size: 36),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: AppSpacing.s5),
             Text(
               'Sin conversaciones aún',
-              style: GoogleFonts.inter(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: AppSpacing.s2),
             Text(
               'Inicia un chat con Captus IA\ny tus conversaciones aparecerán aquí.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                  fontSize: 14,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   height: 1.5),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: AppSpacing.s6),
             FilledButton.icon(
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primary,
@@ -442,7 +407,7 @@ class _EmptyHistoryState extends StatelessWidget {
               onPressed: onNewChat,
               icon: const Icon(Icons.add_rounded),
               label: Text('Iniciar conversación',
-                  style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
             ),
           ],
         ),

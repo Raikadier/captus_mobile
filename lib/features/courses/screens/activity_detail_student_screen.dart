@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/courses_provider.dart';
 import '../../../models/course.dart';
 
@@ -51,8 +51,6 @@ class _ActivityDetailStudentScreenState
           const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (_, __) => Scaffold(
         appBar: AppBar(
-          backgroundColor: AppColors.surface,
-          elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
             onPressed: () => context.pop(),
@@ -60,7 +58,7 @@ class _ActivityDetailStudentScreenState
         ),
         body: Center(
           child: Text('No se pudo cargar la actividad',
-              style: GoogleFonts.inter(color: AppColors.textSecondary)),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
         ),
       ),
       data: (course) {
@@ -89,8 +87,6 @@ class _ActivityDetailStudentScreenState
   Widget _buildNotFound(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => context.pop(),
@@ -98,7 +94,7 @@ class _ActivityDetailStudentScreenState
       ),
       body: Center(
         child: Text('Actividad no encontrada',
-            style: GoogleFonts.inter(color: AppColors.textSecondary)),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
       ),
     );
   }
@@ -113,33 +109,27 @@ class _ActivityDetailStudentScreenState
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => context.pop(),
         ),
         title: Text(
           activity.type,
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppColors.textSecondary),
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.s4),
         children: [
           Text(
             activity.title,
-            style: GoogleFonts.inter(
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(
               fontSize: 22,
               fontWeight: FontWeight.w700,
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Row(
             children: [
               Container(
@@ -168,9 +158,8 @@ class _ActivityDetailStudentScreenState
                     const SizedBox(width: 4),
                     Text(
                       _formatCountdown(activity.dueDate),
-                      style: GoogleFonts.inter(
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         fontSize: 12,
-                        fontWeight: FontWeight.w600,
                         color: isOverdue
                             ? AppColors.error
                             : dueDiff.inHours < 24
@@ -181,7 +170,7 @@ class _ActivityDetailStudentScreenState
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.s2),
               if (activity.requiresFile)
                 Container(
                   padding:
@@ -198,8 +187,7 @@ class _ActivityDetailStudentScreenState
                       const SizedBox(width: 4),
                       Text(
                         'Requiere archivo',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -209,33 +197,28 @@ class _ActivityDetailStudentScreenState
             ],
           ),
           if (activity.description != null) ...[
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.s5),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.s4),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Text(
                 activity.description!,
-                style: GoogleFonts.inter(
-                  fontSize: 14,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   height: 1.6,
                 ),
               ),
             ),
           ],
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.s6),
           Text(
             'Mi entrega',
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           if (activity.isGraded) ...[
             _GradedView(activity: activity, color: color),
           ] else if (activity.isSubmitted) ...[
@@ -279,7 +262,7 @@ class _GradedView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(AppSpacing.s5),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
@@ -291,22 +274,18 @@ class _GradedView extends StatelessWidget {
             children: [
               const Icon(Icons.check_circle,
                   color: AppColors.primary, size: 20),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.s2),
               Text(
                 'Calificada',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primary,
-                ),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.primary),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.s5),
           if (activity.grade != null) ...[
             Text(
               activity.grade!.toStringAsFixed(1),
-              style: GoogleFonts.inter(
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(
                 fontSize: 56,
                 fontWeight: FontWeight.w800,
                 color: AppColors.primary,
@@ -315,17 +294,14 @@ class _GradedView extends StatelessWidget {
             ),
             Text(
               '/ 5.0',
-              style: GoogleFonts.inter(
-                fontSize: 18,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: AppColors.textSecondary),
             ),
           ],
           if (activity.feedback != null) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.s4),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(AppSpacing.s3),
               decoration: BoxDecoration(
                 color: AppColors.surface2,
                 borderRadius: BorderRadius.circular(10),
@@ -335,16 +311,12 @@ class _GradedView extends StatelessWidget {
                 children: [
                   Text(
                     'Retroalimentación',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     activity.feedback!,
-                    style: GoogleFonts.inter(
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       fontSize: 13,
                       color: AppColors.textPrimary,
                       height: 1.5,
@@ -364,7 +336,7 @@ class _SubmittedView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         color: AppColors.info.withAlpha(AppAlpha.a10),
         borderRadius: BorderRadius.circular(14),
@@ -373,25 +345,18 @@ class _SubmittedView extends StatelessWidget {
       child: Row(
         children: [
           const Icon(Icons.cloud_done, color: AppColors.info, size: 28),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.s3),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Entrega enviada',
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.info,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.info),
                 ),
                 Text(
                   'En espera de calificación.',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -425,7 +390,7 @@ class _UploadView extends StatelessWidget {
             onTap: onFileTap,
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppSpacing.s5),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(14),
@@ -445,12 +410,12 @@ class _UploadView extends StatelessWidget {
                         ? AppColors.primary
                         : AppColors.textDisabled,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.s2),
                   Text(
                     fileSelected
                         ? 'archivo_entrega.pdf'
                         : 'Toca para seleccionar archivo',
-                    style: GoogleFonts.inter(
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       fontSize: 13,
                       color: fileSelected
                           ? AppColors.primary
@@ -460,32 +425,20 @@ class _UploadView extends StatelessWidget {
                   if (!fileSelected)
                     Text(
                       'PDF, DOC, ZIP — máx. 50 MB',
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
-                        color: AppColors.textDisabled,
-                      ),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.textDisabled),
                     ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
         ],
         TextField(
           controller: commentController,
           maxLines: 4,
-          style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
-          decoration: InputDecoration(
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary),
+          decoration: const InputDecoration(
             hintText: 'Comentario para el docente (opcional)...',
-            hintStyle:
-                GoogleFonts.inter(fontSize: 14, color: AppColors.textDisabled),
-            filled: true,
-            fillColor: AppColors.surface,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide.none,
-            ),
-            contentPadding: const EdgeInsets.all(16),
           ),
         ),
       ],
@@ -510,7 +463,7 @@ class _BottomBar extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.fromLTRB(
-          16, 12, 16, MediaQuery.of(context).padding.bottom + 12),
+          AppSpacing.s4, AppSpacing.s3, AppSpacing.s4, MediaQuery.of(context).padding.bottom + AppSpacing.s3),
       decoration: BoxDecoration(
         color: AppColors.surface,
         border: Border(top: BorderSide(color: AppColors.border)),
@@ -526,10 +479,7 @@ class _BottomBar extends StatelessWidget {
           ),
           label: Text(
             showAiButton ? 'Pedir ayuda al IA' : 'Subir entrega',
-            style: GoogleFonts.inter(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor:

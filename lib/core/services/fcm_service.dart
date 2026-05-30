@@ -149,6 +149,7 @@ class _InAppBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final top = MediaQuery.of(context).padding.top;
     return Positioned(
       top: top + 8,
@@ -190,17 +191,12 @@ class _InAppBanner extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(title,
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textOnPrimary,
-                          ),
+                          style: tt.titleSmall!.copyWith(color: AppColors.textOnPrimary),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis),
                       if (body.isNotEmpty)
                         Text(body,
-                            style: GoogleFonts.inter(
-                                fontSize: 12, color: AppColors.textSecondary),
+                            style: tt.bodySmall,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis),
                     ],

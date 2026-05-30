@@ -12,6 +12,7 @@ class StreakBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     switch (size) {
       case StreakSize.micro:
         return Row(
@@ -21,11 +22,7 @@ class StreakBadge extends StatelessWidget {
             const SizedBox(width: 2),
             Text(
               '$days',
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: AppColors.warning,
-              ),
+              style: tt.labelLarge!.copyWith(color: AppColors.warning),
             ),
           ],
         );
@@ -45,11 +42,7 @@ class StreakBadge extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 '$days días',
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.warning,
-                ),
+                style: tt.labelLarge!.copyWith(color: AppColors.warning),
               ),
             ],
           ),
@@ -76,18 +69,11 @@ class StreakBadge extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 '$days',
-                style: GoogleFonts.inter(
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.warning,
-                ),
+                style: tt.displaySmall!.copyWith(color: AppColors.warning),
               ),
               Text(
                 'días consecutivos',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: tt.bodyMedium!.copyWith(color: AppColors.textSecondary),
               ),
             ],
           ),

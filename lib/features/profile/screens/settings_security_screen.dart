@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class SettingsSecurityScreen extends StatefulWidget {
   const SettingsSecurityScreen({super.key});
@@ -26,11 +26,11 @@ class _SettingsSecurityScreenState extends State<SettingsSecurityScreen> {
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.s4),
         children: [
           // Security score
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(AppSpacing.s5),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -57,32 +57,27 @@ class _SettingsSecurityScreenState extends State<SettingsSecurityScreen> {
                   child: const Icon(Icons.shield_rounded,
                       color: AppColors.primary, size: 26),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: AppSpacing.s4),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Seguridad básica',
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: AppColors.textPrimary),
                     ),
                     Text(
                       'Activa 2FA para mayor protección',
-                      style: GoogleFonts.inter(
-                          fontSize: 12, color: AppColors.textSecondary),
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: AppSpacing.s5),
 
           _SectionLabel(text: 'ACCESO'),
-          const SizedBox(height: 8),
+          SizedBox(height: AppSpacing.s2),
           _SettingsCard(children: [
             _ToggleRow(
               icon: Icons.fingerprint_rounded,
@@ -101,10 +96,10 @@ class _SettingsSecurityScreenState extends State<SettingsSecurityScreen> {
             ),
           ]),
 
-          const SizedBox(height: 20),
+          SizedBox(height: AppSpacing.s5),
 
           _SectionLabel(text: 'CONTRASEÑA'),
-          const SizedBox(height: 8),
+          SizedBox(height: AppSpacing.s2),
           _SettingsCard(children: [
             _ActionRow(
               icon: Icons.lock_reset_rounded,
@@ -119,10 +114,10 @@ class _SettingsSecurityScreenState extends State<SettingsSecurityScreen> {
             ),
           ]),
 
-          const SizedBox(height: 20),
+          SizedBox(height: AppSpacing.s5),
 
           _SectionLabel(text: 'SESIONES'),
-          const SizedBox(height: 8),
+          SizedBox(height: AppSpacing.s2),
           _SettingsCard(children: [
             _SessionRow(
               device: 'Dispositivo actual',
@@ -138,7 +133,7 @@ class _SettingsSecurityScreenState extends State<SettingsSecurityScreen> {
             ),
           ]),
 
-          const SizedBox(height: 32),
+          SizedBox(height: AppSpacing.s8),
         ],
       ),
     );
@@ -158,39 +153,31 @@ class _SettingsSecurityScreenState extends State<SettingsSecurityScreen> {
       ),
       builder: (_) => Padding(
         padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          top: 24,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          left: AppSpacing.s6,
+          right: AppSpacing.s6,
+          top: AppSpacing.s6,
+          bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.s6,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Cambiar contraseña',
-                style: GoogleFonts.inter(
-                    fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 20),
+                style: Theme.of(context).textTheme.headlineMedium),
+            SizedBox(height: AppSpacing.s5),
             _PasswordField(controller: currentCtrl, label: 'Contraseña actual'),
-            const SizedBox(height: 12),
+            SizedBox(height: AppSpacing.s3),
             _PasswordField(controller: newCtrl, label: 'Nueva contraseña'),
-            const SizedBox(height: 12),
+            SizedBox(height: AppSpacing.s3),
             _PasswordField(
                 controller: confirmCtrl, label: 'Confirmar contraseña'),
-            const SizedBox(height: 20),
+            SizedBox(height: AppSpacing.s5),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
                 child: Text('Actualizar',
-                    style: GoogleFonts.inter(
-                        color: AppColors.textOnPrimary, fontWeight: FontWeight.w600)),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.textOnPrimary)),
               ),
             ),
           ],
@@ -208,9 +195,7 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: GoogleFonts.inter(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
+      style: Theme.of(context).textTheme.labelMedium!.copyWith(
         color: AppColors.textSecondary,
         letterSpacing: 0.8,
       ),
@@ -257,18 +242,16 @@ class _ToggleRow extends StatelessWidget {
       child: Row(
         children: [
           Icon(icon, size: 18, color: AppColors.textSecondary),
-          const SizedBox(width: 12),
+          SizedBox(width: AppSpacing.s3),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: GoogleFonts.inter(
-                        fontSize: 13, color: AppColors.textPrimary)),
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textPrimary)),
                 if (subtitle != null)
                   Text(subtitle!,
-                      style: GoogleFonts.inter(
-                          fontSize: 11, color: AppColors.textSecondary)),
+                      style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textSecondary)),
               ],
             ),
           ),
@@ -300,11 +283,10 @@ class _ActionRow extends StatelessWidget {
         child: Row(
           children: [
             Icon(icon, size: 18, color: AppColors.textSecondary),
-            const SizedBox(width: 12),
+            SizedBox(width: AppSpacing.s3),
             Expanded(
               child: Text(label,
-                  style: GoogleFonts.inter(
-                      fontSize: 13, color: AppColors.textPrimary)),
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textPrimary)),
             ),
             const Icon(Icons.chevron_right_rounded,
                 size: 16, color: AppColors.textSecondary),
@@ -339,17 +321,15 @@ class _SessionRow extends StatelessWidget {
             size: 18,
             color: isCurrent ? AppColors.primary : AppColors.textSecondary,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: AppSpacing.s3),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(device,
-                    style: GoogleFonts.inter(
-                        fontSize: 13, color: AppColors.textPrimary)),
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textPrimary)),
                 Text(location,
-                    style: GoogleFonts.inter(
-                        fontSize: 11, color: AppColors.textSecondary)),
+                    style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textSecondary)),
               ],
             ),
           ),
@@ -361,10 +341,9 @@ class _SessionRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text('Actual',
-                  style: GoogleFonts.inter(
-                      fontSize: 11,
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
                       color: AppColors.primary,
-                      fontWeight: FontWeight.w600)),
+                      fontWeight: FontWeight.w600))
             )
           else
             TextButton(
@@ -374,8 +353,7 @@ class _SessionRow extends StatelessWidget {
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap),
               child: Text('Revocar',
-                  style:
-                      GoogleFonts.inter(fontSize: 12, color: AppColors.error)),
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.error)),
             ),
         ],
       ),
@@ -401,7 +379,7 @@ class _PasswordFieldState extends State<_PasswordField> {
     return TextFormField(
       controller: widget.controller,
       obscureText: _obscure,
-      style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
+      style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textPrimary),
       decoration: InputDecoration(
         labelText: widget.label,
         suffixIcon: IconButton(

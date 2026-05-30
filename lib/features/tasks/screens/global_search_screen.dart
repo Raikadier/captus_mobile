@@ -44,6 +44,7 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final allTasks =
         ref.watch(tasksNotifierProvider).asData?.value ?? [];
     final allCourses =
