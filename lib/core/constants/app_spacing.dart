@@ -1,4 +1,5 @@
 /// Spacing token system for Captus — v2.0
+import '../constants/app_spacing.dart';
 ///
 /// Base grid: 4px. Every value is a multiple of 4.
 /// Use named tokens instead of raw double literals in UI code.

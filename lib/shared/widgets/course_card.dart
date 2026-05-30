@@ -115,7 +115,7 @@ class CourseCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
 
-                    const SizedBox(height: 2),
+                    const SizedBox(height: AppSpacing.s1),
 
                     // Course code
                     Text(

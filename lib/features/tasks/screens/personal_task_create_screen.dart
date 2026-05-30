@@ -368,7 +368,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                       onTap: () => setState(() => _priority = p),
                       child: AnimatedContainer(
                         duration: AppDurations.fast,
-                        margin: const EdgeInsets.only(right: 8),
+                        margin: const EdgeInsets.only(right: AppSpacing.s2),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         decoration: BoxDecoration(
                           color: isSelected ? color.withAlpha(AppAlpha.a15) : AppColors.surface2,
@@ -567,7 +567,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                 ],
               ),
             ],
-            const SizedBox(height: 40),
+            const SizedBox(height: AppSpacing.s1),
           ],
         ),
       ),
@@ -576,7 +576,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
 
   Widget _buildSubtaskItem(int index) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: AppSpacing.s2),
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3, vertical: 10),
       decoration: BoxDecoration(
         color: AppColors.surface2,
@@ -645,7 +645,7 @@ class _QuickDateChip extends StatelessWidget {
               size: 16,
               color: isSelected ? AppColors.primary : AppColors.textSecondary,
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: AppSpacing.s1),
             Text(
               label,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(

@@ -81,7 +81,7 @@ class _ActivityCard extends StatelessWidget {
               TextSpan(text: ' $mainLabel', style: tt.labelLarge!.copyWith(color: AppColors.textSecondary)),
             ]),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: AppSpacing.s1),
           Text(sub, style: tt.labelMedium!.copyWith(color: AppColors.textSecondary)),
         ],
       ),

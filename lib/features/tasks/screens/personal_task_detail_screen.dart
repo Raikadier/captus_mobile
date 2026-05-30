@@ -398,7 +398,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                 ),
               ),
             ],
-            const SizedBox(height: 40),
+            const SizedBox(height: AppSpacing.s1),
           ],
         ),
       ),
@@ -420,7 +420,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 14, color: color),
-          const SizedBox(width: 6),
+          const SizedBox(width: AppSpacing.s1),
           Text(
             label,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(color: color),
@@ -432,7 +432,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
 
   Widget _buildSubtaskItem(SubTask subtask) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: AppSpacing.s2),
       padding: const EdgeInsets.all(AppSpacing.s3),
       decoration: BoxDecoration(
         color: subtask.isCompleted ? AppColors.surface2 : AppColors.surface,

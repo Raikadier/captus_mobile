@@ -252,7 +252,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                     onTap: () => setState(() => _priority = p),
                     child: AnimatedContainer(
                       duration: AppDurations.fast,
-                      margin: const EdgeInsets.only(right: 8),
+                      margin: const EdgeInsets.only(right: AppSpacing.s2),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       decoration: BoxDecoration(
                         color: isSelected ? color.withAlpha(AppAlpha.a15) : AppColors.surface2,
@@ -430,7 +430,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
           child: Column(
             children: [
               Icon(icon, color: isSelected ? AppColors.primary : AppColors.textSecondary),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppSpacing.s1),
               Text(
                 label,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(

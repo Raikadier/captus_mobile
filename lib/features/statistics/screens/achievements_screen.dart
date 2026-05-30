@@ -111,7 +111,7 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> {
   Widget _buildError(String message) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.s6),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -147,7 +147,7 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> {
   Widget _buildEmpty() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(AppSpacing.s8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -208,7 +208,7 @@ class _StatsHeader extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     if (stats != null) ...[
-                      const SizedBox(height: 2),
+                      const SizedBox(height: AppSpacing.s1),
                       Text(
                         '${(progress * 100).toStringAsFixed(0)}% completado',
                         style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.primary),
@@ -279,7 +279,7 @@ class _FilterChips extends StatelessWidget {
           ),
           const SizedBox(width: AppSpacing.s2),
           ...AchievementDifficulty.values.map((d) => Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: AppSpacing.s2),
                 child: _chip(
                   context: context,
                   label: d.label,
@@ -389,7 +389,7 @@ class _AchievementTile extends StatelessWidget {
               Text(def.icon, style: const TextStyle(fontSize: 28))
             else
               _LockedEmoji(icon: def.icon),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.s1),
             Text(
               unlocked ? def.name : '???',
               style: Theme.of(context).textTheme.labelSmall!.copyWith(color: unlocked
@@ -400,7 +400,7 @@ class _AchievementTile extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             if (!unlocked) ...[
-              const SizedBox(height: 6),
+              const SizedBox(height: AppSpacing.s1),
               ClipRRect(
                 borderRadius: BorderRadius.circular(3),
                 child: LinearProgressIndicator(
@@ -410,7 +410,7 @@ class _AchievementTile extends StatelessWidget {
                   valueColor: AlwaysStoppedAnimation<Color>(difficulty.color),
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: AppSpacing.s1),
               Text(
                 '${achievement.progress}/${def.targetValue}',
                 style: Theme.of(context).textTheme.labelSmall!.copyWith(color: AppColors.textDisabled),
@@ -482,7 +482,7 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
           Container(
             width: 40,
             height: 4,
-            margin: const EdgeInsets.only(bottom: 20),
+            margin: const EdgeInsets.only(bottom: AppSpacing.s5),
             decoration: BoxDecoration(
               color: AppColors.border,
               borderRadius: BorderRadius.circular(2),
@@ -506,7 +506,7 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
             unlocked ? def.name : '???',
             style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: AppColors.textPrimary),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.s1),
           Text(
             unlocked ? def.description : 'Desbloquea este logro para ver su descripción',
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary),
@@ -552,7 +552,7 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
           const SizedBox(height: AppSpacing.s4),
           // Estado
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s2),
             decoration: BoxDecoration(
               color: unlocked
                   ? AppColors.primary.withAlpha(AppAlpha.a10)
@@ -565,7 +565,7 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
                     children: [
                       const Icon(Icons.check_circle_rounded,
                           size: 16, color: AppColors.primary),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: AppSpacing.s1),
                       Text(
                         achievement.unlockedAt != null
                             ? 'Desbloqueado el ${_formatDate(achievement.unlockedAt!)}'
@@ -579,7 +579,7 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
                     children: [
                       const Icon(Icons.lock_outline_rounded,
                           size: 16, color: AppColors.textDisabled),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: AppSpacing.s1),
                       Text(
                         'Bloqueado — ¡sigue adelante!',
                         style: Theme.of(context).textTheme.titleSmall!.copyWith(color: AppColors.textDisabled),

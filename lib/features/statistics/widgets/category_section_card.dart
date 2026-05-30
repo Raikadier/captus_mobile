@@ -66,12 +66,12 @@ class CategorySectionCard extends StatelessWidget {
                   children: stats.categoryTaskCounts.take(5).map((cat) {
                     final color = AppColors.courseColors[cat.categoryId % AppColors.courseColors.length];
                     return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      padding: const EdgeInsets.symmetric(vertical: AppSpacing.s1),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(width: 10, height: 10, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: AppSpacing.s1),
                           Text(
                             cat.categoryName.length > 14 ? '${cat.categoryName.substring(0, 12)}…' : cat.categoryName,
                             style: tt.labelMedium!.copyWith(color: AppColors.textPrimary),

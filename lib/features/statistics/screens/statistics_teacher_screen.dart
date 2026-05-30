@@ -9,6 +9,7 @@ import '../../../core/providers/courses_provider.dart';
 import '../../../models/teacher_stats_model.dart';
 import '../providers/teacher_stats_provider.dart';
 import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class StatisticsFilterNotifier extends Notifier<TeacherStudentRiskLevel?> {
   @override
@@ -69,21 +70,21 @@ class StatisticsTeacherScreen extends ConsumerWidget {
               else ...[
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(AppSpacing.s4),
                     child: _buildSummaryGrid(context, stats),
                   ),
                 ),
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4),
                     child: _buildPerformanceChart(stats),
                   ),
                 ),
                 if (stats.averageGrade == null)
                   SliverToBoxAdapter(
                     child: Container(
-                      margin: const EdgeInsets.all(16),
-                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.all(AppSpacing.s4),
+                      padding: const EdgeInsets.all(AppSpacing.s4),
                       decoration: BoxDecoration(
                         color: AppColors.info.withAlpha(AppAlpha.a08),
                         borderRadius: BorderRadius.circular(AppRadius.r7),
@@ -220,7 +221,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
       ),
       actions: [
         Padding(
-          padding: const EdgeInsets.only(right: 8),
+          padding: const EdgeInsets.only(right: AppSpacing.s2),
           child: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(6),
@@ -256,7 +257,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
         final dropdownValue = selectedId ?? 'all';
 
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4),
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(AppRadius.r7),
@@ -380,7 +381,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     Color color,
   ) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(AppSpacing.s3),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
@@ -406,7 +407,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: AppSpacing.s1),
           Text(
             label,
             style: GoogleFonts.inter(
@@ -460,7 +461,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.s1),
           _buildResponsiveBar(
             'Alto',
             stats.highPerformancePercentage,
@@ -568,19 +569,19 @@ class StatisticsTeacherScreen extends ConsumerWidget {
 
     return Container(
       color: AppColors.background,
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.s3),
       child: SizedBox(
         height: 38,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4),
           itemCount: filters.length,
           itemBuilder: (context, index) {
             final filter = filters[index];
             final isSelected = activeFilter == filter.value;
 
             return Padding(
-              padding: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.only(right: AppSpacing.s3),
               child: ChoiceChip(
                 label: Text(filter.label),
                 selected: isSelected,
@@ -695,7 +696,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
   Widget _buildNoResultsInFilter() {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.all(48),
+        padding: const EdgeInsets.all(AppSpacing.s12),
         child: Column(
           children: [
             const Icon(
@@ -742,7 +743,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s1),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
@@ -766,7 +767,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
             }
           },
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(AppSpacing.s3),
             child: Row(
               children: [
                 _buildAvatar(student.studentName, statusColor),
@@ -785,7 +786,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.s1),
                       Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
                         spacing: 8,
@@ -834,7 +835,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: AppSpacing.s1),
                     Text(
                       '${student.submittedAssignments}/${student.totalAssignments}',
                       style: GoogleFonts.inter(
@@ -891,7 +892,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     bool filled = false,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s2, vertical: AppSpacing.s1),
       decoration: BoxDecoration(
         color: filled ? color.withAlpha(AppAlpha.a12) : Colors.transparent,
         borderRadius: BorderRadius.circular(AppRadius.r3),
@@ -904,7 +905,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 12, color: color.withAlpha(filled ? 255 : 180)),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppSpacing.s1),
           Text(
             text,
             style: GoogleFonts.inter(
@@ -925,12 +926,12 @@ class StatisticsTeacherScreen extends ConsumerWidget {
   }) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(40),
+        padding: const EdgeInsets.all(AppSpacing.s1),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(32),
+              padding: const EdgeInsets.all(AppSpacing.s8),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 shape: BoxShape.circle,
@@ -969,7 +970,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                 height: 1.6,
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: AppSpacing.s1),
           ],
         ),
       ),
@@ -979,12 +980,12 @@ class StatisticsTeacherScreen extends ConsumerWidget {
   Widget _buildErrorState(WidgetRef ref, Object error) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.s6),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppSpacing.s6),
               decoration: BoxDecoration(
                 color: AppColors.error.withAlpha(AppAlpha.a08),
                 shape: BoxShape.circle,

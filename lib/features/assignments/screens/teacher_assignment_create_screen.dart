@@ -455,7 +455,7 @@ class _TeacherAssignmentCreateScreenState
 
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0, top: 4.0),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s2, top: AppSpacing.s1),
       child: Text(
         title,
         style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.textPrimary),

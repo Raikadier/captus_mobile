@@ -8,6 +8,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/services/avatar_service.dart';
 import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class ProfileEditScreen extends ConsumerStatefulWidget {
   const ProfileEditScreen({super.key});
@@ -109,7 +110,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       ),
       builder: (context) => SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -213,7 +214,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(right: AppSpacing.s2),
             child: TextButton(
               onPressed: _saving ? null : _save,
               child: _saving
@@ -228,7 +229,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.s4),
         child: Form(
           key: _formKey,
           child: Column(
@@ -236,7 +237,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
             children: [
               if (_error != null)
                 Container(
-                  margin: const EdgeInsets.only(bottom: 16),
+                  margin: const EdgeInsets.only(bottom: AppSpacing.s4),
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
                     color: AppColors.error.withAlpha(AppAlpha.a08),
@@ -297,7 +298,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                       child: GestureDetector(
                         onTap: _showImageSourcePicker,
                         child: Container(
-                          padding: const EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(AppSpacing.s2),
                           decoration: BoxDecoration(
                             color: AppColors.primary, shape: BoxShape.circle,
                             border: Border.all(color: AppColors.background, width: 2),
@@ -324,7 +325,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                 ),
               ]),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s1),
 
               _SectionLabel(text: 'INFORMACIÓN ACADÉMICA'),
               const SizedBox(height: 8),
@@ -351,7 +352,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                 ),
                 const Divider(height: 0, color: AppColors.border, thickness: 0.5),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s1),
                   child: Row(
                     children: [
                       const Icon(Icons.layers_rounded,
@@ -498,7 +499,7 @@ class _ReadOnlyField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
         child: Row(
           children: [
             Icon(icon, size: 18, color: AppColors.textSecondary),
@@ -512,7 +513,7 @@ class _ReadOnlyField extends StatelessWidget {
                     style: GoogleFonts.inter(
                         fontSize: 11, color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: AppSpacing.s1),
                   Text(
                     value,
                     style: GoogleFonts.inter(

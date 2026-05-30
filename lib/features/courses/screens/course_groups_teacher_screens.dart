@@ -998,7 +998,7 @@ Future<void> _showAssignTaskSheet({
                   'Fecha límite',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.s1),
                 OutlinedButton.icon(
                   onPressed: saving
                       ? null
@@ -1335,7 +1335,7 @@ class _InfoCounter extends StatelessWidget {
               color: AppColors.primary,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.s1),
           Text(
             title,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.textSecondary),

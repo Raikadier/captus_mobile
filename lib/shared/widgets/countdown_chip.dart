@@ -42,7 +42,7 @@ class CountdownChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.access_time_rounded, size: 12, color: color),
-          const SizedBox(width: 3),
+          const SizedBox(width: AppSpacing.s1),
           Text(label,
               style: tt.labelSmall!.copyWith(
                   color: color, fontWeight: FontWeight.w500)),

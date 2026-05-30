@@ -83,6 +83,7 @@ import '../../features/projects/screens/project_create_screen.dart';
 import '../../features/projects/screens/project_detail_screen.dart';
 import '../../features/projects/screens/project_members_screen.dart';
 import '../constants/app_radius.dart';
+import '../constants/app_spacing.dart';
 
 // Use the shared key so FCM / deep-link code can navigate imperatively
 final _rootNavigatorKey  = RouterService.navigatorKey;
@@ -694,7 +695,7 @@ class NotFoundScreen extends ConsumerWidget {
       backgroundColor: AppColors.background,
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSpacing.s6),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -732,7 +733,7 @@ class NotFoundScreen extends ConsumerWidget {
                   backgroundColor: AppColors.warning,
                   foregroundColor: AppColors.textOnPrimary,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      const EdgeInsets.symmetric(horizontal: AppSpacing.s8, vertical: AppSpacing.s4),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppRadius.r5),
                   ),

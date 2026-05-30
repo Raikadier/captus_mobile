@@ -70,7 +70,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModal) => Padding(
           padding: EdgeInsets.only(
-            left: 20, right: 20, top: 20,
+            left: AppSpacing.s5, right: AppSpacing.s5, top: AppSpacing.s5,
             bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
           ),
           child: Form(
@@ -374,7 +374,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
-          left: 20, right: 20, top: 20,
+          left: AppSpacing.s5, right: AppSpacing.s5, top: AppSpacing.s5,
           bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
         ),
         child: Column(
@@ -458,7 +458,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModal) => Padding(
           padding: EdgeInsets.only(
-            left: 20, right: 20, top: 20,
+            left: AppSpacing.s5, right: AppSpacing.s5, top: AppSpacing.s5,
             bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
           ),
           child: Form(
@@ -695,7 +695,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                 ],
                               ),
                             ]),
-                            const SizedBox(height: 6),
+                            const SizedBox(height: AppSpacing.s1),
                             Row(children: [
                               Icon(
                                 hasTeacher
@@ -737,7 +737,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: AppColors.primary,
                                     side: const BorderSide(color: AppColors.primary),
-                                    padding: const EdgeInsets.symmetric(vertical: 6),
+                                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.s1),
                                   ),
                                 ),
                               ),
@@ -751,7 +751,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: AppColors.textSecondary,
                                     side: const BorderSide(color: AppColors.border),
-                                    padding: const EdgeInsets.symmetric(vertical: 6),
+                                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.s1),
                                   ),
                                 ),
                               ),

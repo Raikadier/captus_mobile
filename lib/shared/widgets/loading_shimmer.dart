@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_radius.dart';
+import '../../core/constants/app_spacing.dart';
 
 // ─── Base ────────────────────────────────────────────────────────────────────
 
@@ -50,7 +51,7 @@ class TaskCardShimmer extends StatelessWidget {
       baseColor: AppColors.surface2,
       highlightColor: AppColors.surface3,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        margin: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s1),
         height: 76,
         decoration: BoxDecoration(
           color: AppColors.surface,
@@ -86,7 +87,7 @@ class TaskCardShimmer extends StatelessWidget {
             Container(
               width: 22,
               height: 22,
-              margin: const EdgeInsets.only(right: 16),
+              margin: const EdgeInsets.only(right: AppSpacing.s4),
               decoration: BoxDecoration(
                 color: AppColors.surface2,
                 borderRadius: BorderRadius.circular(AppRadius.r1),
@@ -141,7 +142,7 @@ class CourseCardShimmer extends StatelessWidget {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.s3),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -157,7 +158,7 @@ class CourseCardShimmer extends StatelessWidget {
                     const SizedBox(height: 10),
                     // Title lines
                     Container(height: 13, color: AppColors.surface2),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: AppSpacing.s1),
                     Container(
                         height: 13, width: 80, color: AppColors.surface2),
                     const Spacer(),
@@ -188,7 +189,7 @@ class CourseGridShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -217,7 +218,7 @@ class StatTileShimmer extends StatelessWidget {
       baseColor: AppColors.surface2,
       highlightColor: AppColors.surface3,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.s4),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.r6),
@@ -238,7 +239,7 @@ class StatTileShimmer extends StatelessWidget {
             const SizedBox(height: 12),
             // Value
             Container(height: 28, width: 60, color: AppColors.surface2),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.s1),
             // Label
             Container(height: 11, width: 80, color: AppColors.surface2),
           ],
@@ -278,7 +279,7 @@ class NotificationItemShimmer extends StatelessWidget {
       baseColor: AppColors.surface2,
       highlightColor: AppColors.surface3,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s2),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -297,9 +298,9 @@ class NotificationItemShimmer extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(height: 14, color: AppColors.surface2),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.s1),
                   Container(height: 12, width: 200, color: AppColors.surface2),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.s1),
                   Container(height: 10, width: 80, color: AppColors.surface2),
                 ],
               ),
@@ -336,7 +337,7 @@ class ProfileHeaderShimmer extends StatelessWidget {
       baseColor: AppColors.surface2,
       highlightColor: AppColors.surface3,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24),
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.s6),
         child: Column(
           children: [
             // Avatar

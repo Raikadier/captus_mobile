@@ -121,7 +121,7 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
                     'Título *',
                     style: tt.titleMedium?.copyWith(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.s1),
                   TextFormField(
                     controller: _titleCtrl,
                     decoration: const InputDecoration(
@@ -137,7 +137,7 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
                     'Descripción (opcional)',
                     style: tt.titleMedium?.copyWith(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.s1),
                   TextFormField(
                     controller: _descCtrl,
                     maxLines: 4,

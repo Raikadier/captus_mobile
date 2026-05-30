@@ -53,9 +53,9 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
             ),
           ),
           Positioned(
-            bottom: 40,
-            left: 24,
-            right: 24,
+            bottom: AppSpacing.s10,
+            left: AppSpacing.s6,
+            right: AppSpacing.s6,
             child: Text(
               'Alinea el código dentro del recuadro',
               textAlign: TextAlign.center,

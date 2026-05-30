@@ -371,7 +371,7 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10, top: 4),
+      padding: const EdgeInsets.only(bottom: 10, top: AppSpacing.s1),
       child: Text(
         label,
         style: tt.labelMedium?.copyWith(

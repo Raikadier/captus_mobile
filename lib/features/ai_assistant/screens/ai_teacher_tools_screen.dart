@@ -678,7 +678,7 @@ class _GenerateButton extends StatelessWidget {
       child: FilledButton.icon(
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.primary,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.r5),
           ),

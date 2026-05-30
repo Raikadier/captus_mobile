@@ -158,7 +158,7 @@ class _TeacherCourseCard extends StatelessWidget {
                               children: [
                                 const Icon(Icons.pending_actions,
                                     size: 12, color: AppColors.warning),
-                                const SizedBox(width: 4),
+                                const SizedBox(width: AppSpacing.s1),
                                 Text(
                                   '$pendingReviews por revisar',
                                   style: tt.labelMedium?.copyWith(
@@ -172,14 +172,14 @@ class _TeacherCourseCard extends StatelessWidget {
                         ],
                       ],
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: AppSpacing.s1),
                     Text(
                       course.name,
                       style: tt.titleLarge?.copyWith(color: AppColors.textPrimary),
                     ),
                     if (course.description != null &&
                         course.description!.isNotEmpty) ...[
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.s1),
                       Text(
                         course.description!,
                         style: tt.bodySmall?.copyWith(color: AppColors.textSecondary),
@@ -192,7 +192,7 @@ class _TeacherCourseCard extends StatelessWidget {
               ),
             ),
             const Padding(
-              padding: EdgeInsets.only(right: 12),
+              padding: EdgeInsets.only(right: AppSpacing.s3),
               child: Icon(Icons.chevron_right,
                   color: AppColors.textDisabled, size: 20),
             ),

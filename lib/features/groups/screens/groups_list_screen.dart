@@ -303,19 +303,19 @@ class _GroupCard extends StatelessWidget {
                     group.name,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: AppSpacing.s1),
                   if (group.courseName != null)
                     Text(
                       group.courseName!,
                       style: Theme.of(context).textTheme.bodySmall,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.s1),
                   Row(
                     children: [
                       const Icon(Icons.access_time,
                           size: 12, color: AppColors.textDisabled),
-                      const SizedBox(width: 3),
+                      const SizedBox(width: AppSpacing.s1),
                       Text(
                         lastActivityText,
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.textDisabled),
@@ -328,7 +328,7 @@ class _GroupCard extends StatelessWidget {
             const SizedBox(width: AppSpacing.s2),
             if (group.pendingTasks > 0)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s2, vertical: AppSpacing.s1),
                 decoration: BoxDecoration(
                   color: AppColors.warning.withAlpha(AppAlpha.a15),
                   borderRadius: BorderRadius.circular(AppRadius.r3),

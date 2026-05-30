@@ -4,6 +4,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/cactus_refresh.dart';
 import '../services/superadmin_service.dart';
 import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class SuperAdminInstitutionDetailScreen extends StatefulWidget {
   final String institutionId;
@@ -73,9 +74,9 @@ class _SuperAdminInstitutionDetailScreenState
         ),
         builder: (ctx) => Padding(
           padding: EdgeInsets.only(
-            left: 24,
-            right: 24,
-            top: 20,
+            left: AppSpacing.s6,
+            right: AppSpacing.s6,
+            top: AppSpacing.s5,
             bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
           ),
           child: Column(
@@ -92,7 +93,7 @@ class _SuperAdminInstitutionDetailScreenState
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s1),
               Text(
                 'Deshabilitar institución',
                 style: GoogleFonts.inter(
@@ -118,7 +119,7 @@ class _SuperAdminInstitutionDetailScreenState
                   color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppSpacing.s1),
               TextField(
                 controller: reasonCtrl,
                 maxLines: 3,
@@ -145,13 +146,13 @@ class _SuperAdminInstitutionDetailScreenState
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s1),
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.error,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppRadius.r5),
                     ),
@@ -212,9 +213,9 @@ class _SuperAdminInstitutionDetailScreenState
       ),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          top: 20,
+          left: AppSpacing.s6,
+          right: AppSpacing.s6,
+          top: AppSpacing.s5,
           bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
         ),
         child: Form(
@@ -233,7 +234,7 @@ class _SuperAdminInstitutionDetailScreenState
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s1),
               Text(
                 'Editar institución',
                 style: GoogleFonts.inter(
@@ -251,7 +252,7 @@ class _SuperAdminInstitutionDetailScreenState
                   color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppSpacing.s1),
               TextFormField(
                 controller: nameCtrl,
                 style: GoogleFonts.inter(
@@ -288,7 +289,7 @@ class _SuperAdminInstitutionDetailScreenState
                   color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppSpacing.s1),
               TextFormField(
                 controller: emailCtrl,
                 keyboardType: TextInputType.emailAddress,
@@ -315,13 +316,13 @@ class _SuperAdminInstitutionDetailScreenState
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s1),
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppRadius.r5),
                     ),
@@ -463,11 +464,11 @@ class _SuperAdminInstitutionDetailScreenState
     return CactusRefresh(
       onRefresh: _load,
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.s4),
         children: [
           // ── Status card ────────────────────────────────────────────────
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.s4),
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(AppRadius.r6),
@@ -505,7 +506,7 @@ class _SuperAdminInstitutionDetailScreenState
                           color: AppColors.textPrimary,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.s1),
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 3),
@@ -583,7 +584,7 @@ class _SuperAdminInstitutionDetailScreenState
 
           // ── Stats card ─────────────────────────────────────────────────
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.s4),
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(AppRadius.r6),
@@ -677,7 +678,7 @@ class _InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     if (children.isEmpty) return const SizedBox.shrink();
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.r6),
@@ -719,7 +720,7 @@ class _InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.s1),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -770,7 +771,7 @@ class _StatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(AppSpacing.s3),
         decoration: BoxDecoration(
           color: color.withAlpha(AppAlpha.a10),
           borderRadius: BorderRadius.circular(AppRadius.r5),
@@ -778,7 +779,7 @@ class _StatTile extends StatelessWidget {
         child: Column(
           children: [
             Icon(icon, color: color, size: 20),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.s1),
             Text(
               value,
               style: GoogleFonts.inter(

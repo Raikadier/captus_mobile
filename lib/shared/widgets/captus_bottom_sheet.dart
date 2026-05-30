@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_animations.dart';
 import '../../core/constants/app_radius.dart';
+import '../../core/constants/app_spacing.dart';
 
 /// Standard Captus bottom sheet wrapper.
 ///
@@ -91,7 +92,7 @@ class CaptusBottomSheet extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
               ] else
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.s1),
               if (title != null) ...[
                 Text(
                   title!,

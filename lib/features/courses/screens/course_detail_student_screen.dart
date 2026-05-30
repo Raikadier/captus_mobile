@@ -138,7 +138,7 @@ class _CourseDetailBody extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppSpacing.s1),
                     Text(
                       course.name,
                       style: tt.headlineLarge?.copyWith(
@@ -287,7 +287,7 @@ class _ActivityTile extends StatelessWidget {
                     activity.title,
                     style: tt.titleMedium?.copyWith(color: AppColors.textPrimary),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: AppSpacing.s1),
                   Text(
                     daysLeft < 0
                         ? 'Vencida'
@@ -307,7 +307,7 @@ class _ActivityTile extends StatelessWidget {
             ),
             const SizedBox(width: AppSpacing.s2),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s2, vertical: AppSpacing.s1),
               decoration: BoxDecoration(
                 color: chipColor.withAlpha(AppAlpha.a10),
                 borderRadius: BorderRadius.circular(AppRadius.r3),
@@ -424,7 +424,7 @@ class _InfoCard extends StatelessWidget {
                   title,
                   style: tt.bodySmall?.copyWith(color: AppColors.textSecondary),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.s1),
                 Text(
                   value,
                   style: tt.bodyMedium?.copyWith(

@@ -174,7 +174,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                   'Título *',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.textSecondary),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.s1),
                 TextFormField(
                   controller: titleCtrl,
                   decoration: const InputDecoration(
@@ -188,7 +188,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                   'Descripción (opcional)',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.textSecondary),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.s1),
                 TextFormField(
                   controller: descCtrl,
                   maxLines: 3,
@@ -654,7 +654,7 @@ class _CommentsTab extends StatelessWidget {
                                           ? AppColors.error
                                           : AppColors.textSecondary,
                                     ),
-                                    const SizedBox(width: 4),
+                                    const SizedBox(width: AppSpacing.s1),
                                     Text(
                                       '$likes',
                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(

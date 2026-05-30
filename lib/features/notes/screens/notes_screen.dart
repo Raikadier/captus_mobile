@@ -88,7 +88,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                   borderRadius: BorderRadius.circular(AppRadius.r5),
                   borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
               ),
             ),
           ),
@@ -99,7 +99,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                 height: 100,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3),
                   itemCount: pinnedNotes.length,
                   itemBuilder: (context, index) {
                     final note = pinnedNotes[index];
@@ -131,7 +131,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                 }
 
                 return GridView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(AppSpacing.s4),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 16,
@@ -263,7 +263,7 @@ class _NoteCard extends StatelessWidget {
                 ],
               ),
               if (note.content != null && note.content!.isNotEmpty) ...[
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.s1),
                 Expanded(
                   child: Text(
                     note.content!,
@@ -274,7 +274,7 @@ class _NoteCard extends StatelessWidget {
                 ),
               ] else
                 const Spacer(),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppSpacing.s1),
               Row(
                 children: [
                   if (note.subject != null && note.subject!.isNotEmpty) ...[
@@ -397,7 +397,7 @@ class _PinnedNoteCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppSpacing.s1),
               Text(
                 note.title,
                 style: tt.titleSmall,

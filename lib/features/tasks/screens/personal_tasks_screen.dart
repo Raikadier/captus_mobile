@@ -469,7 +469,7 @@ class _DateFilterChip extends StatelessWidget {
               size: 14,
               color: isActive ? AppColors.primary : AppColors.textSecondary,
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: AppSpacing.s1),
             Text(
               isActive
                   ? DateFormat('d MMM', 'es').format(selectedDate!)

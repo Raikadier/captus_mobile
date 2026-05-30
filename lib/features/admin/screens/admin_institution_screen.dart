@@ -155,7 +155,7 @@ class _Field extends StatelessWidget {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s4),
       child: TextField(
         controller: ctrl,
         keyboardType: type,

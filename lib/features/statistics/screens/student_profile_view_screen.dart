@@ -66,7 +66,7 @@ class StudentProfileViewScreen extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.s3),
           ..._submissions.map((s) => Container(
-                margin: const EdgeInsets.only(bottom: 8),
+                margin: const EdgeInsets.only(bottom: AppSpacing.s2),
                 padding: const EdgeInsets.all(AppSpacing.s3),
                 decoration: BoxDecoration(
                   color: AppColors.surface,

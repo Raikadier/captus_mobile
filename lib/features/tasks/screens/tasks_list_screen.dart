@@ -156,7 +156,7 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
                               style: tt.headlineSmall!.copyWith(
                                   color: AppColors.textOnPrimary),
                             ),
-                            const SizedBox(height: 2),
+                            const SizedBox(height: AppSpacing.s1),
                             Text(
                               'Gestiona tus tareas propias',
                               style: tt.bodySmall!.copyWith(
@@ -382,7 +382,7 @@ class _TaskCardContent extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: AppSpacing.s1),
                       Text(
                         description,
                         style: tt.bodySmall,

@@ -255,7 +255,7 @@ class _TasksTab extends StatelessWidget {
                         ),
                       ),
                       if (task.dueDate != null) ...[
-                        const SizedBox(height: 2),
+                        const SizedBox(height: AppSpacing.s1),
                         Text(
                           _formatDue(task.dueDate!),
                           style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -356,7 +356,7 @@ class _MembersTab extends StatelessWidget {
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         if (member.isAdmin) ...[
-                          const SizedBox(width: 6),
+                          const SizedBox(width: AppSpacing.s1),
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 6, vertical: 2),
@@ -377,7 +377,7 @@ class _MembersTab extends StatelessWidget {
                         ],
                       ],
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: AppSpacing.s1),
                     Row(
                       children: [
                         Expanded(

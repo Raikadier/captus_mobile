@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../services/superadmin_service.dart';
+import '../../../core/constants/app_spacing.dart';
 
 const _roles = ['student', 'teacher', 'admin', 'superadmin'];
 
@@ -147,7 +148,7 @@ class _SuperAdminUsersScreenState extends State<SuperAdminUsersScreen> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3, vertical: AppSpacing.s2),
           child: DropdownButtonFormField<String>(
             value: _roleFilter,
             decoration: const InputDecoration(

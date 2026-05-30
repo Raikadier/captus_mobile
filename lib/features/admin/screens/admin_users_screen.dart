@@ -57,7 +57,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModal) => Padding(
           padding: EdgeInsets.only(
-            left: 20, right: 20, top: 20,
+            left: AppSpacing.s5, right: AppSpacing.s5, top: AppSpacing.s5,
             bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
           ),
           child: Column(
@@ -177,7 +177,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             height: 44,
             child: ListView(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s1),
               children: _roleLabels.entries.map((e) {
                 final selected = _roleTab == e.key;
                 return GestureDetector(
@@ -187,7 +187,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                   },
                   child: AnimatedContainer(
                     duration: AppDurations.fast,
-                    margin: const EdgeInsets.only(right: 8),
+                    margin: const EdgeInsets.only(right: AppSpacing.s2),
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                     decoration: BoxDecoration(
                       color: selected ? AppColors.primary : AppColors.surface,

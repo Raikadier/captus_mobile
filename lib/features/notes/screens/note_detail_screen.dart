@@ -232,7 +232,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
                     size: 14,
                     color: AppColors.textSecondary,
                   ),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: AppSpacing.s1),
                   Text(
                     'Creada: ${_formatDate(note.createdAt)}',
                     style: tt.bodySmall,
@@ -244,7 +244,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
                       size: 14,
                       color: AppColors.textSecondary,
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: AppSpacing.s1),
                     Text(
                       'Actualizada: ${_formatDate(note.updateAt!)}',
                       style: tt.bodySmall,
@@ -257,7 +257,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
         ),
       ),
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
         decoration: BoxDecoration(
           color: AppColors.surface,
           boxShadow: [

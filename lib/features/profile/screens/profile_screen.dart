@@ -101,12 +101,12 @@ class ProfileScreen extends ConsumerWidget {
                   user.name,
                   style: Theme.of(context).textTheme.headlineLarge,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.s1),
                 Text(
                   user.email,
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.s1),
                 Text(
                   _roleDisplayText(user.role),
                   style: Theme.of(context).textTheme.labelMedium!.copyWith(
@@ -327,7 +327,7 @@ class ProfileScreen extends ConsumerWidget {
                                 : AppColors.textPrimary,
                           ),
                         ),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: AppSpacing.s1),
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 6, vertical: 2),
@@ -348,7 +348,7 @@ class ProfileScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: AppSpacing.s1),
                     Text(
                       message,
                       style: Theme.of(context).textTheme.labelMedium!.copyWith(
@@ -521,7 +521,7 @@ class _InfoRow extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
           child: Row(
             children: [
               Icon(icon, size: 18, color: AppColors.textSecondary),
@@ -567,7 +567,7 @@ class _LinkRow extends StatelessWidget {
           onTap: onTap,
           behavior: HitTestBehavior.opaque,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
             child: Row(
               children: [
                 Icon(icon, size: 18, color: c),
@@ -583,7 +583,7 @@ class _LinkRow extends StatelessWidget {
                       color: AppColors.textSecondary,
                     ),
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: AppSpacing.s1),
                 ],
                 Icon(Icons.chevron_right_rounded,
                     size: 18, color: AppColors.textSecondary),
@@ -624,7 +624,7 @@ class _StatTile extends StatelessWidget {
         child: Column(
           children: [
             Icon(icon, color: color, size: 22),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.s1),
             Text(value,
                 style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: AppColors.textPrimary)),
             Text(label,

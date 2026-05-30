@@ -252,7 +252,7 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                         children: [
                           Text(mode.emoji,
                               style: const TextStyle(fontSize: 16)),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: AppSpacing.s1),
                           Text(
                             mode.label,
                             style: tt.labelLarge?.copyWith(
@@ -327,7 +327,7 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                     child: FilledButton.icon(
                       style: FilledButton.styleFrom(
                         backgroundColor: AppColors.primary,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(AppRadius.r5),
                         ),
@@ -405,7 +405,7 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                             size: 16,
                             color: AppColors.primary,
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: AppSpacing.s1),
                           Text(
                             '${_selectedMode.emoji} ${_selectedMode.label} generado',
                             style: tt.labelLarge?.copyWith(color: AppColors.primary),
@@ -491,7 +491,7 @@ class _LoadingPlaceholderState extends State<_LoadingPlaceholder>
               ),
               SizedBox(height: AppSpacing.s3),
               ...[0.9, 0.7, 0.85, 0.6].map((w) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.s2),
                     child: Container(
                       height: 14,
                       width: MediaQuery.of(context).size.width * w,

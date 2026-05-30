@@ -87,7 +87,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 return GestureDetector(
                   onTap: () => setState(() => _selectedTab = e.key),
                   child: Container(
-                    margin: const EdgeInsets.only(right: 8),
+                    margin: const EdgeInsets.only(right: AppSpacing.s2),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
@@ -163,7 +163,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                       background: Container(
                         color: AppColors.error,
                         alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 16),
+                        padding: const EdgeInsets.only(right: AppSpacing.s4),
                         child: const Icon(Icons.delete_outline_rounded,
                             color: AppColors.textOnPrimary),
                       ),
@@ -215,7 +215,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 3),
+                                    const SizedBox(height: AppSpacing.s1),
                                     Text(
                                       n.body,
                                       style: tt.bodySmall,
@@ -230,7 +230,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                                 Container(
                                   width: 8,
                                   height: 8,
-                                  margin: const EdgeInsets.only(top: 4),
+                                  margin: const EdgeInsets.only(top: AppSpacing.s1),
                                   decoration: const BoxDecoration(
                                     color: AppColors.primary,
                                     shape: BoxShape.circle,

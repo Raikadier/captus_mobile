@@ -213,7 +213,7 @@ class _NavItem extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: AppSpacing.s1),
               Text(
                 label,
                 style: TextStyle(
@@ -287,7 +287,7 @@ class _CenterNavItem extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: AppSpacing.s1),
               Text(
                 label,
                 style: TextStyle(
@@ -418,7 +418,7 @@ class _MenuOption extends StatelessWidget {
                     title,
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: AppSpacing.s1),
                   Text(
                     subtitle,
                     style: Theme.of(context).textTheme.bodySmall,

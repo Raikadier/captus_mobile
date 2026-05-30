@@ -5,6 +5,7 @@ import '../../../core/services/api_client.dart';
 import '../../../shared/widgets/captus_fab.dart';
 import '../../../shared/widgets/cactus_refresh.dart';
 import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_spacing.dart';
 
 const _roleOptions = ['owner', 'admin', 'member'];
 const _roleLabels = {
@@ -79,9 +80,9 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => Padding(
           padding: EdgeInsets.only(
-            left: 24,
-            right: 24,
-            top: 20,
+            left: AppSpacing.s6,
+            right: AppSpacing.s6,
+            top: AppSpacing.s5,
             bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
           ),
           child: Form(
@@ -100,7 +101,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.s1),
                 Text(
                   'Agregar miembro',
                   style: GoogleFonts.inter(
@@ -118,7 +119,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                     color: AppColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.s1),
                 TextFormField(
                   controller: emailCtrl,
                   keyboardType: TextInputType.emailAddress,
@@ -159,7 +160,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                     color: AppColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.s1),
                 DropdownButtonFormField<String>(
                   value: selectedRole,
                   style: GoogleFonts.inter(
@@ -189,13 +190,13 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                       .toList(),
                   onChanged: (v) => setModalState(() => selectedRole = v!),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.s1),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.primary,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(AppRadius.r5),
                       ),
@@ -438,8 +439,8 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
                               : 'U';
 
                           return Container(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            padding: const EdgeInsets.all(16),
+                            margin: const EdgeInsets.only(bottom: AppSpacing.s3),
+                            padding: const EdgeInsets.all(AppSpacing.s4),
                             decoration: BoxDecoration(
                               color: AppColors.surface,
                               borderRadius: BorderRadius.circular(AppRadius.r6),

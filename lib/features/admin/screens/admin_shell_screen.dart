@@ -147,7 +147,7 @@ class _AdminNavItem extends StatelessWidget {
             size: 20,
             color: isSelected ? AppColors.primary : AppColors.textSecondary,
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: AppSpacing.s1),
           Text(
             label,
             style: tt.labelSmall!.copyWith(color: isSelected ? AppColors.primary : AppColors.textSecondary),

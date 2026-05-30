@@ -107,7 +107,7 @@ class CalendarAgendaScreen extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 4),
-                      margin: const EdgeInsets.only(bottom: 8, top: 16),
+                      margin: const EdgeInsets.only(bottom: AppSpacing.s2, top: AppSpacing.s4),
                       decoration: BoxDecoration(
                         color: isToday
                             ? AppColors.primary.withAlpha(AppAlpha.a15)
@@ -134,7 +134,7 @@ class CalendarAgendaScreen extends ConsumerWidget {
                             }
                           },
                           child: Container(
-                            margin: const EdgeInsets.only(bottom: 8),
+                            margin: const EdgeInsets.only(bottom: AppSpacing.s2),
                             padding: EdgeInsets.all(AppSpacing.s3),
                             decoration: BoxDecoration(
                               color: AppColors.surface,

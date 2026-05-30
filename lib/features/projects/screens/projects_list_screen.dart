@@ -254,7 +254,7 @@ class _ProjectCard extends StatelessWidget {
                   ),
                   if (project['description'] != null &&
                       (project['description'] as String).isNotEmpty) ...[
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppSpacing.s1),
                     Text(
                       project['description'] as String,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
@@ -262,7 +262,7 @@ class _ProjectCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.s1),
                   Row(
                     children: [
                       const Icon(
@@ -270,7 +270,7 @@ class _ProjectCard extends StatelessWidget {
                         size: 13,
                         color: AppColors.textSecondary,
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: AppSpacing.s1),
                       Text(
                         '$memberCount ${memberCount == 1 ? 'miembro' : 'miembros'}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),

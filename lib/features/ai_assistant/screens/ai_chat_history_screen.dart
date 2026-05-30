@@ -285,7 +285,7 @@ class _ConversationTile extends StatelessWidget {
       direction: DismissDirection.endToStart,
       background: Container(
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
+        padding: const EdgeInsets.only(right: AppSpacing.s5),
         margin: const EdgeInsets.symmetric(vertical: 3),
         decoration: BoxDecoration(
           color: AppColors.errorLight,

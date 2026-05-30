@@ -174,7 +174,7 @@ class _EvidenceScreenState extends State<EvidenceScreen> {
                       final item = _items[index];
 
                       return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
+                        margin: const EdgeInsets.only(bottom: AppSpacing.s3),
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
                           color: AppColors.surface,
@@ -299,7 +299,7 @@ class _EvidencePreview extends StatelessWidget {
       return Container(
         width: 58,
         height: 58,
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.all(AppSpacing.s1),
         color: AppColors.surface,
         child: QrImageView(data: item.qrData!),
       );

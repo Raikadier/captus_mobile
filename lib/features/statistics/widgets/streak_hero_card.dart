@@ -17,7 +17,7 @@ class StreakHeroCard extends StatelessWidget {
     final title = getStreakTitle(stats.currentStreak);
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.s6),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: stats.hasStreak

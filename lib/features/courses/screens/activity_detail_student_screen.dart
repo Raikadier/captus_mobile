@@ -156,7 +156,7 @@ class _ActivityDetailStudentScreenState
                               ? AppColors.warning
                               : color,
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: AppSpacing.s1),
                     Text(
                       _formatCountdown(activity.dueDate),
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
@@ -185,7 +185,7 @@ class _ActivityDetailStudentScreenState
                     children: [
                       const Icon(Icons.attach_file,
                           size: 14, color: AppColors.textSecondary),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: AppSpacing.s1),
                       Text(
                         'Requiere archivo',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -314,7 +314,7 @@ class _GradedView extends StatelessWidget {
                     'Retroalimentación',
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.s1),
                   Text(
                     activity.feedback!,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(

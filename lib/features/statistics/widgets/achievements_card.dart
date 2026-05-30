@@ -49,7 +49,7 @@ class AchievementsCard extends ConsumerWidget {
                           children: [
                             Text('$unlocked / $kTotalAchievements desbloqueados',
                                 style: tt.bodyMedium!.copyWith(color: AppColors.textPrimary)),
-                            const SizedBox(height: 6),
+                            const SizedBox(height: AppSpacing.s1),
                             ClipRRect(
                               borderRadius: BorderRadius.circular(AppRadius.r1),
                               child: LinearProgressIndicator(
@@ -73,7 +73,7 @@ class AchievementsCard extends ConsumerWidget {
                     Row(
                       children: [
                         const Icon(Icons.access_time_rounded, size: 14, color: AppColors.textSecondary),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: AppSpacing.s1),
                         Expanded(
                           child: Text('Último logro: ${last.definition.name}',
                               style: tt.labelLarge!.copyWith(color: AppColors.textPrimary)),

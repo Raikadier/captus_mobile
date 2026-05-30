@@ -164,7 +164,7 @@ class _CourseCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppSpacing.s1),
                     Text(
                       course.code,
                       style: tt.labelSmall?.copyWith(
@@ -193,7 +193,7 @@ class _CourseCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: AppSpacing.s1),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(AppRadius.r1),
                           child: LinearProgressIndicator(

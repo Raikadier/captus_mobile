@@ -123,7 +123,7 @@ class _SettingsBody extends ConsumerWidget {
 
         // ── Tone selector ──────────────────────────────────────────────
         Container(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: const EdgeInsets.only(bottom: AppSpacing.s3),
           padding: EdgeInsets.all(AppSpacing.s4),
           decoration: BoxDecoration(
             color: AppColors.surface,
@@ -135,7 +135,7 @@ class _SettingsBody extends ConsumerWidget {
             children: [
               Text('Tono de respuestas',
                   style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.s1),
               Text('Cómo responde Captus IA',
                   style: Theme.of(context).textTheme.bodySmall),
               SizedBox(height: AppSpacing.s3),
@@ -239,7 +239,7 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12, top: 8),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s3, top: AppSpacing.s2),
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelMedium?.copyWith(

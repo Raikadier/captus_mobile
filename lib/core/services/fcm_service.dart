@@ -7,6 +7,7 @@ import '../constants/app_colors.dart';
 import 'api_client.dart';
 import 'router_service.dart';
 import '../constants/app_radius.dart';
+import '../constants/app_spacing.dart';
 
 // ── Background handler (top-level, required by Firebase) ─────────────────────
 @pragma('vm:entry-point')
@@ -154,14 +155,14 @@ class _InAppBanner extends StatelessWidget {
     final top = MediaQuery.of(context).padding.top;
     return Positioned(
       top: top + 8,
-      left: 12,
-      right: 12,
+      left: AppSpacing.s3,
+      right: AppSpacing.s3,
       child: Material(
         color: Colors.transparent,
         child: GestureDetector(
           onTap: onTap,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
             decoration: BoxDecoration(
               color: AppColors.modalBg,
               borderRadius: BorderRadius.circular(AppRadius.r6),

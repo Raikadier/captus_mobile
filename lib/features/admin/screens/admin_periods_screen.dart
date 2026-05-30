@@ -57,7 +57,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => Padding(
           padding: EdgeInsets.only(
-            left: 24, right: 24, top: 24,
+            left: AppSpacing.s6, right: AppSpacing.s6, top: AppSpacing.s6,
             bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
           ),
           child: Form(
@@ -287,7 +287,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                           }
 
                           return Card(
-                            margin: const EdgeInsets.only(bottom: 12),
+                            margin: const EdgeInsets.only(bottom: AppSpacing.s3),
                             color: AppColors.surface,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(AppRadius.r5),

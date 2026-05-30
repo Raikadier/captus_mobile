@@ -176,7 +176,7 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
                       children: [
                         const Icon(Icons.menu_book_outlined,
                             size: 16, color: AppColors.primary),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: AppSpacing.s1),
                         Text('Mis Cursos',
                             style: tt.titleMedium),
                         const Spacer(),
@@ -192,7 +192,7 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
                           ),
                           child: const Text('Ver todo'),
                         ),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: AppSpacing.s1),
                         _PillButton(
                           label: '+ Nuevo',
                           onTap: () =>
@@ -239,7 +239,7 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
                       children: [
                         const Icon(Icons.calendar_today_outlined,
                             size: 16, color: AppColors.primary),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: AppSpacing.s1),
                         Text('Próximos Eventos',
                             style: tt.titleMedium),
                       ],
@@ -264,7 +264,7 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
                       children: [
                         const Icon(Icons.rate_review_outlined,
                             size: 16, color: AppColors.primary),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: AppSpacing.s1),
                         Text('Revisiones Pendientes',
                             style: tt.titleMedium),
                       ],

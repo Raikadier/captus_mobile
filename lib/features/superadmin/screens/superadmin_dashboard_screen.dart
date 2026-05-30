@@ -60,7 +60,7 @@ class _SuperAdminDashboardScreenState
           : _error != null
               ? Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(AppSpacing.s6),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -171,7 +171,7 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 10, top: 4),
+        padding: const EdgeInsets.only(bottom: 10, top: AppSpacing.s1),
         child: Text(
           text,
           style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textSecondary),
@@ -209,8 +209,8 @@ class _KpiCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(4),
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      margin: const EdgeInsets.all(AppSpacing.s1),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4, horizontal: AppSpacing.s2),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.r5),
@@ -233,7 +233,7 @@ class _KpiCard extends StatelessWidget {
             kpi.value,
             style: Theme.of(context).textTheme.displaySmall!.copyWith(color: AppColors.textPrimary),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: AppSpacing.s1),
           Text(
             kpi.label,
             textAlign: TextAlign.center,

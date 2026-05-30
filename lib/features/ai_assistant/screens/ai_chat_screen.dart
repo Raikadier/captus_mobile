@@ -426,12 +426,12 @@ class _MessageBubble extends StatelessWidget {
           // Reasoning steps (collapsible)
           if (!isUser && message.steps.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(left: 34, top: 4),
+              padding: const EdgeInsets.only(left: 34, top: AppSpacing.s1),
               child: _ThinkingSteps(steps: message.steps),
             ),
           // Action chip (tool was invoked)
           if (!isUser && message.actionPerformed != null) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.s1),
             Padding(
               padding: const EdgeInsets.only(left: 34),
               child: ActionChip(
@@ -443,7 +443,7 @@ class _MessageBubble extends StatelessWidget {
                 ),
                 backgroundColor: AppColors.primary.withAlpha(12),
                 side: BorderSide.none,
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s1),
                 onPressed: null,
               ),
             ),
@@ -552,10 +552,10 @@ class _MarkdownMessage extends StatelessWidget {
           ),
         ),
         // Spacing
-        pPadding: const EdgeInsets.only(bottom: 4),
-        h1Padding: const EdgeInsets.only(bottom: 6, top: 4),
-        h2Padding: const EdgeInsets.only(bottom: 4, top: 4),
-        h3Padding: const EdgeInsets.only(bottom: 2, top: 4),
+        pPadding: const EdgeInsets.only(bottom: AppSpacing.s1),
+        h1Padding: const EdgeInsets.only(bottom: 6, top: AppSpacing.s1),
+        h2Padding: const EdgeInsets.only(bottom: AppSpacing.s1, top: AppSpacing.s1),
+        h3Padding: const EdgeInsets.only(bottom: 2, top: AppSpacing.s1),
       ),
     );
   }
@@ -864,7 +864,7 @@ class _ThinkingStepsState extends State<_ThinkingSteps> {
                       '$count ${count == 1 ? 'paso' : 'pasos'} de razonamiento',
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.primary),
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: AppSpacing.s1),
                     Icon(
                       _expanded
                           ? Icons.keyboard_arrow_up_rounded
@@ -980,7 +980,7 @@ class _InputBar extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: AppSpacing.s1),
           // Mic button (voice input)
           if (sttAvailable)
             AnimatedContainer(
@@ -1006,7 +1006,7 @@ class _InputBar extends StatelessWidget {
                 padding: EdgeInsets.zero,
               ),
             ),
-          const SizedBox(width: 6),
+          const SizedBox(width: AppSpacing.s1),
           AnimatedSwitcher(
             duration: AppDurations.fast,
             transitionBuilder: (child, anim) =>

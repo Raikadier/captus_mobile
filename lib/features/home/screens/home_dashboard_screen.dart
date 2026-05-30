@@ -504,7 +504,7 @@ class _StatCard extends StatelessWidget {
                 height: 1.2,
               ),
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: AppSpacing.s1),
             Text(
               label,
               style: tt.labelSmall,

@@ -108,7 +108,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             Container(
               width: 40,
               height: 4,
-              margin: const EdgeInsets.only(top: 12),
+              margin: const EdgeInsets.only(top: AppSpacing.s3),
               decoration: BoxDecoration(
                 color: AppColors.border,
                 borderRadius: BorderRadius.circular(2),
@@ -201,7 +201,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           DateFormat('MMMM yyyy', 'es').format(_focusedDay).toUpperCase(),
                           style: tt.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: AppSpacing.s1),
                         Icon(
                           Icons.keyboard_arrow_down_rounded,
                           color: AppColors.textSecondary,
@@ -272,7 +272,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               ),
             ),
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
+              margin: const EdgeInsets.symmetric(horizontal: AppSpacing.s4),
               padding: EdgeInsets.all(AppSpacing.s3),
               decoration: BoxDecoration(
                 color: AppColors.surface,
@@ -371,7 +371,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             ),
             const SizedBox(height: 18),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -412,7 +412,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       if (eventType == 'task') {
                         final task = item['data'] as TaskModel;
                         return Container(
-                          margin: const EdgeInsets.only(bottom: 12),
+                          margin: const EdgeInsets.only(bottom: AppSpacing.s3),
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
                             color: AppColors.surface,
@@ -438,7 +438,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                       task.title,
                                       style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                                     ),
-                                    const SizedBox(height: 4),
+                                    const SizedBox(height: AppSpacing.s1),
                                     Row(
                                       children: [
                                         Container(
@@ -481,7 +481,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                         final event = item['data'] as CalendarEvent;
                         final eventColor = _getEventColor(event);
                         return Container(
-                          margin: const EdgeInsets.only(bottom: 12),
+                          margin: const EdgeInsets.only(bottom: AppSpacing.s3),
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
                             color: AppColors.surface,
@@ -507,7 +507,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                       event.title,
                                       style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                                     ),
-                                    const SizedBox(height: 4),
+                                    const SizedBox(height: AppSpacing.s1),
                                     Row(
                                       children: [
                                         Container(
@@ -580,7 +580,7 @@ class _FormatButton extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: AppDurations.fast,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s2),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
