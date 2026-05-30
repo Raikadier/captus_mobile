@@ -436,8 +436,10 @@ class _StatsRow extends StatelessWidget {
           _StatCard(
             value: '$overdueCount',
             label: 'Vencidas',
-            icon: Icons.warning_amber_rounded,
-            color: overdueCount > 0 ? AppColors.error : AppColors.textDisabled,
+            icon: overdueCount > 0
+                ? Icons.error_outline_rounded
+                : Icons.check_circle_outline_rounded,
+            color: overdueCount > 0 ? AppColors.error : AppColors.success,
           ),
         ],
       ),
@@ -582,27 +584,44 @@ class _DayDot extends StatelessWidget {
           height: 32,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
+            // Active: amber fill — completed task day
+            // Today + not active: solid primary fill so TODAY is unmissable
+            // Inactive past/future: surface2 with border for definition
             color: isActive
                 ? AppColors.streak
                 : isToday
-                    ? AppColors.primaryUltraLight
+                    ? AppColors.primary.withAlpha(AppAlpha.a20)
                     : AppColors.surface2,
-            border: isToday
-                ? Border.all(color: AppColors.primary, width: 2)
-                : null,
+            border: Border.all(
+              color: isActive
+                  ? AppColors.streak
+                  : isToday
+                      ? AppColors.primary
+                      : AppColors.border,
+              width: isToday ? 2 : 1,
+            ),
           ),
           child: isActive
-              ? const Center(
-                  child: Text(
-                    '✓',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.streakText,
-                    ),
+              ? Center(
+                  child: Icon(
+                    Icons.check_rounded,
+                    size: 16,
+                    color: isToday ? AppColors.streakText : AppColors.streakText,
                   ),
                 )
-              : null,
+              : isToday
+                  ? Center(
+                      child: Text(
+                        '•',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.primary,
+                          height: 1,
+                        ),
+                      ),
+                    )
+                  : null,
         ),
       ],
     );
@@ -626,39 +645,44 @@ class _QuickAccessCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return CaptusPressable(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(
           vertical: AppSpacing.s3,
-          horizontal: AppSpacing.cardPaddingCompact,
+          horizontal: AppSpacing.s3,
         ),
         decoration: BoxDecoration(
-          color: color.withAlpha(AppAlpha.a08),
+          // Neutral surface — same for both cards (consistency)
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.r6),
-          border: Border.all(color: color.withAlpha(AppAlpha.a20)),
+          border: Border.all(color: AppColors.border),
+          boxShadow: AppShadows.xs,
         ),
         child: Row(
           children: [
+            // Icon container — feature color ONLY here
             Container(
-              padding: const EdgeInsets.all(AppSpacing.s2),
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
-                color: color.withAlpha(AppAlpha.a15),
+                color: color.withAlpha(AppAlpha.a12),
                 borderRadius: BorderRadius.circular(AppRadius.r3),
               ),
               child: Icon(icon, color: color, size: 18),
             ),
-            const SizedBox(width: AppSpacing.s2),
+            const SizedBox(width: AppSpacing.s2 + 2),
             Expanded(
               child: Text(
                 label,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(color: color),
+                style: tt.titleSmall,  // neutral text, not color-tinted
               ),
             ),
             Icon(
               Icons.chevron_right_rounded,
               size: 16,
-              color: color.withAlpha(AppAlpha.a60),
+              color: AppColors.textSecondary,
             ),
           ],
         ),
