@@ -88,10 +88,12 @@ class JoinCourseScreen extends ConsumerWidget {
     });
 
     return Scaffold(
+      restorationId: 'join_course_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.close, color: AppColors.textPrimary),
+          tooltip: 'Cerrar',
           onPressed: () => context.go('/home'),
         ),
       ),

@@ -30,6 +30,7 @@ class SuperAdminShellScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final idx = _selectedIndex(context);
     return Scaffold(
+      restorationId: 'super_admin_shell_screen',
       body: child,
       bottomNavigationBar: NavigationBar(
         selectedIndex: idx,

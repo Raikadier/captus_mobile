@@ -335,6 +335,7 @@ class _SuperAdminInstitutionDetailScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'super_admin_institution_detail_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.surface,

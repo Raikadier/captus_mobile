@@ -146,11 +146,13 @@ class _CalendarEventCreateScreenState
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'calendar_event_create_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(_isEditing ? 'Editar evento' : 'Nuevo evento'),
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
+          tooltip: 'Cerrar',
           onPressed: () => context.pop(),
         ),
         actions: [

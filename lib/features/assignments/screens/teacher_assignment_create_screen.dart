@@ -173,6 +173,7 @@ class _TeacherAssignmentCreateScreenState
         : const AsyncValue.data(<EnrolledStudent>[]);
 
     return Scaffold(
+      restorationId: 'teacher_assignment_create_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
@@ -369,6 +370,7 @@ class _TeacherAssignmentCreateScreenState
                                 _attachedFileName = null;
                               }),
                               icon: const Icon(Icons.close_rounded, size: 18),
+                              tooltip: 'Cerrar',
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
                             ),

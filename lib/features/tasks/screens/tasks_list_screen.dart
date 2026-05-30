@@ -105,6 +105,7 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'tasks_list_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Mis tareas'),

@@ -34,6 +34,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
     final activeFilter = ref.watch(statisticsFilterProvider);
 
     return Scaffold(
+      restorationId: 'statistics_teacher_screen',
       backgroundColor: AppColors.background,
       body: statsAsync.when(
         data: (stats) => RefreshIndicator(
@@ -161,6 +162,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
                 color: AppColors.textPrimary,
                 size: 20,
               ),
+              tooltip: 'Volver',
               onPressed: () => context.pop(),
             )
           : null,

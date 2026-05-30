@@ -34,6 +34,7 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> {
     final achievementsAsync = ref.watch(achievementsProvider);
 
     return Scaffold(
+      restorationId: 'achievements_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
@@ -42,6 +43,7 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),

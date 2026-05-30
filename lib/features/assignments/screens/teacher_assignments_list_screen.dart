@@ -16,6 +16,7 @@ class TeacherAssignmentsListScreen extends ConsumerWidget {
     final assignmentsAsync = ref.watch(teacherAssignmentsProvider);
 
     return Scaffold(
+      restorationId: 'teacher_assignments_list_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(

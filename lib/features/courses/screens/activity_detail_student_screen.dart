@@ -55,6 +55,7 @@ class _ActivityDetailStudentScreenState
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            tooltip: 'Volver',
             onPressed: () => context.pop(),
           ),
         ),
@@ -88,9 +89,11 @@ class _ActivityDetailStudentScreenState
 
   Widget _buildNotFound(BuildContext context) {
     return Scaffold(
+      restorationId: 'activity_detail_student_screen',
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),
@@ -113,6 +116,7 @@ class _ActivityDetailStudentScreenState
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         title: Text(

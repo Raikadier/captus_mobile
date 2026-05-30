@@ -56,10 +56,12 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
     final hasResults = tasks.isNotEmpty || courses.isNotEmpty;
 
     return Scaffold(
+      restorationId: 'global_search_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         title: TextField(
@@ -84,6 +86,7 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
           if (_query.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.close_rounded),
+              tooltip: 'Cerrar',
               onPressed: () {
                 _searchCtrl.clear();
                 setState(() => _query = '');

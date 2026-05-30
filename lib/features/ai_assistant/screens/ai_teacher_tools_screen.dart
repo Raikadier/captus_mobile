@@ -120,6 +120,7 @@ class _AiTeacherToolsScreenState
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'ai_teacher_tools_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(

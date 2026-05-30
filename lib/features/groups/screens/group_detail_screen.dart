@@ -56,6 +56,7 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            tooltip: 'Volver',
             onPressed: () => context.pop(),
           ),
         ),
@@ -74,10 +75,12 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
 
         if (group == null) {
           return Scaffold(
+      restorationId: 'group_detail_screen',
             appBar: AppBar(
               leading: IconButton(
                 icon:
                     const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                tooltip: 'Volver',
                 onPressed: () => context.pop(),
               ),
             ),
@@ -101,6 +104,7 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         title: Column(
@@ -121,6 +125,7 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen>
           IconButton(
             icon: const Icon(Icons.settings_outlined,
                 color: AppColors.textSecondary),
+            tooltip: 'Configuración',
             onPressed: () =>
                 context.push('/groups/${widget.groupId}/settings'),
           ),

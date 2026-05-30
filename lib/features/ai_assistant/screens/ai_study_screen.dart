@@ -159,6 +159,7 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'ai_study_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(

@@ -143,6 +143,7 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
     });
 
     return Scaffold(
+      restorationId: 'ai_chat_screen',
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
@@ -1003,6 +1004,7 @@ class _InputBar extends StatelessWidget {
                   color: isListening ? AppColors.error : AppColors.textSecondary,
                   size: 20,
                 ),
+                tooltip: 'Detener',
                 onPressed: onVoice,
                 padding: EdgeInsets.zero,
               ),
@@ -1039,6 +1041,7 @@ class _SendButton extends StatelessWidget {
           ),
           child: IconButton(
             icon: const Icon(Icons.send_rounded, color: AppColors.textOnPrimary, size: 18),
+            tooltip: 'Enviar',
             onPressed: onSend,
             padding: EdgeInsets.zero,
           ),

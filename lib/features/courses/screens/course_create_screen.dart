@@ -44,11 +44,13 @@ class _CourseCreateScreenState extends ConsumerState<CourseCreateScreen> {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'course_create_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         title: Text(

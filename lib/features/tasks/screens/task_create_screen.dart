@@ -179,11 +179,13 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'task_create_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(_isEditing ? 'Editar actividad' : 'Nueva actividad'),
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
+          tooltip: 'Cerrar',
           onPressed: _isSaving ? null : () => context.pop(),
         ),
         actions: [
@@ -389,6 +391,7 @@ class _TaskCreateScreenState extends State<TaskCreateScreen> {
                   title: Text(s),
                   trailing: IconButton(
                     icon: const Icon(Icons.close),
+                    tooltip: 'Cerrar',
                     onPressed: () => setState(() => _subtasks.remove(s)),
                   ),
                 )),

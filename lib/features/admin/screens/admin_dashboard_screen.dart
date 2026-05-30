@@ -62,6 +62,7 @@ class _AdminDashboardScreenState
     final user = ref.watch(currentUserProvider);
 
     return Scaffold(
+      restorationId: 'admin_dashboard_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Row(
@@ -87,6 +88,7 @@ class _AdminDashboardScreenState
           IconButton(
             icon: const Icon(Icons.notifications_outlined,
                 color: AppColors.textPrimary),
+            tooltip: 'Notificaciones',
             onPressed: () => context.push('/notifications'),
           ),
           const SizedBox(width: AppSpacing.s2),

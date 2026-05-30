@@ -52,11 +52,13 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
     final dateFilter = filters.dateFilter;
 
     return Scaffold(
+      restorationId: 'personal_tasks_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Tareas personales'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         actions: [

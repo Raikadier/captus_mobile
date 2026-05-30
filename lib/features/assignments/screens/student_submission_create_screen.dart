@@ -62,6 +62,7 @@ class _StudentSubmissionCreateScreenState
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'student_submission_create_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(

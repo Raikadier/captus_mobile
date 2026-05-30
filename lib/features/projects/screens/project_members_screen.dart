@@ -355,6 +355,7 @@ class _ProjectMembersScreenState extends State<ProjectMembersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'project_members_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,

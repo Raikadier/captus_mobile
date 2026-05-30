@@ -30,6 +30,7 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
         DateFormat("EEEE d 'de' MMMM", 'es').format(now);
 
     return Scaffold(
+      restorationId: 'home_dashboard_teacher_screen',
       backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
@@ -90,6 +91,7 @@ class HomeDashboardTeacherScreen extends ConsumerWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.notifications_outlined),
+                  tooltip: 'Notificaciones',
                   color: AppColors.textPrimary,
                   onPressed: () => context.push('/notifications'),
                 ),

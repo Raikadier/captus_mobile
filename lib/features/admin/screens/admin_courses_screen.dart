@@ -581,6 +581,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'admin_courses_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text('Cursos',

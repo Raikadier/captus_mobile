@@ -109,6 +109,7 @@ class _SuperAdminInstitutionsScreenState
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'super_admin_institutions_screen',
       appBar: AppBar(title: const Text('Instituciones')),
       body: Column(children: [
         Padding(
@@ -120,6 +121,7 @@ class _SuperAdminInstitutionsScreenState
             trailing: [
               IconButton(
                 icon: const Icon(Icons.search),
+                tooltip: 'Buscar',
                 onPressed: () => _load(reset: true),
               ),
             ],

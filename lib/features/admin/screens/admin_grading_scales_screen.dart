@@ -196,6 +196,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'admin_grading_scales_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
@@ -205,6 +206,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
+            tooltip: 'Actualizar',
             onPressed: _load,
           ),
         ],

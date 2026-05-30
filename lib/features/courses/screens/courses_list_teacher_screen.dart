@@ -18,10 +18,12 @@ class CoursesListTeacherScreen extends ConsumerWidget {
     final coursesAsync = ref.watch(coursesProvider);
 
     return Scaffold(
+      restorationId: 'courses_list_teacher_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         title: Text(
@@ -31,6 +33,7 @@ class CoursesListTeacherScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list, color: AppColors.textSecondary),
+            tooltip: 'Filtrar',
             onPressed: () {},
           ),
         ],

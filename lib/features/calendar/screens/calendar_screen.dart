@@ -185,6 +185,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final dayEvents = _getEventsForDay(_selectedDay);
 
     return Scaffold(
+      restorationId: 'calendar_screen',
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
@@ -260,6 +261,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       ),
                       IconButton(
                         icon: const Icon(Icons.today_rounded, color: AppColors.primary),
+                        tooltip: 'Hoy',
                         onPressed: () {
                           setState(() {
                             _focusedDay = DateTime.now();

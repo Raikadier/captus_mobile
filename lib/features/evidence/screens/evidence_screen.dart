@@ -118,6 +118,7 @@ class _EvidenceScreenState extends State<EvidenceScreen> {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'evidence_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Evidencias'),
@@ -203,6 +204,7 @@ class _EvidenceScreenState extends State<EvidenceScreen> {
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete_outline_rounded),
+                              tooltip: 'Eliminar',
                               onPressed: () async {
                                 await _service.delete(item.id);
                                 _load();

@@ -270,6 +270,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
 
     if (_isLoadingTask) {
       return Scaffold(
+      restorationId: 'personal_task_create_screen',
         backgroundColor: AppColors.background,
         appBar: AppBar(
           title: const Text('Cargando...'),
@@ -288,6 +289,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
                 : 'Nueva tarea'),
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
+          tooltip: 'Cerrar',
           onPressed: _isLoading ? null : () => context.pop(),
         ),
         actions: [

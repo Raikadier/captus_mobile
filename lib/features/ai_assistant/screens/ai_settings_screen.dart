@@ -18,6 +18,7 @@ class AiSettingsScreen extends ConsumerWidget {
     final asyncSettings = ref.watch(aiSettingsProvider);
 
     return Scaffold(
+      restorationId: 'ai_settings_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
@@ -26,6 +27,7 @@ class AiSettingsScreen extends ConsumerWidget {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),

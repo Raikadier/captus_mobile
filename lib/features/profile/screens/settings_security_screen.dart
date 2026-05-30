@@ -18,11 +18,13 @@ class _SettingsSecurityScreenState extends State<SettingsSecurityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'settings_security_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Seguridad'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),
@@ -389,6 +391,7 @@ class _PasswordFieldState extends State<_PasswordField> {
             size: 18,
             color: AppColors.textSecondary,
           ),
+          tooltip: 'Ver contraseña',
           onPressed: () => setState(() => _obscure = !_obscure),
         ),
       ),

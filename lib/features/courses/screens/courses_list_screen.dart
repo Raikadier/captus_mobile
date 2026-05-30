@@ -20,6 +20,7 @@ class CoursesListScreen extends ConsumerWidget {
     final coursesAsync = ref.watch(coursesProvider);
 
     return Scaffold(
+      restorationId: 'courses_list_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
@@ -29,6 +30,7 @@ class CoursesListScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.search, color: AppColors.textSecondary),
+            tooltip: 'Buscar',
             onPressed: () => context.push('/search'),
           ),
         ],

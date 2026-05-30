@@ -68,6 +68,7 @@ class _AssignmentReviewScreenState
         ref.watch(submissionsProvider(widget.assignmentId));
 
     return Scaffold(
+      restorationId: 'assignment_review_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(

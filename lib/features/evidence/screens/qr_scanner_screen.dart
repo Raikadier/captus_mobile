@@ -19,6 +19,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'qr_scanner_screen',
       backgroundColor: AppColors.textPrimary,
       appBar: AppBar(
         title: const Text('Escanear QR'),

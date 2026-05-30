@@ -87,11 +87,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'register_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Crear cuenta'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.go('/login'),
         ),
       ),
@@ -199,6 +201,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       icon: Icon(_obscurePassword
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined),
+                      tooltip: 'Ver contraseña',
                       onPressed: () => setState(
                           () => _obscurePassword = !_obscurePassword),
                     ),
@@ -223,6 +226,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       icon: Icon(_obscureConfirmPassword
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined),
+                      tooltip: 'Ver contraseña',
                       onPressed: () => setState(() =>
                           _obscureConfirmPassword =
                               !_obscureConfirmPassword),

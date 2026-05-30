@@ -37,13 +37,16 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
     final statsAsync = ref.watch(userStatisticsProvider);
 
     return Scaffold(
+      restorationId: 'statistics_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
         title: const Text('Mis Estadísticas'),
-        leading: IconButton(icon: const Icon(Icons.arrow_back_rounded), onPressed: () => context.pop()),
+        leading: IconButton(icon: const Icon(Icons.arrow_back_rounded),
+tooltip: 'Volver', onPressed: () => context.pop()),
         actions: [
-          IconButton(icon: const Icon(Icons.settings_outlined), onPressed: () => _showGoalSettings(context)),
+          IconButton(icon: const Icon(Icons.settings_outlined),
+tooltip: 'Configuración', onPressed: () => _showGoalSettings(context)),
         ],
       ),
       body: statsAsync.when(

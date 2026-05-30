@@ -69,11 +69,13 @@ class _RegisterAcademicProfileScreenState
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'register_academic_profile_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Perfil académico'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),

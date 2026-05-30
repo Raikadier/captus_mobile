@@ -64,11 +64,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     final asyncNotifs = ref.watch(notificationsProvider);
 
     return Scaffold(
+      restorationId: 'notifications_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Notificaciones'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         actions: [

@@ -73,6 +73,7 @@ class HomeDashboardScreen extends ConsumerWidget {
     }).toList();
 
     return Scaffold(
+      restorationId: 'home_dashboard_screen',
       backgroundColor: AppColors.background,
       body: CustomScrollView(
         slivers: [
@@ -248,6 +249,7 @@ class _DashboardAppBar extends StatelessWidget {
           children: [
             IconButton(
               icon: const Icon(Icons.notifications_outlined),
+              tooltip: 'Notificaciones',
               color: AppColors.textPrimary,
               onPressed: () => context.push('/notifications'),
             ),

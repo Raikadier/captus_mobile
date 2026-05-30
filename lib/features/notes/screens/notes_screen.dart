@@ -38,6 +38,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
     final pinnedAsync = ref.watch(pinnedNotesProvider);
 
     return Scaffold(
+      restorationId: 'notes_screen',
       appBar: AppBar(
         backgroundColor: AppColors.surface,
         elevation: 0,
@@ -49,6 +50,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.add, color: AppColors.primary),
+            tooltip: 'Agregar',
             onPressed: () => context.push('/notes/new'),
           ),
         ],

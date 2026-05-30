@@ -20,11 +20,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'settings_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Configuración'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),

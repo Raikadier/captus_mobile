@@ -103,6 +103,7 @@ class _AdminInstitutionScreenState extends State<AdminInstitutionScreen> {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'admin_institution_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text('Institución',

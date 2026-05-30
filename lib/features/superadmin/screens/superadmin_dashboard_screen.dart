@@ -41,6 +41,7 @@ class _SuperAdminDashboardScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'super_admin_dashboard_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
@@ -50,6 +51,7 @@ class _SuperAdminDashboardScreenState
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded, color: AppColors.textPrimary),
+            tooltip: 'Actualizar',
             onPressed: _load,
           ),
         ],

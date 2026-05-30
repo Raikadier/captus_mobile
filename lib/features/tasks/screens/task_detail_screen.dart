@@ -267,6 +267,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
     if (_task == null) {
       return Scaffold(
+      restorationId: 'task_detail_screen',
         backgroundColor: AppColors.background,
         appBar: AppBar(title: const Text('Detalle de tarea')),
         body: Center(
@@ -290,6 +291,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         title: Text(type == 'evaluation' ? 'Evaluación' : 'Tarea'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),

@@ -150,6 +150,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
     }
 
     return Scaffold(
+      restorationId: 'note_detail_screen',
       appBar: AppBar(
         title: Text(
           isEditing ? 'Editar nota' : 'Nueva nota',
@@ -160,6 +161,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
           if (isEditing)
             IconButton(
               icon: const Icon(Icons.delete_outline, color: AppColors.error),
+              tooltip: 'Eliminar',
               onPressed: _isLoading ? null : _delete,
             ),
           TextButton(

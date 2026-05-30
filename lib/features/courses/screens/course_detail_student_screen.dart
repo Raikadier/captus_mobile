@@ -48,6 +48,7 @@ class _CourseDetailStudentScreenState
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            tooltip: 'Volver',
             onPressed: () => context.pop(),
           ),
         ),
@@ -61,9 +62,11 @@ class _CourseDetailStudentScreenState
       data: (course) {
         if (course == null) {
           return Scaffold(
+      restorationId: 'course_detail_student_screen',
             appBar: AppBar(
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                tooltip: 'Volver',
                 onPressed: () => context.pop(),
               ),
             ),
@@ -108,6 +111,7 @@ class _CourseDetailBody extends StatelessWidget {
             backgroundColor: color,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: AppColors.textOnPrimary),
+              tooltip: 'Volver',
               onPressed: () => context.pop(),
             ),
             flexibleSpace: FlexibleSpaceBar(

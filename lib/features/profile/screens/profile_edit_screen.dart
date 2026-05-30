@@ -203,6 +203,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'profile_edit_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
@@ -210,6 +211,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
         title: const Text('Editar Perfil'),
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
+          tooltip: 'Cerrar',
           onPressed: () => context.pop(),
         ),
         actions: [
@@ -277,6 +279,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                                       ? Image.network(
                                           _currentAvatarUrl!,
                                           fit: BoxFit.cover,
+                                          semanticLabel: 'Foto de perfil del usuario',
                                           width: 96,
                                           height: 96,
                                           loadingBuilder: (context, child, loadingProgress) {

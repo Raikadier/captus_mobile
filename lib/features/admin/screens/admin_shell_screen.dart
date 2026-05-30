@@ -38,6 +38,7 @@ class AdminShellScreen extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
     final idx = _selectedIndex(context);
     return Scaffold(
+      restorationId: 'admin_shell_screen',
       body: child,
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(

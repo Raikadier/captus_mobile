@@ -174,11 +174,13 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'activity_create_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
         leading: IconButton(
           icon: const Icon(Icons.close, color: AppColors.textPrimary),
+          tooltip: 'Cerrar',
           onPressed: () => context.pop(),
         ),
         title: Text(

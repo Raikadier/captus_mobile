@@ -158,6 +158,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'admin_users_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
@@ -167,6 +168,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.person_add_rounded, color: AppColors.primary),
+            tooltip: 'Agregar',
             onPressed: _showInviteDialog,
           ),
         ],

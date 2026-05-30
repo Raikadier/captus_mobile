@@ -207,6 +207,7 @@ class _GroupsListScreenState extends ConsumerState<GroupsListScreen> {
     final groupsAsync = ref.watch(myGroupsProvider);
 
     return Scaffold(
+      restorationId: 'groups_list_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(

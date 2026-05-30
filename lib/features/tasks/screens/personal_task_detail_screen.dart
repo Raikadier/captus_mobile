@@ -152,6 +152,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
+      restorationId: 'personal_task_detail_screen',
         backgroundColor: AppColors.background,
         appBar: AppBar(title: const Text('Tarea')),
         body: const Center(child: CircularProgressIndicator()),
@@ -193,16 +194,19 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
         title: Text(_isCompleted ? 'Tarea completada' : 'Tarea'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         actions: [
           if (!_isDisabled) ...[
             IconButton(
               icon: const Icon(Icons.edit_outlined),
+              tooltip: 'Editar',
               onPressed: () => context.push('/tasks/personal/${widget.taskId}/edit'),
             ),
             IconButton(
               icon: const Icon(Icons.delete_outline),
+              tooltip: 'Eliminar',
               onPressed: _deleteTask,
             ),
           ],

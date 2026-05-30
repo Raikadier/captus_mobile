@@ -252,6 +252,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'project_detail_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
@@ -264,10 +265,12 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
           if (_isOwner) ...[
             IconButton(
               icon: const Icon(Icons.edit_outlined),
+              tooltip: 'Editar',
               onPressed: _showEditDialog,
             ),
             IconButton(
               icon: const Icon(Icons.delete_outline, color: AppColors.error),
+              tooltip: 'Eliminar',
               onPressed: _deleteProject,
             ),
           ],

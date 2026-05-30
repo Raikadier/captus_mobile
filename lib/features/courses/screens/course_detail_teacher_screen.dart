@@ -88,6 +88,7 @@ class _CourseDetailTeacherScreenState
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            tooltip: 'Volver',
             onPressed: () => context.pop(),
           ),
         ),
@@ -99,10 +100,12 @@ class _CourseDetailTeacherScreenState
       data: (course) {
         if (course == null) {
           return Scaffold(
+      restorationId: 'course_detail_teacher_screen',
             appBar: AppBar(
               leading: IconButton(
                 icon:
                     const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                tooltip: 'Volver',
                 onPressed: () => context.pop(),
               ),
             ),
@@ -130,11 +133,13 @@ class _CourseDetailTeacherScreenState
             backgroundColor: color,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: AppColors.textOnPrimary),
+              tooltip: 'Volver',
               onPressed: () => context.pop(),
             ),
             actions: [
               IconButton(
                 icon: const Icon(Icons.more_vert, color: AppColors.textOnPrimary),
+                tooltip: 'Más opciones',
                 onPressed: () => _showMenu(context),
               ),
             ],
@@ -278,6 +283,7 @@ class _ActivitiesTeacherTab extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.edit_outlined,
                     color: AppColors.textDisabled, size: 18),
+                tooltip: 'Editar',
                 onPressed: () => context.push(
                     '/teacher/courses/${course.id}/activity/${activity.id}/edit'),
               ),

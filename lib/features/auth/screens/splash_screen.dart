@@ -81,6 +81,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'splash_screen',
       backgroundColor: AppColors.background,
       body: Center(
         child: AnimatedBuilder(

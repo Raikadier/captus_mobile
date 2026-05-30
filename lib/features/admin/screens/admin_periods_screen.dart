@@ -218,6 +218,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'admin_periods_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
@@ -225,7 +226,8 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
           style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.textPrimary),
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _load),
+          IconButton(icon: const Icon(Icons.refresh),
+tooltip: 'Actualizar', onPressed: _load),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(

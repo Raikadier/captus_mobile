@@ -28,17 +28,20 @@ class ProfileScreen extends ConsumerWidget {
     final initial = user.name.isNotEmpty ? user.name[0].toUpperCase() : '?';
 
     return Scaffold(
+      restorationId: 'profile_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
         title: const Text('Mi Perfil'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined),
+            tooltip: 'Editar',
             onPressed: () => context.push('/profile/edit'),
           ),
         ],
@@ -69,6 +72,7 @@ class ProfileScreen extends ConsumerWidget {
                             ? Image.network(
                                 user.avatarUrl!,
                                 fit: BoxFit.cover,
+                                semanticLabel: 'Foto de perfil',
                                 width: 88,
                                 height: 88,
                                 errorBuilder: (_, __, ___) =>

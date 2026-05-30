@@ -121,12 +121,14 @@ class _ScanQRJoinCourseScreenState extends State<ScanQRJoinCourseScreen> {
     final hasPendingConfirmation = _pendingInviteCode != null && !_isProcessingScan;
 
     return Scaffold(
+      restorationId: 'scan_q_r_join_course_screen',
       backgroundColor: AppColors.textPrimary,
       appBar: AppBar(
         backgroundColor: AppColors.textPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textOnPrimary),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         title: Text(

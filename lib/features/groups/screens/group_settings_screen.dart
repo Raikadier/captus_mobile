@@ -138,9 +138,11 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
     }
     if (group == null) {
       return Scaffold(
+      restorationId: 'group_settings_screen',
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            tooltip: 'Volver',
             onPressed: () => context.pop(),
           ),
         ),
@@ -157,6 +159,7 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back,
               color: AppColors.textPrimary),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         title: Text(

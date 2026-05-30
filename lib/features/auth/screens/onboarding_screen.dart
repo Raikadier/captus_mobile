@@ -79,6 +79,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'onboarding_page',
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(

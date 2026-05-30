@@ -31,6 +31,7 @@ class CalendarAgendaScreen extends ConsumerWidget {
     final tasksAsync = ref.watch(tasksNotifierProvider);
 
     return Scaffold(
+      restorationId: 'calendar_agenda_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
@@ -39,6 +40,7 @@ class CalendarAgendaScreen extends ConsumerWidget {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),

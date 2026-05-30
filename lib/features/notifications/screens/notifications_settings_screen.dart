@@ -25,11 +25,13 @@ class _NotificationsSettingsScreenState
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'notifications_settings_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Notificaciones'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),

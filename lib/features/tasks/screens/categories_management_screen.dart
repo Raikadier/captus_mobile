@@ -17,11 +17,13 @@ class CategoriesManagementScreen extends ConsumerWidget {
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
 
     return Scaffold(
+      restorationId: 'categories_management_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Categorías'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),
@@ -263,12 +265,14 @@ class _CategoryTile extends StatelessWidget {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.edit_outlined, size: 20),
+                    tooltip: 'Editar',
                     onPressed: onEdit,
                     color: AppColors.textSecondary,
                   ),
                   IconButton(
                     icon:
                         const Icon(Icons.delete_outline, size: 20),
+                    tooltip: 'Eliminar',
                     onPressed: onDelete,
                     color: AppColors.error,
                   ),

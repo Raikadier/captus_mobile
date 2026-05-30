@@ -61,6 +61,7 @@ class _SuperAdminAuditScreenState extends State<SuperAdminAuditScreen> {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'super_admin_audit_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Auditoría'),
@@ -69,6 +70,7 @@ class _SuperAdminAuditScreenState extends State<SuperAdminAuditScreen> {
         actions: [
           IconButton(
               icon: const Icon(Icons.refresh),
+              tooltip: 'Actualizar',
               onPressed: () => _load(reset: true)),
         ],
       ),

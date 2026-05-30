@@ -208,6 +208,7 @@ class _CreateCourseGroupScreenState
     final canContinue = _nameCtrl.text.trim().isNotEmpty;
 
     return Scaffold(
+      restorationId: 'create_course_group_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         foregroundColor: AppColors.textPrimary,
@@ -436,6 +437,7 @@ class GroupDetailTeacherScreen extends ConsumerWidget {
               '/teacher/courses/$courseId/groups/$groupId/admin',
             ),
             icon: const Icon(Icons.settings_outlined),
+            tooltip: 'Configuración',
           ),
         ],
       ),
@@ -789,6 +791,7 @@ class _MembersAdminTab extends ConsumerWidget {
                           ),
                           trailing: IconButton(
                             icon: const Icon(Icons.more_vert),
+                            tooltip: 'Más opciones',
                             onPressed: () async {
                               await ref
                                   .read(courseGroupsNotifierProvider.notifier)
@@ -965,6 +968,7 @@ Future<void> _showAssignTaskSheet({
                           ? null
                           : () => Navigator.pop(sheetContext),
                       icon: const Icon(Icons.close),
+                      tooltip: 'Cerrar',
                     ),
                   ],
                 ),
@@ -1132,6 +1136,7 @@ class _GroupAssignmentsCard extends StatelessWidget {
               IconButton(
                 onPressed: onAssign,
                 icon: const Icon(Icons.add_circle_outline),
+                tooltip: 'Agregar',
                 color: AppColors.primary,
               ),
             ],

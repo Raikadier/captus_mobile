@@ -55,6 +55,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'login_screen',
       backgroundColor: AppColors.background,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
@@ -121,6 +122,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       icon: Icon(_obscurePassword
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined),
+                      tooltip: 'Ver contraseña',
                       onPressed: () =>
                           setState(() => _obscurePassword = !_obscurePassword),
                     ),

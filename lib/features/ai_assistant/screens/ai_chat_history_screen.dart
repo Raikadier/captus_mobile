@@ -109,6 +109,7 @@ class _AiChatHistoryScreenState extends ConsumerState<AiChatHistoryScreen> {
     final query = _searchQuery.toLowerCase();
 
     return Scaffold(
+      restorationId: 'ai_chat_history_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         automaticallyImplyLeading: false, // entry-point: no back button in shell

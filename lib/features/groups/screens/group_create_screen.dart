@@ -75,11 +75,13 @@ class _GroupCreateScreenState extends ConsumerState<GroupCreateScreen> {
     final coursesAsync = ref.watch(coursesProvider);
 
     return Scaffold(
+      restorationId: 'group_create_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded,
               color: AppColors.textPrimary),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         title: Text(

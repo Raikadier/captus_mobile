@@ -12,11 +12,13 @@ class StudentProfileViewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'student_profile_view_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Perfil del estudiante'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),

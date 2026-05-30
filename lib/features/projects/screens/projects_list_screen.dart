@@ -59,6 +59,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'projects_list_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
