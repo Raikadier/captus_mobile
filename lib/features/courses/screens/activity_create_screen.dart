@@ -204,7 +204,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
                   onTap: () => setState(() => _selectedType = type),
                   child: Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        const EdgeInsets.symmetric(horizontal: AppSpacing.s3 + 2, vertical: AppSpacing.s2),
                     decoration: BoxDecoration(
                       color: selected
                           ? AppColors.primary.withAlpha(AppAlpha.a15)
@@ -258,7 +258,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
             CaptusPressable(
               onTap: _pickDate,
               child: Container(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(AppSpacing.s3 + 2),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(AppRadius.r5),
@@ -293,7 +293,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
             ),
             const SizedBox(height: AppSpacing.s6),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3 + 2, vertical: AppSpacing.s1),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(AppRadius.r5),

@@ -173,7 +173,7 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 10, top: AppSpacing.s1),
+        padding: const EdgeInsets.only(bottom: AppSpacing.s2 + 2, top: AppSpacing.s1),
         child: Text(
           text,
           style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textSecondary),

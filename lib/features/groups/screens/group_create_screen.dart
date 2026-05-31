@@ -228,7 +228,7 @@ class _GroupCreateScreenState extends ConsumerState<GroupCreateScreen> {
             // ── Privacidad ────────────────────────────────────────────
             _SectionLabel('PRIVACIDAD'),
             Container(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(AppSpacing.s3 + 2),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(AppRadius.r5),
@@ -330,7 +330,7 @@ class _CoursePicker extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
     if (courses.isEmpty) {
       return Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(AppSpacing.s3 + 2),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.r5),
@@ -373,7 +373,7 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10, top: AppSpacing.s1),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s2 + 2, top: AppSpacing.s1),
       child: Text(
         label,
         style: tt.labelMedium?.copyWith(

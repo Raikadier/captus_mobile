@@ -33,7 +33,7 @@ class WeeklyBarChartCard extends StatelessWidget {
             children: [
               Text('Esta Semana', style: tt.bodyMedium!.copyWith(color: AppColors.textPrimary)),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s2 + 2, vertical: AppSpacing.s1),
                 decoration: BoxDecoration(color: AppColors.info.withAlpha(AppAlpha.a10), borderRadius: BorderRadius.circular(AppRadius.r3)),
                 child: Text('$activeDays/7 días activos', style: tt.labelLarge!.copyWith(color: AppColors.info)),
               ),
@@ -73,7 +73,7 @@ class WeeklyBarChartCard extends StatelessWidget {
                             final idx = val.toInt();
                             final isToday = idx == today;
                             return Padding(
-                              padding: const EdgeInsets.only(top: 6),
+                              padding: const EdgeInsets.only(top: AppSpacing.s1 + 2),
                               child: Text(labels[idx], style: tt.labelMedium!.copyWith(color: isToday ? AppColors.primary : AppColors.textSecondary)),
                             );
                           },

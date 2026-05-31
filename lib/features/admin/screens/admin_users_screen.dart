@@ -191,7 +191,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                   child: AnimatedContainer(
                     duration: AppDurations.fast,
                     margin: const EdgeInsets.only(right: AppSpacing.s2),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3 + 2, vertical: AppSpacing.s1),
                     decoration: BoxDecoration(
                       color: selected ? AppColors.primary : AppColors.surface,
                       borderRadius: BorderRadius.circular(AppRadius.r8),
@@ -228,7 +228,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                         final name = u['name'] ?? u['email'] ?? 'Sin nombre';
                         final role = u['role'] ?? 'student';
                         return Container(
-                          padding: const EdgeInsets.all(14),
+                          padding: const EdgeInsets.all(AppSpacing.s3 + 2),
                           decoration: BoxDecoration(
                             color: AppColors.surface,
                             borderRadius: BorderRadius.circular(AppRadius.r5),

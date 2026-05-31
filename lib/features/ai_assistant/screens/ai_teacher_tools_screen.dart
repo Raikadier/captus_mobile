@@ -594,7 +594,7 @@ class _FieldLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s1 + 2),
       child: Text(
         text,
         style: tt.labelLarge?.copyWith(color: AppColors.textSecondary),

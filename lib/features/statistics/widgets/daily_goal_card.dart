@@ -42,7 +42,7 @@ class DailyGoalCard extends StatelessWidget {
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s2 + 2, vertical: AppSpacing.s1),
                 decoration: BoxDecoration(
                   color: isGoalMet ? AppColors.primary.withAlpha(AppAlpha.a10) : AppColors.surface2,
                   borderRadius: BorderRadius.circular(AppRadius.r3),

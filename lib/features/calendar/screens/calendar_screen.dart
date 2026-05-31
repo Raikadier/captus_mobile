@@ -123,7 +123,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             SizedBox(height: AppSpacing.s4),
             ListTile(
               leading: Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(AppSpacing.s2 + 2),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withAlpha(AppAlpha.a10),
                   borderRadius: BorderRadius.circular(AppRadius.r5),
@@ -140,7 +140,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             ),
             ListTile(
               leading: Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(AppSpacing.s2 + 2),
                 decoration: BoxDecoration(
                   color: AppColors.info.withAlpha(AppAlpha.a10),
                   borderRadius: BorderRadius.circular(AppRadius.r5),
@@ -416,7 +416,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                         final task = item['data'] as TaskModel;
                         return Container(
                           margin: const EdgeInsets.only(bottom: AppSpacing.s3),
-                          padding: const EdgeInsets.all(14),
+                          padding: const EdgeInsets.all(AppSpacing.s3 + 2),
                           decoration: BoxDecoration(
                             color: AppColors.surface,
                             borderRadius: BorderRadius.circular(AppRadius.r6),
@@ -485,7 +485,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                         final eventColor = _getEventColor(event);
                         return Container(
                           margin: const EdgeInsets.only(bottom: AppSpacing.s3),
-                          padding: const EdgeInsets.all(14),
+                          padding: const EdgeInsets.all(AppSpacing.s3 + 2),
                           decoration: BoxDecoration(
                             color: AppColors.surface,
                             borderRadius: BorderRadius.circular(AppRadius.r6),

@@ -72,7 +72,7 @@ class StreakHeroCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.s4),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(AppSpacing.s3 + 2),
             decoration: BoxDecoration(
               color: AppColors.surface.withAlpha(AppAlpha.a70),
               borderRadius: BorderRadius.circular(AppRadius.r5),

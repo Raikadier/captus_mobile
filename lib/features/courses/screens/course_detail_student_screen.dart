@@ -262,7 +262,7 @@ class _ActivityTile extends StatelessWidget {
     return CaptusPressable(
       onTap: () => context.push('/courses/$courseId/activity/${activity.id}'),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(AppSpacing.s3 + 2),
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.r6),

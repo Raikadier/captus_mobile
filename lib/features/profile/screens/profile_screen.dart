@@ -87,7 +87,7 @@ class ProfileScreen extends ConsumerWidget {
                       child: CaptusPressable(
                         onTap: () => context.push('/profile/edit'),
                         child: Container(
-                          padding: const EdgeInsets.all(6),
+                          padding: const EdgeInsets.all(AppSpacing.s1 + 2),
                           decoration: BoxDecoration(
                             color: AppColors.primary,
                             shape: BoxShape.circle,

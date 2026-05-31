@@ -86,7 +86,7 @@ class CategorySectionCard extends StatelessWidget {
             final progress = maxCount > 0 ? cat.completedCount / maxCount : 0.0;
             final color = AppColors.courseColors[cat.categoryId % AppColors.courseColors.length];
             return Padding(
-              padding: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.only(bottom: AppSpacing.s2 + 2),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

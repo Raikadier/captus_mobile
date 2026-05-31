@@ -254,8 +254,8 @@ class _DashboardAppBar extends StatelessWidget {
               onPressed: () => context.push('/notifications'),
             ),
             Positioned(
-              right: 10,
-              top: 10,
+              right: AppSpacing.s2 + 2,
+              top: AppSpacing.s2 + 2,
               child: Container(
                 width: 8,
                 height: 8,

@@ -176,7 +176,7 @@ class _EvidenceScreenState extends State<EvidenceScreen> {
 
                       return Container(
                         margin: const EdgeInsets.only(bottom: AppSpacing.s3),
-                        padding: const EdgeInsets.all(14),
+                        padding: const EdgeInsets.all(AppSpacing.s3 + 2),
                         decoration: BoxDecoration(
                           color: AppColors.surface,
                           borderRadius: BorderRadius.circular(AppRadius.r7),
@@ -259,7 +259,7 @@ class _ActionCard extends StatelessWidget {
             border: Border.all(color: AppColors.border),
             borderRadius: BorderRadius.circular(AppRadius.r7),
           ),
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(AppSpacing.s3 + 2),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

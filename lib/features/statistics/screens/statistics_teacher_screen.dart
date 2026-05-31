@@ -226,7 +226,7 @@ class StatisticsTeacherScreen extends ConsumerWidget {
           padding: const EdgeInsets.only(right: AppSpacing.s2),
           child: IconButton(
             icon: Container(
-              padding: const EdgeInsets.all(6),
+              padding: const EdgeInsets.all(AppSpacing.s1 + 2),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(AppRadius.r4),

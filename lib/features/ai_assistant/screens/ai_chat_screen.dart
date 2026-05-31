@@ -356,7 +356,7 @@ class _MessageBubble extends StatelessWidget {
     final timeStr = DateFormat('HH:mm').format(message.time);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s2 + 2),
       child: Column(
         crossAxisAlignment:
             isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -370,7 +370,7 @@ class _MessageBubble extends StatelessWidget {
                 Container(
                   height: 28,
                   width: 28,
-                  margin: const EdgeInsets.only(right: 6, bottom: 2),
+                  margin: const EdgeInsets.only(right: AppSpacing.s1 + 2, bottom: 2),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withAlpha(AppAlpha.a08),
                     shape: BoxShape.circle,
@@ -545,7 +545,7 @@ class _MarkdownMessage extends StatelessWidget {
             horizontal: 12, vertical: 6),
         // Lists
         listBullet: baseStyle,
-        listBulletPadding: const EdgeInsets.only(right: 6),
+        listBulletPadding: const EdgeInsets.only(right: AppSpacing.s1 + 2),
         listIndent: 16,
         // Horizontal rule
         horizontalRuleDecoration: BoxDecoration(
@@ -555,7 +555,7 @@ class _MarkdownMessage extends StatelessWidget {
         ),
         // Spacing
         pPadding: const EdgeInsets.only(bottom: AppSpacing.s1),
-        h1Padding: const EdgeInsets.only(bottom: 6, top: AppSpacing.s1),
+        h1Padding: const EdgeInsets.only(bottom: AppSpacing.s1 + 2, top: AppSpacing.s1),
         h2Padding: const EdgeInsets.only(bottom: AppSpacing.s1, top: AppSpacing.s1),
         h3Padding: const EdgeInsets.only(bottom: 2, top: AppSpacing.s1),
       ),
@@ -588,13 +588,13 @@ class _TypingBubbleState extends State<_TypingBubble>
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s2 + 2),
       child: Row(
         children: [
           Container(
             height: 28,
             width: 28,
-            margin: const EdgeInsets.only(right: 6),
+            margin: const EdgeInsets.only(right: AppSpacing.s1 + 2),
             decoration: BoxDecoration(
               color: AppColors.primary.withAlpha(AppAlpha.a08),
               shape: BoxShape.circle,
@@ -683,7 +683,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.s7),
           ...suggestions.map((s) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.only(bottom: AppSpacing.s2 + 2),
                 child: InkWell(
                   onTap: () => onSuggestion(s),
                   borderRadius: BorderRadius.circular(AppRadius.r5),

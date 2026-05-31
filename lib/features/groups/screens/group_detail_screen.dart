@@ -216,7 +216,7 @@ class _TasksTab extends StatelessWidget {
         return CaptusPressable(
           onTap: () => onToggle(task.id.toString()),
           child: Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(AppSpacing.s3 + 2),
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(AppRadius.r6),
@@ -330,7 +330,7 @@ class _MembersTab extends StatelessWidget {
         final member = members[index];
         final contribution = 0.4 + (index * 0.15).clamp(0.0, 0.6);
         return Container(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(AppSpacing.s3 + 2),
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(AppRadius.r6),

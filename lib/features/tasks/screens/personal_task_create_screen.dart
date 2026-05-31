@@ -404,7 +404,7 @@ class _PersonalTaskCreateScreenState extends ConsumerState<PersonalTaskCreateScr
               CaptusPressable(
                 onTap: _pickDate,
                 child: Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(AppSpacing.s3 + 2),
                   decoration: BoxDecoration(
                     color: AppColors.surface2,
                     borderRadius: BorderRadius.circular(AppRadius.r5),

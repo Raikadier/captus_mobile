@@ -236,7 +236,7 @@ class _NoteCard extends StatelessWidget {
           boxShadow: AppShadows.xs,
         ),
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(AppSpacing.s2 + 2),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -373,7 +373,7 @@ class _PinnedNoteCard extends StatelessWidget {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(AppSpacing.s2 + 2),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

@@ -330,7 +330,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
               const SizedBox(height: AppSpacing.s2 + 2),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(AppSpacing.s3 + 2),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(AppRadius.r5),
@@ -383,7 +383,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
               CaptusPressable(
                 onTap: () => context.push('/tasks/personal/create?parentTaskId=${widget.taskId}'),
                 child: Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(AppSpacing.s3 + 2),
                   decoration: BoxDecoration(
                     color: AppColors.primaryLight,
                     borderRadius: BorderRadius.circular(AppRadius.r5),
@@ -416,7 +416,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s2 + 2, vertical: AppSpacing.s1),
       decoration: BoxDecoration(
         color: color.withAlpha(AppAlpha.a10),
         borderRadius: BorderRadius.circular(AppRadius.r3),

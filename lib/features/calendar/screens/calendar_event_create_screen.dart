@@ -268,7 +268,7 @@ class _CalendarEventCreateScreenState
             CaptusPressable(
               onTap: _pickStartDate,
               child: Container(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(AppSpacing.s3 + 2),
                 decoration: BoxDecoration(
                   color: AppColors.surface2,
                   borderRadius: BorderRadius.circular(AppRadius.r5),
@@ -297,7 +297,7 @@ class _CalendarEventCreateScreenState
               CaptusPressable(
                 onTap: _pickEndDate,
                 child: Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(AppSpacing.s3 + 2),
                   decoration: BoxDecoration(
                     color: AppColors.surface2,
                     borderRadius: BorderRadius.circular(AppRadius.r5),

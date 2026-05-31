@@ -329,7 +329,7 @@ class _ConversationTile extends StatelessWidget {
         ),
         child: ListTile(
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              const EdgeInsets.symmetric(horizontal: AppSpacing.s3 + 2, vertical: AppSpacing.s1),
           leading: Container(
             width: 38,
             height: 38,

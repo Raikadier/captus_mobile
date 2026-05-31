@@ -309,7 +309,7 @@ class _FilterChips extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: AppDurations.fast,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3 + 2, vertical: AppSpacing.s2),
         decoration: BoxDecoration(
           color: isActive ? color : AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.r8),
@@ -363,7 +363,7 @@ class _AchievementTile extends StatelessWidget {
     return CaptusPressable(
       onTap: () => _showDetailSheet(context, achievement),
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(AppSpacing.s2 + 2),
         decoration: BoxDecoration(
           color: unlocked
               ? difficulty.color.withAlpha(AppAlpha.a12)
