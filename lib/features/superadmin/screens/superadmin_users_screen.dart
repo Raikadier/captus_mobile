@@ -131,7 +131,7 @@ class _SuperAdminUsersScreenState extends State<SuperAdminUsersScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Usuarios Globales'),
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.background,
         elevation: 0,
       ),
       body: Column(children: [

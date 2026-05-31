@@ -206,7 +206,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       restorationId: 'profile_edit_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.background,
         elevation: 0,
         title: const Text('Editar Perfil'),
         leading: IconButton(

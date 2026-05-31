@@ -40,7 +40,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
     return Scaffold(
       restorationId: 'notes_screen',
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.background,
         elevation: 0,
         title: Text(
           'Notas',

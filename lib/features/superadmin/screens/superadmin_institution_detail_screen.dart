@@ -338,7 +338,7 @@ class _SuperAdminInstitutionDetailScreenState
       restorationId: 'super_admin_institution_detail_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.background,
         elevation: 0,
         title: Text(
           widget.institutionName.isNotEmpty

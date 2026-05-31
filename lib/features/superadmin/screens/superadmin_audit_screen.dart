@@ -64,7 +64,7 @@ class _SuperAdminAuditScreenState extends State<SuperAdminAuditScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Auditoría'),
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.background,
         elevation: 0,
         actions: [
           IconButton(

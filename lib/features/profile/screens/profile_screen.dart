@@ -31,7 +31,7 @@ class ProfileScreen extends ConsumerWidget {
       restorationId: 'profile_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.background,
         title: const Text('Mi Perfil'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),

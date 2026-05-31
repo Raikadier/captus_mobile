@@ -40,7 +40,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
       restorationId: 'statistics_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.background,
         title: const Text('Mis Estadísticas'),
         leading: IconButton(icon: const Icon(Icons.arrow_back_rounded),
 tooltip: 'Volver', onPressed: () => context.pop()),

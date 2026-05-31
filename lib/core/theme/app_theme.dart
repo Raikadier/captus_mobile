@@ -199,7 +199,7 @@ class AppTheme {
       const BottomNavigationBarThemeData(
         backgroundColor: AppColors.shellBg,
         selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.slate400,
+        unselectedItemColor: AppColors.textSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
         selectedLabelStyle: TextStyle(
@@ -218,19 +218,17 @@ class AppTheme {
           if (states.contains(WidgetState.selected)) {
             return const IconThemeData(color: AppColors.primary, size: 24);
           }
-          return const IconThemeData(color: AppColors.slate400, size: 22);
+          return const IconThemeData(color: AppColors.textSecondary, size: 22);
         }),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return GoogleFonts.inter(
+            return const TextStyle(
               fontSize: 10, fontWeight: FontWeight.w600,
-              color: AppColors.primary, letterSpacing: 0.2,
-            );
+              color: AppColors.primary, letterSpacing: 0.2);
           }
-          return GoogleFonts.inter(
+          return const TextStyle(
             fontSize: 10, fontWeight: FontWeight.w400,
-            color: AppColors.slate400,
-          );
+            color: AppColors.textSecondary);
         }),
       );
 
