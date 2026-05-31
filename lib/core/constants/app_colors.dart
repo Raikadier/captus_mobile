@@ -68,8 +68,8 @@ class AppColors {
   static const Color surface3    = slate200;  // Hover, separadores
 
   // ─── SEMANTIC TOKENS — Shell (always dark) ──────────────────────────────────
-  static const Color shellBg     = slate900;  // Bottom nav background
-  static const Color shellSurface= slate800;  // Bottom nav elevated / modal bg
+  static const Color shellBg     = surface;   // Bottom nav background — matches app surface
+  static const Color shellSurface= surface2;  // Bottom nav elevated / modal bg
   static const Color modalBg     = slate800;  // Bottom sheets y modales oscuros
 
   // ─── SEMANTIC TOKENS — Brand / Primary ─────────────────────────────────────

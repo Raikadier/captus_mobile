@@ -103,11 +103,14 @@ class _CaptusBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.shellBg,  // slate-900 — dark shell
-        border: Border(
+      decoration: BoxDecoration(
+        // Surface background — consistent with the rest of the app
+        color: AppColors.surface,
+        // Subtle top shadow for elevation separation (no hard border line)
+        boxShadow: AppShadows.smDark,
+        border: const Border(
           top: BorderSide(
-            color: AppColors.shellSurface, // slate-800 hairline
+            color: AppColors.border, // slate-200 hairline
             width: 0.5,
           ),
         ),
@@ -208,8 +211,8 @@ class _NavItem extends StatelessWidget {
                     key: ValueKey(isSelected),
                     size: 24,
                     color: isSelected
-                        ? AppColors.primary    // brand green on dark
-                        : AppColors.slate400,  // muted gray
+                        ? AppColors.primary
+                        : AppColors.textSecondary,
                   ),
                 ),
               ),
@@ -219,7 +222,7 @@ class _NavItem extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                  color: isSelected ? AppColors.primary : AppColors.slate500,
+                  color: isSelected ? AppColors.primary : AppColors.textSecondary,
                   letterSpacing: isSelected ? 0.1 : 0,
                 ),
               ),
@@ -269,8 +272,12 @@ class _CenterNavItem extends StatelessWidget {
                 height: 32,
                 decoration: BoxDecoration(
                   gradient: isSelected ? AppGradients.brand : null,
-                  color: isSelected ? null : AppColors.shellSurface,
+                  color: isSelected ? null : AppColors.surface2,
                   borderRadius: BorderRadius.circular(AppRadius.pill),
+                  border: isSelected ? null : Border.all(
+                    color: AppColors.border,
+                    width: 1,
+                  ),
                   boxShadow: isSelected ? AppShadows.brandSm : null,
                 ),
                 child: Center(
@@ -282,7 +289,7 @@ class _CenterNavItem extends StatelessWidget {
                       size: 22,
                       color: isSelected
                           ? AppColors.textOnPrimary
-                          : AppColors.slate400,
+                          : AppColors.textSecondary,
                     ),
                   ),
                 ),
@@ -293,7 +300,7 @@ class _CenterNavItem extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                  color: isSelected ? AppColors.primary : AppColors.slate500,
+                  color: isSelected ? AppColors.primary : AppColors.textSecondary,
                 ),
               ),
             ],
