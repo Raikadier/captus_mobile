@@ -430,7 +430,7 @@ class _StatsRow extends StatelessWidget {
             value: '$streakDays',
             label: 'Racha',
             icon: Icons.local_fire_department_rounded,
-            color: AppColors.streak,
+            color: AppColors.streakText,
           ),
           const SizedBox(width: AppSpacing.cardGap),
           _StatCard(

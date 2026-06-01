@@ -59,7 +59,8 @@ class AppColors {
   static const Color amber100 = Color(0xFFFEF3C7); // oklch(0.96 0.09 90)
   static const Color amber400 = Color(0xFFFBBF24); // oklch(0.83 0.17 90)
   static const Color amber500 = Color(0xFFF59E0B); // oklch(0.75 0.17 90)
-  static const Color amber800 = Color(0xFF92400E); // oklch(0.42 0.12 60)
+  static const Color amber700 = Color(0xFFB45309); // oklch(0.53 0.14 65) — WCAG AA 5.0:1
+  static const Color amber800 = Color(0xFF92400E); // oklch(0.42 0.12 60) — WCAG AAA 7.1:1
 
   // ─── SEMANTIC TOKENS — Backgrounds / Surfaces ──────────────────────────────
   static const Color background  = slate50;   // Scaffold general
@@ -89,7 +90,8 @@ class AppColors {
   static const Color textPrimary   = slate900;  // Texto principal
   static const Color textSecondary = slate500;  // Texto secundario / iconos
   static const Color textDisabled  = slate400;  // Deshabilitados, placeholders
-  static const Color textOnPrimary = Color(0xFFFFFFFF); // Sobre fondo verde
+  // textOnPrimary = dark slate (WCAG 6.9:1 on #1DB954) — dark-on-green like Spotify
+  static const Color textOnPrimary = Color(0xFF0F172A); // WCAG AAA 6.9:1 on primary green
   static const Color textOnDark    = Color(0xFFFFFFFF); // Sobre fondos oscuros
   static const Color textInverse   = slate50;   // Texto en superficies oscuras
 
@@ -101,7 +103,9 @@ class AppColors {
   // ─── SEMANTIC TOKENS — Status ──────────────────────────────────────────────
   static const Color error        = Color(0xFFDC2626); // oklch(0.55 0.22 29)
   static const Color errorLight   = Color(0xFFFEF2F2);
-  static const Color warning      = Color(0xFFD97706); // oklch(0.63 0.17 60)
+  static const Color warning      = Color(0xFFD97706); // oklch(0.63 0.17 60) — icons/borders 3.19:1
+  static const Color warningDark   = amber700;  // Text on light bg — WCAG AA 5.0:1
+  static const Color warningText   = amber800;  // Text AAA — 7.1:1
   static const Color warningLight = Color(0xFFFFFBEB);
   static const Color info         = Color(0xFF2563EB); // oklch(0.51 0.22 264)
   static const Color infoLight    = Color(0xFFEFF6FF);

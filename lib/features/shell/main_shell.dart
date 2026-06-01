@@ -211,7 +211,7 @@ class _NavItem extends StatelessWidget {
                     key: ValueKey(isSelected),
                     size: 24,
                     color: isSelected
-                        ? AppColors.primary
+                        ? AppColors.primaryDark  // 4.45:1 on white
                         : AppColors.textSecondary,
                   ),
                 ),
@@ -222,7 +222,7 @@ class _NavItem extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                  color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                  color: isSelected ? AppColors.primaryDark : AppColors.textSecondary,
                   letterSpacing: isSelected ? 0.1 : 0,
                 ),
               ),
@@ -300,7 +300,7 @@ class _CenterNavItem extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                  color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                  color: isSelected ? AppColors.primaryDark : AppColors.textSecondary,
                 ),
               ),
             ],

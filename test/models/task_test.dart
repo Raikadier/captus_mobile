@@ -9,7 +9,7 @@ void main() {
         title: 'Test Task',
         priority: TaskPriority.high,
         status: TaskStatus.pending,
-        createdAt: DateTime(2026, 5, 15),
+        createdAt: DateTime(2028, 5, 15),
       );
 
       expect(task.id, 1);
@@ -22,8 +22,8 @@ void main() {
     });
 
     test('should create TaskModel with all fields', () {
-      final dueDate = DateTime(2026, 6, 1);
-      final createdAt = DateTime(2026, 5, 15);
+      final dueDate = DateTime(2028, 6, 1);
+      final createdAt = DateTime(2028, 5, 15);
       final subtask = SubTask(id: 'st1', title: 'Subtask 1');
       final task = TaskModel(
         id: 1,
@@ -166,8 +166,8 @@ void main() {
     });
 
     test('should convert to JSON and back', () {
-      final dueDate = DateTime(2026, 6, 1);
-      final createdAt = DateTime(2026, 5, 15);
+      final dueDate = DateTime(2028, 6, 1);
+      final createdAt = DateTime(2028, 5, 15);
       final task = TaskModel(
         id: 1,
         title: 'Test Task',
@@ -231,7 +231,7 @@ void main() {
         title: 'Original Title',
         priority: TaskPriority.high,
         status: TaskStatus.pending,
-        createdAt: DateTime(2026, 5, 15),
+        createdAt: DateTime(2028, 5, 15),
       );
 
       final updated = task.copyWith(status: TaskStatus.completed, completed: true);
