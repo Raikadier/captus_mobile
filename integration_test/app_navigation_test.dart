@@ -1,7 +1,7 @@
 /// E2E Navigation smoke tests — run on device/emulator.
 ///
 /// How to run:
-///   flutter test integration_test/app_navigation_test.dart --device-id <id>
+///   flutter test integration_test/app_navigation_test.dart --device-id `<id>`
 ///
 /// These tests launch the full app and verify that key navigation flows
 /// complete without crashing. They do NOT require an authenticated user;
@@ -57,9 +57,14 @@ void main() {
       app.main();
       await tester.pumpAndSettle(const Duration(seconds: 5));
 
-      final loginBtn =
-          find.textContaining('Iniciar') | find.textContaining('Entrar');
-      if (loginBtn.evaluate().isNotEmpty) {
+      final loginBtnIniciar = find.textContaining('Iniciar');
+      final loginBtnEntrar = find.textContaining('Entrar');
+      final hasLoginBtn = loginBtnIniciar.evaluate().isNotEmpty ||
+          loginBtnEntrar.evaluate().isNotEmpty;
+      if (hasLoginBtn) {
+        final loginBtn = loginBtnIniciar.evaluate().isNotEmpty
+            ? loginBtnIniciar
+            : loginBtnEntrar;
         await tester.tap(loginBtn.first);
         await tester.pump();
 

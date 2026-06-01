@@ -2,10 +2,12 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import 'api_client.dart';
 import 'router_service.dart';
+import '../constants/app_radius.dart';
+import '../constants/app_spacing.dart';
+import '../../shared/widgets/captus_pressable.dart';
 
 // ── Background handler (top-level, required by Firebase) ─────────────────────
 @pragma('vm:entry-point')
@@ -149,20 +151,21 @@ class _InAppBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final top = MediaQuery.of(context).padding.top;
     return Positioned(
       top: top + 8,
-      left: 12,
-      right: 12,
+      left: AppSpacing.s3,
+      right: AppSpacing.s3,
       child: Material(
         color: Colors.transparent,
-        child: GestureDetector(
+        child: CaptusPressable(
           onTap: onTap,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
             decoration: BoxDecoration(
               color: AppColors.modalBg,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.r6),
               border: Border.all(color: AppColors.success.withAlpha(AppAlpha.a80)),
               boxShadow: [
                 BoxShadow(
@@ -183,30 +186,25 @@ class _InAppBanner extends StatelessWidget {
                   child: const Icon(Icons.notifications_rounded,
                       size: 18, color: AppColors.textOnPrimary),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.s3),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(title,
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textOnPrimary,
-                          ),
+                          style: tt.titleSmall!.copyWith(color: AppColors.textOnPrimary),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis),
                       if (body.isNotEmpty)
                         Text(body,
-                            style: GoogleFonts.inter(
-                                fontSize: 12, color: AppColors.textSecondary),
+                            style: tt.bodySmall,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis),
                     ],
                   ),
                 ),
-                GestureDetector(
+                CaptusPressable(
                   onTap: onDismiss,
                   child: const Icon(Icons.close_rounded,
                       size: 16, color: AppColors.textDisabled),

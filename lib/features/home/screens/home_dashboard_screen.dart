@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
+import '../../../core/constants/app_gradients.dart';
+import '../../../core/constants/app_shadows.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../models/task.dart';
+import '../../../core/providers/courses_provider.dart';
 import '../../../models/course.dart';
 import '../../../models/user.dart';
 import '../../../shared/widgets/task_card.dart';
 import '../../../shared/widgets/course_card.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 import '../../statistics/providers/user_statistics_provider.dart';
 
 class HomeDashboardScreen extends ConsumerWidget {
@@ -35,8 +41,10 @@ class HomeDashboardScreen extends ConsumerWidget {
           )
         : UserModel.mock;
 
-    final courses = CourseModel.mockList;
-    final streakDays = ref.watch(userStatisticsProvider).value?.currentStreak ?? 0;
+    final coursesAsync = ref.watch(coursesProvider);
+    final courses = coursesAsync.asData?.value ?? <CourseModel>[];
+    final streakDays =
+        ref.watch(userStatisticsProvider).value?.currentStreak ?? 0;
 
     final pendingTasksAsync = ref.watch(pendingTasksProvider);
     final overdueTasksAsync = ref.watch(overdueTasksProvider);
@@ -53,31 +61,31 @@ class HomeDashboardScreen extends ConsumerWidget {
       error: (_, __) => 0,
     );
 
-    final todayTasks = pendingTasks.where((t) {
-      if (t.dueDate == null) return false;
-      final diff = t.dueDate!.difference(DateTime.now());
-      return diff.inHours < 24 && t.dueDate!.isAfter(DateTime.now());
-    }).toList();
-
     final upcomingTasks = pendingTasks.where((t) {
       if (t.dueDate == null) return false;
       final diff = t.dueDate!.difference(DateTime.now());
       return diff.inDays < 3 && diff.inDays >= 0;
     }).toList();
 
+    final todayTasks = upcomingTasks.where((t) {
+      final diff = t.dueDate!.difference(DateTime.now());
+      return diff.inHours < 24;
+    }).toList();
+
     return Scaffold(
+      restorationId: 'home_dashboard_screen',
       backgroundColor: AppColors.background,
       body: CustomScrollView(
         slivers: [
-          // ── AppBar ──────────────────────────────────────────────────────────
+          // ── App bar ────────────────────────────────────────────────────────
           _DashboardAppBar(user: user),
 
-          // ── Saludo + fecha ──────────────────────────────────────────────────
+          // ── Greeting ───────────────────────────────────────────────────────
           SliverToBoxAdapter(
             child: _GreetingHeader(user: user),
           ),
 
-          // ── Tarjeta sugerencia IA ───────────────────────────────────────────
+          // ── AI Suggestion hero card ────────────────────────────────────────
           SliverToBoxAdapter(
             child: _AiSuggestionCard(
               taskCount: pendingTasks.length,
@@ -85,7 +93,7 @@ class HomeDashboardScreen extends ConsumerWidget {
             ),
           ),
 
-          // ── Stats row ───────────────────────────────────────────────────────
+          // ── Stats row ──────────────────────────────────────────────────────
           SliverToBoxAdapter(
             child: _StatsRow(
               todayCount: todayTasks.length,
@@ -94,12 +102,12 @@ class HomeDashboardScreen extends ConsumerWidget {
             ),
           ),
 
-          // ── Racha semanal ───────────────────────────────────────────────────
+          // ── Weekly streak ──────────────────────────────────────────────────
           SliverToBoxAdapter(
             child: _WeeklyStreak(),
           ),
 
-          // ── Tareas prioritarias ─────────────────────────────────────────────
+          // ── Priority tasks ─────────────────────────────────────────────────
           if (upcomingTasks.isNotEmpty) ...[
             _SectionHeader(
               title: 'Priorizado por IA',
@@ -109,17 +117,21 @@ class HomeDashboardScreen extends ConsumerWidget {
               delegate: SliverChildBuilderDelegate(
                 (_, i) => TaskCard(
                   task: upcomingTasks[i],
-                  onTap: () => context.push('/tasks/${upcomingTasks[i].id}'),
+                  onTap: () =>
+                      context.push('/tasks/${upcomingTasks[i].id}'),
                 ),
                 childCount: upcomingTasks.length.clamp(0, 3),
               ),
             ),
           ],
 
-          // ── Accesos rápidos ─────────────────────────────────────────────────
+          // ── Quick access ───────────────────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.pageMargin, AppSpacing.sectionGap,
+                AppSpacing.pageMargin, 0,
+              ),
               child: Row(
                 children: [
                   Expanded(
@@ -130,12 +142,12 @@ class HomeDashboardScreen extends ConsumerWidget {
                       onTap: () => context.push('/projects'),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: AppSpacing.cardGap),
                   Expanded(
                     child: _QuickAccessCard(
                       icon: Icons.menu_book_rounded,
                       label: 'Modo Estudio',
-                      color: AppColors.primary,
+                      color: AppColors.accentPurple,
                       onTap: () => context.push('/ai/study'),
                     ),
                   ),
@@ -144,25 +156,28 @@ class HomeDashboardScreen extends ConsumerWidget {
             ),
           ),
 
-          // ── Mis materias ────────────────────────────────────────────────────
+          // ── My courses ─────────────────────────────────────────────────────
           _SectionHeader(
             title: 'Mis materias',
             onSeeAll: () => context.push('/courses'),
           ),
           SliverToBoxAdapter(
             child: SizedBox(
-              height: 190,
+              height: 200,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.pageMargin,
+                ),
                 itemCount: courses.length,
                 itemBuilder: (_, i) => SizedBox(
-                  width: 152,
+                  width: 160,
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 12),
+                    padding: const EdgeInsets.only(right: AppSpacing.cardGap),
                     child: CourseCard(
                       course: courses[i],
-                      onTap: () => context.push('/courses/${courses[i].id}'),
+                      onTap: () =>
+                          context.push('/courses/${courses[i].id}'),
                     ),
                   ),
                 ),
@@ -170,7 +185,7 @@ class HomeDashboardScreen extends ConsumerWidget {
             ),
           ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.s25)),
         ],
       ),
     );
@@ -187,60 +202,60 @@ class _DashboardAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverAppBar(
       floating: true,
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.background,
       elevation: 0,
-      scrolledUnderElevation: 0,
-      titleSpacing: 16,
+      scrolledUnderElevation: 1,
+      shadowColor: AppColors.shadowBase,
+      surfaceTintColor: Colors.transparent,
+      titleSpacing: AppSpacing.pageMargin,
       title: Row(
         children: [
           // Avatar
-          GestureDetector(
+          CaptusPressable(
             onTap: () => context.push('/profile'),
             child: CircleAvatar(
               radius: 18,
               backgroundColor: AppColors.primaryLight,
-              backgroundImage:
-                  user.avatarUrl != null && user.avatarUrl!.isNotEmpty
-                      ? NetworkImage(user.avatarUrl!)
-                      : null,
+              backgroundImage: user.avatarUrl != null &&
+                      user.avatarUrl!.isNotEmpty
+                  ? NetworkImage(user.avatarUrl!)
+                  : null,
               child: user.avatarUrl == null || user.avatarUrl!.isEmpty
                   ? Text(
                       user.firstName[0].toUpperCase(),
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.primaryDark,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.brand700),
                     )
                   : null,
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.s2),
+          // Captus wordmark
           Text(
             'Captus',
-            style: GoogleFonts.inter(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              color: AppColors.primary,
-            ),
+            style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: AppColors.primary, letterSpacing: -0.01 * 22),
           ),
         ],
       ),
       actions: [
-        // Notificaciones
+        IconButton(
+          icon: const Icon(Icons.search_rounded),
+          tooltip: 'Buscar',
+          onPressed: () => context.push('/search'),
+          color: AppColors.textPrimary,
+        ),
+        // Notification bell with badge dot
         Stack(
           clipBehavior: Clip.none,
           children: [
             IconButton(
-              icon: const Icon(
-                Icons.notifications_outlined,
-                color: AppColors.textPrimary,
-              ),
+              icon: const Icon(Icons.notifications_outlined),
+              tooltip: 'Notificaciones',
+              color: AppColors.textPrimary,
               onPressed: () => context.push('/notifications'),
             ),
             Positioned(
-              right: 10,
-              top: 10,
+              right: AppSpacing.s2 + 2,
+              top: AppSpacing.s2 + 2,
               child: Container(
                 width: 8,
                 height: 8,
@@ -252,17 +267,17 @@ class _DashboardAppBar extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: AppSpacing.s1),
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
-        child: Container(color: AppColors.border, height: 1),
+        child: Container(color: AppColors.divider, height: 1),
       ),
     );
   }
 }
 
-// ── Saludo ─────────────────────────────────────────────────────────────────────
+// ── Greeting ───────────────────────────────────────────────────────────────────
 
 class _GreetingHeader extends StatelessWidget {
   final UserModel user;
@@ -277,36 +292,26 @@ class _GreetingHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateStr = DateFormat("EEEE d 'de' MMMM", 'es').format(DateTime.now());
-    // Capitaliza primera letra
+    final dateStr =
+        DateFormat("EEEE d 'de' MMMM", 'es').format(DateTime.now());
     final dateLabel = dateStr[0].toUpperCase() + dateStr.substring(1);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.pageMargin, AppSpacing.sectionGap,
+        AppSpacing.pageMargin, AppSpacing.s1,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '$_greeting, ${user.firstName}',
-                  style: GoogleFonts.inter(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  dateLabel,
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
+          Text(
+            '$_greeting, ${user.firstName}',
+            style: Theme.of(context).textTheme.headlineLarge,
+          ),
+          const SizedBox(height: AppSpacing.s1),
+          Text(
+            dateLabel,
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
       ),
@@ -314,7 +319,10 @@ class _GreetingHeader extends StatelessWidget {
   }
 }
 
-// ── Tarjeta sugerencia IA ──────────────────────────────────────────────────────
+// ── AI Suggestion Hero Card ────────────────────────────────────────────────────
+//
+// v2: Brand gradient background + brandLg shadow for hero presence.
+//
 
 class _AiSuggestionCard extends StatelessWidget {
   final int taskCount;
@@ -323,61 +331,64 @@ class _AiSuggestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return CaptusPressable(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.fromLTRB(
+          AppSpacing.pageMargin, AppSpacing.s4,
+          AppSpacing.pageMargin, 0,
+        ),
+        padding: const EdgeInsets.all(AppSpacing.cardPaddingStd),
         decoration: BoxDecoration(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.circular(16),
+          gradient: AppGradients.brandHero,
+          borderRadius: BorderRadius.circular(AppRadius.r8),
+          boxShadow: AppShadows.brandMd,
         ),
         child: Row(
           children: [
-            // Icono cactus / IA
+            // Cactus icon container
             Container(
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
-                color: AppColors.textOnPrimary.withAlpha(40),
-                borderRadius: BorderRadius.circular(10),
+                color: AppColors.textOnPrimary.withAlpha(AppAlpha.a20),
+                borderRadius: BorderRadius.circular(AppRadius.r5),
               ),
               child: const Center(
-                child: Text('🌵', style: TextStyle(fontSize: 22)),
+                child: Text('🌵', style: TextStyle(fontSize: 24)),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'CAPTUS SUGIERE',
-                    style: GoogleFonts.inter(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textOnPrimary.withAlpha(180),
-                      letterSpacing: 0.8,
-                    ),
+                    style: Theme.of(context).textTheme.labelSmall!.copyWith(color: AppColors.textOnPrimary.withAlpha(AppAlpha.a70), letterSpacing: 1.0),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: AppSpacing.s1),
                   Text(
-                    'Tienes $taskCount entregas esta semana. Empieza por Estructuras de Datos — vence mañana.',
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textOnPrimary,
-                      height: 1.4,
-                    ),
+                    taskCount > 0
+                        ? 'Tienes $taskCount entregas esta semana. Empieza con la más urgente.'
+                        : '¡Al día! No tienes tareas pendientes esta semana.',
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(color: AppColors.textOnPrimary, height: 1.45),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 8),
-            const Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 14,
-              color: AppColors.textOnPrimary,
+            const SizedBox(width: AppSpacing.s2),
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.s1 + 2),
+              decoration: BoxDecoration(
+                color: AppColors.textOnPrimary.withAlpha(AppAlpha.a20),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.arrow_forward_rounded,
+                size: 16,
+                color: AppColors.textOnPrimary,
+              ),
             ),
           ],
         ),
@@ -386,7 +397,7 @@ class _AiSuggestionCard extends StatelessWidget {
   }
 }
 
-// ── Stats row ──────────────────────────────────────────────────────────────────
+// ── Stats Row ──────────────────────────────────────────────────────────────────
 
 class _StatsRow extends StatelessWidget {
   final int todayCount;
@@ -402,25 +413,33 @@ class _StatsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.pageMargin, AppSpacing.s4,
+        AppSpacing.pageMargin, 0,
+      ),
       child: Row(
         children: [
           _StatCard(
             value: '$todayCount',
-            label: 'Tareas hoy',
-            color: AppColors.textPrimary,
+            label: 'Hoy',
+            icon: Icons.today_outlined,
+            color: AppColors.primary,
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpacing.cardGap),
           _StatCard(
-            value: '$streakDays 🔥',
-            label: 'Días racha',
-            color: AppColors.warning,
+            value: '$streakDays',
+            label: 'Racha',
+            icon: Icons.local_fire_department_rounded,
+            color: AppColors.streakText,
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpacing.cardGap),
           _StatCard(
             value: '$overdueCount',
-            label: 'Por entregar',
-            color: overdueCount > 0 ? AppColors.error : AppColors.textPrimary,
+            label: 'Vencidas',
+            icon: overdueCount > 0
+                ? Icons.error_outline_rounded
+                : Icons.check_circle_outline_rounded,
+            color: overdueCount > 0 ? AppColors.error : AppColors.success,
           ),
         ],
       ),
@@ -431,11 +450,13 @@ class _StatsRow extends StatelessWidget {
 class _StatCard extends StatelessWidget {
   final String value;
   final String label;
+  final IconData icon;
   final Color color;
 
   const _StatCard({
     required this.value,
     required this.label,
+    required this.icon,
     required this.color,
   });
 
@@ -443,29 +464,27 @@ class _StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.s3 + 2, // 14px
+        ),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border, width: 1.5),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
+          border: Border.all(color: AppColors.border),
+          boxShadow: AppShadows.xs,
         ),
         child: Column(
           children: [
+            Icon(icon, size: 18, color: color),
+            const SizedBox(height: AppSpacing.s1),
             Text(
               value,
-              style: GoogleFonts.inter(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: color,
-              ),
+              style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: color, height: 1.2),
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: AppSpacing.s1),
             Text(
               label,
-              style: GoogleFonts.inter(
-                fontSize: 11,
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(context).textTheme.labelSmall,
             ),
           ],
         ),
@@ -474,7 +493,7 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-// ── Racha semanal ──────────────────────────────────────────────────────────────
+// ── Weekly streak tracker ──────────────────────────────────────────────────────
 
 class _WeeklyStreak extends ConsumerWidget {
   const _WeeklyStreak();
@@ -483,13 +502,11 @@ class _WeeklyStreak extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final now = DateTime.now();
     const days = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
-    // weekday: Mon=1 … Sun=7 → índice 0-6
     final todayIndex = now.weekday - 1;
 
     final statsAsync = ref.watch(userStatisticsProvider);
-    // weeklyDailyCompletions[i] = tareas completadas ese día (0 = sin completar)
-    final weeklyData = statsAsync.value?.weeklyDailyCompletions ??
-        List.filled(7, 0);
+    final weeklyData =
+        statsAsync.value?.weeklyDailyCompletions ?? List.filled(7, 0);
     final streak = statsAsync.value?.currentStreak ?? 0;
 
     final activeDays = weeklyData.where((c) => c > 0).length;
@@ -498,35 +515,38 @@ class _WeeklyStreak extends ConsumerWidget {
         : activeDays == 1
             ? '1 día productivo esta semana'
             : '$activeDays días productivos esta semana'
-              '${streak > 0 ? ' · Racha: $streak 🔥' : ''}';
+                '${streak > 0 ? ' · Racha: $streak 🔥' : ''}';
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.pageMargin, AppSpacing.cardGap,
+        AppSpacing.pageMargin, 0,
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.cardPaddingStd,
+        vertical: AppSpacing.s3 + 2, // 14px
+      ),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border, width: 1.5),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
+        border: Border.all(color: AppColors.border),
+        boxShadow: AppShadows.xs,
       ),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: List.generate(7, (i) {
-              return _DayDot(
-                label: days[i],
-                isActive: weeklyData[i] > 0,
-                isToday: i == todayIndex,
-              );
-            }),
+            children: List.generate(7, (i) => _DayDot(
+              label: days[i],
+              isActive: weeklyData[i] > 0,
+              isToday: i == todayIndex,
+            )),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.s2 + 2), // 10px
           Text(
             label,
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodySmall,
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -551,34 +571,57 @@ class _DayDot extends StatelessWidget {
       children: [
         Text(
           label,
-          style: GoogleFonts.inter(
-            fontSize: 11,
-            color: AppColors.textSecondary,
-            fontWeight: FontWeight.w500,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: isToday ? AppColors.primary : AppColors.textSecondary,
+            fontWeight: isToday ? FontWeight.w600 : FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 5),
-        Container(
+        const SizedBox(height: AppSpacing.s1),
+        AnimatedContainer(
+          duration: AppDurations.standard,
+          curve: AppCurves.springShort,
           width: 32,
           height: 32,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isActive ? AppColors.streak : AppColors.surface2,
-            border:
-                isToday ? Border.all(color: AppColors.primary, width: 2) : null,
+            // Active: amber fill — completed task day
+            // Today + not active: solid primary fill so TODAY is unmissable
+            // Inactive past/future: surface2 with border for definition
+            color: isActive
+                ? AppColors.streak
+                : isToday
+                    ? AppColors.primary.withAlpha(AppAlpha.a20)
+                    : AppColors.surface2,
+            border: Border.all(
+              color: isActive
+                  ? AppColors.streak
+                  : isToday
+                      ? AppColors.primary
+                      : AppColors.border,
+              width: isToday ? 2 : 1,
+            ),
           ),
           child: isActive
               ? Center(
-                  child: Text(
-                    '✓',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.streakText,
-                    ),
+                  child: Icon(
+                    Icons.check_rounded,
+                    size: 16,
+                    color: isToday ? AppColors.streakText : AppColors.streakText,
                   ),
                 )
-              : null,
+              : isToday
+                  ? Center(
+                      child: Text(
+                        '•',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.primary,
+                          height: 1,
+                        ),
+                      ),
+                    )
+                  : null,
         ),
       ],
     );
@@ -602,30 +645,45 @@ class _QuickAccessCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    final tt = Theme.of(context).textTheme;
+    return CaptusPressable(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.s3,
+          horizontal: AppSpacing.s3,
+        ),
         decoration: BoxDecoration(
-          color: color.withAlpha(18),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: color.withAlpha(50)),
+          // Neutral surface — same for both cards (consistency)
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.r6),
+          border: Border.all(color: AppColors.border),
+          boxShadow: AppShadows.xs,
         ),
         child: Row(
           children: [
-            Icon(icon, color: color, size: 22),
-            const SizedBox(width: 10),
+            // Icon container — feature color ONLY here
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: color.withAlpha(AppAlpha.a12),
+                borderRadius: BorderRadius.circular(AppRadius.r3),
+              ),
+              child: Icon(icon, color: color, size: 18),
+            ),
+            const SizedBox(width: AppSpacing.s2 + 2),
             Expanded(
               child: Text(
                 label,
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: color,
-                ),
+                style: tt.titleSmall,  // neutral text, not color-tinted
               ),
             ),
-            Icon(Icons.arrow_forward_ios_rounded, size: 12, color: color),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 16,
+              color: AppColors.textSecondary,
+            ),
           ],
         ),
       ),
@@ -645,30 +703,29 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 22, 8, 10),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.pageMargin, AppSpacing.sectionGap,
+          AppSpacing.s2, AppSpacing.s2,
+        ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              title,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
-            ),
+            Text(title, style: Theme.of(context).textTheme.headlineSmall),
             const Spacer(),
             if (onSeeAll != null)
               TextButton(
                 onPressed: onSeeAll,
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.s2,
+                    vertical: AppSpacing.s1,
+                  ),
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 child: Text(
                   'Ver todo',
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: AppColors.primary,
                     fontWeight: FontWeight.w500,
                   ),

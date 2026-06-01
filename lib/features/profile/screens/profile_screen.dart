@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../statistics/providers/user_statistics_provider.dart';
 import '../../statistics/providers/achievements_provider.dart';
 import '../../statistics/utils/streak_messages.dart';
 import '../../../models/achievement.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -26,17 +28,20 @@ class ProfileScreen extends ConsumerWidget {
     final initial = user.name.isNotEmpty ? user.name[0].toUpperCase() : '?';
 
     return Scaffold(
+      restorationId: 'profile_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.background,
         title: const Text('Mi Perfil'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined),
+            tooltip: 'Editar',
             onPressed: () => context.push('/profile/edit'),
           ),
         ],
@@ -45,7 +50,7 @@ class ProfileScreen extends ConsumerWidget {
         children: [
           // Header
           Container(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(AppSpacing.s6),
             decoration: BoxDecoration(
               color: AppColors.surface,
               border: Border(
@@ -67,6 +72,7 @@ class ProfileScreen extends ConsumerWidget {
                             ? Image.network(
                                 user.avatarUrl!,
                                 fit: BoxFit.cover,
+                                semanticLabel: 'Foto de perfil',
                                 width: 88,
                                 height: 88,
                                 errorBuilder: (_, __, ___) =>
@@ -78,10 +84,10 @@ class ProfileScreen extends ConsumerWidget {
                     Positioned(
                       bottom: 0,
                       right: 0,
-                      child: GestureDetector(
+                      child: CaptusPressable(
                         onTap: () => context.push('/profile/edit'),
                         child: Container(
-                          padding: const EdgeInsets.all(6),
+                          padding: const EdgeInsets.all(AppSpacing.s1 + 2),
                           decoration: BoxDecoration(
                             color: AppColors.primary,
                             shape: BoxShape.circle,
@@ -95,55 +101,47 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: AppSpacing.s3),
                 Text(
                   user.name,
-                  style: GoogleFonts.inter(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.headlineLarge,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.s1),
                 Text(
                   user.email,
-                  style: GoogleFonts.inter(
-                      fontSize: 13, color: AppColors.textSecondary),
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.s1),
                 Text(
                   _roleDisplayText(user.role),
-                  style: GoogleFonts.inter(
-                      fontSize: 11,
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: AppSpacing.s4),
                 // Streak section is only meaningful for students and teachers.
                 if (user.role == 'student' || user.role == 'teacher')
-                  _buildStreakSection(ref),
+                  _buildStreakSection(context, ref),
               ],
             ),
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: AppSpacing.s4),
 
           // Academic info
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'INFORMACIÓN ACADÉMICA',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
                     color: AppColors.textSecondary,
                     letterSpacing: 0.8,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: AppSpacing.s2),
                 _InfoCard(children: [
                   if (user.institutionName != null)
                     _InfoRow(
@@ -182,32 +180,28 @@ class ProfileScreen extends ConsumerWidget {
                 // Stats and quick-access links are only relevant for
                 // students and teachers. Admins go straight to CUENTA.
                 if (user.role == 'student' || user.role == 'teacher') ...[
-                  const SizedBox(height: 24),
+                  SizedBox(height: AppSpacing.s6),
 
                   Text(
                     'MIS ESTADÍSTICAS',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
+                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
                       color: AppColors.textSecondary,
                       letterSpacing: 0.8,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  _buildRealStats(ref),
+                  SizedBox(height: AppSpacing.s2),
+                  _buildRealStats(context, ref),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: AppSpacing.s6),
 
                   Text(
                     'ACCESO RÁPIDO',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
+                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
                       color: AppColors.textSecondary,
                       letterSpacing: 0.8,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: AppSpacing.s2),
                   _InfoCard(children: [
                     _LinkRow(
                       icon: Icons.bar_chart_rounded,
@@ -241,19 +235,17 @@ class ProfileScreen extends ConsumerWidget {
                   ]),
                 ],
 
-                const SizedBox(height: 24),
+                SizedBox(height: AppSpacing.s6),
 
                 // Settings
                 Text(
                   'CUENTA',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
                     color: AppColors.textSecondary,
                     letterSpacing: 0.8,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: AppSpacing.s2),
                 _InfoCard(children: [
                   _LinkRow(
                     icon: Icons.settings_outlined,
@@ -274,7 +266,7 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ]),
 
-                const SizedBox(height: 32),
+                SizedBox(height: AppSpacing.s8),
               ],
             ),
           ),
@@ -284,7 +276,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   /// Sección de racha compacta que aparece debajo del avatar.
-  Widget _buildStreakSection(WidgetRef ref) {
+  Widget _buildStreakSection(BuildContext context, WidgetRef ref) {
     final statsAsync = ref.watch(userStatisticsProvider);
 
     return statsAsync.when(
@@ -302,22 +294,22 @@ class ProfileScreen extends ConsumerWidget {
 
         return Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: 14),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: hasStreak
                   ? [
-                      AppColors.warning.withAlpha(30),
-                      AppColors.warning.withAlpha(10),
+                      AppColors.warning.withAlpha(AppAlpha.a12),
+                      AppColors.warning.withAlpha(AppAlpha.a04),
                     ]
                   : [AppColors.surface2, AppColors.surface2],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.r6),
             border: Border.all(
               color: hasStreak
-                  ? AppColors.warning.withAlpha(100)
+                  ? AppColors.warning.withAlpha(AppAlpha.a40)
                   : AppColors.border,
               width: 1,
             ),
@@ -325,7 +317,7 @@ class ProfileScreen extends ConsumerWidget {
           child: Row(
             children: [
               Text(emoji, style: const TextStyle(fontSize: 28)),
-              const SizedBox(width: 12),
+              SizedBox(width: AppSpacing.s3),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -334,29 +326,25 @@ class ProfileScreen extends ConsumerWidget {
                       children: [
                         Text(
                           hasStreak ? '$streak días' : 'Sin racha',
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                          style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                             color: hasStreak
                                 ? AppColors.warning
                                 : AppColors.textPrimary,
                           ),
                         ),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: AppSpacing.s1),
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
                             color: hasStreak
-                                ? AppColors.warning.withAlpha(25)
+                                ? AppColors.warning.withAlpha(AppAlpha.a10)
                                 : AppColors.surface3,
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: BorderRadius.circular(AppRadius.r2),
                           ),
                           child: Text(
                             title,
-                            style: GoogleFonts.inter(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
+                            style: Theme.of(context).textTheme.labelSmall!.copyWith(
                               color: hasStreak
                                   ? AppColors.warning
                                   : AppColors.textSecondary,
@@ -365,11 +353,10 @@ class ProfileScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: AppSpacing.s1),
                     Text(
                       message,
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
+                      style: Theme.of(context).textTheme.labelMedium!.copyWith(
                         color: AppColors.textSecondary,
                         fontStyle: FontStyle.italic,
                       ),
@@ -380,25 +367,21 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               ),
               if (stats.bestStreak > 0) ...[
-                const SizedBox(width: 8),
+                SizedBox(width: AppSpacing.s2),
                 Column(
                   children: [
                     const Icon(Icons.emoji_events_rounded,
                         color: AppColors.warning, size: 16),
                     Text(
                       '${stats.bestStreak}',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.warning,
                       ),
                     ),
                     Text(
                       'mejor',
-                      style: GoogleFonts.inter(
-                        fontSize: 9,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.labelSmall!.copyWith(color: AppColors.textSecondary),
                     ),
                   ],
                 ),
@@ -411,7 +394,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   /// Tiles de estadísticas con datos reales del proveedor.
-  Widget _buildRealStats(WidgetRef ref) {
+  Widget _buildRealStats(BuildContext context, WidgetRef ref) {
     final statsAsync = ref.watch(userStatisticsProvider);
 
     return statsAsync.when(
@@ -422,13 +405,13 @@ class ProfileScreen extends ConsumerWidget {
               label: 'Completadas',
               value: '…',
               color: AppColors.primary),
-          const SizedBox(width: 8),
+          SizedBox(width: AppSpacing.s2),
           _StatTile(
               icon: Icons.local_fire_department_rounded,
               label: 'Racha',
               value: '…',
               color: AppColors.warning),
-          const SizedBox(width: 8),
+          SizedBox(width: AppSpacing.s2),
           _StatTile(
               icon: Icons.percent_rounded,
               label: 'Éxito',
@@ -443,13 +426,13 @@ class ProfileScreen extends ConsumerWidget {
               label: 'Completadas',
               value: '-',
               color: AppColors.primary),
-          const SizedBox(width: 8),
+          SizedBox(width: AppSpacing.s2),
           _StatTile(
               icon: Icons.local_fire_department_rounded,
               label: 'Racha',
               value: '-',
               color: AppColors.warning),
-          const SizedBox(width: 8),
+          SizedBox(width: AppSpacing.s2),
           _StatTile(
               icon: Icons.percent_rounded,
               label: 'Éxito',
@@ -464,13 +447,13 @@ class ProfileScreen extends ConsumerWidget {
               label: 'Completadas',
               value: '${stats.completedTasks}',
               color: AppColors.primary),
-          const SizedBox(width: 8),
+          SizedBox(width: AppSpacing.s2),
           _StatTile(
               icon: Icons.local_fire_department_rounded,
               label: 'Racha',
               value: '${stats.currentStreak}d',
               color: AppColors.warning),
-          const SizedBox(width: 8),
+          SizedBox(width: AppSpacing.s2),
           _StatTile(
               icon: Icons.percent_rounded,
               label: 'Éxito',
@@ -488,9 +471,9 @@ class ProfileScreen extends ConsumerWidget {
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surface,
         title: Text('Cerrar sesión',
-            style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+            style: Theme.of(context).textTheme.headlineMedium),
         content: Text('¿Seguro que quieres salir?',
-            style: GoogleFonts.inter(color: AppColors.textSecondary)),
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary)),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context),
@@ -500,7 +483,7 @@ class ProfileScreen extends ConsumerWidget {
               Navigator.pop(context);
               ref.read(authProvider.notifier).signOut();
             },
-            child: Text('Salir', style: GoogleFonts.inter(color: AppColors.error)),
+            child: Text('Salir', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.error)),
           ),
         ],
       ),
@@ -517,7 +500,7 @@ class _InfoCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.r5),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Column(children: children),
@@ -543,18 +526,16 @@ class _InfoRow extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
           child: Row(
             children: [
               Icon(icon, size: 18, color: AppColors.textSecondary),
-              const SizedBox(width: 12),
+              SizedBox(width: AppSpacing.s3),
               Text(label,
-                  style: GoogleFonts.inter(
-                      fontSize: 13, color: AppColors.textSecondary)),
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary)),
               const Spacer(),
               Text(value,
-                  style: GoogleFonts.inter(
-                      fontSize: 13, color: AppColors.textPrimary)),
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textPrimary)),
             ],
           ),
         ),
@@ -591,25 +572,23 @@ class _LinkRow extends StatelessWidget {
           onTap: onTap,
           behavior: HitTestBehavior.opaque,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
             child: Row(
               children: [
                 Icon(icon, size: 18, color: c),
-                const SizedBox(width: 12),
+                SizedBox(width: AppSpacing.s3),
                 Expanded(
                   child: Text(label,
-                      style: GoogleFonts.inter(fontSize: 13, color: c)),
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(color: c)),
                 ),
                 if (trailingLabel != null && trailingLabel!.isNotEmpty) ...[
                   Text(
                     trailingLabel!,
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                    style: Theme.of(context).textTheme.labelLarge!.copyWith(
                       color: AppColors.textSecondary,
                     ),
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: AppSpacing.s1),
                 ],
                 Icon(Icons.chevron_right_rounded,
                     size: 18, color: AppColors.textSecondary),
@@ -644,21 +623,17 @@ class _StatTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.r5),
           border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: Column(
           children: [
             Icon(icon, color: color, size: 22),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.s1),
             Text(value,
-                style: GoogleFonts.inter(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary)),
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: AppColors.textPrimary)),
             Text(label,
-                style: GoogleFonts.inter(
-                    fontSize: 10, color: AppColors.textSecondary)),
+                style: Theme.of(context).textTheme.labelSmall!.copyWith(color: AppColors.textSecondary)),
           ],
         ),
       ),
@@ -683,7 +658,7 @@ Widget _buildAvatarInitial(String initial) {
   return Center(
     child: Text(
       initial,
-      style: GoogleFonts.inter(
+      style: const TextStyle(
         fontSize: 36,
         fontWeight: FontWeight.bold,
         color: AppColors.primary,

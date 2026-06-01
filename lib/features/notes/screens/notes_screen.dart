@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_shadows.dart';
 import '../../../core/providers/notes_provider.dart';
 import '../../../models/note.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class NotesScreen extends ConsumerStatefulWidget {
   const NotesScreen({super.key});
@@ -30,25 +33,24 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final notesAsync = ref.watch(unpinnedNotesProvider);
     final pinnedAsync = ref.watch(pinnedNotesProvider);
 
     return Scaffold(
+      restorationId: 'notes_screen',
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.background,
         elevation: 0,
         title: Text(
           'Notas',
-          style: GoogleFonts.inter(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
+          style: tt.headlineLarge,
         ),
         centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.add, color: AppColors.primary),
+            tooltip: 'Agregar',
             onPressed: () => context.push('/notes/new'),
           ),
         ],
@@ -62,16 +64,10 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
               onChanged: (value) {
                 ref.read(noteSearchQueryProvider.notifier).setQuery(value);
               },
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                color: AppColors.textPrimary,
-              ),
+              style: tt.bodyMedium,
               decoration: InputDecoration(
                 hintText: 'Buscar notas...',
-                hintStyle: GoogleFonts.inter(
-                  fontSize: 14,
-                  color: AppColors.textDisabled,
-                ),
+                hintStyle: tt.bodyMedium!.copyWith(color: AppColors.textDisabled),
                 prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -85,18 +81,18 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                 filled: true,
                 fillColor: AppColors.surface2,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                   borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                   borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
               ),
             ),
           ),
@@ -107,7 +103,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                 height: 100,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3),
                   itemCount: pinnedNotes.length,
                   itemBuilder: (context, index) {
                     final note = pinnedNotes[index];
@@ -139,7 +135,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                 }
 
                 return GridView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(AppSpacing.s4),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 16,
@@ -165,9 +161,9 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(Icons.error_outline, size: 48, color: AppColors.error),
-                    const SizedBox(height: 16),
-                    Text('Error al cargar notas', style: GoogleFonts.inter(color: AppColors.textSecondary)),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.s4),
+                    Text('Error al cargar notas', style: tt.bodyMedium!.copyWith(color: AppColors.textSecondary)),
+                    const SizedBox(height: AppSpacing.s2),
                     ElevatedButton(
                       onPressed: () => ref.read(notesNotifierProvider.notifier).refresh(),
                       child: const Text('Reintentar'),
@@ -225,27 +221,22 @@ class _NoteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: onTap,
       onLongPress: () => _showOptions(context),
       child: Container(
         decoration: BoxDecoration(
           color: note.color,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
           border: Border.all(
-            color: note.accentColor.withAlpha(51),
+            color: note.accentColor.withAlpha(AppAlpha.a20),
             width: 1,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.textPrimary.withAlpha(AppAlpha.a05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow: AppShadows.xs,
         ),
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(AppSpacing.s2 + 2),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -254,11 +245,7 @@ class _NoteCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       note.title,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: tt.titleSmall,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -274,37 +261,30 @@ class _NoteCard extends StatelessWidget {
                 ],
               ),
               if (note.content != null && note.content!.isNotEmpty) ...[
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.s1),
                 Expanded(
                   child: Text(
                     note.content!,
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: tt.labelMedium!.copyWith(color: AppColors.textSecondary),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ] else
                 const Spacer(),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppSpacing.s1),
               Row(
                 children: [
                   if (note.subject != null && note.subject!.isNotEmpty) ...[
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                       decoration: BoxDecoration(
-                        color: note.accentColor.withAlpha(38),
-                        borderRadius: BorderRadius.circular(4),
+                        color: note.accentColor.withAlpha(AppAlpha.a15),
+                        borderRadius: BorderRadius.circular(AppRadius.r1),
                       ),
                       child: Text(
                         note.subject!,
-                        style: GoogleFonts.inter(
-                          
-                          color: note.accentColor,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: tt.bodyMedium,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -314,10 +294,7 @@ class _NoteCard extends StatelessWidget {
                     const Spacer(),
                   Text(
                     note.updateAt != null ? formatDate(note.updateAt!) : formatDate(note.createdAt),
-                    style: GoogleFonts.inter(
-                      fontSize: 9,
-                      color: AppColors.textDisabled,
-                    ),
+                    style: tt.labelSmall!.copyWith(color: AppColors.textDisabled),
                   ),
                 ],
               ),
@@ -355,7 +332,7 @@ class _NoteCard extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.delete_outline, color: AppColors.error),
-              title: Text('Eliminar', style: GoogleFonts.inter(color: AppColors.error)),
+              title: Text('Eliminar', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.error)),
               onTap: () {
                 Navigator.pop(context);
                 onDelete();
@@ -381,21 +358,22 @@ class _PinnedNoteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    final tt = Theme.of(context).textTheme;
+    return CaptusPressable(
       onTap: onTap,
       child: Container(
         width: 140,
         margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         decoration: BoxDecoration(
           color: note.color,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.r5),
           border: Border.all(
-            color: note.accentColor.withAlpha(51),
+            color: note.accentColor.withAlpha(AppAlpha.a20),
             width: 1,
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(AppSpacing.s2 + 2),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -407,7 +385,7 @@ class _PinnedNoteCard extends StatelessWidget {
                     color: AppColors.primary,
                   ),
                   const Spacer(),
-                  GestureDetector(
+                  CaptusPressable(
                     onTap: onTogglePin,
                     child: Icon(
                       Icons.close,
@@ -417,14 +395,10 @@ class _PinnedNoteCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppSpacing.s1),
               Text(
                 note.title,
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
+                style: tt.titleSmall,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -432,10 +406,7 @@ class _PinnedNoteCard extends StatelessWidget {
               if (note.content != null && note.content!.isNotEmpty)
                 Text(
                   note.content!,
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: tt.labelMedium!.copyWith(color: AppColors.textSecondary),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

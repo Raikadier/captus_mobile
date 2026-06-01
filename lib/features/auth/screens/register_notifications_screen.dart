@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class RegisterNotificationsScreen extends StatefulWidget {
   const RegisterNotificationsScreen({super.key});
@@ -20,24 +21,28 @@ class _RegisterNotificationsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'register_notifications_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Notificaciones'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.s6),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 8),
-              _StepBar(),
-              const SizedBox(height: 28),
+              const SizedBox(height: AppSpacing.s2),
+              const _StepBar(),
+              const SizedBox(height: AppSpacing.s8),
               Center(
                 child: Column(
                   children: [
@@ -45,31 +50,27 @@ class _RegisterNotificationsScreenState
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withAlpha(25),
+                        color: AppColors.primary.withAlpha(AppAlpha.a10),
                         shape: BoxShape.circle,
                       ),
                       child: const Center(
-                        child: Text('🔔', style: TextStyle(fontSize: 40)),
+                        child: Text('🔔',
+                            style: TextStyle(fontSize: 40)),
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      'Mantente al tanto',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.s5),
+                    Text('Mantente al tanto', style: tt.headlineMedium),
+                    const SizedBox(height: AppSpacing.s2),
                     Text(
                       'Las notificaciones inteligentes de Captus te avisan antes de que sea tarde.',
-                      style: GoogleFonts.inter(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                          height: 1.5),
+                      style: tt.bodyMedium!.copyWith(
+                          color: AppColors.textSecondary, height: 1.5),
                       textAlign: TextAlign.center,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.s8),
               _NotifToggle(
                 icon: '📋',
                 label: 'Recordatorios de tareas',
@@ -96,19 +97,20 @@ class _RegisterNotificationsScreenState
                 label: 'Sugerencias de Captus IA',
                 subtitle: 'Consejos proactivos para organizarte',
                 value: _aiSuggestions,
-                onChanged: (v) => setState(() => _aiSuggestions = v),
+                onChanged: (v) =>
+                    setState(() => _aiSuggestions = v),
               ),
               const Spacer(),
               ElevatedButton(
                 onPressed: () => context.go('/home'),
                 child: const Text('Activar notificaciones'),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.s3),
               TextButton(
                 onPressed: () => context.go('/home'),
                 child: const Text('Ahora no'),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
             ],
           ),
         ),
@@ -134,28 +136,27 @@ class _NotifToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: AppSpacing.s3),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.r5),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Row(
         children: [
           Text(icon, style: const TextStyle(fontSize: 24)),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.s4),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
-                    style: GoogleFonts.inter(
-                        fontSize: 14, fontWeight: FontWeight.w600)),
+                Text(label, style: tt.headlineSmall),
                 Text(subtitle,
-                    style: GoogleFonts.inter(
-                        fontSize: 12, color: AppColors.textSecondary)),
+                    style: tt.bodySmall!
+                        .copyWith(color: AppColors.textSecondary)),
               ],
             ),
           ),
@@ -167,6 +168,8 @@ class _NotifToggle extends StatelessWidget {
 }
 
 class _StepBar extends StatelessWidget {
+  const _StepBar();
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -174,10 +177,10 @@ class _StepBar extends StatelessWidget {
         return Expanded(
           child: Container(
             height: 4,
-            margin: EdgeInsets.only(right: i < 2 ? 4 : 0),
+            margin: EdgeInsets.only(right: i < 2 ? AppSpacing.s1 : 0),
             decoration: BoxDecoration(
               color: AppColors.primary,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(AppRadius.r1),
             ),
           ),
         );

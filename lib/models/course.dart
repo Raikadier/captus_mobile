@@ -101,6 +101,52 @@ class CourseModel {
     );
   }
 
+  /// Maps an Express API course object to [CourseModel].
+  ///
+  /// Handles both teacher shape  (`title`, `invite_code`, `students`,
+  /// `pendingTasks`) and student shape (`title`, `invite_code`, `professor`,
+  /// `progress`).
+  ///
+  /// [colorSeed] is used to assign a stable colour from the palette when the
+  /// server does not provide one (cycle through palette indices).
+  factory CourseModel.fromApiJson(Map<String, dynamic> json,
+      {int colorSeed = 0}) {
+    final activitiesRaw = json['activities'];
+    List<ActivityModel> activities = [];
+    if (activitiesRaw is List) {
+      activities = activitiesRaw
+          .map((a) => ActivityModel.fromJson(a as Map<String, dynamic>))
+          .toList();
+    }
+
+    // Derive a stable colour index from the server id hash or the seed.
+    final idStr = json['id']?.toString() ?? '';
+    final colorIndex = idStr.isNotEmpty
+        ? idStr.codeUnits.fold(0, (a, b) => a + b) % 6
+        : colorSeed % 6;
+
+    return CourseModel(
+      id: idStr,
+      // Accept both "title" (API) and "name" (local schema)
+      name: json['title']?.toString() ?? json['name']?.toString() ?? '',
+      // Accept "invite_code" (API) and "code" (local schema)
+      code: json['invite_code']?.toString() ?? json['code']?.toString() ?? '',
+      // Student shape has "professor"; teacher shape has no teacher name
+      teacherName: json['professor']?.toString() ??
+          json['teacherName']?.toString() ??
+          '',
+      colorIndex: (json['colorIndex'] as num?)?.toInt() ?? colorIndex,
+      progress: (json['progress'] as num?)?.toDouble() ?? 0.0,
+      // Teacher shape returns "pendingTasks"; student shape has nothing yet
+      pendingActivities: (json['pendingTasks'] as num?)?.toInt() ??
+          (json['pendingActivities'] as num?)?.toInt() ??
+          0,
+      activities: activities,
+      description: json['description']?.toString(),
+      schedule: json['schedule']?.toString(),
+    );
+  }
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,

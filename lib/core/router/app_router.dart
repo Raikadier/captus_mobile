@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../constants/app_colors.dart';
 import '../providers/auth_provider.dart';
@@ -82,6 +81,8 @@ import '../../features/projects/screens/projects_list_screen.dart';
 import '../../features/projects/screens/project_create_screen.dart';
 import '../../features/projects/screens/project_detail_screen.dart';
 import '../../features/projects/screens/project_members_screen.dart';
+import '../constants/app_radius.dart';
+import '../constants/app_spacing.dart';
 
 // Use the shared key so FCM / deep-link code can navigate imperatively
 final _rootNavigatorKey  = RouterService.navigatorKey;
@@ -255,10 +256,11 @@ GoRouter createRouter(WidgetRef ref) {
             name: 'calendar',
             builder: (_, __) => const CalendarScreen(),
           ),
+          // /ai → history as entry point (BRE-04)
           GoRoute(
             path: '/ai',
             name: 'ai_assistant',
-            builder: (_, __) => const AiChatScreen(),
+            builder: (_, __) => const AiChatHistoryScreen(),
           ),
           GoRoute(
             path: '/groups',
@@ -289,6 +291,17 @@ GoRouter createRouter(WidgetRef ref) {
         ],
       ),
 
+      // AI chat (full-screen, outside shell — no bottom nav while chatting)
+      GoRoute(
+        path: '/ai/chat',
+        name: 'ai_chat',
+        builder: (_, __) => const AiChatScreen(),
+      ),
+      GoRoute(
+        path: '/ai/history',
+        name: 'ai_history',
+        builder: (_, __) => const AiChatHistoryScreen(),
+      ),
       GoRoute(
         path: '/notes/new',
         name: 'note_create',
@@ -465,11 +478,6 @@ GoRouter createRouter(WidgetRef ref) {
         path: '/ai/teacher-tools',
         name: 'ai_teacher_tools',
         builder: (_, __) => const AiTeacherToolsScreen(),
-      ),
-      GoRoute(
-        path: '/ai/history',
-        name: 'ai_chat_history',
-        builder: (_, __) => const AiChatHistoryScreen(),
       ),
       GoRoute(
         path: '/ai/settings',
@@ -678,6 +686,7 @@ class NotFoundScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tt = Theme.of(context).textTheme;
     final authState = ref.watch(authProvider).asData?.value;
     final role = authState?.role ?? 'student';
 
@@ -685,31 +694,24 @@ class NotFoundScreen extends ConsumerWidget {
       backgroundColor: AppColors.background,
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSpacing.s6),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.search_off_rounded,
                   size: 80, color: AppColors.warning),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
               Text(
                 'Página no encontrada',
-                style: GoogleFonts.inter(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: tt.displaySmall!.copyWith(color: AppColors.textPrimary),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.s3),
               Text(
                 'No pudimos encontrar la ruta: $location',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  color: AppColors.textSecondary,
-                ),
+                style: tt.headlineSmall,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.s8),
               FilledButton(
                 onPressed: () {
                   if (authState == null || !authState.isAuthenticated) {
@@ -730,14 +732,14 @@ class NotFoundScreen extends ConsumerWidget {
                   backgroundColor: AppColors.warning,
                   foregroundColor: AppColors.textOnPrimary,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      const EdgeInsets.symmetric(horizontal: AppSpacing.s8, vertical: AppSpacing.s4),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.r5),
                   ),
                 ),
                 child: Text(
                   'Ir al inicio',
-                  style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                  style: tt.titleMedium,
                 ),
               ),
             ],

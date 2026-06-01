@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class NotificationsSettingsScreen extends StatefulWidget {
   const NotificationsSettingsScreen({super.key});
@@ -22,17 +23,20 @@ class _NotificationsSettingsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'notifications_settings_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Notificaciones'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.s4),
         children: [
           _SectionCard(
             title: 'Tareas',
@@ -51,7 +55,7 @@ class _NotificationsSettingsScreenState
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           _SectionCard(
             title: 'Grupos',
             icon: '👥',
@@ -63,7 +67,7 @@ class _NotificationsSettingsScreenState
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           _SectionCard(
             title: 'Cursos',
             icon: '📚',
@@ -75,7 +79,7 @@ class _NotificationsSettingsScreenState
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           _SectionCard(
             title: 'Captus IA',
             icon: '🤖',
@@ -88,15 +92,15 @@ class _NotificationsSettingsScreenState
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.s5),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.s4),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.r5),
               border: Border.all(
                 color: _doNotDisturb
-                    ? AppColors.error.withAlpha(76)
+                    ? AppColors.error.withAlpha(AppAlpha.a30)
                     : AppColors.border,
                 width: 0.5,
               ),
@@ -107,21 +111,18 @@ class _NotificationsSettingsScreenState
                 Row(
                   children: [
                     const Text('🔕', style: TextStyle(fontSize: 22)),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.s3),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Modo no molestar',
-                            style: GoogleFonts.inter(
-                                fontSize: 14, fontWeight: FontWeight.w600),
+                            style: tt.titleMedium,
                           ),
                           Text(
                             'Silencia todas las notificaciones',
-                            style: GoogleFonts.inter(
-                                fontSize: 12,
-                                color: AppColors.textSecondary),
+                            style: tt.labelLarge!.copyWith(color: AppColors.textSecondary),
                           ),
                         ],
                       ),
@@ -134,13 +135,12 @@ class _NotificationsSettingsScreenState
                   ],
                 ),
                 if (_doNotDisturb) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.s3),
                   const Divider(color: AppColors.border),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.s2),
                   Text(
                     'Horario: 10:00 PM — 8:00 AM',
-                    style: GoogleFonts.inter(
-                        fontSize: 13, color: AppColors.textSecondary),
+                    style: tt.bodySmall!.copyWith(color: AppColors.textSecondary),
                   ),
                   TextButton(
                     onPressed: () {},
@@ -173,11 +173,12 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.r5),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Column(
@@ -186,15 +187,14 @@ class _SectionCard extends StatelessWidget {
           Row(
             children: [
               Text(icon, style: const TextStyle(fontSize: 18)),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.s2),
               Text(
                 title,
-                style: GoogleFonts.inter(
-                    fontSize: 14, fontWeight: FontWeight.w700),
+                style: tt.titleMedium,
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           ...children,
         ],
       ),
@@ -217,8 +217,9 @@ class _NotifRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s2),
       child: Row(
         children: [
           Expanded(
@@ -226,12 +227,10 @@ class _NotifRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: GoogleFonts.inter(fontSize: 13)),
+                    style: tt.titleSmall),
                 if (subtitle != null)
                   Text(subtitle!,
-                      style: GoogleFonts.inter(
-                          fontSize: 11,
-                          color: AppColors.textSecondary)),
+                      style: tt.labelMedium!.copyWith(color: AppColors.textSecondary)),
               ],
             ),
           ),

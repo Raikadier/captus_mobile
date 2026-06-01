@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/task.dart';
+import '../../core/constants/app_radius.dart';
 
 class PriorityBar extends StatelessWidget {
   final TaskPriority priority;
@@ -26,8 +27,8 @@ class PriorityBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(12),
-          bottomLeft: Radius.circular(12),
+          topLeft: Radius.circular(AppRadius.r5),
+          bottomLeft: Radius.circular(AppRadius.r5),
         ),
       ),
     );

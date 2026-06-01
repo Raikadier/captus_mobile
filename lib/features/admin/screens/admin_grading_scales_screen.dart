@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_errors.dart';
 import '../services/admin_service.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class AdminGradingScalesScreen extends StatefulWidget {
   const AdminGradingScalesScreen({super.key});
@@ -53,11 +54,11 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
       ),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
-          left: 24, right: 24, top: 24,
+          left: AppSpacing.s6, right: AppSpacing.s6, top: AppSpacing.s6,
           bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
         ),
         child: Form(
@@ -68,19 +69,16 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
             children: [
               Text(
                 existing == null ? 'Nueva escala' : 'Editar escala',
-                style: GoogleFonts.inter(
-                  fontSize: 18, fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: AppColors.textPrimary),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s5),
               TextFormField(
                 controller: nameCtrl,
                 decoration: const InputDecoration(labelText: 'Nombre (ej. Escala 0–5)'),
                 validator: (v) =>
                     (v == null || v.trim().isEmpty) ? 'Requerido' : null,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.s3),
               Row(children: [
                 Expanded(
                   child: TextFormField(
@@ -91,7 +89,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
                         double.tryParse(v ?? '') == null ? 'Número inválido' : null,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.s3),
                 Expanded(
                   child: TextFormField(
                     controller: maxCtrl,
@@ -102,7 +100,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
                   ),
                 ),
               ]),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
@@ -198,18 +196,17 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'admin_grading_scales_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: Text(
           'Escalas de calificación',
-          style: GoogleFonts.inter(
-              fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.textPrimary),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
+            tooltip: 'Actualizar',
             onPressed: _load,
           ),
         ],
@@ -229,7 +226,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(_error!, textAlign: TextAlign.center),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.s3),
                       ElevatedButton(
                           onPressed: _load, child: const Text('Reintentar')),
                     ],
@@ -242,14 +239,12 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
                         children: [
                           Icon(Icons.grading_outlined,
                               size: 64, color: AppColors.textSecondary),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: AppSpacing.s4),
                           Text('Sin escalas de calificación',
-                              style: GoogleFonts.inter(
-                                  color: AppColors.textSecondary, fontSize: 16)),
-                          const SizedBox(height: 8),
+                              style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: AppColors.textSecondary)),
+                          const SizedBox(height: AppSpacing.s2),
                           Text('Crea tu primera escala con el botón +',
-                              style: GoogleFonts.inter(
-                                  color: AppColors.textSecondary, fontSize: 13)),
+                              style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary)),
                         ],
                       ),
                     )
@@ -267,30 +262,30 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
                           final max = scale['max_score'];
 
                           return Card(
-                            margin: const EdgeInsets.only(bottom: 12),
+                            margin: const EdgeInsets.only(bottom: AppSpacing.s3),
                             color: AppColors.surface,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.r5),
                               side: isDefault
                                   ? BorderSide(
                                       color: AppColors.primary, width: 1.5)
                                   : BorderSide.none,
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.all(AppSpacing.s4),
                               child: Row(
                                 children: [
                                   Container(
                                     width: 48,
                                     height: 48,
                                     decoration: BoxDecoration(
-                                      color: AppColors.primary.withAlpha(20),
-                                      borderRadius: BorderRadius.circular(10),
+                                      color: AppColors.primary.withAlpha(AppAlpha.a08),
+                                      borderRadius: BorderRadius.circular(AppRadius.r4),
                                     ),
                                     child: Icon(Icons.grading_outlined,
                                         color: AppColors.primary),
                                   ),
-                                  const SizedBox(width: 14),
+                                  const SizedBox(width: AppSpacing.s3),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -299,13 +294,10 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
                                         Row(children: [
                                           Text(
                                             scale['name'] as String? ?? '',
-                                            style: GoogleFonts.inter(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 14,
-                                                color: AppColors.textPrimary),
+                                            style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.textPrimary),
                                           ),
                                           if (isDefault) ...[
-                                            const SizedBox(width: 8),
+                                            const SizedBox(width: AppSpacing.s2),
                                             Container(
                                               padding:
                                                   const EdgeInsets.symmetric(
@@ -313,25 +305,19 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
                                                       vertical: 2),
                                               decoration: BoxDecoration(
                                                 color: AppColors.primary
-                                                    .withAlpha(20),
+                                                    .withAlpha(AppAlpha.a08),
                                                 borderRadius:
-                                                    BorderRadius.circular(20),
+                                                    BorderRadius.circular(AppRadius.r8),
                                               ),
                                               child: Text('predeterminada',
-                                                  style: GoogleFonts.inter(
-                                                      fontSize: 11,
-                                                      color: AppColors.primary,
-                                                      fontWeight:
-                                                          FontWeight.w600)),
+                                                  style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.primary)),
                                             ),
                                           ],
                                         ]),
-                                        const SizedBox(height: 4),
+                                        const SizedBox(height: AppSpacing.s1),
                                         Text(
                                           'Rango: $min – $max',
-                                          style: GoogleFonts.inter(
-                                              fontSize: 13,
-                                              color: AppColors.textSecondary),
+                                          style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary),
                                         ),
                                       ],
                                     ),
@@ -373,8 +359,7 @@ class _AdminGradingScalesScreenState extends State<AdminGradingScalesScreen> {
                                                     Icons.delete_outline,
                                                     color: AppColors.error),
                                                 title: Text('Eliminar',
-                                                    style: GoogleFonts.inter(
-                                                        color: AppColors.error)),
+                                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.error)),
                                                 contentPadding:
                                                     EdgeInsets.zero)),
                                     ],

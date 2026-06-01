@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -19,18 +20,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'settings_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: const Text('Configuración'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.s4),
         children: [
           _Section(
             title: 'GENERAL',
@@ -70,7 +71,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           _Section(
             title: 'PRIVACIDAD',
             children: [
@@ -95,7 +96,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           _Section(
             title: 'CUENTA',
             children: [
@@ -119,15 +120,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.s6),
           Center(
             child: Text(
               'Captus v1.0.0',
-              style: GoogleFonts.inter(
-                  fontSize: 12, color: AppColors.textDisabled),
+              style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.textDisabled),
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: AppSpacing.s8),
         ],
       ),
     );
@@ -144,27 +144,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
       ),
       builder: (_) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Container(
             width: 36,
             height: 4,
             decoration: BoxDecoration(
               color: AppColors.border,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(AppRadius.r1),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           Text(title,
               style:
-                  GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
+                  Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(height: AppSpacing.s2),
           ...options.map((opt) => ListTile(
-                title: Text(opt, style: GoogleFonts.inter(fontSize: 14)),
+                title: Text(opt, style: Theme.of(context).textTheme.bodyMedium),
                 trailing: opt == current
                     ? const Icon(Icons.check_rounded, color: AppColors.primary)
                     : null,
@@ -173,7 +173,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Navigator.pop(context);
                 },
               )),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
         ],
       ),
     );
@@ -185,10 +185,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surface,
         title: Text('Eliminar cuenta',
-            style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+            style: Theme.of(context).textTheme.titleMedium),
         content: Text(
           'Esta acción es irreversible. Se eliminarán todos tus datos.',
-          style: GoogleFonts.inter(color: AppColors.textSecondary),
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
@@ -200,7 +200,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Navigator.pop(context);
               context.go('/login');
             },
-            child: Text('Eliminar', style: GoogleFonts.inter(color: AppColors.error)),
+            child: Text('Eliminar', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.error)),
           ),
         ],
       ),
@@ -221,18 +221,13 @@ class _Section extends StatelessWidget {
       children: [
         Text(
           title,
-          style: GoogleFonts.inter(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textSecondary,
-            letterSpacing: 0.8,
-          ),
+          style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textSecondary),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.s2),
         Container(
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.r5),
             border: Border.all(color: AppColors.border, width: 0.5),
           ),
           child: Column(children: children),
@@ -260,22 +255,20 @@ class _ToggleRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s1),
       child: Row(
         children: [
           Icon(icon, size: 18, color: AppColors.textSecondary),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.s3),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: GoogleFonts.inter(
-                        fontSize: 13, color: AppColors.textPrimary)),
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textPrimary)),
                 if (subtitle != null)
                   Text(subtitle!,
-                      style: GoogleFonts.inter(
-                          fontSize: 11, color: AppColors.textSecondary)),
+                      style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textSecondary)),
               ],
             ),
           ),
@@ -305,20 +298,18 @@ class _PickerRow extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
         child: Row(
           children: [
             Icon(icon, size: 18, color: AppColors.textSecondary),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child: Text(label,
-                  style: GoogleFonts.inter(
-                      fontSize: 13, color: AppColors.textPrimary)),
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textPrimary)),
             ),
             Text(value,
-                style: GoogleFonts.inter(
-                    fontSize: 13, color: AppColors.textSecondary)),
-            const SizedBox(width: 4),
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary)),
+            const SizedBox(width: AppSpacing.s1),
             const Icon(Icons.chevron_right_rounded,
                 size: 16, color: AppColors.textSecondary),
           ],
@@ -348,14 +339,14 @@ class _LinkRow extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
         child: Row(
           children: [
             Icon(icon, size: 18, color: c),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child:
-                  Text(label, style: GoogleFonts.inter(fontSize: 13, color: c)),
+                  Text(label, style: Theme.of(context).textTheme.bodySmall),
             ),
             const Icon(Icons.chevron_right_rounded,
                 size: 16, color: AppColors.textSecondary),

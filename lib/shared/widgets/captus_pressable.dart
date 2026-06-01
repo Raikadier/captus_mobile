@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/constants/app_animations.dart';
 
-/// A tappable wrapper that applies a scale-down press animation
-/// following the Captus design system (scale 0.97, 80ms instant).
+/// Premium tappable wrapper following Captus Design System v2.
 ///
-/// Replaces bare [GestureDetector] for any interactive card, button,
-/// or list item that needs tactile press feedback.
+/// Applies simultaneous scale + opacity press animation for a tactile,
+/// natural feel. Uses design-system spring curve for the release bounce.
+///
+/// Press state:  scale(0.97) + opacity(0.90) — instant/exit (80ms)
+/// Release state: scale(1.0)  + opacity(1.0)  — quick/springShort (120ms)
+///
+/// Replaces bare [GestureDetector] for interactive cards, list items,
+/// and any tappable surface that needs premium feedback.
 ///
 /// Usage:
 /// ```dart
@@ -20,10 +25,13 @@ class CaptusPressable extends StatefulWidget {
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
 
-  /// Scale factor at maximum press depth. Default: 0.97 (design spec).
+  /// Scale factor at maximum press depth. Default: [AppMotion.pressScale] = 0.97.
   final double pressScale;
 
-  /// Whether to trigger a light haptic when pressed.
+  /// Opacity at maximum press depth. Default: [AppMotion.pressOpacity] = 0.90.
+  final double pressOpacity;
+
+  /// Whether to trigger a light haptic on tap-down.
   final bool haptic;
 
   const CaptusPressable({
@@ -31,8 +39,9 @@ class CaptusPressable extends StatefulWidget {
     required this.child,
     this.onTap,
     this.onLongPress,
-    this.pressScale = 0.97,
-    this.haptic = false,
+    this.pressScale   = AppMotion.pressScale,
+    this.pressOpacity = AppMotion.pressOpacity,
+    this.haptic       = false,
   });
 
   @override
@@ -43,22 +52,33 @@ class _CaptusPressableState extends State<CaptusPressable>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _scale;
+  late final Animation<double> _opacity;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: AppDurations.instant,      // 80ms press
-      reverseDuration: AppDurations.fast,  // 150ms release
+      duration: AppMotion.pressDuration,    // 80ms — instant
+      reverseDuration: AppMotion.releaseDuration, // 120ms — quick
     );
+
     _scale = Tween<double>(
       begin: 1.0,
       end: widget.pressScale,
     ).animate(CurvedAnimation(
       parent: _controller,
-      curve: AppCurves.exit,    // Accelerate into press
-      reverseCurve: AppCurves.enter, // Decelerate on release
+      curve: AppMotion.pressCurve,   // easeIn — accelerate into press
+      reverseCurve: AppMotion.releaseCurve.flipped, // springShort — bounce back
+    ));
+
+    _opacity = Tween<double>(
+      begin: 1.0,
+      end: widget.pressOpacity,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: AppMotion.pressCurve,
+      reverseCurve: AppCurves.smooth,
     ));
   }
 
@@ -78,14 +98,25 @@ class _CaptusPressableState extends State<CaptusPressable>
 
   @override
   Widget build(BuildContext context) {
+    final interactive = widget.onTap != null || widget.onLongPress != null;
     return GestureDetector(
       onTap: widget.onTap,
       onLongPress: widget.onLongPress,
-      onTapDown: widget.onTap != null ? _onTapDown : null,
-      onTapUp: widget.onTap != null ? _onTapUp : null,
-      onTapCancel: widget.onTap != null ? _onTapCancel : null,
+      onTapDown: interactive ? _onTapDown : null,
+      onTapUp:   interactive ? _onTapUp   : null,
+      onTapCancel: interactive ? _onTapCancel : null,
       behavior: HitTestBehavior.opaque,
-      child: ScaleTransition(scale: _scale, child: widget.child),
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) => Transform.scale(
+          scale: _scale.value,
+          child: Opacity(
+            opacity: _opacity.value,
+            child: child,
+          ),
+        ),
+        child: widget.child,
+      ),
     );
   }
 }

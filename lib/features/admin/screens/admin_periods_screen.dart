@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_errors.dart';
 import '../services/admin_service.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class AdminPeriodsScreen extends StatefulWidget {
   const AdminPeriodsScreen({super.key});
@@ -51,12 +52,12 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
       ),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => Padding(
           padding: EdgeInsets.only(
-            left: 24, right: 24, top: 24,
+            left: AppSpacing.s6, right: AppSpacing.s6, top: AppSpacing.s6,
             bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
           ),
           child: Form(
@@ -67,12 +68,9 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
               children: [
                 Text(
                   existing == null ? 'Nuevo período' : 'Editar período',
-                  style: GoogleFonts.inter(
-                    fontSize: 18, fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: AppColors.textPrimary),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.s5),
                 TextFormField(
                   controller: nameCtrl,
                   decoration: const InputDecoration(
@@ -80,7 +78,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                   validator: (v) =>
                       (v == null || v.trim().isEmpty) ? 'Requerido' : null,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.s3),
                 // Start date
                 ListTile(
                   contentPadding: EdgeInsets.zero,
@@ -89,7 +87,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                     startDate != null
                         ? 'Inicio: ${startDate!.toLocal().toString().split(' ')[0]}'
                         : 'Fecha de inicio (opcional)',
-                    style: GoogleFonts.inter(fontSize: 14),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   onTap: () async {
                     final d = await showDatePicker(
@@ -109,7 +107,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                     endDate != null
                         ? 'Fin: ${endDate!.toLocal().toString().split(' ')[0]}'
                         : 'Fecha de fin (opcional)',
-                    style: GoogleFonts.inter(fontSize: 14),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   onTap: () async {
                     final d = await showDatePicker(
@@ -121,7 +119,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                     if (d != null) setModalState(() => endDate = d);
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s4),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
@@ -220,17 +218,16 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'admin_periods_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: Text(
           'Períodos académicos',
-          style: GoogleFonts.inter(
-              fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.textPrimary),
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _load),
+          IconButton(icon: const Icon(Icons.refresh),
+tooltip: 'Actualizar', onPressed: _load),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -248,7 +245,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(_error!, textAlign: TextAlign.center),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.s3),
                       ElevatedButton(
                           onPressed: _load, child: const Text('Reintentar')),
                     ],
@@ -261,14 +258,12 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                         children: [
                           Icon(Icons.date_range_outlined,
                               size: 64, color: AppColors.textSecondary),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: AppSpacing.s4),
                           Text('Sin períodos académicos',
-                              style: GoogleFonts.inter(
-                                  color: AppColors.textSecondary, fontSize: 16)),
-                          const SizedBox(height: 8),
+                              style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: AppColors.textSecondary)),
+                          const SizedBox(height: AppSpacing.s2),
                           Text('Crea tu primer período con el botón +',
-                              style: GoogleFonts.inter(
-                                  color: AppColors.textSecondary, fontSize: 13)),
+                              style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary)),
                         ],
                       ),
                     )
@@ -294,17 +289,17 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                           }
 
                           return Card(
-                            margin: const EdgeInsets.only(bottom: 12),
+                            margin: const EdgeInsets.only(bottom: AppSpacing.s3),
                             color: AppColors.surface,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.r5),
                               side: isActive
                                   ? const BorderSide(
                                       color: AppColors.success, width: 1.5)
                                   : BorderSide.none,
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.all(AppSpacing.s4),
                               child: Row(
                                 children: [
                                   Container(
@@ -313,15 +308,15 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                                     decoration: BoxDecoration(
                                       color: isActive
                                           ? AppColors.success.withAlpha(AppAlpha.a20)
-                                          : AppColors.primary.withAlpha(20),
-                                      borderRadius: BorderRadius.circular(10),
+                                          : AppColors.primary.withAlpha(AppAlpha.a08),
+                                      borderRadius: BorderRadius.circular(AppRadius.r4),
                                     ),
                                     child: Icon(Icons.date_range_outlined,
                                         color: isActive
                                             ? AppColors.success
                                             : AppColors.primary),
                                   ),
-                                  const SizedBox(width: 14),
+                                  const SizedBox(width: AppSpacing.s3),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -330,13 +325,10 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                                         Row(children: [
                                           Text(
                                             period['name'] as String? ?? '',
-                                            style: GoogleFonts.inter(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 15,
-                                                color: AppColors.textPrimary),
+                                            style: Theme.of(context).textTheme.titleLarge!.copyWith(color: AppColors.textPrimary),
                                           ),
                                           if (isActive) ...[
-                                            const SizedBox(width: 8),
+                                            const SizedBox(width: AppSpacing.s2),
                                             Container(
                                               padding:
                                                   const EdgeInsets.symmetric(
@@ -344,26 +336,20 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                                                       vertical: 2),
                                               decoration: BoxDecoration(
                                                 color: AppColors.success
-                                                    .withAlpha(25),
+                                                    .withAlpha(AppAlpha.a10),
                                                 borderRadius:
-                                                    BorderRadius.circular(20),
+                                                    BorderRadius.circular(AppRadius.r8),
                                               ),
                                               child: Text('activo',
-                                                  style: GoogleFonts.inter(
-                                                      fontSize: 11,
-                                                      color: AppColors.success,
-                                                      fontWeight:
-                                                          FontWeight.w600)),
+                                                  style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.success)),
                                             ),
                                           ],
                                         ]),
                                         if (dateRange.isNotEmpty) ...[
-                                          const SizedBox(height: 4),
+                                          const SizedBox(height: AppSpacing.s1),
                                           Text(
                                             dateRange,
-                                            style: GoogleFonts.inter(
-                                                fontSize: 13,
-                                                color: AppColors.textSecondary),
+                                            style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary),
                                           ),
                                         ],
                                       ],
@@ -396,8 +382,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                                                     Icons.check_circle_outline,
                                                     color: AppColors.success),
                                                 title: Text('Marcar activo',
-                                                    style: GoogleFonts.inter(
-                                                        color: AppColors.success)),
+                                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.success)),
                                                 contentPadding:
                                                     EdgeInsets.zero)),
                                       PopupMenuItem(
@@ -407,8 +392,7 @@ class _AdminPeriodsScreenState extends State<AdminPeriodsScreen> {
                                                   Icons.delete_outline,
                                                   color: AppColors.error),
                                               title: Text('Eliminar',
-                                                  style: GoogleFonts.inter(
-                                                      color: AppColors.error)),
+                                                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.error)),
                                               contentPadding:
                                                   EdgeInsets.zero)),
                                     ],

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_errors.dart';
 import '../services/admin_service.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class AdminCoursesScreen extends StatefulWidget {
   const AdminCoursesScreen({super.key});
@@ -65,11 +66,11 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8))),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModal) => Padding(
           padding: EdgeInsets.only(
-            left: 20, right: 20, top: 20,
+            left: AppSpacing.s5, right: AppSpacing.s5, top: AppSpacing.s5,
             bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
           ),
           child: Form(
@@ -80,10 +81,8 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(isEdit ? 'Editar curso' : 'Nuevo curso',
-                      style: GoogleFonts.inter(
-                          fontSize: 18, fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary)),
-                  const SizedBox(height: 18),
+                      style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: AppColors.textPrimary)),
+                  const SizedBox(height: AppSpacing.s4),
                   TextFormField(
                     controller: nameCtrl,
                     decoration: const InputDecoration(
@@ -93,7 +92,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                     validator: (v) =>
                         (v == null || v.trim().isEmpty) ? 'Requerido' : null,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.s3),
                   TextFormField(
                     controller: descCtrl,
                     decoration: const InputDecoration(
@@ -101,7 +100,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                         border: OutlineInputBorder()),
                     maxLines: 2,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.s3),
                   if (_teachers.isNotEmpty)
                     DropdownButtonFormField<String>(
                       value: teacherId,
@@ -121,7 +120,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                       ],
                       onChanged: (v) => setModal(() => teacherId = v),
                     ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.s3),
                   if (_periods.isNotEmpty)
                     DropdownButtonFormField<String>(
                       value: periodId,
@@ -141,7 +140,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                       ],
                       onChanged: (v) => setModal(() => periodId = v),
                     ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.s3),
                   if (_scales.isNotEmpty)
                     DropdownButtonFormField<String>(
                       value: scaleId,
@@ -161,7 +160,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                       ],
                       onChanged: (v) => setModal(() => scaleId = v),
                     ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.s5),
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
@@ -221,7 +220,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8))),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModal) {
           if (loading && students.isEmpty && err == null) {
@@ -246,12 +245,9 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Estudiantes inscritos',
-                            style: GoogleFonts.inter(
-                                fontSize: 18, fontWeight: FontWeight.w700,
-                                color: AppColors.textPrimary)),
+                            style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: AppColors.textPrimary)),
                         Text(course['name'] as String? ?? '',
-                            style: GoogleFonts.inter(
-                                fontSize: 13, color: AppColors.textSecondary)),
+                            style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary)),
                       ],
                     ),
                   ),
@@ -279,11 +275,10 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                   children: [
                                     Icon(Icons.school_outlined,
                                         size: 48, color: AppColors.textSecondary),
-                                    const SizedBox(height: 12),
+                                    const SizedBox(height: AppSpacing.s3),
                                     Text('Sin estudiantes inscritos',
-                                        style: GoogleFonts.inter(
-                                            color: AppColors.textSecondary)),
-                                    const SizedBox(height: 12),
+                                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary)),
+                                    const SizedBox(height: AppSpacing.s3),
                                     TextButton.icon(
                                       onPressed: () {
                                         Navigator.pop(ctx);
@@ -306,26 +301,18 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                       s['email'] as String? ?? 'Sin nombre';
                                   final email = s['email'] as String? ?? '';
                                   return ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 4, vertical: 4),
                                     leading: CircleAvatar(
-                                      backgroundColor: AppColors.primary.withAlpha(25),
+                                      backgroundColor: AppColors.primary.withAlpha(AppAlpha.a10),
                                       child: Text(
                                         name.isNotEmpty ? name[0].toUpperCase() : '?',
-                                        style: GoogleFonts.inter(
-                                            color: AppColors.primary,
-                                            fontWeight: FontWeight.w600),
+                                        style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.primary),
                                       ),
                                     ),
                                     title: Text(name,
-                                        style: GoogleFonts.inter(
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 14)),
+                                        style: Theme.of(context).textTheme.titleMedium),
                                     subtitle: email.isNotEmpty
                                         ? Text(email,
-                                            style: GoogleFonts.inter(
-                                                fontSize: 12,
-                                                color: AppColors.textSecondary))
+                                            style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.textSecondary))
                                         : null,
                                     trailing: IconButton(
                                       icon: const Icon(Icons.person_remove_outlined,
@@ -384,10 +371,10 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8))),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
-          left: 20, right: 20, top: 20,
+          left: AppSpacing.s5, right: AppSpacing.s5, top: AppSpacing.s5,
           bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
         ),
         child: Column(
@@ -395,13 +382,10 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Inscribir estudiantes',
-                style: GoogleFonts.inter(
-                    fontSize: 18, fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary)),
+                style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: AppColors.textPrimary)),
             Text(course['name'] as String? ?? '',
-                style: GoogleFonts.inter(
-                    fontSize: 13, color: AppColors.textSecondary)),
-            const SizedBox(height: 16),
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary)),
+            const SizedBox(height: AppSpacing.s4),
             TextField(
               controller: ctrl,
               maxLines: 5,
@@ -411,11 +395,10 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                   border: OutlineInputBorder(),
                   alignLabelWithHint: true),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.s2),
             Text('Un email por línea. Solo estudiantes ya registrados en Captus.',
-                style: GoogleFonts.inter(
-                    fontSize: 12, color: AppColors.textSecondary)),
-            const SizedBox(height: 16),
+                style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.textSecondary)),
+            const SizedBox(height: AppSpacing.s4),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
@@ -471,11 +454,11 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8))),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModal) => Padding(
           padding: EdgeInsets.only(
-            left: 20, right: 20, top: 20,
+            left: AppSpacing.s5, right: AppSpacing.s5, top: AppSpacing.s5,
             bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
           ),
           child: Form(
@@ -485,14 +468,11 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Notificación institucional',
-                    style: GoogleFonts.inter(
-                        fontSize: 18, fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary)),
-                const SizedBox(height: 4),
+                    style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: AppColors.textPrimary)),
+                const SizedBox(height: AppSpacing.s1),
                 Text('Envía un mensaje a los miembros de la institución',
-                    style: GoogleFonts.inter(
-                        fontSize: 13, color: AppColors.textSecondary)),
-                const SizedBox(height: 18),
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary)),
+                const SizedBox(height: AppSpacing.s4),
                 DropdownButtonFormField<String?>(
                   value: selectedRole,
                   decoration: const InputDecoration(
@@ -505,7 +485,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                   ],
                   onChanged: (v) => setModal(() => selectedRole = v),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.s3),
                 TextFormField(
                   controller: titleCtrl,
                   decoration: const InputDecoration(
@@ -513,7 +493,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                   validator: (v) =>
                       (v == null || v.trim().isEmpty) ? 'Requerido' : null,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.s3),
                 TextFormField(
                   controller: bodyCtrl,
                   decoration: const InputDecoration(
@@ -522,7 +502,7 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                       alignLabelWithHint: true),
                   maxLines: 3,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.s5),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
@@ -601,13 +581,11 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'admin_courses_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: Text('Cursos',
-            style: GoogleFonts.inter(
-                fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.textPrimary)),
         actions: [
           IconButton(
             icon: const Icon(Icons.campaign_outlined, color: AppColors.primary),
@@ -630,14 +608,12 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                     children: [
                       const Icon(Icons.book_outlined,
                           size: 56, color: AppColors.textSecondary),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.s3),
                       Text('No hay cursos',
-                          style: GoogleFonts.inter(
-                              color: AppColors.textSecondary, fontSize: 16)),
-                      const SizedBox(height: 8),
+                          style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: AppColors.textSecondary)),
+                      const SizedBox(height: AppSpacing.s2),
                       Text('Crea el primero con el botón +',
-                          style: GoogleFonts.inter(
-                              color: AppColors.textSecondary, fontSize: 13)),
+                          style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.textSecondary)),
                     ],
                   ),
                 )
@@ -645,9 +621,9 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                   onRefresh: _load,
                   color: AppColors.primary,
                   child: ListView.separated(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(AppSpacing.s4),
                     itemCount: _courses.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.s2 + 2),
                     itemBuilder: (_, i) {
                       final c = _courses[i] as Map<String, dynamic>;
                       final hasTeacher = c['teacher_id'] != null;
@@ -655,10 +631,10 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                       final periodName = c['period']?['name'] as String?;
 
                       return Container(
-                        padding: const EdgeInsets.all(14),
+                        padding: const EdgeInsets.all(AppSpacing.s3 + 2),
                         decoration: BoxDecoration(
                           color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.r5),
                           border: Border.all(color: AppColors.border),
                         ),
                         child: Column(
@@ -667,25 +643,19 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                             Row(children: [
                               Expanded(
                                 child: Text(c['name'] as String? ?? '',
-                                    style: GoogleFonts.inter(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 14,
-                                        color: AppColors.textPrimary)),
+                                    style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.textPrimary)),
                               ),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 3),
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary.withAlpha(20),
-                                  borderRadius: BorderRadius.circular(20),
+                                  color: AppColors.primary.withAlpha(AppAlpha.a08),
+                                  borderRadius: BorderRadius.circular(AppRadius.r8),
                                 ),
                                 child: Text('$enrollments alumnos',
-                                    style: GoogleFonts.inter(
-                                        fontSize: 11,
-                                        color: AppColors.primary,
-                                        fontWeight: FontWeight.w600)),
+                                    style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.primary)),
                               ),
-                              const SizedBox(width: 4),
+                              const SizedBox(width: AppSpacing.s1),
                               PopupMenuButton<String>(
                                 icon: const Icon(Icons.more_vert,
                                     color: AppColors.textSecondary, size: 20),
@@ -721,12 +691,12 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                           leading: const Icon(Icons.delete_outline,
                                               color: AppColors.error),
                                           title: Text('Eliminar curso',
-                                              style: GoogleFonts.inter(color: AppColors.error)),
+                                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.error)),
                                           contentPadding: EdgeInsets.zero)),
                                 ],
                               ),
                             ]),
-                            const SizedBox(height: 6),
+                            const SizedBox(height: AppSpacing.s1),
                             Row(children: [
                               Icon(
                                 hasTeacher
@@ -737,56 +707,52 @@ class _AdminCoursesScreenState extends State<AdminCoursesScreen> {
                                     ? AppColors.textSecondary
                                     : AppColors.warning,
                               ),
-                              const SizedBox(width: 4),
+                              const SizedBox(width: AppSpacing.s1),
                               Text(
                                 hasTeacher
                                     ? c['teacher_name'] as String? ?? 'Docente asignado'
                                     : 'Sin docente asignado',
-                                style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    color: hasTeacher
+                                style: Theme.of(context).textTheme.bodySmall!.copyWith(color: hasTeacher
                                         ? AppColors.textSecondary
                                         : AppColors.warning),
                               ),
                             ]),
                             if (periodName != null) ...[
-                              const SizedBox(height: 4),
+                              const SizedBox(height: AppSpacing.s1),
                               Row(children: [
                                 const Icon(Icons.date_range_outlined,
                                     size: 13, color: AppColors.textSecondary),
-                                const SizedBox(width: 4),
+                                const SizedBox(width: AppSpacing.s1),
                                 Text(periodName,
-                                    style: GoogleFonts.inter(
-                                        fontSize: 12,
-                                        color: AppColors.textSecondary)),
+                                    style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.textSecondary)),
                               ]),
                             ],
-                            const SizedBox(height: 10),
+                            const SizedBox(height: AppSpacing.s2 + 2),
                             Row(children: [
                               Expanded(
                                 child: OutlinedButton.icon(
                                   onPressed: () => _showStudents(c),
                                   icon: const Icon(Icons.people_outlined, size: 15),
                                   label: Text('Estudiantes ($enrollments)',
-                                      style: GoogleFonts.inter(fontSize: 12)),
+                                      style: Theme.of(context).textTheme.bodySmall),
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: AppColors.primary,
                                     side: const BorderSide(color: AppColors.primary),
-                                    padding: const EdgeInsets.symmetric(vertical: 6),
+                                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.s1),
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: AppSpacing.s2),
                               Expanded(
                                 child: OutlinedButton.icon(
                                   onPressed: () => _showCourseForm(existing: c),
                                   icon: const Icon(Icons.edit_outlined, size: 15),
                                   label: Text('Editar',
-                                      style: GoogleFonts.inter(fontSize: 12)),
+                                      style: Theme.of(context).textTheme.bodySmall),
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: AppColors.textSecondary,
                                     side: const BorderSide(color: AppColors.border),
-                                    padding: const EdgeInsets.symmetric(vertical: 6),
+                                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.s1),
                                   ),
                                 ),
                               ),

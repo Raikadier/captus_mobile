@@ -2,11 +2,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/services/avatar_service.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class ProfileEditScreen extends ConsumerStatefulWidget {
   const ProfileEditScreen({super.key});
@@ -104,17 +106,17 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       context: context,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r7)),
       ),
       builder: (context) => SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
                 leading: const Icon(Icons.camera_alt_rounded, color: AppColors.primary),
-                title: Text('Tomar foto', style: GoogleFonts.inter()),
+                title: Text('Tomar foto', style: Theme.of(context).textTheme.bodyMedium),
                 onTap: () {
                   Navigator.pop(context);
                   _pickAvatar(ImageSource.camera);
@@ -122,7 +124,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library_rounded, color: AppColors.primary),
-                title: Text('Elegir de galería', style: GoogleFonts.inter()),
+                title: Text('Elegir de galería', style: Theme.of(context).textTheme.bodyMedium),
                 onTap: () {
                   Navigator.pop(context);
                   _pickAvatar(ImageSource.gallery);
@@ -131,7 +133,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
               if (_currentAvatarUrl != null && _currentAvatarUrl!.isNotEmpty)
                 ListTile(
                   leading: const Icon(Icons.delete_rounded, color: AppColors.error),
-                  title: Text('Eliminar foto', style: GoogleFonts.inter(color: AppColors.error)),
+                  title: Text('Eliminar foto', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.error)),
                   onTap: () async {
                     Navigator.pop(context);
                     setState(() {
@@ -201,18 +203,20 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'profile_edit_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.background,
         elevation: 0,
         title: const Text('Editar Perfil'),
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
+          tooltip: 'Cerrar',
           onPressed: () => context.pop(),
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(right: AppSpacing.s2),
             child: TextButton(
               onPressed: _saving ? null : _save,
               child: _saving
@@ -220,14 +224,13 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                       width: 16, height: 16,
                       child: CircularProgressIndicator(strokeWidth: 2))
                   : Text('Guardar',
-                      style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w600, color: AppColors.primary)),
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.primary)),
             ),
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.s4),
         child: Form(
           key: _formKey,
           child: Column(
@@ -235,22 +238,22 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
             children: [
               if (_error != null)
                 Container(
-                  margin: const EdgeInsets.only(bottom: 16),
+                  margin: const EdgeInsets.only(bottom: AppSpacing.s4),
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
-                    color: AppColors.error.withAlpha(20),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.error.withAlpha(60)),
+                    color: AppColors.error.withAlpha(AppAlpha.a08),
+                    borderRadius: BorderRadius.circular(AppRadius.r4),
+                    border: Border.all(color: AppColors.error.withAlpha(AppAlpha.a24)),
                   ),
                   child: Text(_error!,
-                      style: GoogleFonts.inter(fontSize: 13, color: AppColors.error)),
+                      style: Theme.of(context).textTheme.titleSmall!.copyWith(color: AppColors.error)),
                 ),
 
               // Avatar
               Center(
                 child: Stack(
                   children: [
-                    GestureDetector(
+                    CaptusPressable(
                       onTap: _showImageSourcePicker,
                       child: Container(
                         width: 96,
@@ -276,6 +279,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                                       ? Image.network(
                                           _currentAvatarUrl!,
                                           fit: BoxFit.cover,
+                                          semanticLabel: 'Foto de perfil del usuario',
                                           width: 96,
                                           height: 96,
                                           loadingBuilder: (context, child, loadingProgress) {
@@ -293,10 +297,10 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                     ),
                     Positioned(
                       bottom: 0, right: 0,
-                      child: GestureDetector(
+                      child: CaptusPressable(
                         onTap: _showImageSourcePicker,
                         child: Container(
-                          padding: const EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(AppSpacing.s2),
                           decoration: BoxDecoration(
                             color: AppColors.primary, shape: BoxShape.circle,
                             border: Border.all(color: AppColors.background, width: 2),
@@ -309,10 +313,10 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: AppSpacing.s7),
 
               _SectionLabel(text: 'INFORMACIÓN PERSONAL'),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.s2),
               _FieldCard(children: [
                 _FormField(
                   controller: _nameCtrl,
@@ -323,10 +327,10 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                 ),
               ]),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s1),
 
               _SectionLabel(text: 'INFORMACIÓN ACADÉMICA'),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.s2),
               _FieldCard(children: [
                 if (_institutionId != null && _institutionName != null) ...[
                   _ReadOnlyField(
@@ -350,22 +354,20 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                 ),
                 const Divider(height: 0, color: AppColors.border, thickness: 0.5),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s1),
                   child: Row(
                     children: [
                       const Icon(Icons.layers_rounded,
                           size: 18, color: AppColors.textSecondary),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: AppSpacing.s3),
                       Text('Semestre',
-                          style: GoogleFonts.inter(
-                              fontSize: 13, color: AppColors.textSecondary)),
+                          style: Theme.of(context).textTheme.titleSmall),
                       const Spacer(),
                       DropdownButton<int>(
                         value: _semester,
                         dropdownColor: AppColors.surface2,
                         underline: const SizedBox(),
-                        style: GoogleFonts.inter(
-                            fontSize: 13, color: AppColors.textPrimary),
+                        style: Theme.of(context).textTheme.titleSmall,
                         items: List.generate(10, (i) => DropdownMenuItem(
                             value: i + 1, child: Text('${i + 1}°'))),
                         onChanged: (v) => setState(() => _semester = v ?? _semester),
@@ -381,7 +383,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                   maxLines: 3,
                 ),
               ]),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.s8),
             ],
           ),
         ),
@@ -395,11 +397,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     return Center(
       child: Text(
         initial,
-        style: GoogleFonts.inter(
-          fontSize: 38,
-          fontWeight: FontWeight.bold,
-          color: AppColors.primary,
-        ),
+        style: Theme.of(context).textTheme.displaySmall!.copyWith(color: AppColors.primary),
       ),
     );
   }
@@ -414,10 +412,7 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
         text,
-        style: GoogleFonts.inter(
-          fontSize: 11, fontWeight: FontWeight.w700,
-          color: AppColors.textSecondary, letterSpacing: 0.8,
-        ),
+        style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textSecondary, letterSpacing: 0.8),
       );
 }
 
@@ -429,7 +424,7 @@ class _FieldCard extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.r5),
           border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: Column(children: children),
@@ -461,17 +456,16 @@ class _FormField extends StatelessWidget {
               padding: EdgeInsets.only(top: maxLines > 1 ? 2 : 0),
               child: Icon(icon, size: 18, color: AppColors.textSecondary),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child: TextFormField(
                 controller: controller,
                 validator: validator,
                 maxLines: maxLines,
-                style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary),
+                style: Theme.of(context).textTheme.titleSmall,
                 decoration: InputDecoration(
                   labelText: label,
-                  labelStyle: GoogleFonts.inter(
-                      fontSize: 13, color: AppColors.textSecondary),
+                  labelStyle: Theme.of(context).textTheme.titleSmall,
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
@@ -497,25 +491,23 @@ class _ReadOnlyField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
         child: Row(
           children: [
             Icon(icon, size: 18, color: AppColors.textSecondary),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     label,
-                    style: GoogleFonts.inter(
-                        fontSize: 11, color: AppColors.textSecondary),
+                    style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: AppSpacing.s1),
                   Text(
                     value,
-                    style: GoogleFonts.inter(
-                        fontSize: 13, color: AppColors.textPrimary),
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
                 ],
               ),

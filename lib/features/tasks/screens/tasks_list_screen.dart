@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../shared/widgets/cactus_refresh.dart';
 import '../../../shared/widgets/captus_dialog.dart';
 import '../../../shared/widgets/captus_fab.dart';
@@ -36,8 +37,7 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
 
       if (!mounted) return;
       setState(() {
-        _tasks = (response as List<dynamic>)
-            .cast<Map<String, dynamic>>();
+        _tasks = (response as List<dynamic>).cast<Map<String, dynamic>>();
         _isLoading = false;
       });
     } catch (e) {
@@ -85,7 +85,6 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
     );
 
     if (!confirmed) {
-      // Re-fetch to restore the dismissed item
       await _fetchTasks();
       return;
     }
@@ -104,11 +103,11 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'tasks_list_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: const Text('Mis tareas'),
         actions: [
           IconButton(
@@ -116,58 +115,54 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
             tooltip: 'Gestionar categorías',
             onPressed: () => context.push('/tasks/categories'),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.s2),
         ],
       ),
       body: Column(
         children: [
-          // ── Personal tasks shortcut ───────────────────────────────────────
+          // ── Personal tasks shortcut ──────────────────────────────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.s4, AppSpacing.s3, AppSpacing.s4, 0),
             child: Material(
               color: AppColors.primary,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.r5),
               child: InkWell(
                 onTap: () => context.push('/tasks/personal'),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.r5),
+                splashColor: AppColors.textOnPrimary.withAlpha(AppAlpha.a10),
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(AppSpacing.s4),
                   child: Row(
                     children: [
                       Container(
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: AppColors.textOnPrimary
-                              .withAlpha(AppAlpha.a20),
-                          borderRadius: BorderRadius.circular(10),
+                          color: AppColors.textOnPrimary.withAlpha(AppAlpha.a20),
+                          borderRadius: BorderRadius.circular(AppRadius.r4),
                         ),
                         child: const Icon(
                           Icons.assignment_rounded,
                           color: AppColors.textOnPrimary,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: AppSpacing.s3),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Tareas personales',
-                              style: GoogleFonts.inter(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.textOnPrimary,
-                              ),
+                              style: tt.headlineSmall!.copyWith(
+                                  color: AppColors.textOnPrimary),
                             ),
-                            const SizedBox(height: 2),
+                            const SizedBox(height: AppSpacing.s1),
                             Text(
                               'Gestiona tus tareas propias',
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                color: AppColors.textOnPrimary
-                                    .withAlpha(AppAlpha.a70),
-                              ),
+                              style: tt.bodySmall!.copyWith(
+                                  color: AppColors.textOnPrimary
+                                      .withAlpha(AppAlpha.a70)),
                             ),
                           ],
                         ),
@@ -183,19 +178,24 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
               ),
             ),
           ),
-          // ── Task list ─────────────────────────────────────────────────────
+          // ── Task list ────────────────────────────────────────────────────
           Expanded(
             child: _isLoading
                 ? const Padding(
-                    padding: EdgeInsets.only(top: 16),
+                    padding: EdgeInsets.only(top: AppSpacing.s4),
                     child: TaskListShimmer(count: 5),
                   )
                 : _tasks.isEmpty
-                    ? const Center(child: Text('No hay tareas'))
+                    ? Center(
+                        child: Text('No hay tareas',
+                            style: tt.bodyMedium!.copyWith(
+                                color: AppColors.textSecondary)))
                     : CactusRefresh(
                         onRefresh: _fetchTasks,
                         child: ListView.builder(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+                          padding: const EdgeInsets.fromLTRB(
+                              AppSpacing.s4, AppSpacing.s4,
+                              AppSpacing.s4, 100),
                           itemCount: _tasks.length,
                           itemBuilder: (context, index) {
                             final task = _tasks[index];
@@ -206,7 +206,8 @@ class _TasksListScreenState extends ConsumerState<TasksListScreen> {
                                 task['description']?.toString() ??
                                     'Sin descripción';
                             final type =
-                                task['assignment_type']?.toString() ?? 'task';
+                                task['assignment_type']?.toString() ??
+                                    'task';
 
                             return _SwipeableTaskCard(
                               key: ValueKey(id),
@@ -258,46 +259,45 @@ class _SwipeableTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Dismissible(
       key: ValueKey(id),
-      // ← swipe left → complete (green)
       background: Container(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsets.only(bottom: AppSpacing.s3),
         decoration: BoxDecoration(
           color: AppColors.success,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
         ),
         alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.only(left: 20),
+        padding: const EdgeInsets.only(left: AppSpacing.s5),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.check_circle_outline_rounded,
                 color: AppColors.textOnPrimary, size: 22),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.s2),
             Text('Completar',
-                style: GoogleFonts.inter(
-                    color: AppColors.textOnPrimary, fontWeight: FontWeight.w600)),
+                style: tt.headlineSmall!
+                    .copyWith(color: AppColors.textOnPrimary)),
           ],
         ),
       ),
-      // → swipe right → delete (red)
       secondaryBackground: Container(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsets.only(bottom: AppSpacing.s3),
         decoration: BoxDecoration(
           color: AppColors.error,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
         ),
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
+        padding: const EdgeInsets.only(right: AppSpacing.s5),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Text('Eliminar',
-                style: GoogleFonts.inter(
-                    color: AppColors.textOnPrimary, fontWeight: FontWeight.w600)),
-            const SizedBox(width: 8),
+                style: tt.headlineSmall!
+                    .copyWith(color: AppColors.textOnPrimary)),
+            const SizedBox(width: AppSpacing.s2),
             const Icon(Icons.delete_outline_rounded,
                 color: AppColors.textOnPrimary, size: 22),
           ],
@@ -306,11 +306,10 @@ class _SwipeableTaskCard extends StatelessWidget {
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.startToEnd) {
           onComplete();
-          return false; // handled manually
         } else {
           onDelete();
-          return false; // handled manually
         }
+        return false;
       },
       child: _TaskCardContent(
         title: title,
@@ -339,28 +338,30 @@ class _TaskCardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final isEvaluation = type == 'evaluation';
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.s3),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
           splashColor: AppColors.primary.withAlpha(AppAlpha.a10),
           highlightColor: AppColors.primary.withAlpha(AppAlpha.a05),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.s4,
+                vertical: AppSpacing.s3 + 2),
             child: Row(
               children: [
-                // Type indicator
                 Container(
                   width: 4,
                   height: 44,
@@ -368,55 +369,47 @@ class _TaskCardContent extends StatelessWidget {
                     color: isEvaluation
                         ? AppColors.warning
                         : AppColors.primary,
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(AppRadius.r1),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.s3),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         title,
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: tt.headlineSmall,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.s1),
                       Text(
                         description,
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: tt.bodySmall,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.s2),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 4),
+                      horizontal: AppSpacing.s2, vertical: AppSpacing.s1),
                   decoration: BoxDecoration(
                     color: isEvaluation
                         ? AppColors.warningLight
                         : AppColors.primaryLight,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.r3),
                   ),
                   child: Text(
                     isEvaluation ? 'Evaluación' : 'Tarea',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
+                    style: tt.labelSmall!.copyWith(
                       color: isEvaluation
                           ? AppColors.warning
                           : AppColors.primary,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),

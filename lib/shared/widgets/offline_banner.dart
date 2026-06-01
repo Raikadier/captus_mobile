@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_animations.dart';
 import '../../core/providers/connectivity_provider.dart';
+import '../../core/constants/app_spacing.dart';
 
 /// Renders an animated "Sin conexión" banner when offline.
 /// Mount it above your main content (e.g. inside the shell scaffold body).
@@ -19,6 +19,7 @@ class OfflineBanner extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tt = Theme.of(context).textTheme;
     final online = ref.watch(isOnlineProvider);
 
     return AnimatedSwitcher(
@@ -30,20 +31,16 @@ class OfflineBanner extends ConsumerWidget {
               width: double.infinity,
               color: AppColors.offline,
               padding:
-                  const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+                  const EdgeInsets.symmetric(vertical: AppSpacing.s1, horizontal: AppSpacing.s4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(Icons.wifi_off_rounded,
                       size: 14, color: AppColors.textOnDark),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.s2),
                   Text(
                     'Sin conexión a internet',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textOnDark,
-                    ),
+                    style: tt.labelLarge!.copyWith(color: AppColors.textOnDark),
                   ),
                 ],
               ),

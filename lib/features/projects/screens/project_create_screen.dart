@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/services/api_client.dart';
 
 class ProjectCreateScreen extends StatefulWidget {
@@ -58,24 +59,22 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'project_create_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
         title: Text(
           'Nuevo proyecto',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+          style: tt.headlineMedium,
         ),
         actions: [
           _saving
               ? const Center(
                   child: Padding(
-                    padding: EdgeInsets.only(right: 16),
+                    padding: EdgeInsets.only(right: AppSpacing.s4),
                     child: SizedBox(
                       width: 20,
                       height: 20,
@@ -90,26 +89,25 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
                   onPressed: _save,
                   child: Text(
                     'Crear',
-                    style: GoogleFonts.inter(
+                    style: tt.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: AppColors.primary,
-                      fontSize: 15,
                     ),
                   ),
                 ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.s2),
         ],
       ),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.s4),
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.s4),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadius.r6),
                 border: Border.all(color: AppColors.border, width: 0.5),
               ),
               child: Column(
@@ -117,111 +115,49 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
                 children: [
                   Text(
                     'Información del proyecto',
-                    style: GoogleFonts.inter(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: tt.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.s4),
                   Text(
                     'Título *',
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: tt.titleMedium?.copyWith(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.s1),
                   TextFormField(
                     controller: _titleCtrl,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: AppColors.textPrimary,
-                    ),
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Nombre del proyecto',
-                      hintStyle: GoogleFonts.inter(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
-                      filled: true,
-                      fillColor: AppColors.surface,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: AppColors.border),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: AppColors.border),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                          color: AppColors.primary,
-                          width: 1.5,
-                        ),
-                      ),
                     ),
                     validator: (v) =>
                         (v == null || v.trim().isEmpty)
                             ? 'El título es requerido'
                             : null,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.s4),
                   Text(
                     'Descripción (opcional)',
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: tt.titleMedium?.copyWith(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.s1),
                   TextFormField(
                     controller: _descCtrl,
                     maxLines: 4,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: AppColors.textPrimary,
-                    ),
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: '¿De qué trata el proyecto?',
-                      hintStyle: GoogleFonts.inter(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
-                      filled: true,
-                      fillColor: AppColors.surface,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: AppColors.border),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: AppColors.border),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                          color: AppColors.primary,
-                          width: 1.5,
-                        ),
-                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.s6),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.r5),
                   ),
                 ),
                 onPressed: _saving ? null : _save,
@@ -236,8 +172,7 @@ class _ProjectCreateScreenState extends State<ProjectCreateScreen> {
                       )
                     : Text(
                         'Crear proyecto',
-                        style: GoogleFonts.inter(
-                          fontSize: 15,
+                        style: tt.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: AppColors.textOnPrimary,
                         ),

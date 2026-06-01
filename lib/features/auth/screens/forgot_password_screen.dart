@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/auth_provider.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
@@ -54,19 +55,19 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'forgot_password_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: const Text('Recuperar contraseña'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSpacing.s6),
           child: _sent
               ? _ConfirmationView(email: _emailCtrl.text)
               : _FormView(
@@ -96,89 +97,49 @@ class _FormView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.s6),
         Center(
           child: Container(
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppColors.info.withAlpha(25),
+              color: AppColors.info.withAlpha(AppAlpha.a10),
               shape: BoxShape.circle,
             ),
-            child: const Center(child: Text('🔑', style: TextStyle(fontSize: 40))),
+            child: const Center(
+                child: Text('🔑', style: TextStyle(fontSize: 40))),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.s6),
         Text('¿Olvidaste tu contraseña?',
-            style: Theme.of(context).textTheme.headlineMedium),
-        const SizedBox(height: 8),
+            style: tt.headlineMedium),
+        const SizedBox(height: AppSpacing.s2),
         Text(
           'Ingresa tu correo y te enviaremos instrucciones para restablecerla.',
-          style: GoogleFonts.inter(fontSize: 14, color: AppColors.textSecondary, height: 1.5),
+          style: tt.bodyMedium!
+              .copyWith(color: AppColors.textSecondary, height: 1.5),
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: AppSpacing.s8),
         TextFormField(
           controller: emailCtrl,
           keyboardType: TextInputType.emailAddress,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Correo institucional',
-            labelStyle: GoogleFonts.inter(color: AppColors.textSecondary),
             hintText: 'usuario@institución.edu',
-            hintStyle: GoogleFonts.inter(color: AppColors.textDisabled),
-            prefixIcon: const Icon(Icons.email_outlined, color: AppColors.textSecondary),
-            filled: true,
-            fillColor: AppColors.surface,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.border, width: 0.5),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.border, width: 0.5),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.error, width: 1),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.error, width: 1.5),
-            ),
+            prefixIcon: Icon(Icons.email_outlined),
           ),
         ),
         if (errorMessage != null) ...[
-          const SizedBox(height: 12),
-          Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            decoration: BoxDecoration(
-              color: AppColors.error.withAlpha(25),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.error.withAlpha(76)),
-            ),
-            child: Text(errorMessage!,
-                style: GoogleFonts.inter(
-                    fontSize: 12, color: AppColors.error)),
-          ),
+          const SizedBox(height: AppSpacing.s3),
+          _ErrorBanner(message: errorMessage!),
         ],
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.s6),
         ElevatedButton(
           onPressed: isLoading ? null : onSend,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: AppColors.textOnPrimary,
-            minimumSize: const Size.fromHeight(48),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            elevation: 0,
-          ),
           child: isLoading
               ? const SizedBox(
                   height: 20,
@@ -199,33 +160,49 @@ class _ConfirmationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text('✉️', style: TextStyle(fontSize: 64)),
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.s6),
         Text('Revisa tu correo',
-            style: Theme.of(context).textTheme.headlineMedium,
+            style: tt.headlineMedium,
             textAlign: TextAlign.center),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.s3),
         Text(
           'Enviamos instrucciones a\n$email',
-          style: GoogleFonts.inter(fontSize: 14, color: AppColors.textSecondary, height: 1.5),
+          style: tt.bodyMedium!
+              .copyWith(color: AppColors.textSecondary, height: 1.5),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 40),
+        const SizedBox(height: AppSpacing.s10),
         ElevatedButton(
           onPressed: () => context.go('/login'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: AppColors.textOnPrimary,
-            minimumSize: const Size.fromHeight(48),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            elevation: 0,
-          ),
           child: const Text('Volver al inicio de sesión'),
         ),
       ],
+    );
+  }
+}
+
+class _ErrorBanner extends StatelessWidget {
+  final String message;
+  const _ErrorBanner({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s3, vertical: AppSpacing.s2 + 2),
+      decoration: BoxDecoration(
+        color: AppColors.error.withAlpha(AppAlpha.a10),
+        borderRadius: BorderRadius.circular(AppRadius.r3),
+        border: Border.all(color: AppColors.error.withAlpha(AppAlpha.a30)),
+      ),
+      child: Text(message,
+          style: tt.bodySmall!.copyWith(color: AppColors.error)),
     );
   }
 }

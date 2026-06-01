@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   final String taskId;
-
-  const TaskDetailScreen({
-    super.key,
-    required this.taskId,
-  });
+  const TaskDetailScreen({super.key, required this.taskId});
 
   @override
   State<TaskDetailScreen> createState() => _TaskDetailScreenState();
@@ -64,7 +59,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         return;
       }
 
-      final isTeacherOwner = task['teacher_id']?.toString() == user.id;
+      final isTeacherOwner =
+          task['teacher_id']?.toString() == user.id;
 
       if (isTeacherOwner) {
         final submissionsResponse = await Supabase.instance.client
@@ -74,13 +70,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             .order('submitted_at', ascending: false);
 
         if (!mounted) return;
-
         setState(() {
           _task = task;
           _isTeacherOwner = true;
           _submissions = List<Map<String, dynamic>>.from(
-            submissionsResponse as List,
-          );
+              submissionsResponse as List);
           _isLoading = false;
         });
       } else {
@@ -92,12 +86,13 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             .maybeSingle();
 
         if (submission != null) {
-          _solutionCtrl.text = submission['solution_text']?.toString() ?? '';
-          _attachmentCtrl.text = submission['attachment_url']?.toString() ?? '';
+          _solutionCtrl.text =
+              submission['solution_text']?.toString() ?? '';
+          _attachmentCtrl.text =
+              submission['attachment_url']?.toString() ?? '';
         }
 
         if (!mounted) return;
-
         setState(() {
           _task = task;
           _mySubmission = submission;
@@ -107,9 +102,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-
       setState(() => _isLoading = false);
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al cargar la tarea: $e')),
       );
@@ -125,7 +118,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     if (_solutionCtrl.text.trim().isEmpty &&
         _attachmentCtrl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Escribe tu solución o pega un enlace')),
+        const SnackBar(
+            content: Text('Escribe tu solución o pega un enlace')),
       );
       return;
     }
@@ -151,7 +145,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       };
 
       if (existing == null) {
-        await Supabase.instance.client.from('assignment_submissions').insert(data);
+        await Supabase.instance.client
+            .from('assignment_submissions')
+            .insert(data);
       } else {
         await Supabase.instance.client
             .from('assignment_submissions')
@@ -160,15 +156,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       }
 
       if (!mounted) return;
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Solución enviada correctamente')),
       );
-
       await _loadDetail();
     } catch (e) {
       if (!mounted) return;
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al enviar solución: $e')),
       );
@@ -183,35 +176,31 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     String feedback,
   ) async {
     final user = Supabase.instance.client.auth.currentUser;
-
     if (user == null || !_isTeacherOwner) return;
 
     await Supabase.instance.client
         .from('assignment_submissions')
         .update({
           'grade': grade,
-          'feedback': feedback.trim().isEmpty ? null : feedback.trim(),
+          'feedback':
+              feedback.trim().isEmpty ? null : feedback.trim(),
           'graded_at': DateTime.now().toIso8601String(),
           'graded_by': user.id,
         })
         .eq('id', submission['id']);
 
     if (!mounted) return;
-
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Calificación guardada')),
     );
-
     await _loadDetail();
   }
 
   void _openGradeDialog(Map<String, dynamic> submission) {
     final gradeCtrl = TextEditingController(
-      text: submission['grade']?.toString() ?? '',
-    );
+        text: submission['grade']?.toString() ?? '');
     final feedbackCtrl = TextEditingController(
-      text: submission['feedback']?.toString() ?? '',
-    );
+        text: submission['feedback']?.toString() ?? '');
 
     showDialog(
       context: context,
@@ -223,40 +212,18 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             TextField(
               controller: gradeCtrl,
               keyboardType: TextInputType.number,
-              style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Calificación',
-                labelStyle: GoogleFonts.inter(color: AppColors.textSecondary),
                 hintText: 'Ej: 4.5',
-                hintStyle: GoogleFonts.inter(color: AppColors.textDisabled),
-                filled: true,
-                fillColor: AppColors.surface,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
-                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
-                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
-                errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error, width: 1)),
-                focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error, width: 1.5)),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.s3),
             TextField(
               controller: feedbackCtrl,
               maxLines: 4,
-              style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Retroalimentación',
-                labelStyle: GoogleFonts.inter(color: AppColors.textSecondary),
                 hintText: 'Escribe comentarios para el estudiante',
-                hintStyle: GoogleFonts.inter(color: AppColors.textDisabled),
-                filled: true,
-                fillColor: AppColors.surface,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
-                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
-                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
-                errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error, width: 1)),
-                focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error, width: 1.5)),
               ),
             ),
           ],
@@ -268,25 +235,19 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              final grade = double.tryParse(gradeCtrl.text.trim());
-
+              final grade =
+                  double.tryParse(gradeCtrl.text.trim());
               if (grade == null) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Ingresa una nota válida')),
+                  const SnackBar(
+                      content: Text('Ingresa una nota válida')),
                 );
                 return;
               }
-
               Navigator.pop(context);
-              _gradeSubmission(submission, grade, feedbackCtrl.text);
+              _gradeSubmission(
+                  submission, grade, feedbackCtrl.text);
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: AppColors.textOnPrimary,
-              minimumSize: const Size.fromHeight(48),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              elevation: 0,
-            ),
             child: const Text('Guardar'),
           ),
         ],
@@ -296,6 +257,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: AppColors.background,
@@ -305,12 +267,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
     if (_task == null) {
       return Scaffold(
+      restorationId: 'task_detail_screen',
         backgroundColor: AppColors.background,
-        appBar: AppBar(
-          backgroundColor: AppColors.surface,
-          elevation: 0,
-          title: const Text('Detalle de tarea'),
-        ),
+        appBar: AppBar(title: const Text('Detalle de tarea')),
         body: Center(
           child: ElevatedButton.icon(
             onPressed: () => context.go('/tasks'),
@@ -329,117 +288,77 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: Text(type == 'evaluation' ? 'Evaluación' : 'Tarea'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.s5),
         children: [
-          Text(
-            title,
-            style: GoogleFonts.inter(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 8),
-          if (dueDate != null) Text('Fecha límite: $dueDate'),
-          const SizedBox(height: 20),
+          Text(title, style: tt.displaySmall),
+          const SizedBox(height: AppSpacing.s2),
+          if (dueDate != null)
+            Text('Fecha límite: $dueDate',
+                style: tt.bodySmall!
+                    .copyWith(color: AppColors.textSecondary)),
+          const SizedBox(height: AppSpacing.s5),
           Text(
             description == null || description.trim().isEmpty
                 ? 'Sin descripción'
                 : description,
-            style: GoogleFonts.inter(fontSize: 15, height: 1.5),
+            style: tt.bodyLarge!.copyWith(height: 1.5),
           ),
-          const SizedBox(height: 32),
-
-          if (_isTeacherOwner) _teacherSubmissionsSection(),
-
-          if (!_isTeacherOwner) _studentSubmissionSection(),
+          const SizedBox(height: AppSpacing.s8),
+          if (_isTeacherOwner) _teacherSubmissionsSection(tt),
+          if (!_isTeacherOwner) _studentSubmissionSection(tt),
         ],
       ),
     );
   }
 
-  Widget _studentSubmissionSection() {
+  Widget _studentSubmissionSection(TextTheme tt) {
     final grade = _mySubmission?['grade'];
     final feedback = _mySubmission?['feedback'];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Mi solución',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        const SizedBox(height: 12),
+        Text('Mi solución', style: tt.headlineMedium),
+        const SizedBox(height: AppSpacing.s3),
         TextField(
           controller: _solutionCtrl,
           maxLines: 6,
-          style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Solución de la tarea',
-            labelStyle: GoogleFonts.inter(color: AppColors.textSecondary),
             hintText: 'Escribe aquí tu solución...',
-            hintStyle: GoogleFonts.inter(color: AppColors.textDisabled),
-            filled: true,
-            fillColor: AppColors.surface,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
-            errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error, width: 1)),
-            focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error, width: 1.5)),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.s3),
         TextField(
           controller: _attachmentCtrl,
-          style: GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Enlace de archivo o evidencia',
-            labelStyle: GoogleFonts.inter(color: AppColors.textSecondary),
             hintText: 'Pega aquí un enlace si tienes archivo',
-            hintStyle: GoogleFonts.inter(color: AppColors.textDisabled),
-            prefixIcon: const Icon(Icons.link_rounded, color: AppColors.textSecondary, size: 20),
-            filled: true,
-            fillColor: AppColors.surface,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border, width: 0.5)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
-            errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error, width: 1)),
-            focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.error, width: 1.5)),
+            prefixIcon: Icon(Icons.link_rounded, size: 20),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.s4),
         ElevatedButton.icon(
           onPressed: _isSubmitting ? null : _submitSolution,
           icon: const Icon(Icons.upload_file),
-          label: Text(_isSubmitting ? 'Enviando...' : 'Enviar solución'),
+          label: Text(
+              _isSubmitting ? 'Enviando...' : 'Enviar solución'),
         ),
-        const SizedBox(height: 32),
-        Text(
-          'Mi calificación',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.s8),
+        Text('Mi calificación', style: tt.headlineMedium),
+        const SizedBox(height: AppSpacing.s3),
         Card(
           child: ListTile(
             title: Text(
-              grade == null ? 'Aún no calificada' : 'Nota: $grade',
-            ),
+                grade == null ? 'Aún no calificada' : 'Nota: $grade'),
             subtitle: Text(
               feedback == null || feedback.toString().trim().isEmpty
                   ? 'Sin retroalimentación todavía'
@@ -451,59 +370,61 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     );
   }
 
-  Widget _teacherSubmissionsSection() {
+  Widget _teacherSubmissionsSection(TextTheme tt) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Entregas de estudiantes',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        const SizedBox(height: 12),
+        Text('Entregas de estudiantes', style: tt.headlineMedium),
+        const SizedBox(height: AppSpacing.s3),
         if (_submissions.isEmpty)
-          const Text('Aún no hay entregas para esta actividad')
+          Text('Aún no hay entregas para esta actividad',
+              style: tt.bodyMedium!
+                  .copyWith(color: AppColors.textSecondary))
         else
           ..._submissions.map((submission) {
-            final studentId = submission['student_id']?.toString() ?? '';
-            final solution = submission['solution_text']?.toString();
-            final attachment = submission['attachment_url']?.toString();
+            final studentId =
+                submission['student_id']?.toString() ?? '';
+            final solution =
+                submission['solution_text']?.toString();
+            final attachment =
+                submission['attachment_url']?.toString();
             final grade = submission['grade']?.toString();
 
             return Card(
-              margin: const EdgeInsets.only(bottom: 12),
+              margin:
+                  const EdgeInsets.only(bottom: AppSpacing.s3),
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.s3),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Estudiante: $studentId'),
-                    const SizedBox(height: 8),
+                    Text('Estudiante: $studentId',
+                        style: tt.bodySmall),
+                    const SizedBox(height: AppSpacing.s2),
                     Text(
                       solution == null || solution.trim().isEmpty
                           ? 'Sin texto de solución'
                           : solution,
+                      style: tt.bodyMedium,
                     ),
-                    if (attachment != null && attachment.trim().isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      Text('Archivo/enlace: $attachment'),
+                    if (attachment != null &&
+                        attachment.trim().isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.s2),
+                      Text('Archivo/enlace: $attachment',
+                          style: tt.bodySmall),
                     ],
-                    const SizedBox(height: 8),
-                    Text(grade == null ? 'Sin calificar' : 'Nota: $grade'),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.s2),
+                    Text(
+                        grade == null
+                            ? 'Sin calificar'
+                            : 'Nota: $grade',
+                        style: tt.labelLarge),
+                    const SizedBox(height: AppSpacing.s2),
                     Align(
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
-                        onPressed: () => _openGradeDialog(submission),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: AppColors.textOnPrimary,
-                          minimumSize: const Size.fromHeight(48),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          elevation: 0,
-                        ),
+                        onPressed: () =>
+                            _openGradeDialog(submission),
                         child: const Text('Calificar'),
                       ),
                     ),

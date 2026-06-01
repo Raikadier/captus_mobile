@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_radius.dart';
+import '../../core/constants/app_spacing.dart';
 
 // ─── Base ────────────────────────────────────────────────────────────────────
 
@@ -49,11 +51,11 @@ class TaskCardShimmer extends StatelessWidget {
       baseColor: AppColors.surface2,
       highlightColor: AppColors.surface3,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        margin: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s1),
         height: 76,
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.r5),
         ),
         child: Row(
           children: [
@@ -63,32 +65,32 @@ class TaskCardShimmer extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.surface2,
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  bottomLeft: Radius.circular(12),
+                  topLeft: Radius.circular(AppRadius.r5),
+                  bottomLeft: Radius.circular(AppRadius.r5),
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(height: 14, width: 200, color: AppColors.surface2),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.s2),
                   Container(height: 10, width: 120, color: AppColors.surface2),
                 ],
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s3),
             // Checkbox placeholder
             Container(
               width: 22,
               height: 22,
-              margin: const EdgeInsets.only(right: 16),
+              margin: const EdgeInsets.only(right: AppSpacing.s4),
               decoration: BoxDecoration(
                 color: AppColors.surface2,
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(AppRadius.r1),
               ),
             ),
           ],
@@ -125,7 +127,7 @@ class CourseCardShimmer extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.r7),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,12 +137,12 @@ class CourseCardShimmer extends StatelessWidget {
               height: 8,
               decoration: const BoxDecoration(
                 color: AppColors.surface2,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r7)),
               ),
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.s3),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -150,13 +152,13 @@ class CourseCardShimmer extends StatelessWidget {
                       height: 36,
                       decoration: BoxDecoration(
                         color: AppColors.surface2,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppRadius.r4),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: AppSpacing.s2 + 2),
                     // Title lines
                     Container(height: 13, color: AppColors.surface2),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: AppSpacing.s1),
                     Container(
                         height: 13, width: 80, color: AppColors.surface2),
                     const Spacer(),
@@ -165,7 +167,7 @@ class CourseCardShimmer extends StatelessWidget {
                       height: 4,
                       decoration: BoxDecoration(
                         color: AppColors.surface2,
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(AppRadius.r1),
                       ),
                     ),
                   ],
@@ -187,7 +189,7 @@ class CourseGridShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -216,10 +218,10 @@ class StatTileShimmer extends StatelessWidget {
       baseColor: AppColors.surface2,
       highlightColor: AppColors.surface3,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.s4),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
           border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: Column(
@@ -231,13 +233,13 @@ class StatTileShimmer extends StatelessWidget {
               height: 28,
               decoration: BoxDecoration(
                 color: AppColors.surface2,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppRadius.r3),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.s3),
             // Value
             Container(height: 28, width: 60, color: AppColors.surface2),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.s1),
             // Label
             Container(height: 11, width: 80, color: AppColors.surface2),
           ],
@@ -256,9 +258,9 @@ class StatsRowShimmer extends StatelessWidget {
     return Row(
       children: const [
         Expanded(child: StatTileShimmer()),
-        SizedBox(width: 12),
+        SizedBox(width: AppSpacing.s3),
         Expanded(child: StatTileShimmer()),
-        SizedBox(width: 12),
+        SizedBox(width: AppSpacing.s3),
         Expanded(child: StatTileShimmer()),
       ],
     );
@@ -277,7 +279,7 @@ class NotificationItemShimmer extends StatelessWidget {
       baseColor: AppColors.surface2,
       highlightColor: AppColors.surface3,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s2),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -290,15 +292,15 @@ class NotificationItemShimmer extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(height: 14, color: AppColors.surface2),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.s1),
                   Container(height: 12, width: 200, color: AppColors.surface2),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.s1),
                   Container(height: 10, width: 80, color: AppColors.surface2),
                 ],
               ),
@@ -335,15 +337,15 @@ class ProfileHeaderShimmer extends StatelessWidget {
       baseColor: AppColors.surface2,
       highlightColor: AppColors.surface3,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24),
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.s6),
         child: Column(
           children: [
             // Avatar
             const SkeletonBox(width: 88, height: 88, borderRadius: 999),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.s4),
             // Name
             const SkeletonBox(width: 160, height: 20, borderRadius: 6),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.s2),
             // Role chip
             const SkeletonBox(width: 80, height: 14, borderRadius: 999),
           ],

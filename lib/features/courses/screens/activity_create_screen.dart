@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/services/api_client.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class ActivityCreateScreen extends StatefulWidget {
   final String courseId;
@@ -131,11 +133,11 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
       }
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             publish ? 'Actividad publicada' : 'Borrador guardado',
-            style: GoogleFonts.inter(color: AppColors.textPrimary),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary),
           ),
           backgroundColor:
               publish ? AppColors.primary : AppColors.surface2,
@@ -144,22 +146,22 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
       context.pop();
     } on ApiException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             e.message,
-            style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textOnPrimary),
           ),
           backgroundColor: AppColors.error,
         ),
       );
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             'Error al guardar la actividad.',
-            style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textOnPrimary),
           ),
           backgroundColor: AppColors.error,
         ),
@@ -172,97 +174,94 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'activity_create_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
-        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: AppColors.textPrimary),
+          tooltip: 'Cerrar',
           onPressed: () => context.pop(),
         ),
         title: Text(
           _isEditing ? 'Editar actividad' : 'Nueva actividad',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
       ),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.s4),
           children: [
             _SectionLabel('Tipo de actividad'),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.s2 + 2),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: AppSpacing.s2,
+              runSpacing: AppSpacing.s2,
               children: _types.map((type) {
                 final selected = _selectedType == type;
-                return GestureDetector(
+                return CaptusPressable(
                   onTap: () => setState(() => _selectedType = type),
                   child: Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        const EdgeInsets.symmetric(horizontal: AppSpacing.s3 + 2, vertical: AppSpacing.s2),
                     decoration: BoxDecoration(
                       color: selected
                           ? AppColors.primary.withAlpha(AppAlpha.a15)
                           : AppColors.surface,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppRadius.r4),
                       border: Border.all(
                         color: selected ? AppColors.primary : AppColors.border,
                       ),
                     ),
                     child: Text(
                       type,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight:
-                            selected ? FontWeight.w600 : FontWeight.w400,
-                        color: selected
-                            ? AppColors.primary
-                            : AppColors.textSecondary,
-                      ),
+                      style: selected
+                          ? Theme.of(context).textTheme.labelLarge?.copyWith(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primary,
+                            )
+                          : Theme.of(context).textTheme.bodySmall?.copyWith(
+                              fontSize: 13,
+                              color: AppColors.textSecondary,
+                            ),
                     ),
                   ),
                 );
               }).toList(),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.s6),
             _SectionLabel('Título'),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.s2),
             TextFormField(
               controller: _titleController,
-              style:
-                  GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary),
               decoration: _inputDecoration('Ej. Parcial 2 — Capítulo 5'),
               validator: (v) => (v == null || v.trim().isEmpty)
                   ? 'El título es requerido'
                   : null,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.s5),
             _SectionLabel('Descripción'),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.s2),
             TextFormField(
               controller: _descriptionController,
               maxLines: 5,
-              style:
-                  GoogleFonts.inter(fontSize: 14, color: AppColors.textPrimary),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary),
               decoration:
                   _inputDecoration('Instrucciones, criterios de evaluación...'),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.s5),
             _SectionLabel('Fecha de entrega'),
-            const SizedBox(height: 8),
-            GestureDetector(
+            const SizedBox(height: AppSpacing.s2),
+            CaptusPressable(
               onTap: _pickDate,
               child: Container(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(AppSpacing.s3 + 2),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                   border: Border.all(
                     color:
                         _dueDate != null ? AppColors.primary : AppColors.border,
@@ -277,13 +276,12 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
                           ? AppColors.primary
                           : AppColors.textDisabled,
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: AppSpacing.s2 + 2),
                     Text(
                       _dueDate != null
                           ? _formatDate(_dueDate!, _dueTime)
                           : 'Seleccionar fecha y hora',
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: _dueDate != null
                             ? AppColors.textPrimary
                             : AppColors.textDisabled,
@@ -293,25 +291,22 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.s6),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3 + 2, vertical: AppSpacing.s1),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.r5),
               ),
               child: Row(
                 children: [
                   const Icon(Icons.attach_file,
                       size: 20, color: AppColors.textSecondary),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: AppSpacing.s2 + 2),
                   Expanded(
                     child: Text(
                       'Requiere entrega de archivo',
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary),
                     ),
                   ),
                   Switch(
@@ -323,7 +318,7 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.s8),
             Row(
               children: [
                 Expanded(
@@ -334,26 +329,23 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
                       side: const BorderSide(color: AppColors.border),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.r5),
                       ),
                     ),
                     child: Text(
                       'Guardar borrador',
-                      style: GoogleFonts.inter(
-                          fontSize: 14, fontWeight: FontWeight.w600),
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.s3),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _loading ? null : () => _submit(true),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: AppColors.textOnPrimary,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.r5),
                       ),
                     ),
                     child: _loading
@@ -367,14 +359,13 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
                           )
                         : Text(
                             'Publicar ahora',
-                            style: GoogleFonts.inter(
-                                fontSize: 14, fontWeight: FontWeight.w600),
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.s8),
           ],
         ),
       ),
@@ -384,30 +375,6 @@ class _ActivityCreateScreenState extends State<ActivityCreateScreen> {
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.textDisabled),
-      filled: true,
-      fillColor: AppColors.surface,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.border),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.primary),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.error),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.error),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     );
   }
 }
@@ -421,9 +388,7 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: GoogleFonts.inter(
-        fontSize: 13,
-        fontWeight: FontWeight.w600,
+      style: Theme.of(context).textTheme.labelLarge?.copyWith(
         color: AppColors.textSecondary,
         letterSpacing: 0.4,
       ),

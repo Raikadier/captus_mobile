@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../services/superadmin_service.dart';
 
@@ -59,15 +58,18 @@ class _SuperAdminAuditScreenState extends State<SuperAdminAuditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'super_admin_audit_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Auditoría'),
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.background,
         elevation: 0,
         actions: [
           IconButton(
               icon: const Icon(Icons.refresh),
+              tooltip: 'Actualizar',
               onPressed: () => _load(reset: true)),
         ],
       ),
@@ -100,15 +102,15 @@ class _SuperAdminAuditScreenState extends State<SuperAdminAuditScreen> {
                       final date = log['created_at'] as String? ?? '';
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: _colorFor(action).withAlpha(30),
+                          backgroundColor: _colorFor(action).withAlpha(AppAlpha.a12),
                           child: Icon(_iconFor(action),
                               color: _colorFor(action), size: 20),
                         ),
                         title: Text(action,
-                            style: GoogleFonts.inter(fontSize: 13)),
+                            style: tt.titleSmall),
                         subtitle: Text(
                           '$actor · ${date.length > 10 ? date.substring(0, 10) : date}',
-                          style: GoogleFonts.inter(fontSize: 11),
+                          style: tt.labelMedium,
                         ),
                         onTap: () => _showPayload(log),
                       );
@@ -126,7 +128,7 @@ class _SuperAdminAuditScreenState extends State<SuperAdminAuditScreen> {
         content: SingleChildScrollView(
           child: Text(
             (log['payload'] ?? {}).toString(),
-            style: GoogleFonts.inter(fontSize: 12),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         ),
         actions: [

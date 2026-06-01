@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../shared/widgets/cactus_refresh.dart';
 import '../services/admin_service.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -60,10 +62,9 @@ class _AdminDashboardScreenState
     final user = ref.watch(currentUserProvider);
 
     return Scaffold(
+      restorationId: 'admin_dashboard_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: Row(
           children: [
             CircleAvatar(
@@ -73,21 +74,13 @@ class _AdminDashboardScreenState
                 user?.name.isNotEmpty == true
                     ? user!.name[0].toUpperCase()
                     : 'A',
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
+                style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: AppColors.primary),
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: AppSpacing.s2 + 2),
             Text(
               'Admin',
-              style: GoogleFonts.inter(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: AppColors.textPrimary),
             ),
           ],
         ),
@@ -95,9 +88,10 @@ class _AdminDashboardScreenState
           IconButton(
             icon: const Icon(Icons.notifications_outlined,
                 color: AppColors.textPrimary),
+            tooltip: 'Notificaciones',
             onPressed: () => context.push('/notifications'),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.s2),
         ],
       ),
       body: _loading
@@ -109,26 +103,19 @@ class _AdminDashboardScreenState
               : CactusRefresh(
                   onRefresh: _load,
                   child: ListView(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(AppSpacing.s4),
                     children: [
                       // Institution name + subtitle
                       Text(
                         _institution?['name'] as String? ?? 'Mi Institución',
-                        style: GoogleFonts.inter(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: AppColors.textPrimary),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.s1),
                       Text(
                         'Panel de administración',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: AppSpacing.s5),
 
                       // Stats grid
                       GridView.count(
@@ -166,19 +153,14 @@ class _AdminDashboardScreenState
                         ],
                       ),
 
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.s6),
 
                       // Section header
                       Padding(
                         padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
                         child: Text(
                           'ACCIONES RÁPIDAS',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textSecondary,
-                            letterSpacing: 0.5,
-                          ),
+                          style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.textSecondary),
                         ),
                       ),
 
@@ -187,31 +169,31 @@ class _AdminDashboardScreenState
                         label: 'Invitar usuario',
                         onTap: () => context.go('/admin/users'),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.s2),
                       _QuickAction(
                         icon: Icons.add_circle_outline_rounded,
                         label: 'Crear curso',
                         onTap: () => context.go('/admin/courses'),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.s2),
                       _QuickAction(
                         icon: Icons.business_rounded,
                         label: 'Editar institución',
                         onTap: () => context.push('/admin/institution'),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.s2),
                       _QuickAction(
                         icon: Icons.grading_rounded,
                         label: 'Escalas de calificación',
                         onTap: () => context.go('/admin/grading-scales'),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.s2),
                       _QuickAction(
                         icon: Icons.date_range_rounded,
                         label: 'Períodos académicos',
                         onTap: () => context.go('/admin/periods'),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.s6),
                     ],
                   ),
                 ),
@@ -224,31 +206,24 @@ class _AdminDashboardScreenState
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.error_outline, size: 56, color: AppColors.error),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             'Error al cargar el panel',
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             _error!,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
             onPressed: _load,
             child: Text(
               'Reintentar',
-              style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textOnPrimary),
             ),
           ),
         ],
@@ -273,10 +248,10 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSpacing.s3 + 2),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Row(
@@ -286,11 +261,11 @@ class _StatCard extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               color: color.withAlpha(AppAlpha.a10),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.r5),
             ),
             child: Icon(icon, color: color, size: 22),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpacing.s2 + 2),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -298,18 +273,11 @@ class _StatCard extends StatelessWidget {
               children: [
                 Text(
                   value,
-                  style: GoogleFonts.inter(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(color: AppColors.textPrimary),
                 ),
                 Text(
                   label,
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -333,13 +301,13 @@ class _QuickAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return CaptusPressable(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.s4),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
           border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: Row(
@@ -349,19 +317,15 @@ class _QuickAction extends StatelessWidget {
               height: 44,
               decoration: BoxDecoration(
                 color: AppColors.primary.withAlpha(AppAlpha.a10),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.r5),
               ),
               child: Icon(icon, color: AppColors.primary, size: 22),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child: Text(
                 label,
-                style: GoogleFonts.inter(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: AppColors.textPrimary),
               ),
             ),
             const Icon(

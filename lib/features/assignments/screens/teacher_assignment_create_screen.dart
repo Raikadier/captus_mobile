@@ -2,11 +2,12 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/assignments_provider.dart';
 import '../../../core/providers/courses_provider.dart';
@@ -109,14 +110,14 @@ class _TeacherAssignmentCreateScreenState
       if (user == null) throw Exception('Usuario no autenticado');
 
       final repo = ref.read(assignmentsRepositoryProvider);
-      
+
       String? fileUrl;
       if (_attachedFileBytes != null && _attachedFileName != null) {
         fileUrl = await repo.uploadFile(_attachedFileBytes!, _attachedFileName!);
       }
 
       final newAssignment = AssignmentModel(
-        id: '', 
+        id: '',
         courseId: _selectedCourseId!,
         teacherId: user.id,
         title: _title,
@@ -138,7 +139,7 @@ class _TeacherAssignmentCreateScreenState
         // If it's for a specific group or student, we might need to handle extra logic here
         // or the repository handles it if we pass targets.
         // For now, following the user's instructions.
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Tarea creada exitosamente')),
@@ -160,26 +161,25 @@ class _TeacherAssignmentCreateScreenState
   @override
   Widget build(BuildContext context) {
     final coursesAsync = ref.watch(coursesProvider);
-    
+
     // Fetch groups and students if a course is selected
     final courseIdInt = int.tryParse(_selectedCourseId ?? '');
-    final groupsAsync = courseIdInt != null 
-        ? ref.watch(courseGroupsProvider(courseIdInt)) 
+    final groupsAsync = courseIdInt != null
+        ? ref.watch(courseGroupsProvider(courseIdInt))
         : const AsyncValue.data(<CourseGroup>[]);
-        
-    final studentsAsync = courseIdInt != null 
-        ? ref.watch(courseStudentsProvider(courseIdInt)) 
+
+    final studentsAsync = courseIdInt != null
+        ? ref.watch(courseStudentsProvider(courseIdInt))
         : const AsyncValue.data(<EnrolledStudent>[]);
 
     return Scaffold(
+      restorationId: 'teacher_assignment_create_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
           'Nueva Asignación',
-          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
       body: coursesAsync.when(
@@ -191,32 +191,32 @@ class _TeacherAssignmentCreateScreenState
           }
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(AppSpacing.s5),
             child: Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionTitle('Título de la Tarea'),
+                  _buildSectionTitle(context, 'Título de la Tarea'),
                   TextFormField(
-                    decoration: _inputDecoration('Ej: Taller de Algoritmos'),
+                    decoration: const InputDecoration(hintText: 'Ej: Taller de Algoritmos'),
                     validator: (val) =>
                         val == null || val.isEmpty ? 'Requerido' : null,
                     onSaved: (val) => _title = val ?? '',
                   ),
-                  const SizedBox(height: 20),
-                  _buildSectionTitle('Descripción'),
+                  SizedBox(height: AppSpacing.s5),
+                  _buildSectionTitle(context, 'Descripción'),
                   TextFormField(
                     maxLines: 4,
-                    decoration: _inputDecoration(
-                        'Instrucciones para los estudiantes...'),
+                    decoration: const InputDecoration(
+                        hintText: 'Instrucciones para los estudiantes...'),
                     onSaved: (val) => _description = val ?? '',
                   ),
-                  const SizedBox(height: 20),
-                  
-                  _buildSectionTitle('Curso'),
+                  SizedBox(height: AppSpacing.s5),
+
+                  _buildSectionTitle(context, 'Curso'),
                   DropdownButtonFormField<String>(
-                    decoration: _inputDecoration('Selecciona un curso'),
+                    decoration: const InputDecoration(hintText: 'Selecciona un curso'),
                     value: _selectedCourseId,
                     items: courses.map((c) {
                       return DropdownMenuItem(
@@ -234,10 +234,10 @@ class _TeacherAssignmentCreateScreenState
                       });
                     },
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: AppSpacing.s5),
 
                   if (_selectedCourseId != null) ...[
-                    _buildSectionTitle('Asignar a (Opcional)'),
+                    _buildSectionTitle(context, 'Asignar a (Opcional)'),
                     Row(
                       children: [
                         Expanded(
@@ -245,7 +245,7 @@ class _TeacherAssignmentCreateScreenState
                             loading: () => const Center(child: CircularProgressIndicator()),
                             error: (_, __) => const Text('Error grupos'),
                             data: (groups) => DropdownButtonFormField<int>(
-                              decoration: _inputDecoration('Grupo'),
+                              decoration: const InputDecoration(hintText: 'Grupo'),
                               value: _selectedGroupId,
                               isExpanded: true,
                               items: [
@@ -259,13 +259,13 @@ class _TeacherAssignmentCreateScreenState
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: AppSpacing.s3),
                         Expanded(
                           child: studentsAsync.when(
                             loading: () => const Center(child: CircularProgressIndicator()),
                             error: (_, __) => const Text('Error estudiantes'),
                             data: (students) => DropdownButtonFormField<String>(
-                              decoration: _inputDecoration('Estudiante'),
+                              decoration: const InputDecoration(hintText: 'Estudiante'),
                               value: _selectedStudentId,
                               isExpanded: true,
                               items: [
@@ -281,7 +281,7 @@ class _TeacherAssignmentCreateScreenState
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: AppSpacing.s5),
                   ],
 
                   Row(
@@ -290,11 +290,11 @@ class _TeacherAssignmentCreateScreenState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildSectionTitle('Fecha Inicio'),
+                            _buildSectionTitle(context, 'Fecha Inicio'),
                             InkWell(
                               onTap: () => _pickDate(context, true),
                               child: InputDecorator(
-                                decoration: _inputDecoration(''),
+                                decoration: const InputDecoration(hintText: ''),
                                 child: Text(
                                   _startDate != null
                                       ? DateFormat('dd/MM/yyyy').format(_startDate!)
@@ -305,21 +305,21 @@ class _TeacherAssignmentCreateScreenState
                           ],
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: AppSpacing.s4),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildSectionTitle('Fecha Límite'),
+                            _buildSectionTitle(context, 'Fecha Límite'),
                             InkWell(
                               onTap: () => _pickDate(context, false),
                               child: InputDecorator(
-                                decoration: _inputDecoration(''),
+                                decoration: const InputDecoration(hintText: ''),
                                 child: Text(
                                   _dueDate != null
                                       ? DateFormat('dd/MM/yyyy').format(_dueDate!)
                                       : 'Seleccionar',
-                                  style: GoogleFonts.inter(
+                                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                     color: _dueDate != null
                                         ? AppColors.textPrimary
                                         : AppColors.error,
@@ -332,16 +332,16 @@ class _TeacherAssignmentCreateScreenState
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  
-                  _buildSectionTitle('Adjuntar Archivo (PDF, Word, etc.)'),
+                  SizedBox(height: AppSpacing.s5),
+
+                  _buildSectionTitle(context, 'Adjuntar Archivo (PDF, Word, etc.)'),
                   InkWell(
                     onTap: _pickFile,
                     child: Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(AppSpacing.s4),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.r5),
                         border: Border.all(
                           color: _attachedFileName != null ? AppColors.primary : AppColors.border,
                           width: 1,
@@ -353,12 +353,11 @@ class _TeacherAssignmentCreateScreenState
                             _attachedFileName != null ? Icons.file_present_rounded : Icons.attach_file_rounded,
                             color: _attachedFileName != null ? AppColors.primary : AppColors.textSecondary,
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: AppSpacing.s3),
                           Expanded(
                             child: Text(
                               _attachedFileName ?? 'Ningún archivo seleccionado',
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
+                              style: Theme.of(context).textTheme.bodySmall!.copyWith(
                                 color: _attachedFileName != null ? AppColors.textPrimary : AppColors.textSecondary,
                               ),
                               overflow: TextOverflow.ellipsis,
@@ -371,6 +370,7 @@ class _TeacherAssignmentCreateScreenState
                                 _attachedFileName = null;
                               }),
                               icon: const Icon(Icons.close_rounded, size: 18),
+                              tooltip: 'Cerrar',
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
                             ),
@@ -378,13 +378,13 @@ class _TeacherAssignmentCreateScreenState
                       ),
                     ),
                   ),
-                  
-                  const SizedBox(height: 20),
-                  _buildSectionTitle('Nota Máxima'),
+
+                  SizedBox(height: AppSpacing.s5),
+                  _buildSectionTitle(context, 'Nota Máxima'),
                   TextFormField(
                     initialValue: '5.0',
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: _inputDecoration('Ej: 5.0 o 100'),
+                    decoration: const InputDecoration(hintText: 'Ej: 5.0 o 100'),
                     validator: (val) {
                       if (val == null || val.isEmpty) return 'Requerido';
                       if (double.tryParse(val) == null) return 'Debe ser un número';
@@ -392,18 +392,16 @@ class _TeacherAssignmentCreateScreenState
                     },
                     onSaved: (val) => _maxGrade = double.tryParse(val ?? '5.0') ?? 5.0,
                   ),
-                  
-                  const SizedBox(height: 40),
+
+                  SizedBox(height: AppSpacing.s10),
                   SizedBox(
                     width: double.infinity,
                     height: 54,
                     child: ElevatedButton(
                       onPressed: _isLoading || _selectedCourseId == null ? null : _submit,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: AppColors.textOnPrimary,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.r5),
                         ),
                         elevation: 0,
                       ),
@@ -411,14 +409,11 @@ class _TeacherAssignmentCreateScreenState
                           ? const CircularProgressIndicator(color: AppColors.textOnPrimary)
                           : Text(
                               'Crear Asignación',
-                              style: GoogleFonts.inter(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.headlineSmall,
                             ),
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  SizedBox(height: AppSpacing.s10),
                 ],
               ),
             ),
@@ -431,24 +426,24 @@ class _TeacherAssignmentCreateScreenState
   Widget _buildEmptyCoursesState() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(AppSpacing.s8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.inbox_outlined, size: 64, color: AppColors.textSecondary),
-            const SizedBox(height: 16),
+            SizedBox(height: AppSpacing.s4),
             Text(
               'No tienes cursos disponibles',
-              style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+              style: Theme.of(context).textTheme.headlineMedium,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: AppSpacing.s2),
             Text(
               'Debes tener al menos un curso asignado para crear tareas.',
-              style: GoogleFonts.inter(color: AppColors.textSecondary),
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: AppSpacing.s6),
             OutlinedButton.icon(
               onPressed: () => context.pop(),
               icon: const Icon(Icons.arrow_back),
@@ -460,40 +455,13 @@ class _TeacherAssignmentCreateScreenState
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0, top: 4.0),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s2, top: AppSpacing.s1),
       child: Text(
         title,
-        style: GoogleFonts.inter(
-          fontSize: 13,
-          fontWeight: FontWeight.bold,
-          color: AppColors.textPrimary,
-        ),
+        style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.textPrimary),
       ),
-    );
-  }
-
-  InputDecoration _inputDecoration(String hint) {
-    return InputDecoration(
-      hintText: hint,
-      hintStyle: GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary),
-      filled: true,
-      fillColor: AppColors.surface,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.border, width: 0.5),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.border, width: 0.5),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-      ),
-      errorStyle: GoogleFonts.inter(fontSize: 11),
     );
   }
 }

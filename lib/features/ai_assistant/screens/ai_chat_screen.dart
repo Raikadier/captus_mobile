@@ -4,11 +4,14 @@ import 'package:intl/intl.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/ai_chat_provider.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class AiChatScreen extends ConsumerStatefulWidget {
   const AiChatScreen({super.key});
@@ -99,7 +102,7 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
       if (_scrollCtrl.hasClients) {
         _scrollCtrl.animateTo(
           _scrollCtrl.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
+          duration: AppDurations.comfortable,
           curve: Curves.easeOut,
         );
       }
@@ -140,6 +143,7 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
     });
 
     return Scaffold(
+      restorationId: 'ai_chat_screen',
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
@@ -203,30 +207,26 @@ class _Header extends ConsumerWidget {
             width: 36,
             decoration: BoxDecoration(
               color: AppColors.primary,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadius.r4),
             ),
             child: const Icon(Icons.auto_awesome_rounded,
                 color: AppColors.textOnPrimary, size: 18),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpacing.s2 + 2),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title != null && title.isNotEmpty ? title : 'Captus IA',
-                  style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
-                      color: AppColors.textPrimary),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   userRole == 'teacher'
                       ? 'Asistente docente · Gemini'
                       : 'Asistente académico · Gemini',
-                  style: GoogleFonts.inter(
-                      fontSize: 11, color: AppColors.textSecondary),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -249,7 +249,7 @@ class _Header extends ConsumerWidget {
             icon: const Icon(Icons.history_rounded,
                 color: AppColors.textSecondary),
             tooltip: 'Historial',
-            onPressed: () => context.push('/ai/history'),
+            onPressed: () => context.pop(), // back to history (/ai)
           ),
           IconButton(
             icon: const Icon(Icons.tune_rounded,
@@ -342,7 +342,7 @@ class _MessageBubble extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Mensaje copiado',
-            style: GoogleFonts.inter(fontSize: 13)),
+            style: Theme.of(context).textTheme.labelLarge),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.textPrimary,
@@ -356,7 +356,7 @@ class _MessageBubble extends StatelessWidget {
     final timeStr = DateFormat('HH:mm').format(message.time);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s2 + 2),
       child: Column(
         crossAxisAlignment:
             isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -370,9 +370,9 @@ class _MessageBubble extends StatelessWidget {
                 Container(
                   height: 28,
                   width: 28,
-                  margin: const EdgeInsets.only(right: 6, bottom: 2),
+                  margin: const EdgeInsets.only(right: AppSpacing.s1 + 2, bottom: 2),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withAlpha(20),
+                    color: AppColors.primary.withAlpha(AppAlpha.a08),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.auto_awesome_rounded,
@@ -391,8 +391,8 @@ class _MessageBubble extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isUser ? AppColors.primary : AppColors.surface,
                       borderRadius: BorderRadius.only(
-                        topLeft: const Radius.circular(16),
-                        topRight: const Radius.circular(16),
+                        topLeft: const Radius.circular(AppRadius.r7),
+                        topRight: const Radius.circular(AppRadius.r7),
                         bottomLeft: Radius.circular(isUser ? 16 : 4),
                         bottomRight: Radius.circular(isUser ? 4 : 16),
                       ),
@@ -403,8 +403,7 @@ class _MessageBubble extends StatelessWidget {
                     child: isUser
                         ? SelectableText(
                             message.text,
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: AppColors.textOnPrimary,
                               height: 1.45,
                             ),
@@ -423,19 +422,18 @@ class _MessageBubble extends StatelessWidget {
             ),
             child: Text(
               timeStr,
-              style: GoogleFonts.inter(
-                  fontSize: 10, color: AppColors.textSecondary),
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.textSecondary),
             ),
           ),
           // Reasoning steps (collapsible)
           if (!isUser && message.steps.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(left: 34, top: 4),
+              padding: const EdgeInsets.only(left: 34, top: AppSpacing.s1),
               child: _ThinkingSteps(steps: message.steps),
             ),
           // Action chip (tool was invoked)
           if (!isUser && message.actionPerformed != null) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.s1),
             Padding(
               padding: const EdgeInsets.only(left: 34),
               child: ActionChip(
@@ -443,19 +441,18 @@ class _MessageBubble extends StatelessWidget {
                     size: 14, color: AppColors.primary),
                 label: Text(
                   _actionLabel(message.actionPerformed!),
-                  style: GoogleFonts.inter(
-                      fontSize: 11, color: AppColors.primary),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.primary),
                 ),
-                backgroundColor: AppColors.primary.withAlpha(12),
+                backgroundColor: AppColors.primary.withAlpha(AppAlpha.a05),
                 side: BorderSide.none,
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s1),
                 onPressed: null,
               ),
             ),
           ],
           // Quick suggestions after last AI message
           if (showSuggestions) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.s2 + 2),
             Wrap(
               spacing: 8,
               runSpacing: 6,
@@ -507,11 +504,7 @@ class _MarkdownMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final baseStyle = GoogleFonts.inter(
-      fontSize: 14,
-      color: AppColors.textPrimary,
-      height: 1.5,
-    );
+    final baseStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5);
 
     return MarkdownBody(
       data: text,
@@ -521,44 +514,38 @@ class _MarkdownMessage extends StatelessWidget {
         // Paragraph
         p: baseStyle,
         // Bold
-        strong: baseStyle.copyWith(fontWeight: FontWeight.w700),
+        strong: baseStyle?.copyWith(fontWeight: FontWeight.w700),
         // Italic
-        em: baseStyle.copyWith(fontStyle: FontStyle.italic),
+        em: baseStyle?.copyWith(fontStyle: FontStyle.italic),
         // Headings
-        h1: GoogleFonts.inter(
-            fontSize: 17, fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary, height: 1.4),
-        h2: GoogleFonts.inter(
-            fontSize: 15, fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary, height: 1.4),
-        h3: GoogleFonts.inter(
-            fontSize: 14, fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary, height: 1.4),
+        h1: Theme.of(context).textTheme.headlineMedium?.copyWith(height: 1.4),
+        h2: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700, height: 1.4),
+        h3: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, height: 1.4),
         // Inline code
-        code: GoogleFonts.sourceCodePro(
+        code: TextStyle(
           fontSize: 13,
           color: AppColors.primary,
-          backgroundColor: AppColors.primary.withAlpha(15),
+          backgroundColor: AppColors.primary.withAlpha(AppAlpha.a05),
         ),
         // Code block
         codeblockDecoration: BoxDecoration(
-          color: AppColors.primary.withAlpha(10),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.primary.withAlpha(40)),
+          color: AppColors.primary.withAlpha(AppAlpha.a04),
+          borderRadius: BorderRadius.circular(AppRadius.r3),
+          border: Border.all(color: AppColors.primary.withAlpha(AppAlpha.a15)),
         ),
-        codeblockPadding: const EdgeInsets.all(12),
+        codeblockPadding: EdgeInsets.all(AppSpacing.s3),
         // Blockquote
         blockquoteDecoration: BoxDecoration(
           border: Border(
             left: BorderSide(color: AppColors.primary, width: 3),
           ),
-          color: AppColors.primary.withAlpha(8),
+          color: AppColors.primary.withAlpha(AppAlpha.a04),
         ),
         blockquotePadding: const EdgeInsets.symmetric(
             horizontal: 12, vertical: 6),
         // Lists
         listBullet: baseStyle,
-        listBulletPadding: const EdgeInsets.only(right: 6),
+        listBulletPadding: const EdgeInsets.only(right: AppSpacing.s1 + 2),
         listIndent: 16,
         // Horizontal rule
         horizontalRuleDecoration: BoxDecoration(
@@ -567,10 +554,10 @@ class _MarkdownMessage extends StatelessWidget {
           ),
         ),
         // Spacing
-        pPadding: const EdgeInsets.only(bottom: 4),
-        h1Padding: const EdgeInsets.only(bottom: 6, top: 4),
-        h2Padding: const EdgeInsets.only(bottom: 4, top: 4),
-        h3Padding: const EdgeInsets.only(bottom: 2, top: 4),
+        pPadding: const EdgeInsets.only(bottom: AppSpacing.s1),
+        h1Padding: const EdgeInsets.only(bottom: AppSpacing.s1 + 2, top: AppSpacing.s1),
+        h2Padding: const EdgeInsets.only(bottom: AppSpacing.s1, top: AppSpacing.s1),
+        h3Padding: const EdgeInsets.only(bottom: 2, top: AppSpacing.s1),
       ),
     );
   }
@@ -589,7 +576,7 @@ class _TypingBubbleState extends State<_TypingBubble>
     with SingleTickerProviderStateMixin {
   late final AnimationController _anim = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 900),
+    duration: AppDurations.medium,
   )..repeat(reverse: true);
 
   @override
@@ -601,15 +588,15 @@ class _TypingBubbleState extends State<_TypingBubble>
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s2 + 2),
       child: Row(
         children: [
           Container(
             height: 28,
             width: 28,
-            margin: const EdgeInsets.only(right: 6),
+            margin: const EdgeInsets.only(right: AppSpacing.s1 + 2),
             decoration: BoxDecoration(
-              color: AppColors.primary.withAlpha(20),
+              color: AppColors.primary.withAlpha(AppAlpha.a08),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.auto_awesome_rounded,
@@ -621,10 +608,10 @@ class _TypingBubbleState extends State<_TypingBubble>
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-                bottomRight: Radius.circular(16),
-                bottomLeft: Radius.circular(4),
+                topLeft: Radius.circular(AppRadius.r7),
+                topRight: Radius.circular(AppRadius.r7),
+                bottomRight: Radius.circular(AppRadius.r7),
+                bottomLeft: Radius.circular(AppRadius.r1),
               ),
               border: Border.all(color: AppColors.border),
             ),
@@ -671,55 +658,49 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(AppSpacing.s6),
       child: Column(
         children: [
-          const SizedBox(height: 16),
+          SizedBox(height: AppSpacing.s4),
           Container(
             height: 64,
             width: 64,
             decoration: BoxDecoration(
-              color: AppColors.primary.withAlpha(18),
-              borderRadius: BorderRadius.circular(20),
+              color: AppColors.primary.withAlpha(AppAlpha.a08),
+              borderRadius: BorderRadius.circular(AppRadius.r8),
             ),
             child: const Icon(Icons.auto_awesome_rounded,
                 color: AppColors.primary, size: 32),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: AppSpacing.s4),
           Text('¿En qué puedo ayudarte?',
-              style: GoogleFonts.inter(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary)),
-          const SizedBox(height: 8),
+              style: Theme.of(context).textTheme.headlineMedium),
+          SizedBox(height: AppSpacing.s2),
           Text(
             'Puedo gestionar tus tareas, eventos, notas y responderte preguntas académicas.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-                fontSize: 13, color: AppColors.textSecondary, height: 1.5),
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppColors.textSecondary, height: 1.5),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: AppSpacing.s7),
           ...suggestions.map((s) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.only(bottom: AppSpacing.s2 + 2),
                 child: InkWell(
                   onTap: () => onSuggestion(s),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 14),
                     decoration: BoxDecoration(
                       color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.r5),
                       border: Border.all(color: AppColors.border),
                     ),
                     child: Row(
                       children: [
                         Expanded(
                           child: Text(s,
-                              style: GoogleFonts.inter(
-                                  fontSize: 14,
-                                  color: AppColors.textPrimary)),
+                              style: Theme.of(context).textTheme.bodyMedium),
                         ),
                         const Icon(Icons.arrow_forward_ios_rounded,
                             size: 14, color: AppColors.textSecondary),
@@ -728,23 +709,23 @@ class _EmptyState extends StatelessWidget {
                   ),
                 ),
               )),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.s2),
           // ── Mode Study / Teacher Tools shortcut ─────────────────────────
           Builder(
             builder: (context) => InkWell(
               onTap: () => context.push(
                 userRole == 'teacher' ? '/ai/teacher-tools' : '/ai/study',
               ),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.r5),
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(
                     horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withAlpha(10),
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.primary.withAlpha(AppAlpha.a04),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                   border: Border.all(
-                      color: AppColors.primary.withAlpha(50)),
+                      color: AppColors.primary.withAlpha(AppAlpha.a20)),
                 ),
                 child: Row(
                   children: [
@@ -755,14 +736,13 @@ class _EmptyState extends StatelessWidget {
                       color: AppColors.primary,
                       size: 18,
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: AppSpacing.s2 + 2),
                     Expanded(
                       child: Text(
                         userRole == 'teacher'
                             ? 'Herramientas IA Docente'
                             : 'Modo Estudio IA',
-                        style: GoogleFonts.inter(
-                            fontSize: 14,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.w600),
                       ),
@@ -789,18 +769,17 @@ class _SuggestionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return CaptusPressable(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
-          color: AppColors.primary.withAlpha(12),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.primary.withAlpha(50)),
+          color: AppColors.primary.withAlpha(AppAlpha.a05),
+          borderRadius: BorderRadius.circular(AppRadius.r8),
+          border: Border.all(color: AppColors.primary.withAlpha(AppAlpha.a20)),
         ),
         child: Text(label,
-            style: GoogleFonts.inter(
-                fontSize: 12,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w500)),
       ),
@@ -856,17 +835,17 @@ class _ThinkingStepsState extends State<_ThinkingSteps> {
     final count = widget.steps.length;
     final allOk = widget.steps.every((s) => s.success);
 
-    return GestureDetector(
+    return CaptusPressable(
       onTap: () => setState(() => _expanded = !_expanded),
       child: AnimatedSize(
-        duration: const Duration(milliseconds: 220),
+        duration: AppDurations.standard,
         curve: Curves.easeInOut,
         alignment: Alignment.topLeft,
         child: Container(
           decoration: BoxDecoration(
-            color: AppColors.primary.withAlpha(8),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppColors.primary.withAlpha(35)),
+            color: AppColors.primary.withAlpha(AppAlpha.a04),
+            borderRadius: BorderRadius.circular(AppRadius.r4),
+            border: Border.all(color: AppColors.primary.withAlpha(AppAlpha.a15)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -882,15 +861,12 @@ class _ThinkingStepsState extends State<_ThinkingSteps> {
                       size: 14,
                       color: allOk ? AppColors.primary : AppColors.warning,
                     ),
-                    const SizedBox(width: 5),
+                    const SizedBox(width: AppSpacing.s1),
                     Text(
                       '$count ${count == 1 ? 'paso' : 'pasos'} de razonamiento',
-                      style: GoogleFonts.inter(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.primary),
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: AppSpacing.s1),
                     Icon(
                       _expanded
                           ? Icons.keyboard_arrow_up_rounded
@@ -905,7 +881,7 @@ class _ThinkingStepsState extends State<_ThinkingSteps> {
               if (_expanded) ...[
                 Divider(
                     height: 1,
-                    color: AppColors.primary.withAlpha(30),
+                    color: AppColors.primary.withAlpha(AppAlpha.a12),
                     indent: 10,
                     endIndent: 10),
                 Padding(
@@ -926,15 +902,13 @@ class _ThinkingStepsState extends State<_ThinkingSteps> {
                               size: 12,
                               color: step.success ? AppColors.success : AppColors.error,
                             ),
-                            const SizedBox(width: 5),
+                            const SizedBox(width: AppSpacing.s1),
                             Icon(_iconFor(step.name),
                                 size: 13, color: AppColors.textSecondary),
-                            const SizedBox(width: 5),
+                            const SizedBox(width: AppSpacing.s1),
                             Text(
                               _labelFor(step.name),
-                              style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  color: AppColors.textSecondary),
+                              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.textSecondary),
                             ),
                           ],
                         ),
@@ -1001,45 +975,25 @@ class _InputBar extends StatelessWidget {
                 maxLines: 4,
                 minLines: 1,
                 textInputAction: TextInputAction.newline,
-                style: GoogleFonts.inter(
-                    fontSize: 14, color: AppColors.textPrimary),
-                decoration: InputDecoration(
+                style: Theme.of(context).textTheme.bodyMedium,
+                decoration: const InputDecoration(
                   hintText: 'Escribe un mensaje…',
-                  hintStyle: GoogleFonts.inter(
-                      fontSize: 14, color: AppColors.textSecondary),
-                  filled: true,
-                  fillColor: AppColors.surface,
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 10),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide:
-                        const BorderSide(color: AppColors.primary, width: 1.5),
-                  ),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: AppSpacing.s1),
           // Mic button (voice input)
           if (sttAvailable)
             AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
+              duration: AppDurations.fast,
               height: 44,
               width: 44,
               decoration: BoxDecoration(
                 color: isListening
                     ? AppColors.error.withAlpha(AppAlpha.a10)
                     : AppColors.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.r5),
                 border: Border.all(
                   color: isListening ? AppColors.error : AppColors.border,
                 ),
@@ -1050,13 +1004,14 @@ class _InputBar extends StatelessWidget {
                   color: isListening ? AppColors.error : AppColors.textSecondary,
                   size: 20,
                 ),
+                tooltip: 'Detener',
                 onPressed: onVoice,
                 padding: EdgeInsets.zero,
               ),
             ),
-          const SizedBox(width: 6),
+          const SizedBox(width: AppSpacing.s1),
           AnimatedSwitcher(
-            duration: const Duration(milliseconds: 180),
+            duration: AppDurations.fast,
             transitionBuilder: (child, anim) =>
                 ScaleTransition(scale: anim, child: child),
             child: isLoading
@@ -1082,10 +1037,11 @@ class _SendButton extends StatelessWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: AppColors.primary,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.r5),
           ),
           child: IconButton(
             icon: const Icon(Icons.send_rounded, color: AppColors.textOnPrimary, size: 18),
+            tooltip: 'Enviar',
             onPressed: onSend,
             padding: EdgeInsets.zero,
           ),
@@ -1104,7 +1060,7 @@ class _StopButton extends StatelessWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: AppColors.error.withAlpha(AppAlpha.a10),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.r5),
             border: Border.all(color: AppColors.error.withAlpha(AppAlpha.a30)),
           ),
           child: IconButton(

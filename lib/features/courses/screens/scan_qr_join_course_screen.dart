@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class ScanQRJoinCourseScreen extends StatefulWidget {
   const ScanQRJoinCourseScreen({super.key});
@@ -47,7 +49,7 @@ class _ScanQRJoinCourseScreenState extends State<ScanQRJoinCourseScreen> {
       final now = DateTime.now();
       if (_lastInvalidFeedbackAt == null ||
           now.difference(_lastInvalidFeedbackAt!) >
-              const Duration(milliseconds: 1200)) {
+              AppDurations.deliberate) {
         _lastInvalidFeedbackAt = now;
         _showInvalidQR();
       }
@@ -58,7 +60,7 @@ class _ScanQRJoinCourseScreenState extends State<ScanQRJoinCourseScreen> {
     final isSameAsPrevious = _pendingInviteCode == inviteCode &&
         _pendingInviteAt != null &&
         now.difference(_pendingInviteAt!) <= const Duration(seconds: 2) &&
-        now.difference(_pendingInviteAt!) >= const Duration(milliseconds: 350);
+        now.difference(_pendingInviteAt!) >= AppDurations.comfortable;
 
     if (!isSameAsPrevious) {
       setState(() {
@@ -77,7 +79,7 @@ class _ScanQRJoinCourseScreenState extends State<ScanQRJoinCourseScreen> {
 
     HapticFeedback.mediumImpact();
     await _controller.stop();
-    await Future<void>.delayed(const Duration(milliseconds: 260));
+    await Future<void>.delayed(AppDurations.standard);
     if (!mounted) return;
     context.push('/join?code=${Uri.encodeQueryComponent(inviteCode)}');
   }
@@ -115,24 +117,23 @@ class _ScanQRJoinCourseScreenState extends State<ScanQRJoinCourseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final hasPendingConfirmation = _pendingInviteCode != null && !_isProcessingScan;
 
     return Scaffold(
+      restorationId: 'scan_q_r_join_course_screen',
       backgroundColor: AppColors.textPrimary,
       appBar: AppBar(
         backgroundColor: AppColors.textPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textOnPrimary),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         title: Text(
           'Escanear QR',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textOnPrimary,
-          ),
+          style: tt.headlineMedium?.copyWith(color: AppColors.textOnPrimary),
         ),
       ),
       body: Stack(
@@ -160,11 +161,7 @@ class _ScanQRJoinCourseScreenState extends State<ScanQRJoinCourseScreen> {
                       ? 'Mantener enfoque para confirmar QR'
                       : 'Escanea el QR del curso',
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textOnPrimary,
-              ),
+              style: tt.titleLarge?.copyWith(color: AppColors.textOnPrimary),
             ),
           ),
         ],
@@ -180,6 +177,7 @@ class _PermissionErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Container(
       color: AppColors.background,
       alignment: Alignment.center,
@@ -189,33 +187,24 @@ class _PermissionErrorView extends StatelessWidget {
         children: [
           const Icon(Icons.camera_alt_outlined,
               color: AppColors.textSecondary, size: 44),
-          const SizedBox(height: 14),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             'Necesitamos acceso a la cámara',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
+            style: tt.headlineSmall,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.s2),
           Text(
             'Activa el permiso de cámara para escanear el QR del curso.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 14,
+            style: tt.bodyLarge?.copyWith(
               color: AppColors.textSecondary,
               height: 1.4,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.s5),
           ElevatedButton.icon(
             onPressed: onRetry,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: AppColors.textOnPrimary,
-            ),
             icon: const Icon(Icons.refresh),
             label: const Text('Reintentar'),
           ),
@@ -260,7 +249,7 @@ class _ScannerOverlay extends StatelessWidget {
                     height: frameSize,
                     decoration: BoxDecoration(
                       color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(AppRadius.r8),
                     ),
                   ),
                 ),
@@ -270,11 +259,11 @@ class _ScannerOverlay extends StatelessWidget {
           Align(
             alignment: Alignment.center,
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
+              duration: AppDurations.fast,
               width: frameSize,
               height: frameSize,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppRadius.r8),
                 border: Border.all(
                   color: isDetected ? AppColors.success : AppColors.primary,
                   width: isDetected ? 3 : 2,

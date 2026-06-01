@@ -1,102 +1,54 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/services/api_client.dart';
+import '../../../core/providers/courses_provider.dart';
+
+// ─── Provider ────────────────────────────────────────────────────────────────
 
 final joinCourseProvider =
     FutureProvider.autoDispose.family<_JoinResult, String>((ref, inviteCode) async {
-  final supabase = Supabase.instance.client;
-  final user = supabase.auth.currentUser;
   final normalizedCode = inviteCode.trim().toUpperCase();
-
-  if (user == null) {
-    return _JoinResult.notLoggedIn;
-  }
-  if (normalizedCode.isEmpty) {
-    return _JoinResult.notFound;
-  }
-
-  final courseRes = await supabase
-      .from('courses')
-      .select('id, title')
-      .eq('invite_code', normalizedCode)
-      .maybeSingle();
-
-  if (courseRes == null) {
-    return _JoinResult.notFound;
-  }
-
-  final courseId = (courseRes['id'] as num?)?.toInt();
-  if (courseId == null) {
-    return _JoinResult.error('No se pudo obtener el curso.');
-  }
-  final courseTitle = courseRes['title']?.toString() ?? 'Curso';
-
-  final existing = await supabase
-      .from('course_enrollments')
-      .select('id')
-      .eq('course_id', courseId)
-      .eq('student_id', user.id)
-      .maybeSingle();
-
-  if (existing != null) {
-    return _JoinResult.alreadyEnrolled(courseTitle);
-  }
-
-  await _ensurePublicUserExists(supabase, user);
+  if (normalizedCode.isEmpty) return _JoinResult.notFound;
 
   try {
-    await supabase.from('course_enrollments').insert({
-      'course_id': courseId,
-      'student_id': user.id,
-    });
-  } on PostgrestException catch (e) {
-    final message = e.message.toLowerCase();
-    if (e.code == '23505' || message.contains('duplicate')) {
-      return _JoinResult.alreadyEnrolled(courseTitle);
-    }
-    if (e.code == '23503' ||
-        message.contains('course_enrollments_student_id_fkey') ||
-        message.contains('violates foreign key constraint')) {
-      // One more attempt after syncing user row.
-      await _ensurePublicUserExists(supabase, user);
-      await supabase.from('course_enrollments').insert({
-        'course_id': courseId,
-        'student_id': user.id,
-      });
-      return _JoinResult.success(courseTitle);
-    }
-    return _JoinResult.error(e.message);
-  }
+    final res = await ApiClient.instance.post<dynamic>(
+      '/enrollments/join-by-code',
+      data: {'code': normalizedCode},
+    );
+    final data = res.data;
+    final title = data is Map
+        ? (data['courses']?['title'] ?? data['title'] ?? normalizedCode).toString()
+        : normalizedCode;
+    return _JoinResult.success(title);
+  } on DioException catch (e) {
+    final serverMsg = (() {
+      final d = e.response?.data;
+      return (d is Map ? d['error'] ?? d['message'] : null) as String?;
+    })();
 
-  return _JoinResult.success(courseTitle);
+    if (e.response?.statusCode == 401) return _JoinResult.notLoggedIn;
+
+    // Backend throws "Ya estás inscrito en este curso" for duplicates
+    if (serverMsg != null &&
+        (serverMsg.contains('inscrito') || serverMsg.contains('enrolled'))) {
+      return _JoinResult.alreadyEnrolled(normalizedCode);
+    }
+    if (serverMsg != null &&
+        (serverMsg.contains('inválido') || serverMsg.contains('invalid'))) {
+      return _JoinResult.notFound;
+    }
+
+    return _JoinResult.error(serverMsg ?? 'Error desconocido');
+  }
 });
 
-Future<void> _ensurePublicUserExists(SupabaseClient supabase, User user) async {
-  final existingUser = await supabase.from('users').select('id').eq('id', user.id).maybeSingle();
-  if (existingUser != null) return;
-
-  final meta = user.userMetadata ?? {};
-  final rawRole = (meta['role'] ?? 'student').toString();
-  final role = rawRole == 'teacher' ? 'teacher' : 'student';
-  final name = (meta['name'] ?? meta['full_name'] ?? meta['display_name'] ?? '').toString().trim();
-
-  try {
-    await supabase.from('users').insert({
-      'id': user.id,
-      'email': user.email ?? '',
-      'name': name.isEmpty ? (user.email ?? 'Usuario') : name,
-      'role': role,
-    });
-  } on PostgrestException catch (e) {
-    final message = e.message.toLowerCase();
-    if (e.code == '23505' || message.contains('duplicate')) return;
-    rethrow;
-  }
-}
+// ─── Result model ────────────────────────────────────────────────────────────
 
 class _JoinResult {
   final _JoinStatus status;
@@ -106,13 +58,17 @@ class _JoinResult {
 
   static const notLoggedIn = _JoinResult._(_JoinStatus.notLoggedIn);
   static const notFound = _JoinResult._(_JoinStatus.notFound);
-  static _JoinResult error(String message) => _JoinResult._(_JoinStatus.error, message);
+  static _JoinResult error(String message) =>
+      _JoinResult._(_JoinStatus.error, message);
   static _JoinResult alreadyEnrolled(String title) =>
       _JoinResult._(_JoinStatus.alreadyEnrolled, title);
-  static _JoinResult success(String title) => _JoinResult._(_JoinStatus.success, title);
+  static _JoinResult success(String title) =>
+      _JoinResult._(_JoinStatus.success, title);
 }
 
 enum _JoinStatus { notLoggedIn, notFound, error, alreadyEnrolled, success }
+
+// ─── Screen ──────────────────────────────────────────────────────────────────
 
 class JoinCourseScreen extends ConsumerWidget {
   final String inviteCode;
@@ -121,29 +77,37 @@ class JoinCourseScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tt = Theme.of(context).textTheme;
     final joinAsync = ref.watch(joinCourseProvider(inviteCode));
 
+    // Refresh courses list when successfully joined
+    ref.listen(joinCourseProvider(inviteCode), (_, next) {
+      if (next.asData?.value.status == _JoinStatus.success) {
+        ref.invalidate(coursesProvider);
+      }
+    });
+
     return Scaffold(
+      restorationId: 'join_course_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: AppColors.textPrimary),
+          tooltip: 'Cerrar',
           onPressed: () => context.go('/home'),
         ),
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s8),
           child: joinAsync.when(
-            loading: () => const Center(
+            loading: () => Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 20),
-                  Text('Procesando invitación...'),
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: AppSpacing.s5),
+                  Text('Procesando invitación...', style: tt.bodyMedium),
                 ],
               ),
             ),
@@ -162,7 +126,8 @@ class JoinCourseScreen extends ConsumerWidget {
                     icon: Icons.lock_outline,
                     iconColor: AppColors.primary,
                     title: 'Inicia sesión primero',
-                    subtitle: 'Debes tener una cuenta en Captus para unirte a un curso.',
+                    subtitle:
+                        'Debes tener una cuenta en Captus para unirte a un curso.',
                     buttonLabel: 'Ir a iniciar sesión',
                     onButton: () => context.go('/login'),
                   );
@@ -171,7 +136,8 @@ class JoinCourseScreen extends ConsumerWidget {
                     icon: Icons.search_off_outlined,
                     iconColor: AppColors.warning,
                     title: 'Código inválido',
-                    subtitle: 'No encontramos ningún curso con el código "$inviteCode".',
+                    subtitle:
+                        'No encontramos ningún curso con el código "$inviteCode".',
                     buttonLabel: 'Volver al inicio',
                     onButton: () => context.go('/home'),
                   );
@@ -180,8 +146,8 @@ class JoinCourseScreen extends ConsumerWidget {
                     icon: Icons.error_outline,
                     iconColor: AppColors.error,
                     title: 'Algo salió mal',
-                    subtitle:
-                        result.message ?? 'No pudimos procesar la invitación.\nIntenta de nuevo.',
+                    subtitle: result.message ??
+                        'No pudimos procesar la invitación.\nIntenta de nuevo.',
                     buttonLabel: 'Volver al inicio',
                     onButton: () => context.go('/home'),
                   );
@@ -199,7 +165,8 @@ class JoinCourseScreen extends ConsumerWidget {
                     icon: Icons.school_outlined,
                     iconColor: AppColors.primary,
                     title: 'Te uniste al curso',
-                    subtitle: 'Ahora eres estudiante de\n"${result.message}".',
+                    subtitle:
+                        'Ahora eres estudiante de\n"${result.message}".',
                     buttonLabel: 'Ver mis cursos',
                     onButton: () => context.go('/courses'),
                     isSuccess: true,
@@ -212,6 +179,8 @@ class JoinCourseScreen extends ConsumerWidget {
     );
   }
 }
+
+// ─── Result view ─────────────────────────────────────────────────────────────
 
 class _ResultView extends StatelessWidget {
   final IconData icon;
@@ -234,6 +203,7 @@ class _ResultView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -246,43 +216,43 @@ class _ResultView extends StatelessWidget {
           ),
           child: Icon(icon, size: 44, color: iconColor),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.s6),
         Text(
           title,
           textAlign: TextAlign.center,
-          style: GoogleFonts.inter(
+          style: tt.displaySmall?.copyWith(
             fontSize: 22,
             fontWeight: FontWeight.w800,
             color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.s2 + 2),
         Text(
           subtitle,
           textAlign: TextAlign.center,
-          style: GoogleFonts.inter(
-            fontSize: 15,
+          style: tt.bodyLarge?.copyWith(
             color: AppColors.textSecondary,
             height: 1.5,
           ),
         ),
-        const SizedBox(height: 40),
+        const SizedBox(height: AppSpacing.s10),
         SizedBox(
           width: double.infinity,
           height: 52,
           child: ElevatedButton(
             onPressed: onButton,
             style: ElevatedButton.styleFrom(
-              backgroundColor: isSuccess ? AppColors.primary : AppColors.textPrimary,
+              backgroundColor:
+                  isSuccess ? AppColors.primary : AppColors.textPrimary,
               foregroundColor: AppColors.textOnPrimary,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadius.r6),
               ),
               elevation: 0,
             ),
             child: Text(
               buttonLabel,
-              style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600),
+              style: tt.titleLarge?.copyWith(fontWeight: FontWeight.w600),
             ),
           ),
         ),

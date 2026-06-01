@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/providers/courses_provider.dart';
 import '../../../models/course.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
-class CourseDetailStudentScreen extends StatefulWidget {
+class CourseDetailStudentScreen extends ConsumerStatefulWidget {
   final String courseId;
 
   const CourseDetailStudentScreen({super.key, required this.courseId});
 
   @override
-  State<CourseDetailStudentScreen> createState() =>
+  ConsumerState<CourseDetailStudentScreen> createState() =>
       _CourseDetailStudentScreenState();
 }
 
-class _CourseDetailStudentScreenState extends State<CourseDetailStudentScreen>
+class _CourseDetailStudentScreenState
+    extends ConsumerState<CourseDetailStudentScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late CourseModel _course;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _course = CourseModel.mockList.firstWhere(
-      (c) => c.id == widget.courseId,
-      orElse: () => CourseModel.mockList.first,
-    );
   }
 
   @override
@@ -37,7 +37,69 @@ class _CourseDetailStudentScreenState extends State<CourseDetailStudentScreen>
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColors.courseColor(_course.colorIndex);
+    final tt = Theme.of(context).textTheme;
+    final courseAsync = ref.watch(courseByIdProvider(widget.courseId));
+
+    return courseAsync.when(
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (err, _) => Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            tooltip: 'Volver',
+            onPressed: () => context.pop(),
+          ),
+        ),
+        body: Center(
+          child: Text(
+            'No se pudo cargar el curso',
+            style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
+          ),
+        ),
+      ),
+      data: (course) {
+        if (course == null) {
+          return Scaffold(
+      restorationId: 'course_detail_student_screen',
+            appBar: AppBar(
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                tooltip: 'Volver',
+                onPressed: () => context.pop(),
+              ),
+            ),
+            body: Center(
+              child: Text(
+                'Curso no encontrado',
+                style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
+              ),
+            ),
+          );
+        }
+        return _CourseDetailBody(
+          course: course,
+          tabController: _tabController,
+        );
+      },
+    );
+  }
+}
+
+class _CourseDetailBody extends StatelessWidget {
+  final CourseModel course;
+  final TabController tabController;
+
+  const _CourseDetailBody({
+    required this.course,
+    required this.tabController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    final color = AppColors.courseColor(course.colorIndex);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -49,6 +111,7 @@ class _CourseDetailStudentScreenState extends State<CourseDetailStudentScreen>
             backgroundColor: color,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: AppColors.textOnPrimary),
+              tooltip: 'Volver',
               onPressed: () => context.pop(),
             ),
             flexibleSpace: FlexibleSpaceBar(
@@ -60,7 +123,7 @@ class _CourseDetailStudentScreenState extends State<CourseDetailStudentScreen>
                     colors: [color, color.withAlpha(AppAlpha.a70)],
                   ),
                 ),
-                padding: const EdgeInsets.fromLTRB(16, 80, 16, 16),
+                padding: const EdgeInsets.fromLTRB(AppSpacing.s4, 80, AppSpacing.s4, AppSpacing.s4),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -70,29 +133,26 @@ class _CourseDetailStudentScreenState extends State<CourseDetailStudentScreen>
                           horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
                         color: AppColors.textOnPrimary.withAlpha(AppAlpha.a20),
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(AppRadius.r2),
                       ),
                       child: Text(
-                        _course.code,
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
+                        course.code,
+                        style: tt.labelMedium?.copyWith(
                           color: AppColors.textOnPrimary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppSpacing.s1),
                     Text(
-                      _course.name,
-                      style: GoogleFonts.inter(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
+                      course.name,
+                      style: tt.headlineLarge?.copyWith(
                         color: AppColors.textOnPrimary,
                       ),
                     ),
                     Text(
-                      _course.teacherName,
-                      style: GoogleFonts.inter(
+                      course.teacherName,
+                      style: tt.labelLarge?.copyWith(
                         fontSize: 13,
                         color: AppColors.textOnPrimary.withAlpha(AppAlpha.a80),
                       ),
@@ -106,14 +166,13 @@ class _CourseDetailStudentScreenState extends State<CourseDetailStudentScreen>
               child: Container(
                 color: AppColors.background,
                 child: TabBar(
-                  controller: _tabController,
+                  controller: tabController,
                   labelColor: color,
                   unselectedLabelColor: AppColors.textSecondary,
                   indicatorColor: color,
                   indicatorWeight: 2,
-                  labelStyle: GoogleFonts.inter(
-                      fontSize: 13, fontWeight: FontWeight.w600),
-                  unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
+                  labelStyle: tt.labelLarge?.copyWith(fontSize: 13),
+                  unselectedLabelStyle: tt.bodySmall?.copyWith(fontSize: 13),
                   tabs: const [
                     Tab(text: 'Actividades'),
                     Tab(text: 'Recursos'),
@@ -125,11 +184,11 @@ class _CourseDetailStudentScreenState extends State<CourseDetailStudentScreen>
           ),
         ],
         body: TabBarView(
-          controller: _tabController,
+          controller: tabController,
           children: [
-            _ActivitiesTab(course: _course, color: color),
+            _ActivitiesTab(course: course, color: color),
             _ResourcesTab(),
-            _InfoTab(course: _course),
+            _InfoTab(course: course),
           ],
         ),
       ),
@@ -145,19 +204,20 @@ class _ActivitiesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     if (course.activities.isEmpty) {
       return Center(
         child: Text(
           'Sin actividades por ahora.',
-          style: GoogleFonts.inter(color: AppColors.textSecondary),
+          style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
         ),
       );
     }
 
     return ListView.separated(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       itemCount: course.activities.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.s2 + 2),
       itemBuilder: (context, index) {
         final activity = course.activities[index];
         return _ActivityTile(
@@ -183,6 +243,7 @@ class _ActivityTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     Color chipColor;
     String chipLabel;
     if (activity.isGraded) {
@@ -198,13 +259,13 @@ class _ActivityTile extends StatelessWidget {
 
     final daysLeft = activity.dueDate.difference(DateTime.now()).inDays;
 
-    return GestureDetector(
+    return CaptusPressable(
       onTap: () => context.push('/courses/$courseId/activity/${activity.id}'),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(AppSpacing.s3 + 2),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
           border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a50)),
         ),
         child: Row(
@@ -214,7 +275,7 @@ class _ActivityTile extends StatelessWidget {
               height: 40,
               decoration: BoxDecoration(
                 color: accentColor.withAlpha(AppAlpha.a10),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppRadius.r4),
               ),
               child: Icon(
                 _typeIcon(activity.type),
@@ -222,28 +283,23 @@ class _ActivityTile extends StatelessWidget {
                 size: 20,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     activity.title,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: tt.titleMedium?.copyWith(color: AppColors.textPrimary),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: AppSpacing.s1),
                   Text(
                     daysLeft < 0
                         ? 'Vencida'
                         : daysLeft == 0
                             ? 'Vence hoy'
                             : 'Vence en $daysLeft día${daysLeft == 1 ? '' : 's'}',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
+                    style: tt.bodySmall?.copyWith(
                       color: daysLeft < 0
                           ? AppColors.error
                           : daysLeft <= 1
@@ -254,20 +310,16 @@ class _ActivityTile extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.s2),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s2, vertical: AppSpacing.s1),
               decoration: BoxDecoration(
                 color: chipColor.withAlpha(AppAlpha.a10),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppRadius.r3),
               ),
               child: Text(
                 chipLabel,
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: chipColor,
-                ),
+                style: tt.labelMedium?.copyWith(color: chipColor),
               ),
             ),
           ],
@@ -295,10 +347,11 @@ class _ActivityTile extends StatelessWidget {
 class _ResourcesTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Center(
       child: Text(
         'Sin recursos disponibles.',
-        style: GoogleFonts.inter(color: AppColors.textSecondary),
+        style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
       ),
     );
   }
@@ -312,26 +365,26 @@ class _InfoTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       children: [
         _InfoCard(
           icon: Icons.info_outline,
           title: 'Descripción',
           value: course.description ?? 'Sin descripción disponible.',
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.s3),
         _InfoCard(
           icon: Icons.schedule,
           title: 'Horario',
           value: course.schedule ?? 'Sin horario registrado.',
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.s3),
         _InfoCard(
           icon: Icons.person_outline,
           title: 'Docente',
           value: course.teacherName,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.s3),
         _InfoCard(
           icon: Icons.trending_up,
           title: 'Progreso general',
@@ -355,33 +408,30 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, color: AppColors.textSecondary, size: 20),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.s3),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                  style: tt.bodySmall?.copyWith(color: AppColors.textSecondary),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.s1),
                 Text(
                   value,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
+                  style: tt.bodyMedium?.copyWith(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w500,
                   ),

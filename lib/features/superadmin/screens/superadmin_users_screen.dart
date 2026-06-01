@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../services/superadmin_service.dart';
+import '../../../core/constants/app_spacing.dart';
 
 const _roles = ['student', 'teacher', 'admin', 'superadmin'];
 
@@ -126,10 +127,11 @@ class _SuperAdminUsersScreenState extends State<SuperAdminUsersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'super_admin_users_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Usuarios Globales'),
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.background,
         elevation: 0,
       ),
       body: Column(children: [
@@ -142,12 +144,13 @@ class _SuperAdminUsersScreenState extends State<SuperAdminUsersScreen> {
             trailing: [
               IconButton(
                   icon: const Icon(Icons.search),
+                  tooltip: 'Buscar',
                   onPressed: () => _load(reset: true)),
             ],
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3, vertical: AppSpacing.s2),
           child: DropdownButtonFormField<String>(
             value: _roleFilter,
             decoration: const InputDecoration(

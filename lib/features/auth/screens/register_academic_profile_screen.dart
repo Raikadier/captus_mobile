@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class RegisterAcademicProfileScreen extends ConsumerStatefulWidget {
   const RegisterAcademicProfileScreen({super.key});
@@ -64,118 +67,65 @@ class _RegisterAcademicProfileScreenState
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'register_academic_profile_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
-        title: Text(
-          'Perfil académico',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
-        ),
+        title: const Text('Perfil académico'),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.s6),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 8),
-              _StepBar(current: 2),
-              const SizedBox(height: 28),
-              Text(
-                'Tu perfil académico',
-                style: GoogleFonts.inter(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'Paso 2 de 3',
-                style: GoogleFonts.inter(
-                    fontSize: 13, color: AppColors.textSecondary),
-              ),
-              const SizedBox(height: 28),
+              const SizedBox(height: AppSpacing.s2),
+              const _StepBar(current: 2),
+              const SizedBox(height: AppSpacing.s8),
+              Text('Tu perfil académico',
+                  style: tt.headlineLarge!.copyWith(fontSize: 24)),
+              const SizedBox(height: AppSpacing.s1 + 2),
+              Text('Paso 2 de 3',
+                  style: tt.bodySmall!
+                      .copyWith(color: AppColors.textSecondary)),
+              const SizedBox(height: AppSpacing.s8),
               TextFormField(
                 controller: _careerCtrl,
-                style: GoogleFonts.inter(
-                    fontSize: 14, color: AppColors.textPrimary),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Carrera / Programa',
-                  labelStyle:
-                      GoogleFonts.inter(color: AppColors.textSecondary),
                   hintText: 'Ingeniería de Sistemas',
-                  hintStyle:
-                      GoogleFonts.inter(color: AppColors.textDisabled),
-                  prefixIcon: const Icon(Icons.school_outlined,
-                      color: AppColors.textSecondary),
-                  filled: true,
-                  fillColor: AppColors.surface,
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                        color: AppColors.border, width: 0.5),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                        color: AppColors.border, width: 0.5),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                        color: AppColors.primary, width: 1.5),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        const BorderSide(color: AppColors.error, width: 1),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                        color: AppColors.error, width: 1.5),
-                  ),
+                  prefixIcon: Icon(Icons.school_outlined),
                 ),
               ),
-              const SizedBox(height: 24),
-              Text(
-                'Semestre actual',
-                style: GoogleFonts.inter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary),
-              ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.s6),
+              Text('Semestre actual', style: tt.headlineSmall),
+              const SizedBox(height: AppSpacing.s3),
               Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: AppSpacing.s2,
+                runSpacing: AppSpacing.s2,
                 children: List.generate(10, (i) {
                   final sem = i + 1;
                   final isSelected = _selectedSemester == sem;
-                  return GestureDetector(
-                    onTap: () => setState(() => _selectedSemester = sem),
+                  return CaptusPressable(
+                    onTap: () =>
+                        setState(() => _selectedSemester = sem),
                     child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 150),
+                      duration: AppDurations.fast,
+                      curve: AppCurves.standard,
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
                         color: isSelected
                             ? AppColors.primary
                             : AppColors.surface2,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppRadius.r4),
                         border: Border.all(
                           color: isSelected
                               ? AppColors.primary
@@ -185,9 +135,7 @@ class _RegisterAcademicProfileScreenState
                       child: Center(
                         child: Text(
                           '$sem',
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+                          style: tt.labelLarge!.copyWith(
                             color: isSelected
                                 ? AppColors.textOnPrimary
                                 : AppColors.textPrimary,
@@ -198,24 +146,19 @@ class _RegisterAcademicProfileScreenState
                   );
                 }),
               ),
-              const SizedBox(height: 24),
-              Text(
-                'Mis materias este semestre',
-                style: GoogleFonts.inter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary),
-              ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.s6),
+              Text('Mis materias este semestre',
+                  style: tt.headlineSmall),
+              const SizedBox(height: AppSpacing.s1),
               Text(
                 'Selecciona las que cursas actualmente',
-                style: GoogleFonts.inter(
-                    fontSize: 13, color: AppColors.textSecondary),
+                style: tt.bodySmall!
+                    .copyWith(color: AppColors.textSecondary),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.s3),
               Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: AppSpacing.s2,
+                runSpacing: AppSpacing.s2,
                 children: _suggestedSubjects.map((s) {
                   final isSelected = _selectedSubjects.contains(s);
                   return FilterChip(
@@ -229,67 +172,27 @@ class _RegisterAcademicProfileScreenState
                     selectedColor:
                         AppColors.primary.withAlpha(AppAlpha.a20),
                     checkmarkColor: AppColors.primary,
-                    labelStyle: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: isSelected
-                          ? AppColors.primary
-                          : AppColors.textPrimary,
-                    ),
                   );
                 }).toList(),
               ),
               if (_error != null) ...[
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: AppColors.error.withAlpha(AppAlpha.a10),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                        color: AppColors.error.withAlpha(AppAlpha.a30)),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.error_outline_rounded,
-                          color: AppColors.error, size: 16),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          _error!,
-                          style: GoogleFonts.inter(
-                              fontSize: 13, color: AppColors.error),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                const SizedBox(height: AppSpacing.s4),
+                _ErrorBanner(message: _error!),
               ],
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.s8),
               ElevatedButton(
                 onPressed: _saving ? null : _continue,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.textOnPrimary,
-                  minimumSize: const Size.fromHeight(48),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  elevation: 0,
-                ),
                 child: _saving
                     ? const SizedBox(
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
-                            color: AppColors.textOnPrimary, strokeWidth: 2),
+                            color: AppColors.textOnPrimary,
+                            strokeWidth: 2),
                       )
-                    : Text(
-                        'Continuar',
-                        style: GoogleFonts.inter(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
+                    : const Text('Continuar'),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
             ],
           ),
         ),
@@ -310,14 +213,45 @@ class _StepBar extends StatelessWidget {
         return Expanded(
           child: Container(
             height: 4,
-            margin: EdgeInsets.only(right: i < 2 ? 4 : 0),
+            margin: EdgeInsets.only(right: i < 2 ? AppSpacing.s1 : 0),
             decoration: BoxDecoration(
               color: active ? AppColors.primary : AppColors.surface2,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(AppRadius.r1),
             ),
           ),
         );
       }),
+    );
+  }
+}
+
+class _ErrorBanner extends StatelessWidget {
+  final String message;
+  const _ErrorBanner({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s3, vertical: AppSpacing.s2 + 2),
+      decoration: BoxDecoration(
+        color: AppColors.error.withAlpha(AppAlpha.a10),
+        borderRadius: BorderRadius.circular(AppRadius.r3),
+        border:
+            Border.all(color: AppColors.error.withAlpha(AppAlpha.a30)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline_rounded,
+              color: AppColors.error, size: 16),
+          const SizedBox(width: AppSpacing.s2),
+          Expanded(
+            child: Text(message,
+                style: tt.bodySmall!.copyWith(color: AppColors.error)),
+          ),
+        ],
+      ),
     );
   }
 }

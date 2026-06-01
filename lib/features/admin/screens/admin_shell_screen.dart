@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
+import '../../../core/constants/app_spacing.dart';
 
 /// Top-level shell for admin users.
 /// Bottom nav: Panel · Usuarios · Cursos · Escalas · Períodos · Cuenta
@@ -36,6 +37,7 @@ class AdminShellScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final idx = _selectedIndex(context);
     return Scaffold(
+      restorationId: 'admin_shell_screen',
       body: child,
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
@@ -133,6 +135,7 @@ class _AdminNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -144,18 +147,14 @@ class _AdminNavItem extends StatelessWidget {
             size: 20,
             color: isSelected ? AppColors.primary : AppColors.textSecondary,
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: AppSpacing.s1),
           Text(
             label,
-            style: GoogleFonts.inter(
-              fontSize: 9,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-              color: isSelected ? AppColors.primary : AppColors.textSecondary,
-            ),
+            style: tt.labelSmall!.copyWith(color: isSelected ? AppColors.primary : AppColors.textSecondary),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.s1),
           AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: AppDurations.fast,
             width: isSelected ? 4 : 0,
             height: isSelected ? 4 : 0,
             decoration: const BoxDecoration(

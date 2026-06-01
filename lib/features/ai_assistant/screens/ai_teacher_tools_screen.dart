@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/ai_chat_provider.dart';
 
 class AiTeacherToolsScreen extends ConsumerStatefulWidget {
@@ -117,30 +118,26 @@ class _AiTeacherToolsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'ai_teacher_tools_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: Text(
           'Herramientas IA Docente',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+          style: tt.headlineMedium,
         ),
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(AppSpacing.s4),
           children: [
             // ── Intro banner ─────────────────────────────────────────────
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(AppSpacing.s4),
               decoration: BoxDecoration(
                 color: AppColors.primary.withAlpha(AppAlpha.a10),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadius.r6),
                 border: Border.all(
                     color: AppColors.primary.withAlpha(AppAlpha.a20),
                     width: 0.5),
@@ -152,7 +149,7 @@ class _AiTeacherToolsScreenState
                     height: 44,
                     decoration: BoxDecoration(
                       color: AppColors.primary.withAlpha(AppAlpha.a20),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.r5),
                     ),
                     child: const Icon(
                       Icons.auto_awesome_rounded,
@@ -160,26 +157,18 @@ class _AiTeacherToolsScreenState
                       size: 22,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: AppSpacing.s3),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'Herramientas IA para Docentes',
-                          style: GoogleFonts.inter(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
-                          ),
+                          style: tt.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
                         ),
                         Text(
                           'Genera material académico con inteligencia artificial',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                            height: 1.3,
-                          ),
+                          style: tt.bodySmall?.copyWith(height: 1.3),
                         ),
                       ],
                     ),
@@ -188,7 +177,7 @@ class _AiTeacherToolsScreenState
               ),
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: AppSpacing.s4),
 
             // ── Tool 1: Semester Plan ─────────────────────────────────────
             _ToolCard(
@@ -209,7 +198,7 @@ class _AiTeacherToolsScreenState
                       hint: 'Ej. Cálculo Diferencial',
                       validator: _required,
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: AppSpacing.s3),
                     _FieldLabel('Temas a cubrir *'),
                     _ToolTextField(
                       controller: _planTopicsCtrl,
@@ -218,7 +207,7 @@ class _AiTeacherToolsScreenState
                       maxLines: 3,
                       validator: _required,
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: AppSpacing.s3),
                     Row(children: [
                       Expanded(
                         child: Column(
@@ -245,7 +234,7 @@ class _AiTeacherToolsScreenState
                           ],
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: AppSpacing.s3),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,7 +249,7 @@ class _AiTeacherToolsScreenState
                           ],
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: AppSpacing.s3),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,7 +265,7 @@ class _AiTeacherToolsScreenState
                         ),
                       ),
                     ]),
-                    const SizedBox(height: 16),
+                    SizedBox(height: AppSpacing.s4),
                     _GenerateButton(
                       sending: _sending,
                       onPressed: _submitPlan,
@@ -286,7 +275,7 @@ class _AiTeacherToolsScreenState
               ),
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: AppSpacing.s3),
 
             // ── Tool 2: Rubric ────────────────────────────────────────────
             _ToolCard(
@@ -307,7 +296,7 @@ class _AiTeacherToolsScreenState
                       hint: 'Ej. Proyecto final de programación',
                       validator: _required,
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: AppSpacing.s3),
                     Row(children: [
                       Expanded(
                         child: Column(
@@ -322,7 +311,7 @@ class _AiTeacherToolsScreenState
                           ],
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: AppSpacing.s3),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -338,7 +327,7 @@ class _AiTeacherToolsScreenState
                         ),
                       ),
                     ]),
-                    const SizedBox(height: 12),
+                    SizedBox(height: AppSpacing.s3),
                     _FieldLabel('Descripción de la actividad'),
                     _ToolTextField(
                       controller: _rubricDescCtrl,
@@ -346,7 +335,7 @@ class _AiTeacherToolsScreenState
                           'Describe brevemente qué deben hacer los estudiantes…',
                       maxLines: 3,
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: AppSpacing.s4),
                     _GenerateButton(
                       sending: _sending,
                       onPressed: _submitRubric,
@@ -356,7 +345,7 @@ class _AiTeacherToolsScreenState
               ),
             ),
 
-            const SizedBox(height: 12),
+            SizedBox(height: AppSpacing.s3),
 
             // ── Tool 3: Question Bank ─────────────────────────────────────
             _ToolCard(
@@ -386,7 +375,7 @@ class _AiTeacherToolsScreenState
                           ],
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: AppSpacing.s3),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -400,7 +389,7 @@ class _AiTeacherToolsScreenState
                           ],
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: AppSpacing.s3),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -416,7 +405,7 @@ class _AiTeacherToolsScreenState
                         ),
                       ),
                     ]),
-                    const SizedBox(height: 12),
+                    SizedBox(height: AppSpacing.s3),
                     Row(children: [
                       Expanded(
                         child: Column(
@@ -446,7 +435,7 @@ class _AiTeacherToolsScreenState
                           ],
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: AppSpacing.s3),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -475,7 +464,7 @@ class _AiTeacherToolsScreenState
                         ),
                       ),
                     ]),
-                    const SizedBox(height: 16),
+                    SizedBox(height: AppSpacing.s4),
                     _GenerateButton(
                       sending: _sending,
                       onPressed: _submitBank,
@@ -485,7 +474,7 @@ class _AiTeacherToolsScreenState
               ),
             ),
 
-            const SizedBox(height: 40),
+            SizedBox(height: AppSpacing.s10),
           ],
         ),
       ),
@@ -523,10 +512,11 @@ class _ToolCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(
           color: expanded ? AppColors.primary : AppColors.border,
           width: expanded ? 1.5 : 0.5,
@@ -536,9 +526,9 @@ class _ToolCard extends StatelessWidget {
         children: [
           InkWell(
             onTap: onToggle,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.r6),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(AppSpacing.s4),
               child: Row(
                 children: [
                   Container(
@@ -546,7 +536,7 @@ class _ToolCard extends StatelessWidget {
                     height: 44,
                     decoration: BoxDecoration(
                       color: AppColors.primary.withAlpha(AppAlpha.a10),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.r5),
                     ),
                     child: Center(
                       child: Text(
@@ -555,25 +545,18 @@ class _ToolCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: AppSpacing.s3),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           title,
-                          style: GoogleFonts.inter(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
+                          style: tt.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                         ),
                         Text(
                           subtitle,
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
-                            color: AppColors.textSecondary,
-                          ),
+                          style: tt.labelLarge?.copyWith(color: AppColors.textSecondary),
                         ),
                       ],
                     ),
@@ -593,7 +576,7 @@ class _ToolCard extends StatelessWidget {
           if (expanded) ...[
             const Divider(height: 1, color: AppColors.border),
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(AppSpacing.s4),
               child: child,
             ),
           ],
@@ -609,15 +592,12 @@ class _FieldLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s1 + 2),
       child: Text(
         text,
-        style: GoogleFonts.inter(
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-          color: AppColors.textSecondary,
-        ),
+        style: tt.labelLarge?.copyWith(color: AppColors.textSecondary),
       ),
     );
   }
@@ -642,6 +622,7 @@ class _ToolTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
@@ -649,37 +630,9 @@ class _ToolTextField extends StatelessWidget {
       validator: validator,
       readOnly: onTap != null,
       onTap: onTap,
-      style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary),
+      style: tt.labelLarge?.copyWith(color: AppColors.textPrimary),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: GoogleFonts.inter(
-            fontSize: 13, color: AppColors.textSecondary),
-        filled: true,
-        fillColor: AppColors.surface,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide:
-              const BorderSide(color: AppColors.primary, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.error),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide:
-              const BorderSide(color: AppColors.error, width: 1.5),
-        ),
       ),
     );
   }
@@ -698,30 +651,13 @@ class _DropdownField<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return DropdownButtonFormField<T>(
       value: value,
       items: items,
       onChanged: onChanged,
-      style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary),
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: AppColors.surface,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide:
-              const BorderSide(color: AppColors.primary, width: 1.5),
-        ),
-      ),
+      style: tt.labelLarge?.copyWith(color: AppColors.textPrimary),
+      decoration: const InputDecoration(),
     );
   }
 }
@@ -737,14 +673,15 @@ class _GenerateButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return SizedBox(
       width: double.infinity,
       child: FilledButton.icon(
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.primary,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.r5),
           ),
         ),
         onPressed: sending ? null : onPressed,
@@ -763,8 +700,7 @@ class _GenerateButton extends StatelessWidget {
               ),
         label: Text(
           sending ? 'Generando…' : 'Generar con IA',
-          style: GoogleFonts.inter(
-            fontSize: 14,
+          style: tt.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
             color: AppColors.textOnPrimary,
           ),

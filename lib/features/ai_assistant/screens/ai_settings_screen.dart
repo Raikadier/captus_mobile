@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/ai_chat_provider.dart';
 import '../../../core/providers/ai_settings_provider.dart';
 import '../../../core/providers/conversations_provider.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class AiSettingsScreen extends ConsumerWidget {
   const AiSettingsScreen({super.key});
@@ -15,20 +18,16 @@ class AiSettingsScreen extends ConsumerWidget {
     final asyncSettings = ref.watch(aiSettingsProvider);
 
     return Scaffold(
+      restorationId: 'ai_settings_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: Text(
           'Configuración IA',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),
@@ -36,7 +35,7 @@ class AiSettingsScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
           child: Text('Error al cargar configuración',
-              style: GoogleFonts.inter(color: AppColors.textSecondary)),
+              style: Theme.of(context).textTheme.bodySmall),
         ),
         data: (settings) => _SettingsBody(settings: settings),
       ),
@@ -57,10 +56,10 @@ class _SettingsBody extends ConsumerWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
         title: Text('Borrar historial',
-            style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
         content: Text(
           'Se eliminarán todas las conversaciones del servidor. Esta acción no se puede deshacer.',
-          style: GoogleFonts.inter(color: AppColors.textSecondary),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         actions: [
           TextButton(
@@ -94,7 +93,7 @@ class _SettingsBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(AppSpacing.s4),
       children: [
         _SectionLabel('PERMISOS DE ACCESO'),
         _ToggleItem(
@@ -122,30 +121,27 @@ class _SettingsBody extends ConsumerWidget {
               _update(ref, settings.copyWith(accessGroups: v)),
         ),
 
-        const SizedBox(height: 8),
+        SizedBox(height: AppSpacing.s2),
         _SectionLabel('COMPORTAMIENTO'),
 
         // ── Tone selector ──────────────────────────────────────────────
         Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.only(bottom: AppSpacing.s3),
+          padding: EdgeInsets.all(AppSpacing.s4),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.r5),
             border: Border.all(color: AppColors.border, width: 0.5),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Tono de respuestas',
-                  style: GoogleFonts.inter(
-                      fontSize: 14, fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary)),
-              const SizedBox(height: 4),
+                  style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: AppSpacing.s1),
               Text('Cómo responde Captus IA',
-                  style: GoogleFonts.inter(
-                      fontSize: 12, color: AppColors.textSecondary)),
-              const SizedBox(height: 12),
+                  style: Theme.of(context).textTheme.bodySmall),
+              SizedBox(height: AppSpacing.s3),
               Row(
                 children: ['Formal', 'Amigable', 'Motivacional']
                     .asMap()
@@ -153,11 +149,11 @@ class _SettingsBody extends ConsumerWidget {
                     .map((e) {
                   final isSelected = settings.toneIndex == e.key;
                   return Expanded(
-                    child: GestureDetector(
+                    child: CaptusPressable(
                       onTap: () =>
                           _update(ref, settings.copyWith(toneIndex: e.key)),
                       child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 150),
+                        duration: AppDurations.fast,
                         margin: EdgeInsets.only(
                             right: e.key < 2 ? 6 : 0),
                         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -165,7 +161,7 @@ class _SettingsBody extends ConsumerWidget {
                           color: isSelected
                               ? AppColors.primaryLight
                               : AppColors.surface2,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(AppRadius.r3),
                           border: Border.all(
                             color: isSelected
                                 ? AppColors.primary
@@ -176,9 +172,7 @@ class _SettingsBody extends ConsumerWidget {
                         child: Center(
                           child: Text(
                             e.value,
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
                               color: isSelected
                                   ? AppColors.primary
                                   : AppColors.textSecondary,
@@ -211,7 +205,7 @@ class _SettingsBody extends ConsumerWidget {
               _update(ref, settings.copyWith(proactiveSuggestions: v)),
         ),
 
-        const SizedBox(height: 24),
+        SizedBox(height: AppSpacing.s6),
 
         // ── Borrar historial ───────────────────────────────────────────
         _SectionLabel('DATOS'),
@@ -222,21 +216,20 @@ class _SettingsBody extends ConsumerWidget {
             side: const BorderSide(color: AppColors.error, width: 0.5),
             padding: const EdgeInsets.symmetric(vertical: 14),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(AppRadius.r5)),
           ),
           icon: const Icon(Icons.delete_sweep_outlined, size: 18),
           label: Text(
             'Borrar historial de conversaciones',
-            style: GoogleFonts.inter(fontWeight: FontWeight.w500),
+            style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: AppSpacing.s2),
         Text(
           'Elimina permanentemente todas tus conversaciones del servidor.',
-          style: GoogleFonts.inter(
-              fontSize: 11, color: AppColors.textSecondary),
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.textSecondary),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: AppSpacing.s8),
       ],
     );
   }
@@ -249,12 +242,10 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12, top: 8),
+      padding: const EdgeInsets.only(bottom: AppSpacing.s3, top: AppSpacing.s2),
       child: Text(
         label,
-        style: GoogleFonts.inter(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(
           color: AppColors.textSecondary,
           letterSpacing: 0.8,
         ),
@@ -281,30 +272,25 @@ class _ToggleItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: AppSpacing.s2 + 2),
+      padding: const EdgeInsets.all(AppSpacing.s3 + 2),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.r5),
         border: Border.all(color: AppColors.border, width: 0.5),
       ),
       child: Row(
         children: [
           Text(icon, style: const TextStyle(fontSize: 22)),
-          const SizedBox(width: 12),
+          SizedBox(width: AppSpacing.s3),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary)),
+                    style: Theme.of(context).textTheme.titleMedium),
                 Text(subtitle,
-                    style: GoogleFonts.inter(
-                        fontSize: 12,
-                        color: AppColors.textSecondary)),
+                    style: Theme.of(context).textTheme.bodySmall),
               ],
             ),
           ),

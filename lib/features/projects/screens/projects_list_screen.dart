@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/services/api_client.dart';
 import '../../../shared/widgets/captus_fab.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 import '../../../shared/widgets/cactus_refresh.dart';
 
 class ProjectsListScreen extends StatefulWidget {
@@ -57,19 +59,14 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'projects_list_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: Text(
           'Proyectos',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
-        actions: const [SizedBox(width: 8)],
+        actions: const [SizedBox(width: AppSpacing.s2)],
       ),
       floatingActionButton: CaptusFab(
         onPressed: () async {
@@ -90,7 +87,8 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
                   : CactusRefresh(
                       onRefresh: _load,
                       child: ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+                        padding: const EdgeInsets.fromLTRB(
+                            AppSpacing.s4, AppSpacing.s2, AppSpacing.s4, 100),
                         itemCount: _projects.length,
                         itemBuilder: (_, i) {
                           final p = _projects[i] as Map<String, dynamic>;
@@ -110,25 +108,18 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.error_outline, size: 56, color: AppColors.error),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             'Error al cargar proyectos',
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             _error!,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.primary,
@@ -136,7 +127,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
             onPressed: _load,
             child: Text(
               'Reintentar',
-              style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textOnPrimary),
             ),
           ),
         ],
@@ -154,24 +145,17 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
             size: 56,
             color: AppColors.textSecondary,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             'Sin proyectos',
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             'Crea tu primer proyecto colaborativo',
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.s6),
           FilledButton.icon(
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.primary,
@@ -183,7 +167,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
             icon: const Icon(Icons.add_rounded, color: AppColors.textOnPrimary),
             label: Text(
               'Crear proyecto',
-              style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textOnPrimary),
             ),
           ),
         ],
@@ -208,14 +192,14 @@ class _ProjectCard extends StatelessWidget {
         0;
     final isOwner = role == 'owner' || role == 'admin';
 
-    return GestureDetector(
+    return CaptusPressable(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: AppSpacing.s3),
+        padding: const EdgeInsets.all(AppSpacing.s4),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppRadius.r6),
           border: Border.all(color: AppColors.border, width: 0.5),
         ),
         child: Row(
@@ -225,7 +209,7 @@ class _ProjectCard extends StatelessWidget {
               height: 44,
               decoration: BoxDecoration(
                 color: AppColors.primary.withAlpha(AppAlpha.a10),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.r5),
               ),
               child: const Icon(
                 Icons.folder_rounded,
@@ -233,7 +217,7 @@ class _ProjectCard extends StatelessWidget {
                 size: 22,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,14 +227,10 @@ class _ProjectCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           project['title'] as String? ?? 'Sin título',
-                          style: GoogleFonts.inter(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.s2),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
@@ -260,13 +240,11 @@ class _ProjectCard extends StatelessWidget {
                           color: isOwner
                               ? AppColors.primary.withAlpha(AppAlpha.a10)
                               : AppColors.surface2,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(AppRadius.r8),
                         ),
                         child: Text(
                           isOwner ? 'Propietario' : 'Miembro',
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
                             color: isOwner
                                 ? AppColors.primary
                                 : AppColors.textSecondary,
@@ -277,18 +255,15 @@ class _ProjectCard extends StatelessWidget {
                   ),
                   if (project['description'] != null &&
                       (project['description'] as String).isNotEmpty) ...[
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppSpacing.s1),
                     Text(
                       project['description'] as String,
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.s1),
                   Row(
                     children: [
                       const Icon(
@@ -296,20 +271,17 @@ class _ProjectCard extends StatelessWidget {
                         size: 13,
                         color: AppColors.textSecondary,
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: AppSpacing.s1),
                       Text(
                         '$memberCount ${memberCount == 1 ? 'miembro' : 'miembros'}',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.s2),
             const Icon(
               Icons.chevron_right_rounded,
               color: AppColors.textSecondary,

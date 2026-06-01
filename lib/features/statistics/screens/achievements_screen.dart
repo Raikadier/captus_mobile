@@ -3,12 +3,15 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
 import '../../../models/achievement.dart';
 import '../providers/achievements_provider.dart';
 import '../../../shared/widgets/loading_shimmer.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class AchievementsScreen extends ConsumerStatefulWidget {
   const AchievementsScreen({super.key});
@@ -31,19 +34,16 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> {
     final achievementsAsync = ref.watch(achievementsProvider);
 
     return Scaffold(
+      restorationId: 'achievements_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: Text(
           'Logros',
-          style: GoogleFonts.inter(
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(color: AppColors.textPrimary),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
       ),
@@ -54,26 +54,26 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> {
           color: AppColors.primary,
           onRefresh: () => ref.read(achievementsProvider.notifier).refresh(),
           child: ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.s4),
             children: [
               _StatsHeader(state: state),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.s4),
               _FilterChips(state: state, ref: ref),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.s5),
               if (state.unlocked.isNotEmpty) ...[
                 _sectionLabel('DESBLOQUEADOS (${state.unlocked.length})'),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.s3),
                 _AchievementsGrid(achievements: state.unlocked),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.s5),
               ],
               if (state.locked.isNotEmpty) ...[
                 _sectionLabel('POR DESBLOQUEAR (${state.locked.length})'),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.s3),
                 _AchievementsGrid(achievements: state.locked),
               ],
               if (state.unlocked.isEmpty && state.locked.isEmpty)
                 _buildEmpty(),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.s8),
             ],
           ),
         ),
@@ -84,23 +84,18 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> {
   Widget _sectionLabel(String text) {
     return Text(
       text,
-      style: GoogleFonts.inter(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
-        color: AppColors.textSecondary,
-        letterSpacing: 0.8,
-      ),
+      style: Theme.of(context).textTheme.labelMedium!.copyWith(color: AppColors.textSecondary),
     );
   }
 
   Widget _buildSkeleton() {
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       children: [
         const LoadingShimmer(height: 110, borderRadius: 16),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.s4),
         const LoadingShimmer(height: 44, borderRadius: 22),
-        const SizedBox(height: 20),
+        const SizedBox(height: AppSpacing.s5),
         GridView.count(
           crossAxisCount: 3,
           crossAxisSpacing: 12,
@@ -119,32 +114,27 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> {
   Widget _buildError(String message) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.s6),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.error_outline_rounded,
                 size: 56, color: AppColors.textDisabled),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.s4),
             Text(
               'No se pudieron cargar los logros',
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: AppColors.textPrimary),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.s2),
             Text(
               message,
-              style: GoogleFonts.inter(
-                  fontSize: 12, color: AppColors.textSecondary),
+              style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.s6),
             TextButton.icon(
               onPressed: () => ref.invalidate(achievementsProvider),
               icon: const Icon(Icons.refresh_rounded),
@@ -160,16 +150,15 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> {
   Widget _buildEmpty() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(AppSpacing.s8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text('🏆', style: TextStyle(fontSize: 56)),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.s4),
             Text(
               'No hay logros en esta categoría',
-              style: GoogleFonts.inter(
-                  fontSize: 14, color: AppColors.textSecondary),
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -192,15 +181,15 @@ class _StatsHeader extends StatelessWidget {
     final stats = state.stats;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [AppColors.primaryDark, AppColors.surface],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withAlpha(51)),
+        borderRadius: BorderRadius.circular(AppRadius.r7),
+        border: Border.all(color: AppColors.primary.withAlpha(AppAlpha.a20)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,35 +197,24 @@ class _StatsHeader extends StatelessWidget {
           Row(
             children: [
               const Text('🏅', style: TextStyle(fontSize: 40)),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.s4),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       '$unlocked logro${unlocked == 1 ? '' : 's'} desbloqueado${unlocked == 1 ? '' : 's'}',
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: AppColors.textPrimary),
                     ),
                     Text(
                       'de $kTotalAchievements disponibles',
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                     if (stats != null) ...[
-                      const SizedBox(height: 2),
+                      const SizedBox(height: AppSpacing.s1),
                       Text(
                         '${(progress * 100).toStringAsFixed(0)}% completado',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary,
-                        ),
+                        style: Theme.of(context).textTheme.labelLarge!.copyWith(color: AppColors.primary),
                       ),
                     ],
                   ],
@@ -244,9 +222,9 @@ class _StatsHeader extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           ClipRRect(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(AppRadius.r1),
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 8,
@@ -256,19 +234,16 @@ class _StatsHeader extends StatelessWidget {
             ),
           ),
           if (last != null && last.unlockedAt != null) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.s2 + 2),
             Row(
               children: [
                 const Icon(Icons.emoji_events_rounded,
                     size: 14, color: AppColors.textSecondary),
-                const SizedBox(width: 4),
+                const SizedBox(width: AppSpacing.s1),
                 Expanded(
                   child: Text(
                     'Último: ${last.definition.name} — ${_formatDate(last.unlockedAt!)}',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -298,16 +273,18 @@ class _FilterChips extends StatelessWidget {
       child: Row(
         children: [
           _chip(
+            context: context,
             label: 'Todos',
             isActive: state.activeFilter == null,
             color: AppColors.primary,
             onTap: () =>
                 ref.read(achievementsProvider.notifier).setFilter(null),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.s2),
           ...AchievementDifficulty.values.map((d) => Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: AppSpacing.s2),
                 child: _chip(
+                  context: context,
                   label: d.label,
                   isActive: state.activeFilter == d,
                   color: d.color,
@@ -321,19 +298,21 @@ class _FilterChips extends StatelessWidget {
   }
 
   Widget _chip({
+    required BuildContext context,
     required String label,
     required bool isActive,
     required Color color,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
+    final tt = Theme.of(context).textTheme;
+    return CaptusPressable(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        duration: AppDurations.fast,
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3 + 2, vertical: AppSpacing.s2),
         decoration: BoxDecoration(
           color: isActive ? color : AppColors.surface,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.r8),
           border: Border.all(
             color: isActive ? color : AppColors.border,
             width: 1.5,
@@ -341,11 +320,7 @@ class _FilterChips extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: GoogleFonts.inter(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: isActive ? AppColors.textOnPrimary : AppColors.textSecondary,
-          ),
+          style: tt.titleSmall!.copyWith(color: isActive ? AppColors.textOnPrimary : AppColors.textSecondary),
         ),
       ),
     );
@@ -385,25 +360,25 @@ class _AchievementTile extends StatelessWidget {
     final difficulty = def.difficulty;
     final unlocked = achievement.isCompleted;
 
-    return GestureDetector(
+    return CaptusPressable(
       onTap: () => _showDetailSheet(context, achievement),
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(AppSpacing.s2 + 2),
         decoration: BoxDecoration(
           color: unlocked
-              ? difficulty.color.withAlpha(30)
+              ? difficulty.color.withAlpha(AppAlpha.a12)
               : AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.r5),
           border: Border.all(
             color: unlocked
-                ? difficulty.color.withAlpha(100)
+                ? difficulty.color.withAlpha(AppAlpha.a40)
                 : AppColors.border,
             width: unlocked ? 1.5 : 0.5,
           ),
           boxShadow: unlocked
               ? [
                   BoxShadow(
-                    color: difficulty.color.withAlpha(40),
+                    color: difficulty.color.withAlpha(AppAlpha.a15),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   )
@@ -417,38 +392,31 @@ class _AchievementTile extends StatelessWidget {
               Text(def.icon, style: const TextStyle(fontSize: 28))
             else
               _LockedEmoji(icon: def.icon),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.s1),
             Text(
               unlocked ? def.name : '???',
-              style: GoogleFonts.inter(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: unlocked
+              style: Theme.of(context).textTheme.labelSmall!.copyWith(color: unlocked
                     ? AppColors.textPrimary
-                    : AppColors.textDisabled,
-              ),
+                    : AppColors.textDisabled),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
             if (!unlocked) ...[
-              const SizedBox(height: 6),
+              const SizedBox(height: AppSpacing.s1),
               ClipRRect(
-                borderRadius: BorderRadius.circular(3),
+                borderRadius: BorderRadius.circular(AppRadius.r1),
                 child: LinearProgressIndicator(
                   value: achievement.progressPercent,
                   minHeight: 4,
-                  backgroundColor: difficulty.color.withAlpha(40),
+                  backgroundColor: difficulty.color.withAlpha(AppAlpha.a15),
                   valueColor: AlwaysStoppedAnimation<Color>(difficulty.color),
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: AppSpacing.s1),
               Text(
                 '${achievement.progress}/${def.targetValue}',
-                style: GoogleFonts.inter(
-                  fontSize: 9,
-                  color: AppColors.textDisabled,
-                ),
+                style: Theme.of(context).textTheme.labelSmall!.copyWith(color: AppColors.textDisabled),
               ),
             ],
           ],
@@ -479,7 +447,7 @@ class _LockedEmoji extends StatelessWidget {
               child: Container(
                 width: 36,
                 height: 36,
-                color: AppColors.surface.withAlpha(180),
+                color: AppColors.surface.withAlpha(AppAlpha.a70),
                 alignment: Alignment.center,
                 child: const Icon(
                   Icons.lock_rounded,
@@ -507,7 +475,7 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
     backgroundColor: AppColors.surface,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
     ),
     builder: (_) => Padding(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
@@ -517,10 +485,10 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
           Container(
             width: 40,
             height: 4,
-            margin: const EdgeInsets.only(bottom: 20),
+            margin: const EdgeInsets.only(bottom: AppSpacing.s5),
             decoration: BoxDecoration(
               color: AppColors.border,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(AppRadius.r1),
             ),
           ),
           if (unlocked)
@@ -536,78 +504,63 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
               child: const Icon(Icons.lock_rounded,
                   size: 36, color: AppColors.textDisabled),
             ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             unlocked ? def.name : '???',
-            style: GoogleFonts.inter(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: AppColors.textPrimary),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.s1),
           Text(
             unlocked ? def.description : 'Desbloquea este logro para ver su descripción',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: AppColors.textSecondary),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           // Dificultad chip
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
             decoration: BoxDecoration(
-              color: difficulty.color.withAlpha(30),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: difficulty.color.withAlpha(80)),
+              color: difficulty.color.withAlpha(AppAlpha.a12),
+              borderRadius: BorderRadius.circular(AppRadius.r8),
+              border: Border.all(color: difficulty.color.withAlpha(AppAlpha.a30)),
             ),
             child: Text(
               difficulty.label,
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: difficulty.color,
-              ),
+              style: Theme.of(context).textTheme.labelLarge,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           // Barra de progreso
           Row(
             children: [
               Expanded(
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(AppRadius.r1),
                   child: LinearProgressIndicator(
                     value: achievement.progressPercent,
                     minHeight: 10,
-                    backgroundColor: difficulty.color.withAlpha(40),
+                    backgroundColor: difficulty.color.withAlpha(AppAlpha.a15),
                     valueColor:
                         AlwaysStoppedAnimation<Color>(difficulty.color),
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.s3),
               Text(
                 '${achievement.progress}/${def.targetValue}',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(color: AppColors.textPrimary),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           // Estado
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s2),
             decoration: BoxDecoration(
               color: unlocked
-                  ? AppColors.primary.withAlpha(25)
+                  ? AppColors.primary.withAlpha(AppAlpha.a10)
                   : AppColors.surface2,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadius.r4),
             ),
             child: unlocked
                 ? Row(
@@ -615,16 +568,12 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
                     children: [
                       const Icon(Icons.check_circle_rounded,
                           size: 16, color: AppColors.primary),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: AppSpacing.s1),
                       Text(
                         achievement.unlockedAt != null
                             ? 'Desbloqueado el ${_formatDate(achievement.unlockedAt!)}'
                             : 'Desbloqueado',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary,
-                        ),
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(color: AppColors.primary),
                       ),
                     ],
                   )
@@ -633,14 +582,10 @@ void _showDetailSheet(BuildContext context, Achievement achievement) {
                     children: [
                       const Icon(Icons.lock_outline_rounded,
                           size: 16, color: AppColors.textDisabled),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: AppSpacing.s1),
                       Text(
                         'Bloqueado — ¡sigue adelante!',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textDisabled,
-                        ),
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(color: AppColors.textDisabled),
                       ),
                     ],
                   ),

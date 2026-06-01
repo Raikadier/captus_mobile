@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_shadows.dart';
+import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/notes_provider.dart';
 import '../../../models/note.dart';
 
@@ -142,26 +143,25 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final note = _currentNote;
     if (note != null && note.userId.isNotEmpty && !_isInitialized) {
       _loadNote(note);
     }
 
     return Scaffold(
+      restorationId: 'note_detail_screen',
       appBar: AppBar(
         title: Text(
           isEditing ? 'Editar nota' : 'Nueva nota',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
+          style: tt.headlineMedium,
         ),
         centerTitle: true,
         actions: [
           if (isEditing)
             IconButton(
               icon: const Icon(Icons.delete_outline, color: AppColors.error),
+              tooltip: 'Eliminar',
               onPressed: _isLoading ? null : _delete,
             ),
           TextButton(
@@ -174,7 +174,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
                   )
                 : Text(
                     'Guardar',
-                    style: GoogleFonts.inter(
+                    style: tt.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: AppColors.primary,
                     ),
@@ -183,22 +183,16 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppSpacing.s4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
               controller: _titleController,
-              style: GoogleFonts.inter(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+              style: tt.headlineLarge,
               decoration: InputDecoration(
                 hintText: 'Título',
-                hintStyle: GoogleFonts.inter(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
+                hintStyle: tt.headlineLarge?.copyWith(
                   color: AppColors.textDisabled,
                 ),
                 border: InputBorder.none,
@@ -208,38 +202,22 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
             const Divider(height: 24),
             TextField(
               controller: _subjectController,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
               decoration: InputDecoration(
                 hintText: 'Materia (opcional)',
-                hintStyle: GoogleFonts.inter(
-                  fontSize: 14,
+                hintStyle: tt.bodyMedium?.copyWith(
                   color: AppColors.textDisabled,
                 ),
                 prefixIcon: const Icon(Icons.school_outlined, size: 20),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: AppColors.surface2,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: AppSpacing.s4),
             TextField(
               controller: _contentController,
-              style: GoogleFonts.inter(
-                fontSize: 15,
-                color: AppColors.textPrimary,
-                height: 1.5,
-              ),
+              style: tt.bodyLarge?.copyWith(height: 1.5),
               decoration: InputDecoration(
                 hintText: 'Contenido',
-                hintStyle: GoogleFonts.inter(
-                  fontSize: 15,
+                hintStyle: tt.bodyLarge?.copyWith(
                   color: AppColors.textDisabled,
                 ),
                 border: InputBorder.none,
@@ -248,7 +226,7 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
               minLines: 10,
               textCapitalization: TextCapitalization.sentences,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: AppSpacing.s4),
             if (note != null && note.id != null && note.userId.isNotEmpty) ...[
               Row(
                 children: [
@@ -257,28 +235,22 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
                     size: 14,
                     color: AppColors.textSecondary,
                   ),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: AppSpacing.s1),
                   Text(
                     'Creada: ${_formatDate(note.createdAt)}',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: tt.bodySmall,
                   ),
                   if (note.updateAt != null) ...[
-                    const SizedBox(width: 16),
+                    SizedBox(width: AppSpacing.s4),
                     Icon(
                       Icons.update_outlined,
                       size: 14,
                       color: AppColors.textSecondary,
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: AppSpacing.s1),
                     Text(
                       'Actualizada: ${_formatDate(note.updateAt!)}',
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: tt.bodySmall,
                     ),
                   ],
                 ],
@@ -288,27 +260,17 @@ class _NoteDetailScreenState extends ConsumerState<NoteDetailScreen> {
         ),
       ),
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.textPrimary.withAlpha(AppAlpha.a05),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
+          boxShadow: AppShadows.smDark,
         ),
         child: SafeArea(
           child: Row(
             children: [
               Text(
                 'Fijar nota',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
-                ),
+                style: tt.titleMedium,
               ),
               const Spacer(),
               Switch(

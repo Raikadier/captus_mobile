@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -10,6 +9,8 @@ import '../../../core/constants/app_colors.dart';
 import '../models/evidence_item.dart';
 import '../services/evidence_local_service.dart';
 import 'qr_scanner_screen.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class EvidenceScreen extends StatefulWidget {
   const EvidenceScreen({super.key});
@@ -115,7 +116,9 @@ class _EvidenceScreenState extends State<EvidenceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'evidence_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Evidencias'),
@@ -125,7 +128,7 @@ class _EvidenceScreenState extends State<EvidenceScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.s4),
             child: GridView.count(
               shrinkWrap: true,
               crossAxisCount: 2,
@@ -162,7 +165,7 @@ class _EvidenceScreenState extends State<EvidenceScreen> {
                 ? Center(
                     child: Text(
                       'Aún no hay evidencias guardadas',
-                      style: GoogleFonts.inter(color: AppColors.textSecondary),
+                      style: tt.bodyMedium!.copyWith(color: AppColors.textSecondary),
                     ),
                   )
                 : ListView.builder(
@@ -172,41 +175,36 @@ class _EvidenceScreenState extends State<EvidenceScreen> {
                       final item = _items[index];
 
                       return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.all(14),
+                        margin: const EdgeInsets.only(bottom: AppSpacing.s3),
+                        padding: const EdgeInsets.all(AppSpacing.s3 + 2),
                         decoration: BoxDecoration(
                           color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(AppRadius.r7),
                           border: Border.all(color: AppColors.border),
                         ),
                         child: Row(
                           children: [
                             _EvidencePreview(item: item),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: AppSpacing.s3),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     item.title,
-                                    style: GoogleFonts.inter(
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.textPrimary,
-                                    ),
+                                    style: tt.titleMedium!.copyWith(color: AppColors.textPrimary),
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: AppSpacing.s1),
                                   Text(
                                     _subtitle(item),
-                                    style: GoogleFonts.inter(
-                                      fontSize: 12,
-                                      color: AppColors.textSecondary,
-                                    ),
+                                    style: tt.bodySmall,
                                   ),
                                 ],
                               ),
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete_outline_rounded),
+                              tooltip: 'Eliminar',
                               onPressed: () async {
                                 await _service.delete(item.id);
                                 _load();
@@ -249,26 +247,27 @@ class _ActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Material(
       color: AppColors.surface,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppRadius.r7),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.r7),
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(color: AppColors.border),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadius.r7),
           ),
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(AppSpacing.s3 + 2),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, color: AppColors.primary, size: 30),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.s2 + 2),
               Text(
                 title,
-                style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                style: tt.titleMedium!.copyWith(color: AppColors.textPrimary),
               ),
             ],
           ),
@@ -287,7 +286,7 @@ class _EvidencePreview extends StatelessWidget {
   Widget build(BuildContext context) {
     if (item.imagePath != null) {
       return ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.r5),
         child: Image.file(
           File(item.imagePath!),
           width: 58,
@@ -301,7 +300,7 @@ class _EvidencePreview extends StatelessWidget {
       return Container(
         width: 58,
         height: 58,
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.all(AppSpacing.s1),
         color: AppColors.surface,
         child: QrImageView(data: item.qrData!),
       );
@@ -312,7 +311,7 @@ class _EvidencePreview extends StatelessWidget {
       height: 58,
       decoration: BoxDecoration(
         color: AppColors.primary.withAlpha(AppAlpha.a10),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.r5),
       ),
       child: Icon(
         item.type == 'location'

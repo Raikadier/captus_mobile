@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_spacing.dart';
+import '../../core/constants/app_radius.dart';
 
 class CountdownChip extends StatelessWidget {
   final DateTime dueDate;
   final bool compact;
 
-  const CountdownChip({super.key, required this.dueDate, this.compact = false});
+  const CountdownChip(
+      {super.key, required this.dueDate, this.compact = false});
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final diff = dueDate.difference(DateTime.now());
     final isOverdue = diff.isNegative;
     final isUrgent = !isOverdue && diff.inHours < 24;
@@ -39,29 +42,30 @@ class CountdownChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.access_time_rounded, size: 12, color: color),
-          const SizedBox(width: 3),
+          const SizedBox(width: AppSpacing.s1),
           Text(label,
-              style: GoogleFonts.inter(
-                  fontSize: 11, color: color, fontWeight: FontWeight.w500)),
+              style: tt.labelSmall!.copyWith(
+                  color: color, fontWeight: FontWeight.w500)),
         ],
       );
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s2, vertical: AppSpacing.s1),
       decoration: BoxDecoration(
-        color: color.withAlpha(25),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color.withAlpha(76)),
+        color: color.withAlpha(AppAlpha.a10),
+        borderRadius: BorderRadius.circular(AppRadius.r2),
+        border: Border.all(color: color.withAlpha(AppAlpha.a30)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.access_time_rounded, size: 12, color: color),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppSpacing.s1),
           Text(label,
-              style: GoogleFonts.inter(
-                  fontSize: 11, color: color, fontWeight: FontWeight.w600)),
+              style: tt.labelSmall!.copyWith(
+                  color: color, fontWeight: FontWeight.w600)),
         ],
       ),
     );

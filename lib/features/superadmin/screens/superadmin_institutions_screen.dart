@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../services/superadmin_service.dart';
+import '../../../core/constants/app_spacing.dart';
 
 class SuperAdminInstitutionsScreen extends StatefulWidget {
   const SuperAdminInstitutionsScreen({super.key});
@@ -64,7 +64,7 @@ class _SuperAdminInstitutionsScreenState
           title: const Text('Deshabilitar institución'),
           content: Column(mainAxisSize: MainAxisSize.min, children: [
             Text('Deshabilitarás "${inst['name']}". Escribe el motivo:'),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.s3),
             TextField(
               controller: reasonCtrl,
               decoration: const InputDecoration(labelText: 'Motivo'),
@@ -107,11 +107,13 @@ class _SuperAdminInstitutionsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'super_admin_institutions_screen',
       appBar: AppBar(title: const Text('Instituciones')),
       body: Column(children: [
         Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(AppSpacing.s3),
           child: SearchBar(
             controller: _searchCtrl,
             hintText: 'Buscar institución…',
@@ -119,6 +121,7 @@ class _SuperAdminInstitutionsScreenState
             trailing: [
               IconButton(
                 icon: const Icon(Icons.search),
+                tooltip: 'Buscar',
                 onPressed: () => _load(reset: true),
               ),
             ],
@@ -166,8 +169,7 @@ class _SuperAdminInstitutionsScreenState
                     title: Text(inst['name'] as String? ?? ''),
                     subtitle: Text(
                       active ? 'Activa' : 'Deshabilitada',
-                      style: GoogleFonts.inter(
-                          color: active ? AppColors.success : AppColors.error),
+                      style: tt.bodyMedium!.copyWith(color: active ? AppColors.success : AppColors.error),
                     ),
                     trailing: Switch(
                       value: active,

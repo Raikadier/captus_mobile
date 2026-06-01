@@ -1,66 +1,93 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/providers/courses_provider.dart';
 import '../../../models/course.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
-class CoursesListTeacherScreen extends StatelessWidget {
+class CoursesListTeacherScreen extends ConsumerWidget {
   const CoursesListTeacherScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final courses = CourseModel.mockList;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tt = Theme.of(context).textTheme;
+    final coursesAsync = ref.watch(coursesProvider);
 
     return Scaffold(
+      restorationId: 'courses_list_teacher_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         title: Text(
           'Mis Cursos',
-          style: GoogleFonts.inter(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+          style: tt.headlineLarge,
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list, color: AppColors.textSecondary),
+            tooltip: 'Filtrar',
             onPressed: () {},
           ),
         ],
       ),
-      body: courses.isEmpty
-          ? EmptyState(
-              icon: Icons.school_outlined,
-              title: 'Sin cursos',
-              subtitle: 'Crea tu primer curso para comenzar.',
-              actionLabel: 'Crear curso',
-              onAction: () {},
-            )
-          : ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: courses.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final course = courses[index];
-                return _TeacherCourseCard(course: course);
-              },
-            ),
+      body: coursesAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, _) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.wifi_off_outlined,
+                  size: 48, color: AppColors.textSecondary),
+              const SizedBox(height: AppSpacing.s3),
+              Text(
+                'No se pudo cargar los cursos',
+                style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: AppSpacing.s4),
+              OutlinedButton(
+                onPressed: () => ref.invalidate(coursesProvider),
+                child: const Text('Reintentar'),
+              ),
+            ],
+          ),
+        ),
+        data: (courses) => courses.isEmpty
+            ? EmptyState(
+                icon: Icons.school_outlined,
+                title: 'Sin cursos',
+                subtitle: 'Crea tu primer curso para comenzar.',
+                actionLabel: 'Crear curso',
+                onAction: () => context.push('/teacher/courses/create'),
+              )
+            : RefreshIndicator(
+                color: AppColors.primary,
+                onRefresh: () async => ref.invalidate(coursesProvider),
+                child: ListView.separated(
+                  padding: const EdgeInsets.all(AppSpacing.s4),
+                  itemCount: courses.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.s3),
+                  itemBuilder: (context, index) {
+                    return _TeacherCourseCard(course: courses[index]);
+                  },
+                ),
+              ),
+      ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () => context.push('/teacher/courses/create'),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textOnPrimary,
         icon: const Icon(Icons.add),
         label: Text(
           'Nuevo curso',
-          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+          style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
       ),
     );
@@ -74,16 +101,16 @@ class _TeacherCourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final color = AppColors.courseColor(course.colorIndex);
-    const studentCount = 28;
     final pendingReviews = course.pendingActivities;
 
-    return GestureDetector(
+    return CaptusPressable(
       onTap: () => context.push('/teacher/courses/${course.id}'),
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.r7),
           border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a40)),
         ),
         child: Row(
@@ -94,15 +121,15 @@ class _TeacherCourseCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: color,
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  bottomLeft: Radius.circular(16),
+                  topLeft: Radius.circular(AppRadius.r7),
+                  bottomLeft: Radius.circular(AppRadius.r7),
                 ),
               ),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: AppSpacing.s3),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -113,15 +140,11 @@ class _TeacherCourseCard extends StatelessWidget {
                               horizontal: 7, vertical: 2),
                           decoration: BoxDecoration(
                             color: color.withAlpha(AppAlpha.a15),
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: BorderRadius.circular(AppRadius.r2),
                           ),
                           child: Text(
-                            course.code,
-                            style: GoogleFonts.inter(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: color,
-                            ),
+                            course.code.isNotEmpty ? course.code : '—',
+                            style: tt.labelMedium?.copyWith(color: color),
                           ),
                         ),
                         const Spacer(),
@@ -130,70 +153,50 @@ class _TeacherCourseCard extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: AppColors.warning.withAlpha(AppAlpha.a15),
-                              borderRadius: BorderRadius.circular(8),
+                              color:
+                                  AppColors.warning.withAlpha(AppAlpha.a15),
+                              borderRadius: BorderRadius.circular(AppRadius.r3),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 const Icon(Icons.pending_actions,
                                     size: 12, color: AppColors.warning),
-                                const SizedBox(width: 4),
+                                const SizedBox(width: AppSpacing.s1),
                                 Text(
                                   '$pendingReviews por revisar',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
+                                  style: tt.labelMedium?.copyWith(
                                     color: AppColors.warning,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppSpacing.s2),
                         ],
                       ],
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: AppSpacing.s1),
                     Text(
                       course.name,
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                      style: tt.titleLarge?.copyWith(color: AppColors.textPrimary),
+                    ),
+                    if (course.description != null &&
+                        course.description!.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.s1),
+                      Text(
+                        course.description!,
+                        style: tt.bodySmall?.copyWith(color: AppColors.textSecondary),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        const Icon(Icons.people_outline,
-                            size: 14, color: AppColors.textSecondary),
-                        const SizedBox(width: 4),
-                        Text(
-                          '$studentCount estudiantes',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Icon(Icons.trending_up, size: 14, color: color),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${(course.progress * 100).toInt()}% avance',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
+                    ],
                   ],
                 ),
               ),
             ),
             const Padding(
-              padding: EdgeInsets.only(right: 12),
+              padding: EdgeInsets.only(right: AppSpacing.s3),
               child: Icon(Icons.chevron_right,
                   color: AppColors.textDisabled, size: 20),
             ),

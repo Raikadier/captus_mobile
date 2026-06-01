@@ -1,9 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/services/api_client.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 enum _StudyMode { flashcards, quiz, resumen, mapaConceptual }
 
@@ -154,32 +157,28 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'ai_study_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: Text(
           'Modo Estudio IA',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+          style: tt.headlineMedium,
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(AppSpacing.s4),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Header banner ────────────────────────────────────────────
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(AppSpacing.s4),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withAlpha(AppAlpha.a10),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppRadius.r6),
                   border: Border.all(
                       color: AppColors.primary.withAlpha(AppAlpha.a20),
                       width: 0.5),
@@ -191,7 +190,7 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                       height: 44,
                       decoration: BoxDecoration(
                         color: AppColors.primary.withAlpha(AppAlpha.a20),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.r5),
                       ),
                       child: const Icon(
                         Icons.menu_book_rounded,
@@ -199,26 +198,18 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                         size: 22,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: AppSpacing.s3),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Modo Estudio',
-                            style: GoogleFonts.inter(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
-                            ),
+                            style: tt.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
                           ),
                           Text(
                             'Pega un texto y genera material de estudio con IA',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                              height: 1.3,
-                            ),
+                            style: tt.bodySmall?.copyWith(height: 1.3),
                           ),
                         ],
                       ),
@@ -227,34 +218,30 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: AppSpacing.s5),
 
               // ── Mode selector ────────────────────────────────────────────
               Text(
                 'Tipo de material',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
-                ),
+                style: tt.bodySmall?.copyWith(fontWeight: FontWeight.w500),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: AppSpacing.s2),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: _StudyMode.values.map((mode) {
                   final selected = _selectedMode == mode;
-                  return GestureDetector(
+                  return CaptusPressable(
                     onTap: () => setState(() => _selectedMode = mode),
                     child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 150),
+                      duration: AppDurations.fast,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
                         color: selected
                             ? AppColors.primary
                             : AppColors.surface,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.r5),
                         border: Border.all(
                           color: selected
                               ? AppColors.primary
@@ -267,12 +254,10 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                         children: [
                           Text(mode.emoji,
                               style: const TextStyle(fontSize: 16)),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: AppSpacing.s1),
                           Text(
                             mode.label,
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
+                            style: tt.labelLarge?.copyWith(
                               color: selected
                                   ? AppColors.textOnPrimary
                                   : AppColors.textPrimary,
@@ -285,47 +270,23 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                 }).toList(),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: AppSpacing.s5),
 
               // ── Subject field ────────────────────────────────────────────
               Text(
                 'Materia (opcional)',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
-                ),
+                style: tt.bodySmall?.copyWith(fontWeight: FontWeight.w500),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: AppSpacing.s2),
               TextField(
                 controller: _subjectCtrl,
-                style: GoogleFonts.inter(
-                    fontSize: 14, color: AppColors.textPrimary),
-                decoration: InputDecoration(
+                style: tt.bodyMedium,
+                decoration: const InputDecoration(
                   hintText: 'Ej. Biología, Cálculo diferencial…',
-                  hintStyle: GoogleFonts.inter(
-                      fontSize: 14, color: AppColors.textSecondary),
-                  filled: true,
-                  fillColor: AppColors.surface,
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 12),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(
-                        color: AppColors.primary, width: 1.5),
-                  ),
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: AppSpacing.s4),
 
               // ── Content field ────────────────────────────────────────────
               Row(
@@ -333,58 +294,33 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                 children: [
                   Text(
                     'Contenido del documento',
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: tt.bodySmall?.copyWith(fontWeight: FontWeight.w500),
                   ),
                   ValueListenableBuilder<TextEditingValue>(
                     valueListenable: _contentCtrl,
                     builder: (_, v, __) => Text(
                       '${v.text.length}/3000',
-                      style: GoogleFonts.inter(
-                          fontSize: 12, color: AppColors.textSecondary),
+                      style: tt.bodySmall,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: AppSpacing.s2),
               TextField(
                 controller: _contentCtrl,
                 maxLines: 8,
                 maxLength: 3000,
-                style: GoogleFonts.inter(
-                    fontSize: 13, color: AppColors.textPrimary),
+                style: tt.labelLarge?.copyWith(color: AppColors.textPrimary),
                 decoration: InputDecoration(
                   hintText:
                       'Pega aquí el texto del documento que quieres estudiar…',
-                  hintStyle: GoogleFonts.inter(
-                      fontSize: 13, color: AppColors.textSecondary),
-                  filled: true,
-                  fillColor: AppColors.surface,
-                  contentPadding: const EdgeInsets.all(14),
-                  counterStyle: GoogleFonts.inter(
-                    fontSize: 11,
+                  counterStyle: tt.labelMedium?.copyWith(
                     color: AppColors.textSecondary,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(
-                        color: AppColors.primary, width: 1.5),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: AppSpacing.s5),
 
               // ── Generate / Nueva sesión buttons ──────────────────────────
               Row(
@@ -393,9 +329,9 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                     child: FilledButton.icon(
                       style: FilledButton.styleFrom(
                         backgroundColor: AppColors.primary,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.r5),
                         ),
                       ),
                       onPressed: _isLoading ? null : _generate,
@@ -414,8 +350,7 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                             ),
                       label: Text(
                         _isLoading ? 'Generando…' : 'Generar',
-                        style: GoogleFonts.inter(
-                          fontSize: 15,
+                        style: tt.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: AppColors.textOnPrimary,
                         ),
@@ -423,13 +358,13 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                     ),
                   ),
                   if (_generated) ...[
-                    const SizedBox(width: 10),
+                    const SizedBox(width: AppSpacing.s2 + 2),
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                             vertical: 16, horizontal: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.r5),
                         ),
                         side: const BorderSide(
                             color: AppColors.border, width: 0.5),
@@ -437,11 +372,7 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                       onPressed: _reset,
                       child: Text(
                         'Nueva sesión',
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: tt.titleMedium?.copyWith(color: AppColors.textSecondary),
                       ),
                     ),
                   ],
@@ -450,18 +381,18 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
 
               // ── Loading placeholder ──────────────────────────────────────
               if (_isLoading) ...[
-                const SizedBox(height: 24),
+                SizedBox(height: AppSpacing.s6),
                 _LoadingPlaceholder(),
               ],
 
               // ── Result section ───────────────────────────────────────────
               if (_generated && _result != null) ...[
-                const SizedBox(height: 24),
+                SizedBox(height: AppSpacing.s6),
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(AppSpacing.s4),
                   decoration: BoxDecoration(
                     color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppRadius.r6),
                     border: Border.all(
                         color: AppColors.primary.withAlpha(AppAlpha.a20),
                         width: 0.5),
@@ -476,14 +407,10 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                             size: 16,
                             color: AppColors.primary,
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: AppSpacing.s1),
                           Text(
                             '${_selectedMode.emoji} ${_selectedMode.label} generado',
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.primary,
-                            ),
+                            style: tt.labelLarge?.copyWith(color: AppColors.primary),
                           ),
                         ],
                       ),
@@ -494,30 +421,11 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                         selectable: true,
                         softLineBreak: true,
                         styleSheet: MarkdownStyleSheet(
-                          p: GoogleFonts.inter(
-                            fontSize: 14,
-                            color: AppColors.textPrimary,
-                            height: 1.5,
-                          ),
-                          strong: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
-                          ),
-                          h2: GoogleFonts.inter(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
-                          ),
-                          h3: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
-                          listBullet: GoogleFonts.inter(
-                            fontSize: 14,
-                            color: AppColors.textPrimary,
-                          ),
+                          p: tt.bodyMedium?.copyWith(height: 1.5),
+                          strong: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+                          h2: tt.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
+                          h3: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                          listBullet: tt.bodyMedium,
                         ),
                       ),
                     ],
@@ -525,7 +433,7 @@ class _AiStudyScreenState extends State<AiStudyScreen> {
                 ),
               ],
 
-              const SizedBox(height: 40),
+              SizedBox(height: AppSpacing.s10),
             ],
           ),
         ),
@@ -543,7 +451,7 @@ class _LoadingPlaceholderState extends State<_LoadingPlaceholder>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1200),
+    duration: AppDurations.deliberate,
   )..repeat(reverse: true);
 
   @override
@@ -554,15 +462,16 @@ class _LoadingPlaceholderState extends State<_LoadingPlaceholder>
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return AnimatedBuilder(
       animation: _ctrl,
       builder: (_, __) {
         final opacity = 0.4 + _ctrl.value * 0.6;
         return Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(AppSpacing.s4),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.r6),
             border: Border.all(color: AppColors.border, width: 0.5),
           ),
           child: Column(
@@ -575,27 +484,23 @@ class _LoadingPlaceholderState extends State<_LoadingPlaceholder>
                     size: 16,
                     color: AppColors.primary,
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: AppSpacing.s2),
                   Text(
                     'Generando con IA…',
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: tt.labelLarge?.copyWith(color: AppColors.primary),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: AppSpacing.s3),
               ...[0.9, 0.7, 0.85, 0.6].map((w) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.s2),
                     child: Container(
                       height: 14,
                       width: MediaQuery.of(context).size.width * w,
                       decoration: BoxDecoration(
                         color: AppColors.surface2
                             .withAlpha((opacity * 255).round()),
-                        borderRadius: BorderRadius.circular(7),
+                        borderRadius: BorderRadius.circular(AppRadius.r2),
                       ),
                     ),
                   )),

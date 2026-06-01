@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/services/api_client.dart';
 import '../../../shared/widgets/captus_dialog.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class ProjectDetailScreen extends StatefulWidget {
   final String projectId;
@@ -82,7 +84,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
     setState(() => _submittingComment = true);
     try {
       await ApiClient.instance.post(
-        '/projects/${widget.projectId}/comments',
+        '/project-comments/project/${widget.projectId}',
         data: {'content': text},
       );
       _commentCtrl.clear();
@@ -135,143 +137,94 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
       isScrollControlled: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          top: 20,
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-        ),
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppColors.border,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Editar proyecto',
-                style: GoogleFonts.inter(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Título *',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 6),
-              TextFormField(
-                controller: titleCtrl,
-                style: GoogleFonts.inter(
-                    fontSize: 14, color: AppColors.textPrimary),
-                decoration: InputDecoration(
-                  hintText: 'Nombre del proyecto',
-                  hintStyle: GoogleFonts.inter(
-                      fontSize: 14, color: AppColors.textSecondary),
-                  filled: true,
-                  fillColor: AppColors.surface,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(
-                        color: AppColors.primary, width: 1.5),
-                  ),
-                ),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Requerido' : null,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Descripción (opcional)',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 6),
-              TextFormField(
-                controller: descCtrl,
-                maxLines: 3,
-                style: GoogleFonts.inter(
-                    fontSize: 14, color: AppColors.textPrimary),
-                decoration: InputDecoration(
-                  hintText: '¿De qué trata el proyecto?',
-                  hintStyle: GoogleFonts.inter(
-                      fontSize: 14, color: AppColors.textSecondary),
-                  filled: true,
-                  fillColor: AppColors.surface,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(
-                        color: AppColors.primary, width: 1.5),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () {
-                    if (formKey.currentState!.validate()) {
-                      Navigator.pop(ctx, true);
-                    }
-                  },
-                  child: Text(
-                    'Guardar',
-                    style: GoogleFonts.inter(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textOnPrimary,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: AppSpacing.s6,
+            right: AppSpacing.s6,
+            top: AppSpacing.s5,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + AppSpacing.s6,
           ),
-        ),
-      ),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.border,
+                      borderRadius: BorderRadius.circular(AppRadius.r1),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.s5),
+                Text(
+                  'Editar proyecto',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const SizedBox(height: AppSpacing.s4),
+                Text(
+                  'Título *',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.textSecondary),
+                ),
+                const SizedBox(height: AppSpacing.s1),
+                TextFormField(
+                  controller: titleCtrl,
+                  decoration: const InputDecoration(
+                    hintText: 'Nombre del proyecto',
+                  ),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Requerido' : null,
+                ),
+                const SizedBox(height: AppSpacing.s3),
+                Text(
+                  'Descripción (opcional)',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.textSecondary),
+                ),
+                const SizedBox(height: AppSpacing.s1),
+                TextFormField(
+                  controller: descCtrl,
+                  maxLines: 3,
+                  decoration: const InputDecoration(
+                    hintText: '¿De qué trata el proyecto?',
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.s5),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.r5),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (formKey.currentState!.validate()) {
+                        Navigator.pop(ctx, true);
+                      }
+                    },
+                    child: Text(
+                      'Guardar',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textOnPrimary,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
 
     if (confirmed != true || !mounted) return;
@@ -298,30 +251,29 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'project_detail_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
         title: Text(
           _project?['title'] as String? ?? 'Proyecto',
-          style: GoogleFonts.inter(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
         actions: [
           if (_isOwner) ...[
             IconButton(
               icon: const Icon(Icons.edit_outlined),
+              tooltip: 'Editar',
               onPressed: _showEditDialog,
             ),
             IconButton(
               icon: const Icon(Icons.delete_outline, color: AppColors.error),
+              tooltip: 'Eliminar',
               onPressed: _deleteProject,
             ),
           ],
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.s2),
         ],
         bottom: TabBar(
           controller: _tabCtrl,
@@ -329,9 +281,8 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
           unselectedLabelColor: AppColors.textSecondary,
           indicatorColor: AppColors.primary,
           indicatorWeight: 2,
-          labelStyle:
-              GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
-          unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
+          labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
+          unselectedLabelStyle: Theme.of(context).textTheme.labelLarge,
           tabs: const [
             Tab(text: 'Miembros'),
             Tab(text: 'Comentarios'),
@@ -373,31 +324,24 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.error_outline, size: 56, color: AppColors.error),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             'Error al cargar el proyecto',
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s3),
           Text(
             _error!,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
             onPressed: _load,
             child: Text(
               'Reintentar',
-              style: GoogleFonts.inter(color: AppColors.textOnPrimary),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textOnPrimary),
             ),
           ),
         ],
@@ -427,26 +371,24 @@ class _MembersTab extends StatelessWidget {
       children: [
         if (isOwner)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.s4, AppSpacing.s3, AppSpacing.s4, 0),
             child: SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: AppColors.primary),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.r4),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.s3),
                 ),
                 onPressed: onManage,
                 icon: const Icon(Icons.manage_accounts_outlined,
                     color: AppColors.primary),
                 label: Text(
                   'Gestionar miembros',
-                  style: GoogleFonts.inter(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.primary),
                 ),
               ),
             ),
@@ -462,31 +404,26 @@ class _MembersTab extends StatelessWidget {
                         size: 56,
                         color: AppColors.textSecondary,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.s3),
                       Text(
                         'Sin miembros',
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            color: AppColors.textSecondary),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.s3),
                       Text(
                         'Gestiona miembros con el botón de arriba',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary),
                       ),
                     ],
                   ),
                 )
               : ListView.separated(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(AppSpacing.s4),
                   itemCount: members.length,
                   separatorBuilder: (_, __) =>
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.s2),
                   itemBuilder: (_, i) {
                     final m = members[i] as Map<String, dynamic>;
                     final user = m['user'] as Map<String, dynamic>? ?? m;
@@ -501,10 +438,10 @@ class _MembersTab extends StatelessWidget {
                         : 'U';
 
                     return Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(AppSpacing.s3),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(AppRadius.r6),
                         border: Border.all(
                             color: AppColors.border, width: 0.5),
                       ),
@@ -521,14 +458,14 @@ class _MembersTab extends StatelessWidget {
                             child: avatarUrl == null || avatarUrl.isEmpty
                                 ? Text(
                                     initial,
-                                    style: GoogleFonts.inter(
+                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: AppColors.primary,
                                     ),
                                   )
                                 : null,
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: AppSpacing.s3),
                           Expanded(
                             child: Column(
                               crossAxisAlignment:
@@ -536,19 +473,14 @@ class _MembersTab extends StatelessWidget {
                               children: [
                                 Text(
                                   name,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.textPrimary,
-                                  ),
+                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      fontWeight: FontWeight.w600),
                                 ),
                                 if (email.isNotEmpty)
                                   Text(
                                     email,
-                                    style: GoogleFonts.inter(
-                                      fontSize: 13,
-                                      color: AppColors.textSecondary,
-                                    ),
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: AppColors.textSecondary),
                                   ),
                               ],
                             ),
@@ -561,13 +493,11 @@ class _MembersTab extends StatelessWidget {
                                   ? AppColors.primary
                                       .withAlpha(AppAlpha.a10)
                                   : AppColors.surface2,
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(AppRadius.r8),
                             ),
                             child: Text(
                               _roleLabel(role),
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
+                              style: Theme.of(context).textTheme.labelMedium?.copyWith(
                                 color: isOwnerRole
                                     ? AppColors.primary
                                     : AppColors.textSecondary,
@@ -628,28 +558,23 @@ class _CommentsTab extends StatelessWidget {
                         size: 56,
                         color: AppColors.textSecondary,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.s3),
                       Text(
                         'Sin comentarios aún',
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            color: AppColors.textSecondary),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.s3),
                       Text(
                         'Sé el primero en comentar',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary),
                       ),
                     ],
                   ),
                 )
               : ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(AppSpacing.s4),
                   itemCount: comments.length,
                   itemBuilder: (_, i) {
                     final c = comments[i] as Map<String, dynamic>;
@@ -670,11 +595,11 @@ class _CommentsTab extends StatelessWidget {
                         : 'U';
 
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.only(bottom: AppSpacing.s3),
+                      padding: const EdgeInsets.all(AppSpacing.s4),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(AppRadius.r6),
                         border: Border.all(
                             color: AppColors.border, width: 0.5),
                       ),
@@ -689,14 +614,13 @@ class _CommentsTab extends StatelessWidget {
                                     .withAlpha(AppAlpha.a10),
                                 child: Text(
                                   initial,
-                                  style: GoogleFonts.inter(
+                                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 13,
                                     color: AppColors.primary,
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: AppSpacing.s2),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment:
@@ -704,25 +628,20 @@ class _CommentsTab extends StatelessWidget {
                                   children: [
                                     Text(
                                       authorName,
-                                      style: GoogleFonts.inter(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.textPrimary,
-                                      ),
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          fontWeight: FontWeight.w600),
                                     ),
                                     if (c['created_at'] != null)
                                       Text(
                                         _formatDate(
                                             c['created_at'] as String),
-                                        style: GoogleFonts.inter(
-                                          fontSize: 11,
-                                          color: AppColors.textSecondary,
-                                        ),
+                                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                            color: AppColors.textSecondary),
                                       ),
                                   ],
                                 ),
                               ),
-                              GestureDetector(
+                              CaptusPressable(
                                 onTap: commentId.isNotEmpty
                                     ? () => onLike(commentId)
                                     : null,
@@ -737,24 +656,21 @@ class _CommentsTab extends StatelessWidget {
                                           ? AppColors.error
                                           : AppColors.textSecondary,
                                     ),
-                                    const SizedBox(width: 4),
+                                    const SizedBox(width: AppSpacing.s1),
                                     Text(
                                       '$likes',
-                                      style: GoogleFonts.inter(
-                                        fontSize: 13,
-                                        color: AppColors.textSecondary,
-                                      ),
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          color: AppColors.textSecondary),
                                     ),
                                   ],
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: AppSpacing.s2 + 2),
                           Text(
                             c['content'] as String? ?? '',
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: AppColors.textPrimary,
                               height: 1.5,
                             ),
@@ -768,7 +684,8 @@ class _CommentsTab extends StatelessWidget {
 
         // ── Comment input ──────────────────────────────────────────────────
         Container(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s4, AppSpacing.s2, AppSpacing.s4, AppSpacing.s4),
           decoration: const BoxDecoration(
             color: AppColors.surface,
             border: Border(top: BorderSide(color: AppColors.border)),
@@ -781,46 +698,19 @@ class _CommentsTab extends StatelessWidget {
                   controller: commentCtrl,
                   maxLines: 3,
                   minLines: 1,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: AppColors.textPrimary,
-                  ),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Escribe un comentario…',
-                    hintStyle: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                    filled: true,
-                    fillColor: AppColors.surface,
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 10),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          const BorderSide(color: AppColors.border),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          const BorderSide(color: AppColors.border),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                          color: AppColors.primary, width: 1.5),
-                    ),
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.s2),
               SizedBox(
-                height: 44,
-                width: 44,
+                height: AppSpacing.buttonHeight,
+                width: AppSpacing.buttonHeight,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.r5),
                   ),
                   child: IconButton(
                     icon: submitting

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
+import '../../../core/constants/app_shadows.dart';
+import '../../../core/constants/app_spacing.dart';
 import '../../../core/providers/auth_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -24,7 +26,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: AppDurations.deliberate,
     );
     _fadeAnim = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: const Interval(0, 0.6)),
@@ -37,18 +39,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _navigate() async {
-    // Show splash for at least 1.8 s while auth state loads.
-    await Future.delayed(const Duration(milliseconds: 1800));
+    await Future.delayed(AppDurations.splash);
     if (!mounted) return;
 
     final authAsync = ref.read(authProvider);
 
-    // Still loading → the router redirect will handle it; just wait.
-    if (authAsync.isLoading) return;
+    if (authAsync.isLoading) {
+      var waited = 0;
+      while (ref.read(authProvider).isLoading && waited < 30) {
+        await Future.delayed(AppDurations.quick);
+        waited++;
+      }
+      if (!mounted) return;
+    }
 
-    final authState = authAsync.asData?.value;
+    final authState = ref.read(authProvider).asData?.value;
     if (authState?.isAuthenticated ?? false) {
-      // Authenticated → go to the right dashboard based on role.
       final role = authState!.role;
       if (role == 'superadmin') {
         context.go('/superadmin/dashboard');
@@ -58,7 +64,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         context.go(role == 'teacher' ? '/home/teacher' : '/home');
       }
     } else {
-      // Check if first-time user → onboarding, otherwise login.
       final prefs = await SharedPreferences.getInstance();
       final seenOnboarding = prefs.getBool('seen_onboarding') ?? false;
       if (!mounted) return;
@@ -74,7 +79,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
+      restorationId: 'splash_screen',
       backgroundColor: AppColors.background,
       body: Center(
         child: AnimatedBuilder(
@@ -92,43 +99,27 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     decoration: BoxDecoration(
                       color: AppColors.primaryDark,
                       shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withAlpha(76),
-                          blurRadius: 40,
-                          spreadRadius: 8,
-                        ),
-                      ],
+                      boxShadow: AppShadows.brandMd,
                     ),
                     child: const Center(
                       child: Text('🌵', style: TextStyle(fontSize: 52)),
                     ),
                   ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Captus',
-                    style: GoogleFonts.inter(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                      letterSpacing: -1,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.s6),
+                  Text('Captus', style: tt.displayMedium),
+                  const SizedBox(height: AppSpacing.s2),
                   Text(
                     'Organiza decisiones, no solo tareas.',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: tt.bodyMedium!
+                        .copyWith(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: AppSpacing.s12),
                   SizedBox(
                     width: 24,
                     height: 24,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: AppColors.primary.withAlpha(128),
+                      color: AppColors.primary.withAlpha(AppAlpha.a50),
                     ),
                   ),
                 ],

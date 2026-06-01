@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_spacing.dart';
 import '../../core/constants/app_animations.dart';
+import '../../core/constants/app_radius.dart';
 
 /// Standard Captus dialog wrapper.
 ///
@@ -101,7 +103,7 @@ class CaptusDialog extends StatelessWidget {
     return Dialog(
       backgroundColor: AppColors.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.r7),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
@@ -120,7 +122,7 @@ class CaptusDialog extends StatelessWidget {
             ),
             // Body
             if (message != null) ...[
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.s2 + 2),
               Text(
                 message!,
                 style: const TextStyle(
@@ -131,10 +133,10 @@ class CaptusDialog extends StatelessWidget {
               ),
             ],
             if (content != null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.s3),
               content!,
             ],
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.s6),
             // Actions
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -144,7 +146,7 @@ class CaptusDialog extends StatelessWidget {
                       onCancel ?? () => Navigator.of(context).pop(false),
                   child: Text(cancelLabel),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.s2),
                 ElevatedButton(
                   style: isDangerous
                       ? ElevatedButton.styleFrom(

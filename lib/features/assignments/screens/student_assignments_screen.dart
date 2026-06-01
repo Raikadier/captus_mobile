@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/assignments_provider.dart';
 
 class StudentAssignmentsScreen extends ConsumerWidget {
@@ -10,17 +11,17 @@ class StudentAssignmentsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tt = Theme.of(context).textTheme;
     final assignmentsAsync = ref.watch(studentAssignmentsProvider);
 
     return Scaffold(
+      restorationId: 'student_assignments_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
           'Mis Tareas',
-          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+          style: tt.headlineSmall,
         ),
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
       body: RefreshIndicator(
@@ -33,10 +34,10 @@ class StudentAssignmentsScreen extends ConsumerWidget {
               children: [
                 const Icon(Icons.cloud_off_rounded,
                     size: 48, color: AppColors.textDisabled),
-                const SizedBox(height: 12),
+                SizedBox(height: AppSpacing.s3),
                 Text('No se pudieron cargar las tareas',
-                    style: GoogleFonts.inter(color: AppColors.textSecondary)),
-                const SizedBox(height: 16),
+                    style: tt.bodyMedium!.copyWith(color: AppColors.textSecondary)),
+                SizedBox(height: AppSpacing.s4),
                 ElevatedButton(
                   onPressed: () =>
                       ref.read(studentAssignmentsProvider.notifier).refresh(),
@@ -53,42 +54,36 @@ class StudentAssignmentsScreen extends ConsumerWidget {
                   children: [
                     const Icon(Icons.assignment_turned_in_outlined,
                         size: 64, color: AppColors.textDisabled),
-                    const SizedBox(height: 16),
+                    SizedBox(height: AppSpacing.s4),
                     Text(
                       'No tienes tareas pendientes',
-                      style: GoogleFonts.inter(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: tt.headlineMedium,
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: AppSpacing.s2),
                     Text(
                       '¡Buen trabajo! Estás al día con tus deberes.',
-                      style: GoogleFonts.inter(color: AppColors.textSecondary),
+                      style: tt.bodyMedium!.copyWith(color: AppColors.textSecondary),
                     ),
                   ],
                 ),
               );
             }
             return ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.s4),
               itemCount: assignments.length,
               itemBuilder: (context, index) {
                 final assignment = assignments[index];
                 return Card(
                   color: AppColors.surface,
-                  margin: const EdgeInsets.only(bottom: 12),
+                  margin: const EdgeInsets.only(bottom: AppSpacing.s3),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(AppRadius.r5)),
                   child: ListTile(
                     title: Text(assignment.title,
-                        style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary)),
+                        style: tt.titleMedium!.copyWith(color: AppColors.textPrimary)),
                     subtitle: Text(
                         'Vence: ${assignment.dueDate.day}/${assignment.dueDate.month}/${assignment.dueDate.year}',
-                        style: GoogleFonts.inter(color: AppColors.textSecondary)),
+                        style: tt.bodySmall!.copyWith(color: AppColors.textSecondary)),
                     trailing: const Icon(Icons.arrow_forward_ios,
                         size: 16, color: AppColors.textSecondary),
                     onTap: () {

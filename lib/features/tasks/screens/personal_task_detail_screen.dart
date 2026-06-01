@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_animations.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../core/utils/app_errors.dart';
 import '../../../models/task.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 
 class PersonalTaskDetailScreen extends ConsumerStatefulWidget {
   final int taskId;
@@ -57,14 +60,14 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
             content: Row(
               children: [
                 const Icon(Icons.check_circle, color: AppColors.textOnPrimary),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.s2),
                 const Text('Tarea completada'),
               ],
             ),
             backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadius.r4),
             ),
           ),
         );
@@ -107,13 +110,13 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
               content: Row(
                 children: [
                   const Icon(Icons.delete, color: AppColors.textOnPrimary),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.s2),
                   const Text('Tarea eliminada'),
                 ],
               ),
               backgroundColor: AppColors.error,
               behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.r4)),
             ),
           );
           context.pop();
@@ -149,6 +152,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
+      restorationId: 'personal_task_detail_screen',
         backgroundColor: AppColors.background,
         appBar: AppBar(title: const Text('Tarea')),
         body: const Center(child: CircularProgressIndicator()),
@@ -164,12 +168,12 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.error_outline, size: 48, color: AppColors.textSecondary),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.s4),
               Text(
                 'Tarea no encontrada',
-                style: GoogleFonts.inter(color: AppColors.textSecondary),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.s4),
               ElevatedButton(
                 onPressed: () => context.pop(),
                 child: const Text('Volver'),
@@ -190,41 +194,44 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
         title: Text(_isCompleted ? 'Tarea completada' : 'Tarea'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         actions: [
           if (!_isDisabled) ...[
             IconButton(
               icon: const Icon(Icons.edit_outlined),
+              tooltip: 'Editar',
               onPressed: () => context.push('/tasks/personal/${widget.taskId}/edit'),
             ),
             IconButton(
               icon: const Icon(Icons.delete_outline),
+              tooltip: 'Eliminar',
               onPressed: _deleteTask,
             ),
           ],
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.s5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AnimatedOpacity(
               opacity: _isOverdue ? 0.7 : 1.0,
-              duration: const Duration(milliseconds: 200),
+              duration: AppDurations.fast,
               child: Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppSpacing.s4),
                 decoration: BoxDecoration(
                   color: _isCompleted
                       ? AppColors.surface2
                       : _isOverdue
-                          ? AppColors.errorLight.withAlpha(38)
+                          ? AppColors.errorLight.withAlpha(AppAlpha.a15)
                           : AppColors.surface,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppRadius.r7),
                   border: Border.all(
                     color: _isOverdue
-                        ? AppColors.error.withAlpha(76)
+                        ? AppColors.error.withAlpha(AppAlpha.a30)
                         : AppColors.border,
                     width: 1.5,
                   ),
@@ -235,10 +242,10 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GestureDetector(
+                        CaptusPressable(
                           onTap: _isDisabled ? null : _completeTask,
                           child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
+                            duration: AppDurations.fast,
                             width: 28,
                             height: 28,
                             decoration: BoxDecoration(
@@ -262,13 +269,11 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                                 : null,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: AppSpacing.s3),
                         Expanded(
                           child: Text(
                             _task!.title,
-                            style: GoogleFonts.inter(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
+                            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                               color: _isCompleted
                                   ? AppColors.textDisabled
                                   : _isOverdue
@@ -282,7 +287,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.s4),
                     Row(
                       children: [
                         _buildInfoChip(
@@ -295,7 +300,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                                   : AppColors.primary,
                         ),
                         if (_task!.categoryName != null) ...[
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppSpacing.s2),
                           _buildInfoChip(
                             icon: Icons.label_outline,
                             label: _task!.categoryName!,
@@ -305,7 +310,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                       ],
                     ),
                     if (_task!.dueDate != null) ...[
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.s3),
                       _buildInfoChip(
                         icon: Icons.calendar_today_outlined,
                         label: DateFormat("d 'de' MMMM, h:mm a", 'es').format(_task!.dueDate!),
@@ -317,28 +322,23 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
               ),
             ),
             if (_task!.description != null && _task!.description!.isNotEmpty) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
               Text(
                 'Descripción',
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.s2 + 2),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(AppSpacing.s3 + 2),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.r5),
                   border: Border.all(color: AppColors.border),
                 ),
                 child: Text(
                   _task!.description!,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                     height: 1.5,
                   ),
@@ -346,31 +346,23 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
               ),
             ],
             if (_task!.subtasks.isNotEmpty) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.s6),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'Subtareas',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   Text(
                     '${_task!.completedSubtasks} de ${_task!.subtasks.length}',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textSecondary,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.textSecondary),
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.s2 + 2),
               ClipRRect(
-                borderRadius: BorderRadius.circular(99),
+                borderRadius: BorderRadius.circular(AppRadius.pill),
                 child: LinearProgressIndicator(
                   value: progress,
                   minHeight: 8,
@@ -380,42 +372,38 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.s4),
               ...List.generate(_task!.subtasks.length, (index) {
                 final subtask = _task!.subtasks[index];
                 return _buildSubtaskItem(subtask);
               }),
             ],
             if (!_isDisabled) ...[
-              const SizedBox(height: 24),
-              GestureDetector(
+              const SizedBox(height: AppSpacing.s6),
+              CaptusPressable(
                 onTap: () => context.push('/tasks/personal/create?parentTaskId=${widget.taskId}'),
                 child: Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(AppSpacing.s3 + 2),
                   decoration: BoxDecoration(
                     color: AppColors.primaryLight,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.primary.withAlpha(76)),
+                    borderRadius: BorderRadius.circular(AppRadius.r5),
+                    border: Border.all(color: AppColors.primary.withAlpha(AppAlpha.a30)),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.add_rounded, color: AppColors.primary),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.s2),
                       Text(
                         'Agregar subtarea',
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.primary),
                       ),
                     ],
                   ),
                 ),
               ),
             ],
-            const SizedBox(height: 40),
+            const SizedBox(height: AppSpacing.s1),
           ],
         ),
       ),
@@ -428,23 +416,19 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s2 + 2, vertical: AppSpacing.s1),
       decoration: BoxDecoration(
-        color: color.withAlpha(25),
-        borderRadius: BorderRadius.circular(8),
+        color: color.withAlpha(AppAlpha.a10),
+        borderRadius: BorderRadius.circular(AppRadius.r3),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 14, color: color),
-          const SizedBox(width: 6),
+          const SizedBox(width: AppSpacing.s1),
           Text(
             label,
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: color,
-            ),
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(color: color),
           ),
         ],
       ),
@@ -453,23 +437,23 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
 
   Widget _buildSubtaskItem(SubTask subtask) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.s2),
+      padding: const EdgeInsets.all(AppSpacing.s3),
       decoration: BoxDecoration(
         color: subtask.isCompleted ? AppColors.surface2 : AppColors.surface,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadius.r4),
         border: Border.all(
           color: subtask.isCompleted ? AppColors.border : AppColors.border,
         ),
       ),
       child: Row(
         children: [
-          GestureDetector(
+          CaptusPressable(
             onTap: _isDisabled
                 ? null
                 : () => _toggleSubtask(subtask.id, !subtask.isCompleted),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
+              duration: AppDurations.fast,
               width: 22,
               height: 22,
               decoration: BoxDecoration(
@@ -489,12 +473,11 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
                   : null,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.s3),
           Expanded(
             child: Text(
               subtask.title,
-              style: GoogleFonts.inter(
-                fontSize: 14,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: subtask.isCompleted
                     ? AppColors.textDisabled
                     : AppColors.textPrimary,
@@ -505,7 +488,7 @@ class _PersonalTaskDetailScreenState extends ConsumerState<PersonalTaskDetailScr
             ),
           ),
           if (!_isDisabled)
-            GestureDetector(
+            CaptusPressable(
               onTap: () async {
                 await ref.read(tasksServiceProvider).deleteSubtask(int.parse(subtask.id));
                 await _loadTask();

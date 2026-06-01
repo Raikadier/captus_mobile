@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_animations.dart';
+import '../../core/constants/app_radius.dart';
+import '../../core/constants/app_spacing.dart';
 
 /// Standard Captus bottom sheet wrapper.
 ///
@@ -64,7 +66,7 @@ class CaptusBottomSheet extends StatelessWidget {
       decoration: const BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20),
+          top: Radius.circular(AppRadius.r8),
         ),
       ),
       child: SafeArea(
@@ -77,20 +79,20 @@ class CaptusBottomSheet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (showHandle) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.s3),
                 Center(
                   child: Container(
                     width: 36,
                     height: 4,
                     decoration: BoxDecoration(
                       color: AppColors.border,
-                      borderRadius: BorderRadius.circular(999),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s4),
               ] else
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.s1),
               if (title != null) ...[
                 Text(
                   title!,
@@ -100,7 +102,7 @@ class CaptusBottomSheet extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s4),
               ],
               child,
             ],

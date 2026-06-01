@@ -1,80 +1,74 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../database/database_service.dart';
+import 'package:dio/dio.dart';
+import '../../models/group.dart';
+import '../services/api_client.dart';
 import 'auth_provider.dart';
 
-class GroupModel {
-  final String id;
-  final String name;
-  final String? description;
-  final int memberCount;
-  final bool isJoined;
-  final String? userId;
+// ─── myGroupsProvider ────────────────────────────────────────────────────────
 
-  const GroupModel({
-    required this.id,
-    required this.name,
-    this.description,
-    this.memberCount = 0,
-    this.isJoined = false,
-    this.userId,
-  });
-
-  factory GroupModel.fromJson(Map<String, dynamic> json) {
-    return GroupModel(
-      id: json['id']?.toString() ?? '',
-      name: json['title']?.toString() ?? json['name']?.toString() ?? '',
-      description: json['description']?.toString(),
-      memberCount: (json['memberCount'] as int?) ?? 0,
-      isJoined: (json['isJoined'] == 1) || (json['isJoined'] == true),
-      userId: json['userId']?.toString(),
-    );
-  }
-}
-
-class GroupsService {
-  Future<List<GroupModel>> fetchAll(String userId) async {
-    final raw = await DatabaseService.query(
-      'groups',
-      where: 'userId = ?',
-      whereArgs: [userId],
-    );
-
-    return raw.map((g) => GroupModel.fromJson(g)).toList();
-  }
-
-  Future<void> joinGroup(String groupId) async {
-    await DatabaseService.update(
-      'groups',
-      {'isJoined': 1},
-      where: 'id = ?',
-      whereArgs: [groupId],
-    );
-  }
-
-  Future<void> leaveGroup(String groupId) async {
-    await DatabaseService.update(
-      'groups',
-      {'isJoined': 0},
-      where: 'id = ?',
-      whereArgs: [groupId],
-    );
-  }
-}
-
-final groupsServiceProvider = Provider<GroupsService>((ref) {
-  return GroupsService();
-});
-
-final groupsProvider = FutureProvider.autoDispose<List<GroupModel>>((ref) {
-  final user = ref.watch(currentUserProvider);
-  final userId = user?.id ?? '';
-
-  return ref.read(groupsServiceProvider).fetchAll(userId);
-});
-
+/// Fetches the groups the authenticated user belongs to via
+/// `GET /groups/my-groups`.
 final myGroupsProvider =
-    Provider.autoDispose<AsyncValue<List<GroupModel>>>((ref) {
-  return ref.watch(groupsProvider).whenData(
-        (groups) => groups.where((g) => g.isJoined).toList(),
-      );
+    FutureProvider.autoDispose<List<GroupModel>>((ref) async {
+  final user = ref.watch(currentUserProvider);
+  if (user == null) return [];
+
+  try {
+    final res = await ApiClient.instance.get<dynamic>('/groups/my-groups');
+    final raw = res.data;
+    if (raw is! List) return [];
+    return raw
+        .map((item) =>
+            GroupModel.fromApiJson(item as Map<String, dynamic>))
+        .toList();
+  } on DioException catch (e) {
+    throw ApiException.fromDio(e);
+  }
 });
+
+// ─── groupsByCourseProvider ──────────────────────────────────────────────────
+
+/// Fetches groups for a specific course via `GET /groups/course/:id`.
+final groupsByCourseProvider =
+    FutureProvider.autoDispose.family<List<GroupModel>, String>((ref, courseId) async {
+  try {
+    final res =
+        await ApiClient.instance.get<dynamic>('/groups/course/$courseId');
+    final raw = res.data;
+    if (raw is! List) return [];
+    return raw
+        .map((item) =>
+            GroupModel.fromApiJson(item as Map<String, dynamic>))
+        .toList();
+  } on DioException catch (e) {
+    throw ApiException.fromDio(e);
+  }
+});
+
+// ─── createGroupProvider (notifier) ─────────────────────────────────────────
+
+class CreateGroupNotifier extends AsyncNotifier<void> {
+  @override
+  Future<void> build() async {}
+
+  Future<void> createGroup({
+    required String name,
+    required String courseId,
+    String? description,
+  }) async {
+    try {
+      await ApiClient.instance.post('/groups', data: {
+        'name': name,
+        'course_id': courseId,
+        'description': description ?? '',
+      });
+    } on DioException catch (e) {
+      throw ApiException.fromDio(e);
+    }
+    ref.invalidate(myGroupsProvider);
+  }
+}
+
+final createGroupNotifierProvider =
+    AsyncNotifierProvider<CreateGroupNotifier, void>(
+        CreateGroupNotifier.new);

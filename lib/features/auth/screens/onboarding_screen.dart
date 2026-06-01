@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_animations.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 
 class _OnboardingPage {
   final String emoji;
@@ -62,11 +64,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Future<void> _next() async {
     if (_currentPage < _pages.length - 1) {
       _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+        duration: AppDurations.standard,
+        curve: AppCurves.standard,
       );
     } else {
-      // Mark onboarding as seen so splash doesn't redirect here again.
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('seen_onboarding', true);
       if (!mounted) return;
@@ -77,6 +78,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      restorationId: 'onboarding_page',
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
@@ -84,7 +86,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Align(
               alignment: Alignment.topRight,
               child: TextButton(
-                onPressed: () => context.go('/login'),
+                onPressed: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setBool('seen_onboarding', true);
+                  if (!context.mounted) return;
+                  context.go('/login');
+                },
                 child: const Text('Omitir'),
               ),
             ),
@@ -97,18 +104,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
             _DotsIndicator(count: _pages.length, current: _currentPage),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.s6),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.pageMargin),
               child: ElevatedButton(
                 onPressed: _next,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.textOnPrimary,
-                  minimumSize: const Size.fromHeight(48),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  elevation: 0,
-                ),
                 child: Text(
                   _currentPage == _pages.length - 1
                       ? 'Empezar ahora'
@@ -116,13 +117,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.s3),
             if (_currentPage == _pages.length - 1)
               TextButton(
                 onPressed: () => context.go('/register'),
                 child: const Text('Crear cuenta nueva'),
               ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.s6),
           ],
         ),
       ),
@@ -136,8 +137,9 @@ class _OnboardingPageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s8),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -145,32 +147,27 @@ class _OnboardingPageWidget extends StatelessWidget {
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: page.accentColor.withAlpha(25),
+              color: page.accentColor.withAlpha(AppAlpha.a10),
               shape: BoxShape.circle,
-              border: Border.all(color: page.accentColor.withAlpha(76), width: 2),
+              border: Border.all(
+                  color: page.accentColor.withAlpha(AppAlpha.a30), width: 2),
             ),
             child: Center(
-              child: Text(page.emoji, style: const TextStyle(fontSize: 56)),
+              child: Text(page.emoji,
+                  style: const TextStyle(fontSize: 56)),
             ),
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: AppSpacing.s10),
           Text(
             page.title,
-            style: GoogleFonts.inter(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: tt.headlineLarge!.copyWith(fontSize: 24),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           Text(
             page.subtitle,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-              height: 1.6,
-            ),
+            style: tt.bodyMedium!.copyWith(
+                color: AppColors.textSecondary, height: 1.6),
             textAlign: TextAlign.center,
           ),
         ],
@@ -190,13 +187,14 @@ class _DotsIndicator extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(count, (i) {
         return AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.symmetric(horizontal: 4),
+          duration: AppDurations.fast,
+          curve: AppCurves.standard,
+          margin: const EdgeInsets.symmetric(horizontal: AppSpacing.s1),
           width: i == current ? 24 : 8,
           height: 8,
           decoration: BoxDecoration(
             color: i == current ? AppColors.primary : AppColors.surface2,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(AppRadius.r1),
           ),
         );
       }),

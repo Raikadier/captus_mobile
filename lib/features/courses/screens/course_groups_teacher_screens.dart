@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/course_groups_provider.dart';
 import '../../../core/utils/app_errors.dart';
 
@@ -25,7 +26,7 @@ class CourseGroupsTab extends ConsumerWidget {
         ref.watch(unassignedCourseStudentsProvider(courseId));
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.s4, AppSpacing.s4, AppSpacing.s4, AppSpacing.s6),
       children: [
         SizedBox(
           height: 48,
@@ -33,21 +34,19 @@ class CourseGroupsTab extends ConsumerWidget {
             onPressed: () =>
                 context.push('/teacher/courses/$courseId/groups/new'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: AppColors.textOnPrimary,
               elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadius.r6),
               ),
             ),
             icon: const Icon(Icons.add),
             label: Text(
               'Crear Nuevo Grupo',
-              style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.s4),
         groupsAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (_, __) => _ErrorBox(
@@ -59,19 +58,19 @@ class CourseGroupsTab extends ConsumerWidget {
             children: [
               Text(
                 'GRUPOS DEL CURSO (${groups.length})',
-                style: GoogleFonts.inter(
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.s2 + 2),
               if (groups.isEmpty)
                 _EmptyInfo(text: 'Aún no hay grupos creados')
               else
                 ...groups.map(
                   (group) => Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.s2 + 2),
                     child: _GroupTile(
                       group: group,
                       onTap: () => context.push(
@@ -84,16 +83,16 @@ class CourseGroupsTab extends ConsumerWidget {
             ],
           ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: AppSpacing.s3),
         Text(
           'SIN GRUPO ASIGNADO',
-          style: GoogleFonts.inter(
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
             fontSize: 12,
             fontWeight: FontWeight.w800,
             color: AppColors.textSecondary,
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.s2 + 2),
         unassignedAsync.when(
           loading: () => const SizedBox.shrink(),
           error: (_, __) =>
@@ -106,7 +105,7 @@ class CourseGroupsTab extends ConsumerWidget {
             return Container(
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadius.r6),
                 border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
               ),
               child: Column(
@@ -121,7 +120,7 @@ class CourseGroupsTab extends ConsumerWidget {
                             student.name.isNotEmpty
                                 ? student.name[0].toUpperCase()
                                 : '?',
-                            style: GoogleFonts.inter(
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: AppColors.textOnPrimary,
                               fontWeight: FontWeight.w700,
                             ),
@@ -129,15 +128,14 @@ class CourseGroupsTab extends ConsumerWidget {
                         ),
                         title: Text(
                           student.name,
-                          style: GoogleFonts.inter(
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
                           ),
                         ),
                         subtitle: Text(
                           student.email.isEmpty ? 'Sin correo' : student.email,
-                          style:
-                              GoogleFonts.inter(color: AppColors.textSecondary),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                         ),
                       ),
                     )
@@ -192,10 +190,10 @@ class _CreateCourseGroupScreenState
       context.go('/teacher/courses/${widget.courseId}/groups/$groupId');
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content:
-              Text(friendlyError(e, fallback: 'No se pudo crear el grupo. Intenta de nuevo.'), style: GoogleFonts.inter()),
+              Text(friendlyError(e, fallback: 'No se pudo crear el grupo. Intenta de nuevo.'), style: Theme.of(context).textTheme.bodyMedium),
           backgroundColor: AppColors.error,
         ),
       );
@@ -210,20 +208,18 @@ class _CreateCourseGroupScreenState
     final canContinue = _nameCtrl.text.trim().isNotEmpty;
 
     return Scaffold(
+      restorationId: 'create_course_group_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
-        elevation: 0,
         title: Text(
           'Crear Nuevo Grupo',
-          style: GoogleFonts.inter(
-              fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+          style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: AppColors.textPrimary),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(26),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+            padding: const EdgeInsets.fromLTRB(AppSpacing.s4, 0, AppSpacing.s4, 10),
             child: Row(
               children: [
                 Expanded(
@@ -233,11 +229,11 @@ class _CreateCourseGroupScreenState
                       color: _step == 0
                           ? AppColors.primary
                           : AppColors.primary.withAlpha(AppAlpha.a40),
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(AppRadius.r1),
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.s2),
                 Expanded(
                   child: Container(
                     height: 4,
@@ -245,7 +241,7 @@ class _CreateCourseGroupScreenState
                       color: _step == 1
                           ? AppColors.primary
                           : AppColors.border,
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(AppRadius.r1),
                     ),
                   ),
                 ),
@@ -257,14 +253,14 @@ class _CreateCourseGroupScreenState
       body: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.s4),
           child: _step == 0
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Nombre del Grupo',
-                        style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 8),
+                        style: Theme.of(context).textTheme.headlineSmall),
+                    const SizedBox(height: AppSpacing.s2),
                     TextField(
                       controller: _nameCtrl,
                       decoration: const InputDecoration(
@@ -272,10 +268,10 @@ class _CreateCourseGroupScreenState
                       ),
                       onChanged: (_) => setState(() {}),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.s3),
                     Text('Descripción (opcional)',
-                        style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 8),
+                        style: Theme.of(context).textTheme.headlineSmall),
+                    const SizedBox(height: AppSpacing.s2),
                     TextField(
                       controller: _descCtrl,
                       maxLines: 3,
@@ -283,7 +279,7 @@ class _CreateCourseGroupScreenState
                         hintText: 'Notas del grupo...',
                       ),
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: AppSpacing.s4),
                     _GroupPreviewCard(name: _nameCtrl.text.trim()),
                     const Spacer(),
                     SizedBox(
@@ -293,13 +289,9 @@ class _CreateCourseGroupScreenState
                         onPressed: canContinue
                             ? () => setState(() => _step = 1)
                             : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: AppColors.textOnPrimary,
-                        ),
                         child: Text(
                           'Continuar',
-                          style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
                         ),
                       ),
                     ),
@@ -310,12 +302,9 @@ class _CreateCourseGroupScreenState
                   children: [
                     Text(
                       'Selecciona miembros',
-                      style: GoogleFonts.inter(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.s3),
                     Expanded(
                       child: studentsAsync.when(
                         loading: () =>
@@ -332,7 +321,7 @@ class _CreateCourseGroupScreenState
                           return ListView.separated(
                             itemCount: students.length,
                             separatorBuilder: (_, __) =>
-                                const SizedBox(height: 8),
+                                const SizedBox(height: AppSpacing.s2),
                             itemBuilder: (context, index) {
                               final s = students[index];
                               final selected =
@@ -340,7 +329,7 @@ class _CreateCourseGroupScreenState
                               return Container(
                                 decoration: BoxDecoration(
                                   color: AppColors.surface,
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(AppRadius.r5),
                                   border: Border.all(
                                     color: selected
                                         ? AppColors.primary
@@ -361,13 +350,11 @@ class _CreateCourseGroupScreenState
                                   },
                                   title: Text(
                                     s.name,
-                                    style: GoogleFonts.inter(
-                                        fontWeight: FontWeight.w600),
+                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                                   ),
                                   subtitle: Text(
                                     s.email.isEmpty ? 'Sin correo' : s.email,
-                                    style: GoogleFonts.inter(
-                                        color: AppColors.textSecondary),
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                                   ),
                                   controlAffinity:
                                       ListTileControlAffinity.leading,
@@ -378,27 +365,22 @@ class _CreateCourseGroupScreenState
                         },
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: AppSpacing.s2 + 2),
                     Row(
                       children: [
                         Expanded(
                           child: OutlinedButton(
                             onPressed: () => setState(() => _step = 0),
-                            child: Text('Atrás', style: GoogleFonts.inter()),
+                            child: Text('Atrás', style: Theme.of(context).textTheme.bodyMedium),
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: AppSpacing.s2 + 2),
                         Expanded(
                           child: ElevatedButton(
                             onPressed: _saving ? null : _createGroup,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: AppColors.textOnPrimary,
-                            ),
                             child: Text(
                               _saving ? 'Creando...' : 'Crear grupo',
-                              style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w700),
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
                             ),
                           ),
                         ),
@@ -431,9 +413,7 @@ class GroupDetailTeacherScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
-        elevation: 0,
         title: groupsAsync.when(
           loading: () => const Text('Grupo'),
           error: (_, __) => const Text('Grupo'),
@@ -447,7 +427,7 @@ class GroupDetailTeacherScreen extends ConsumerWidget {
             }
             return Text(
               group?.name ?? 'Grupo',
-              style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+              style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.w700),
             );
           },
         ),
@@ -457,11 +437,12 @@ class GroupDetailTeacherScreen extends ConsumerWidget {
               '/teacher/courses/$courseId/groups/$groupId/admin',
             ),
             icon: const Icon(Icons.settings_outlined),
+            tooltip: 'Configuración',
           ),
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.s4),
         children: [
           membersAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
@@ -470,26 +451,23 @@ class GroupDetailTeacherScreen extends ConsumerWidget {
             data: (members) => Container(
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadius.r6),
                 border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
               ),
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(14),
+                    padding: const EdgeInsets.all(AppSpacing.s3 + 2),
                     child: Row(
                       children: [
                         Text(
                           'Miembros',
-                          style: GoogleFonts.inter(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          style: Theme.of(context).textTheme.headlineMedium,
                         ),
                         const Spacer(),
                         Text(
                           '${members.length}',
-                          style: GoogleFonts.inter(
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.w700,
                           ),
@@ -500,7 +478,7 @@ class GroupDetailTeacherScreen extends ConsumerWidget {
                   const Divider(height: 1),
                   if (members.isEmpty)
                     const Padding(
-                      padding: EdgeInsets.all(16),
+                      padding: EdgeInsets.all(AppSpacing.s4),
                       child: _EmptyInfo(text: 'Sin miembros todavía'),
                     )
                   else
@@ -512,7 +490,7 @@ class GroupDetailTeacherScreen extends ConsumerWidget {
                           ),
                           child: Text(
                             m.name.isNotEmpty ? m.name[0].toUpperCase() : '?',
-                            style: GoogleFonts.inter(
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: AppColors.textOnPrimary,
                               fontWeight: FontWeight.w700,
                             ),
@@ -520,12 +498,11 @@ class GroupDetailTeacherScreen extends ConsumerWidget {
                         ),
                         title: Text(
                           m.name,
-                          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                         ),
                         subtitle: Text(
                           m.email.isEmpty ? 'Sin correo' : m.email,
-                          style:
-                              GoogleFonts.inter(color: AppColors.textSecondary),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                         ),
                       ),
                     ),
@@ -533,7 +510,7 @@ class GroupDetailTeacherScreen extends ConsumerWidget {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           assignmentsAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (_, __) =>
@@ -574,23 +551,18 @@ class GroupAdminTeacherScreen extends ConsumerWidget {
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: AppBar(
-          backgroundColor: AppColors.surface,
           foregroundColor: AppColors.textPrimary,
-          elevation: 0,
           title: Text(
             'Administrar Grupo',
-            style: GoogleFonts.inter(
-                fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: AppColors.textPrimary),
           ),
           bottom: TabBar(
             indicatorColor: AppColors.primary,
             indicatorWeight: 3,
             labelColor: AppColors.primary,
             unselectedLabelColor: AppColors.textSecondary,
-            labelStyle:
-                GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13),
-            unselectedLabelStyle:
-                GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13),
+            labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700, fontSize: 13),
+            unselectedLabelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600, fontSize: 13),
             tabs: const [
               Tab(text: 'General'),
               Tab(text: 'Miembros'),
@@ -646,21 +618,21 @@ class _GeneralAdminTab extends ConsumerWidget {
         error: (_, __) =>
             const _EmptyInfo(text: 'No se pudo cargar información'),
         data: (members) => ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.s4),
         children: [
           Row(
             children: [
               Expanded(
                   child: _InfoCounter(
                       title: 'Miembros', value: '${members.length}')),
-              const SizedBox(width: 10),
+              const SizedBox(width: AppSpacing.s2 + 2),
               Expanded(
                 child: _InfoCounter(
                   title: 'Tareas',
                   value: '${assignments.length}',
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: AppSpacing.s2 + 2),
               Expanded(
                 child: _InfoCounter(
                   title: 'Pendiente',
@@ -670,13 +642,12 @@ class _GeneralAdminTab extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s4),
           Text(
             'Acciones Rápidas',
-            style: GoogleFonts.inter(
-                fontSize: 18, fontWeight: FontWeight.w700),
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.s2 + 2),
           GridView.count(
             crossAxisCount: 2,
             childAspectRatio: 1.65,
@@ -774,23 +745,22 @@ class _MembersAdminTab extends ConsumerWidget {
         enrolledStudents.where((s) => !memberIds.contains(s.id)).toList();
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       children: [
         Text(
           'Miembros Actuales',
-          style: GoogleFonts.inter(
-              fontSize: 16, fontWeight: FontWeight.w700),
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.s2 + 2),
         Container(
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.r6),
             border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
           ),
           child: currentMembers.isEmpty
               ? const Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: EdgeInsets.all(AppSpacing.s4),
                   child: _EmptyInfo(text: 'Sin miembros en el grupo'),
                 )
               : Column(
@@ -805,7 +775,7 @@ class _MembersAdminTab extends ConsumerWidget {
                               member.name.isNotEmpty
                                   ? member.name[0].toUpperCase()
                                   : '?',
-                              style: GoogleFonts.inter(
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 color: AppColors.textOnPrimary,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -813,16 +783,15 @@ class _MembersAdminTab extends ConsumerWidget {
                           ),
                           title: Text(
                             member.name,
-                            style:
-                                GoogleFonts.inter(fontWeight: FontWeight.w600),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                           ),
                           subtitle: Text(
                             member.email.isEmpty ? 'Sin correo' : member.email,
-                            style: GoogleFonts.inter(
-                                color: AppColors.textSecondary),
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                           ),
                           trailing: IconButton(
                             icon: const Icon(Icons.more_vert),
+                            tooltip: 'Más opciones',
                             onPressed: () async {
                               await ref
                                   .read(courseGroupsNotifierProvider.notifier)
@@ -838,22 +807,21 @@ class _MembersAdminTab extends ConsumerWidget {
                       .toList(),
                 ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.s4),
         Text(
           'Agregar Miembros',
-          style: GoogleFonts.inter(
-              fontSize: 16, fontWeight: FontWeight.w700),
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.s2 + 2),
         Container(
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.r6),
             border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
           ),
           child: addable.isEmpty
               ? const Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: EdgeInsets.all(AppSpacing.s4),
                   child: _EmptyInfo(text: 'No hay estudiantes disponibles'),
                 )
               : Column(
@@ -868,7 +836,7 @@ class _MembersAdminTab extends ConsumerWidget {
                               student.name.isNotEmpty
                                   ? student.name[0].toUpperCase()
                                   : '?',
-                              style: GoogleFonts.inter(
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 color: AppColors.textOnPrimary,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -876,15 +844,13 @@ class _MembersAdminTab extends ConsumerWidget {
                           ),
                           title: Text(
                             student.name,
-                            style:
-                                GoogleFonts.inter(fontWeight: FontWeight.w600),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                           ),
                           subtitle: Text(
                             student.email.isEmpty
                                 ? 'Sin correo'
                                 : student.email,
-                            style: GoogleFonts.inter(
-                                color: AppColors.textSecondary),
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                           ),
                           trailing: OutlinedButton.icon(
                             onPressed: () async {
@@ -920,7 +886,7 @@ class _TasksAdminTab extends ConsumerWidget {
     final assignmentsAsync = ref.watch(groupAssignmentsProvider(groupId));
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s4),
       children: [
         SizedBox(
           height: 46,
@@ -931,18 +897,14 @@ class _TasksAdminTab extends ConsumerWidget {
               courseId: courseId,
               groupId: groupId,
             ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: AppColors.textOnPrimary,
-            ),
             icon: const Icon(Icons.add),
             label: Text(
               'Asignar Nueva Tarea',
-              style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
           ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: AppSpacing.s3),
         assignmentsAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (_, __) =>
@@ -971,7 +933,7 @@ Future<void> _showAssignTaskSheet({
     isScrollControlled: true,
     backgroundColor: AppColors.surface,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r8)),
     ),
     builder: (sheetContext) => StatefulBuilder(
       builder: (sheetContext, setSheetState) {
@@ -979,9 +941,9 @@ Future<void> _showAssignTaskSheet({
             titleCtrl.text.trim().isNotEmpty && dueDate != null && !saving;
         return Padding(
           padding: EdgeInsets.fromLTRB(
-            16,
-            16,
-            16,
+            AppSpacing.s4,
+            AppSpacing.s4,
+            AppSpacing.s4,
             MediaQuery.of(sheetContext).viewInsets.bottom + 18,
           ),
           child: Form(
@@ -994,8 +956,7 @@ Future<void> _showAssignTaskSheet({
                   children: [
                     Text(
                       'Asignar Nueva Tarea',
-                      style: GoogleFonts.inter(
-                        fontSize: 18,
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: AppColors.textPrimary,
                       ),
@@ -1006,14 +967,15 @@ Future<void> _showAssignTaskSheet({
                           ? null
                           : () => Navigator.pop(sheetContext),
                       icon: const Icon(Icons.close),
+                      tooltip: 'Cerrar',
                     ),
                   ],
                 ),
                 Text(
                   'Se asignará a todos los miembros del grupo.',
-                  style: GoogleFonts.inter(color: AppColors.textSecondary),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.s4),
                 TextFormField(
                   controller: titleCtrl,
                   decoration: const InputDecoration(
@@ -1025,7 +987,7 @@ Future<void> _showAssignTaskSheet({
                       : null,
                   onChanged: (_) => setSheetState(() {}),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.s3),
                 TextFormField(
                   controller: descCtrl,
                   maxLines: 3,
@@ -1034,12 +996,12 @@ Future<void> _showAssignTaskSheet({
                     hintText: 'Instrucciones detalladas para el grupo...',
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.s3),
                 Text(
                   'Fecha límite',
-                  style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.s1),
                 OutlinedButton.icon(
                   onPressed: saving
                       ? null
@@ -1068,7 +1030,7 @@ Future<void> _showAssignTaskSheet({
                         : DateFormat('dd/MM/yyyy').format(dueDate!),
                   ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.s4),
                 Row(
                   children: [
                     Expanded(
@@ -1079,7 +1041,7 @@ Future<void> _showAssignTaskSheet({
                         child: const Text('Cancelar'),
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: AppSpacing.s2 + 2),
                     Expanded(
                       child: ElevatedButton(
                         onPressed: canSubmit
@@ -1109,7 +1071,7 @@ Future<void> _showAssignTaskSheet({
                                       SnackBar(
                                         content: Text(
                                           'Tarea asignada al grupo',
-                                          style: GoogleFonts.inter(),
+                                          style: Theme.of(context).textTheme.bodyMedium,
                                         ),
                                       ),
                                     );
@@ -1125,10 +1087,6 @@ Future<void> _showAssignTaskSheet({
                                 }
                               }
                             : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: AppColors.textOnPrimary,
-                        ),
                         child: Text(saving ? 'Asignando...' : 'Asignar Tarea'),
                       ),
                     ),
@@ -1158,10 +1116,10 @@ class _GroupAssignmentsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSpacing.s3 + 2),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
       ),
       child: Column(
@@ -1171,21 +1129,18 @@ class _GroupAssignmentsCard extends StatelessWidget {
             children: [
               Text(
                 'Tareas del grupo',
-                style: GoogleFonts.inter(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: AppColors.textPrimary),
               ),
               const Spacer(),
               IconButton(
                 onPressed: onAssign,
                 icon: const Icon(Icons.add_circle_outline),
+                tooltip: 'Agregar',
                 color: AppColors.primary,
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.s2),
           _GroupAssignmentsList(assignments: assignments),
         ],
       ),
@@ -1208,11 +1163,11 @@ class _GroupAssignmentsList extends StatelessWidget {
       children: assignments
           .map(
             (assignment) => Container(
-              margin: const EdgeInsets.only(bottom: 10),
-              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.only(bottom: AppSpacing.s2 + 2),
+              padding: const EdgeInsets.all(AppSpacing.s3),
               decoration: BoxDecoration(
                 color: AppColors.background,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.r5),
                 border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
               ),
               child: Row(
@@ -1225,24 +1180,21 @@ class _GroupAssignmentsList extends StatelessWidget {
                         ? AppColors.success
                         : AppColors.warning,
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: AppSpacing.s2 + 2),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           assignment.title,
-                          style: GoogleFonts.inter(
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w700,
                             color: AppColors.textPrimary,
                           ),
                         ),
                         Text(
                           'Entrega: ${DateFormat('dd/MM/yyyy').format(assignment.dueDate)}',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                         ),
                       ],
                     ),
@@ -1271,13 +1223,13 @@ class _GroupTile extends StatelessWidget {
 
     return Material(
       color: AppColors.surface,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(AppRadius.r6),
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.r6),
             border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -1288,14 +1240,14 @@ class _GroupTile extends StatelessWidget {
                 backgroundColor: color,
                 child: const Icon(Icons.groups_2_outlined, color: AppColors.textOnPrimary),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.s3),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       group.name,
-                      style: GoogleFonts.inter(
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -1303,7 +1255,7 @@ class _GroupTile extends StatelessWidget {
                     ),
                     Text(
                       '${group.memberCount} miembros',
-                      style: GoogleFonts.inter(color: AppColors.textSecondary),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                     ),
                   ],
                 ),
@@ -1327,10 +1279,10 @@ class _GroupPreviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSpacing.s3 + 2),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
       ),
       child: Row(
@@ -1340,21 +1292,18 @@ class _GroupPreviewCard extends StatelessWidget {
             backgroundColor: AppColors.info,
             child: const Icon(Icons.groups_2_outlined, color: AppColors.textOnPrimary),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.s3),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   name.isEmpty ? 'Nombre del grupo' : name,
-                  style: GoogleFonts.inter(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 Text(
                   'Vista previa',
-                  style: GoogleFonts.inter(color: AppColors.textSecondary),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -1377,26 +1326,23 @@ class _InfoCounter extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 18),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a70)),
       ),
       child: Column(
         children: [
           Text(
             value,
-            style: GoogleFonts.inter(
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(
               fontSize: 22,
               fontWeight: FontWeight.w800,
               color: AppColors.primary,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.s1),
           Text(
             title,
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -1421,13 +1367,13 @@ class _AdminActionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: AppColors.surface,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(AppRadius.r6),
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(AppRadius.r6),
             border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
           ),
           child: Column(
@@ -1442,11 +1388,10 @@ class _AdminActionCard extends StatelessWidget {
                 ),
                 child: Icon(icon, color: color),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.s2 + 2),
               Text(
                 label,
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w600,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color:
                       label == 'Eliminar' ? AppColors.error : AppColors.textPrimary,
                 ),
@@ -1467,15 +1412,15 @@ class _EmptyInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSpacing.s3 + 2),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.border.withAlpha(AppAlpha.a60)),
       ),
       child: Text(
         text,
-        style: GoogleFonts.inter(color: AppColors.textSecondary),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
       ),
     );
   }
@@ -1490,20 +1435,20 @@ class _ErrorBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSpacing.s3 + 2),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.r6),
         border: Border.all(color: AppColors.error.withAlpha(AppAlpha.a30)),
       ),
       child: Row(
         children: [
           const Icon(Icons.error_outline, color: AppColors.error),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpacing.s2 + 2),
           Expanded(
             child: Text(
               message,
-              style: GoogleFonts.inter(color: AppColors.textPrimary),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary),
             ),
           ),
           TextButton(onPressed: onRetry, child: const Text('Reintentar')),

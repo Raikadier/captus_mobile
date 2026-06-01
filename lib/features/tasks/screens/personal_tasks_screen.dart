@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/providers/tasks_provider.dart';
 import '../../../core/providers/categories_provider.dart';
+import '../../../shared/widgets/captus_fab.dart';
+import '../../../shared/widgets/captus_pressable.dart';
 import '../../../shared/widgets/task_card.dart';
 
 class PersonalTasksScreen extends ConsumerStatefulWidget {
   const PersonalTasksScreen({super.key});
 
   @override
-  ConsumerState<PersonalTasksScreen> createState() => _PersonalTasksScreenState();
+  ConsumerState<PersonalTasksScreen> createState() =>
+      _PersonalTasksScreenState();
 }
 
 class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
@@ -32,13 +36,14 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
   bool get _hasActiveFilters {
     final filters = ref.read(taskFiltersProvider);
     return filters.searchQuery != '' ||
-           filters.priorityFilter != null ||
-           filters.categoryFilter != null ||
-           filters.dateFilter != null;
+        filters.priorityFilter != null ||
+        filters.categoryFilter != null ||
+        filters.dateFilter != null;
   }
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     final tasksAsync = ref.watch(filteredTasksProvider);
     final categoriesAsync = ref.watch(categoriesNotifierProvider);
     final filters = ref.watch(taskFiltersProvider);
@@ -46,15 +51,14 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
     final categoryFilter = filters.categoryFilter;
     final dateFilter = filters.dateFilter;
 
-
     return Scaffold(
+      restorationId: 'personal_tasks_screen',
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
         title: const Text('Tareas personales'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Volver',
           onPressed: () => context.pop(),
         ),
         actions: [
@@ -63,32 +67,31 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
             tooltip: 'Gestionar categorías',
             onPressed: () => context.push('/tasks/categories'),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.s2),
         ],
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.s4),
             child: Column(
               children: [
+                // ── Search bar ────────────────────────────────────────────
                 Container(
                   height: 44,
                   decoration: BoxDecoration(
                     color: AppColors.surface2,
-                    borderRadius: BorderRadius.circular(22),
+                    borderRadius: BorderRadius.circular(AppRadius.r8),
                   ),
                   child: TextField(
                     controller: _searchController,
                     onChanged: (value) {
-                      ref.read(taskFiltersProvider.notifier).setSearchQuery(value);
+                      ref
+                          .read(taskFiltersProvider.notifier)
+                          .setSearchQuery(value);
                     },
                     decoration: InputDecoration(
                       hintText: 'Buscar tareas...',
-                      hintStyle: GoogleFonts.inter(
-                        color: AppColors.textSecondary,
-                        fontSize: 14,
-                      ),
                       prefixIcon: const Icon(
                         Icons.search,
                         color: AppColors.textSecondary,
@@ -99,25 +102,23 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
                               icon: const Icon(Icons.clear, size: 18),
                               onPressed: () {
                                 _searchController.clear();
-                                ref.read(taskFiltersProvider.notifier).setSearchQuery('');
+                                ref
+                                    .read(taskFiltersProvider.notifier)
+                                    .setSearchQuery('');
                               },
                             )
                           : null,
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
+                      filled: false,
                       contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                    ),
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: AppColors.textPrimary,
+                          horizontal: AppSpacing.s4, vertical: AppSpacing.s3),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.s3),
+                // ── Filters row ───────────────────────────────────────────
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -131,25 +132,30 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
                           {'value': 3, 'label': 'Baja'},
                         ],
                         onChanged: (val) {
-                          ref.read(taskFiltersProvider.notifier).setPriorityFilter(val);
+                          ref
+                              .read(taskFiltersProvider.notifier)
+                              .setPriorityFilter(val);
                         },
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.s2),
                       categoriesAsync.when(
                         data: (categories) => _FilterDropdown(
                           value: categoryFilter,
                           hint: 'Categoría',
                           items: categories
-                              .map((c) => {'value': c.id, 'label': c.name})
+                              .map((c) =>
+                                  {'value': c.id, 'label': c.name})
                               .toList(),
                           onChanged: (val) {
-                            ref.read(taskFiltersProvider.notifier).setCategoryFilter(val);
+                            ref
+                                .read(taskFiltersProvider.notifier)
+                                .setCategoryFilter(val);
                           },
                         ),
                         loading: () => const SizedBox.shrink(),
                         error: (_, __) => const SizedBox.shrink(),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.s2),
                       _DateFilterChip(
                         selectedDate: dateFilter,
                         onTap: () async {
@@ -160,45 +166,41 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
                             lastDate: DateTime(2030),
                           );
                           if (date != null) {
-                            ref.read(taskFiltersProvider.notifier).setDateFilter(date);
+                            ref
+                                .read(taskFiltersProvider.notifier)
+                                .setDateFilter(date);
                           }
                         },
                         onClear: () {
-                          ref.read(taskFiltersProvider.notifier).setDateFilter(null);
+                          ref
+                              .read(taskFiltersProvider.notifier)
+                              .setDateFilter(null);
                         },
                       ),
                       if (_hasActiveFilters) ...[
-                        const SizedBox(width: 8),
-                        GestureDetector(
+                        const SizedBox(width: AppSpacing.s2),
+                        CaptusPressable(
                           onTap: _clearFilters,
                           child: Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
-                            ),
+                                horizontal: AppSpacing.s3,
+                                vertical: AppSpacing.s2),
                             decoration: BoxDecoration(
-                              color: AppColors.error.withAlpha(25),
-                              borderRadius: BorderRadius.circular(8),
+                              color: AppColors.error.withAlpha(AppAlpha.a10),
+                              borderRadius: BorderRadius.circular(AppRadius.r3),
                               border: Border.all(
-                                color: AppColors.error.withAlpha(76),
-                              ),
+                                  color: AppColors.error.withAlpha(AppAlpha.a30)),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  Icons.clear_rounded,
-                                  size: 16,
-                                  color: AppColors.error,
-                                ),
-                                const SizedBox(width: 4),
+                                const Icon(Icons.clear_rounded,
+                                    size: 16, color: AppColors.error),
+                                const SizedBox(width: AppSpacing.s1),
                                 Text(
                                   'Limpiar',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.error,
-                                  ),
+                                  style: tt.labelLarge!
+                                      .copyWith(color: AppColors.error),
                                 ),
                               ],
                             ),
@@ -213,27 +215,22 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
           ),
           Expanded(
             child: tasksAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () =>
+                  const Center(child: CircularProgressIndicator()),
               error: (error, _) => Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.error_outline,
-                      size: 48,
-                      color: AppColors.error,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Error al cargar tareas',
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
+                    const Icon(Icons.error_outline,
+                        size: 48, color: AppColors.error),
+                    const SizedBox(height: AppSpacing.s4),
+                    Text('Error al cargar tareas',
+                        style: tt.headlineSmall!
+                            .copyWith(color: AppColors.textSecondary)),
+                    const SizedBox(height: AppSpacing.s4),
                     ElevatedButton(
-                      onPressed: () => ref.refresh(tasksNotifierProvider),
+                      onPressed: () =>
+                          ref.refresh(tasksNotifierProvider),
                       child: const Text('Reintentar'),
                     ),
                   ],
@@ -245,30 +242,23 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.assignment_outlined,
-                          size: 64,
-                          color: AppColors.textDisabled,
-                        ),
-                        const SizedBox(height: 16),
+                        const Icon(Icons.assignment_outlined,
+                            size: 64, color: AppColors.textDisabled),
+                        const SizedBox(height: AppSpacing.s4),
                         Text(
                           _hasActiveFilters
                               ? 'No hay tareas que coincidan'
                               : 'No hay tareas personales',
-                          style: GoogleFonts.inter(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textSecondary,
-                          ),
+                          style: tt.headlineMedium!
+                              .copyWith(color: AppColors.textSecondary),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: AppSpacing.s2),
                         Text(
                           _hasActiveFilters
                               ? 'Intenta con otros filtros'
                               : 'Crea tu primera tarea',
-                          style: GoogleFonts.inter(
-                            color: AppColors.textDisabled,
-                          ),
+                          style: tt.bodyMedium!
+                              .copyWith(color: AppColors.textDisabled),
                         ),
                       ],
                     ),
@@ -276,15 +266,17 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
                 }
 
                 return ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.only(bottom: AppSpacing.s4),
                   itemCount: tasks.length,
                   itemBuilder: (context, index) {
                     final task = tasks[index];
                     return TaskCard(
                       task: task,
-                      onTap: () => context.push('/tasks/personal/${task.id}'),
+                      onTap: () =>
+                          context.push('/tasks/personal/${task.id}'),
                       onComplete: () => _completeTask(task.id!),
-                      onDelete: () => _deleteTask(task.id!, task.title),
+                      onDelete: () =>
+                          _deleteTask(task.id!, task.title),
                     );
                   },
                 );
@@ -293,32 +285,30 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: CaptusFab(
         onPressed: () => context.push('/tasks/personal/create'),
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: AppColors.textOnPrimary),
+        tooltip: 'Nueva tarea personal',
       ),
     );
   }
 
   Future<void> _completeTask(int taskId) async {
     try {
-      await ref.read(tasksNotifierProvider.notifier).completeWithSubtasks(taskId);
+      await ref
+          .read(tasksNotifierProvider.notifier)
+          .completeWithSubtasks(taskId);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.check_circle, color: AppColors.textOnPrimary),
-                const SizedBox(width: 8),
-                const Text('Tarea completada'),
-              ],
-            ),
+            content: const Row(children: [
+              Icon(Icons.check_circle, color: AppColors.textOnPrimary),
+              SizedBox(width: AppSpacing.s2),
+              Text('Tarea completada'),
+            ]),
             backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
+                borderRadius: BorderRadius.circular(AppRadius.r4)),
           ),
         );
       }
@@ -326,9 +316,8 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppColors.error,
-          ),
+              content: Text('Error: $e'),
+              backgroundColor: AppColors.error),
         );
       }
     }
@@ -346,7 +335,8 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
             child: const Text('Cancelar'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
+            style: FilledButton.styleFrom(
+                backgroundColor: AppColors.error),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Eliminar'),
           ),
@@ -360,18 +350,15 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.delete, color: AppColors.textOnPrimary),
-                  const SizedBox(width: 8),
-                  const Text('Tarea eliminada'),
-                ],
-              ),
+              content: const Row(children: [
+                Icon(Icons.delete, color: AppColors.textOnPrimary),
+                SizedBox(width: AppSpacing.s2),
+                Text('Tarea eliminada'),
+              ]),
               backgroundColor: AppColors.error,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+                  borderRadius: BorderRadius.circular(AppRadius.r4)),
             ),
           );
         }
@@ -379,15 +366,16 @@ class _PersonalTasksScreenState extends ConsumerState<PersonalTasksScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error: $e'),
-              backgroundColor: AppColors.error,
-            ),
+                content: Text('Error: $e'),
+                backgroundColor: AppColors.error),
           );
         }
       }
     }
   }
 }
+
+// ── Filter dropdown ───────────────────────────────────────────────────────────
 
 class _FilterDropdown extends StatelessWidget {
   final int? value;
@@ -404,48 +392,38 @@ class _FilterDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    final isActive = value != null;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s3),
       decoration: BoxDecoration(
-        color: value != null ? AppColors.primaryLight : AppColors.surface2,
-        borderRadius: BorderRadius.circular(8),
+        color: isActive ? AppColors.primaryLight : AppColors.surface2,
+        borderRadius: BorderRadius.circular(AppRadius.r3),
         border: Border.all(
-          color: value != null ? AppColors.primary : AppColors.border,
-        ),
+            color: isActive ? AppColors.primary : AppColors.border),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<int?>(
           value: value,
           dropdownColor: AppColors.surface,
-          hint: Text(
-            hint,
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              color: AppColors.textSecondary,
-            ),
-          ),
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            size: 20,
-            color: AppColors.textSecondary,
-          ),
+          hint: Text(hint,
+              style: tt.bodySmall!
+                  .copyWith(color: AppColors.textSecondary)),
+          icon: const Icon(Icons.keyboard_arrow_down_rounded,
+              size: 20, color: AppColors.textSecondary),
           isDense: true,
-          style: GoogleFonts.inter(
-            fontSize: 13,
-            color: AppColors.textPrimary,
-          ),
+          style: tt.bodySmall!.copyWith(color: AppColors.textPrimary),
           items: [
             DropdownMenuItem<int?>(
               value: null,
-              child: Text(
-                'Todas',
-                style: GoogleFonts.inter(color: AppColors.textSecondary),
-              ),
+              child: Text('Todas',
+                  style: tt.bodySmall!
+                      .copyWith(color: AppColors.textSecondary)),
             ),
             ...items.map((item) => DropdownMenuItem<int?>(
-              value: item['value'] as int,
-              child: Text(item['label'] as String),
-            )),
+                  value: item['value'] as int,
+                  child: Text(item['label'] as String),
+                )),
           ],
           onChanged: onChanged,
         ),
@@ -453,6 +431,8 @@ class _FilterDropdown extends StatelessWidget {
     );
   }
 }
+
+// ── Date filter chip ──────────────────────────────────────────────────────────
 
 class _DateFilterChip extends StatelessWidget {
   final DateTime? selectedDate;
@@ -467,73 +447,51 @@ class _DateFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (selectedDate != null) {
-      return GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: AppColors.primaryLight,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.primary),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.calendar_today,
-                size: 14,
-                color: AppColors.primary,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                DateFormat('d MMM', 'es').format(selectedDate!),
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primary,
-                ),
-              ),
-              const SizedBox(width: 4),
-              GestureDetector(
-                onTap: onClear,
-                child: Icon(
-                  Icons.close,
-                  size: 16,
-                  color: AppColors.primary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+    final tt = Theme.of(context).textTheme;
+    final isActive = selectedDate != null;
 
-    return GestureDetector(
+    return CaptusPressable(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.s3, vertical: AppSpacing.s2),
         decoration: BoxDecoration(
-          color: AppColors.surface2,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.border),
+          color: isActive ? AppColors.primaryLight : AppColors.surface2,
+          borderRadius: BorderRadius.circular(AppRadius.r3),
+          border: Border.all(
+              color: isActive ? AppColors.primary : AppColors.border),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.calendar_today_outlined,
+              isActive
+                  ? Icons.calendar_today
+                  : Icons.calendar_today_outlined,
               size: 14,
-              color: AppColors.textSecondary,
+              color: isActive ? AppColors.primary : AppColors.textSecondary,
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: AppSpacing.s1),
             Text(
-              'Fecha',
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                color: AppColors.textSecondary,
+              isActive
+                  ? DateFormat('d MMM', 'es').format(selectedDate!)
+                  : 'Fecha',
+              style: tt.bodySmall!.copyWith(
+                color: isActive
+                    ? AppColors.primary
+                    : AppColors.textSecondary,
+                fontWeight:
+                    isActive ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
+            if (isActive) ...[
+              const SizedBox(width: AppSpacing.s1),
+              CaptusPressable(
+                onTap: onClear,
+                child: const Icon(Icons.close,
+                    size: 16, color: AppColors.primary),
+              ),
+            ],
           ],
         ),
       ),
