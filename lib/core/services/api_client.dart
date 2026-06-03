@@ -110,7 +110,7 @@ class _AuthInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     // 401 → session expired; could trigger a sign-out here
     if (err.response?.statusCode == 401) {
-      SupabaseService.auth.signOut();
+      SupabaseService.auth?.signOut();
     }
     handler.next(err);
   }

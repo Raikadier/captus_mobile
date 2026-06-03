@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../env/env.dart';
 
@@ -6,22 +7,37 @@ import '../env/env.dart';
 /// Call [SupabaseService.initialize] in main() before runApp.
 /// Then use [SupabaseService.client] anywhere in the app.
 abstract class SupabaseService {
+  static bool _initialized = false;
+
   static Future<void> initialize() async {
+    if (_initialized) return;
     await Supabase.initialize(
       url: Env.supabaseUrl,
       anonKey: Env.supabaseAnonKey,
     );
+    _initialized = true;
   }
 
-  /// The global Supabase client.
-  static SupabaseClient get client => Supabase.instance.client;
+  /// Whether Supabase has been successfully initialized.
+  static bool get isInitialized => _initialized;
 
-  /// Shortcut to the auth sub-client.
-  static GoTrueClient get auth => client.auth;
+  /// The global Supabase client. Returns null if not yet initialized.
+  static SupabaseClient? get client {
+    if (!_initialized) return null;
+    try {
+      return Supabase.instance.client;
+    } catch (e) {
+      debugPrint('[SupabaseService] client access failed: $e');
+      return null;
+    }
+  }
 
-  /// Current session (null when logged out).
-  static Session? get currentSession => auth.currentSession;
+  /// Shortcut to the auth sub-client. Returns null if not initialized.
+  static GoTrueClient? get auth => client?.auth;
 
-  /// Current user (null when logged out).
-  static User? get currentUser => auth.currentUser;
+  /// Current session (null when logged out or not initialized).
+  static Session? get currentSession => auth?.currentSession;
+
+  /// Current user (null when logged out or not initialized).
+  static User? get currentUser => auth?.currentUser;
 }

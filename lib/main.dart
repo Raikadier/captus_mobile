@@ -2,10 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/router/app_router.dart';
 import 'core/services/local_storage_service.dart';
+import 'core/services/supabase_service.dart';
 import 'core/services/fcm_service.dart';
 import 'core/services/monitoring_service.dart';
 import 'core/theme/app_theme.dart';
@@ -29,16 +29,18 @@ Future<void> main() async {
     debugPrint('[Firebase] Initialization failed: $e');
   }
 
-  // Supabase
+  // Supabase — use SupabaseService so _initialized flag is set correctly.
+  // Without the flag, any Dio interceptor that runs before this line would
+  // throw "Supabase not initialized" and freeze the app on the splash screen.
   if (Env.hasSupabase) {
     try {
-      await Supabase.initialize(
-        url: Env.supabaseUrl,
-        anonKey: Env.supabaseAnonKey,
-      );
+      await SupabaseService.initialize();
+      debugPrint('[Supabase] Initialized OK');
     } catch (e) {
       debugPrint('[Supabase] Initialization failed: $e');
     }
+  } else {
+    debugPrint('[Supabase] Skipped — missing URL or key in .env');
   }
 
   await initializeDateFormatting('es');
