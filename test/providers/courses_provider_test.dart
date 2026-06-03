@@ -18,7 +18,7 @@ void main() {
         'description': 'Curso de algoritmos.',
       };
 
-      final course = CourseModel.fromApiJson(json);
+      final course = CourseModel.fromJson(json);
 
       expect(course.id, '1');
       expect(course.name, 'Estructuras de Datos');
@@ -37,7 +37,7 @@ void main() {
         'pendingTasks': 5,
       };
 
-      final course = CourseModel.fromApiJson(json, colorSeed: 2);
+      final course = CourseModel.fromJson(json, colorSeed: 2);
 
       expect(course.id, 't1');
       expect(course.name, 'Álgebra');
@@ -56,7 +56,7 @@ void main() {
         ],
       };
 
-      final course = CourseModel.fromApiJson(json);
+      final course = CourseModel.fromJson(json);
 
       expect(course.activities, hasLength(1));
       expect(course.activities.first.title, 'Act 1');
@@ -64,7 +64,7 @@ void main() {
 
     test('fromApiJson should generate stable colorIndex from id', () {
       final json = {'id': 'test-id-123', 'title': 'Course'};
-      final course = CourseModel.fromApiJson(json);
+      final course = CourseModel.fromJson(json);
 
       expect(course.colorIndex, inInclusiveRange(0, 5));
     });

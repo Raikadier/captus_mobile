@@ -1,8 +1,8 @@
-/// Shared test infrastructure for Captus Mobile.
-///
-/// Usage:
-///   await tester.pumpWidget(makeTestableWidget(child));
-///   await tester.pumpWidget(makeTestableWidget(child, overrides: [...]));
+// Shared test infrastructure for Captus Mobile.
+//
+// Usage:
+//   await tester.pumpWidget(makeTestableWidget(child));
+//   await tester.pumpWidget(makeTestableWidget(child, overrides: [...]));
 
 // All imports MUST come first in Dart
 import 'package:flutter/material.dart';

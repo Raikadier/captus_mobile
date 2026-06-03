@@ -99,7 +99,7 @@ void main() {
         'pendingActivities': 2,
       };
 
-      final course = CourseModel.fromApiJson(json);
+      final course = CourseModel.fromJson(json);
 
       expect(course.id, '1');
       expect(course.name, 'Estructuras de Datos');
@@ -117,7 +117,7 @@ void main() {
         'description': 'Curso de álgebra.',
       };
 
-      final course = CourseModel.fromApiJson(json, colorSeed: 3);
+      final course = CourseModel.fromJson(json, colorSeed: 3);
 
       expect(course.id, 't1');
       expect(course.name, 'Álgebra Lineal');
@@ -131,8 +131,8 @@ void main() {
       final json1 = {'id': 'aaa', 'title': 'Course A'};
       final json2 = {'id': 'bbb', 'title': 'Course B'};
 
-      final course1 = CourseModel.fromApiJson(json1);
-      final course2 = CourseModel.fromApiJson(json2);
+      final course1 = CourseModel.fromJson(json1);
+      final course2 = CourseModel.fromJson(json2);
 
       expect(course1.colorIndex, inInclusiveRange(0, 5));
       expect(course2.colorIndex, inInclusiveRange(0, 5));
@@ -147,7 +147,7 @@ void main() {
         ],
       };
 
-      final course = CourseModel.fromApiJson(json);
+      final course = CourseModel.fromJson(json);
 
       expect(course.activities, hasLength(1));
       expect(course.activities.first.title, 'Activity 1');

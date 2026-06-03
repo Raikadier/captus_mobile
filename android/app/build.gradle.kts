@@ -1,6 +1,6 @@
 plugins {
     id("com.android.application")
-    // id("com.google.gms.google-services")   // Disabled: needs google-services.json with com.captus.app
+    id("com.google.gms.google-services")
     id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
 }
@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.captus.app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"  // Required by path_provider, share_plus, sqflite, etc.
+    ndkVersion = "28.2.13676358"  // Required by integration_test, jni, speech_to_text (28+); backward-compatible with other plugins.
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId = "com.captus.app"
-        minSdk = 23   // firebase_analytics requires minSdk 23; flutter.minSdkVersion (21) is too low
+        minSdk = flutter.minSdkVersion   // firebase_analytics requires minSdk 23; flutter default (21) is too low
         targetSdk = 34         // Android 14 — current stable target
         versionCode = flutter.versionCode
         versionName = flutter.versionName

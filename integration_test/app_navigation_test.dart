@@ -57,8 +57,10 @@ void main() {
       app.main();
       await tester.pumpAndSettle(const Duration(seconds: 5));
 
-      final loginBtn =
-          find.textContaining('Iniciar') | find.textContaining('Entrar');
+      final loginBtn = find.byWidgetPredicate((w) =>
+          w is Text &&
+          (w.data?.contains('Iniciar') == true ||
+              w.data?.contains('Entrar') == true));
       if (loginBtn.evaluate().isNotEmpty) {
         await tester.tap(loginBtn.first);
         await tester.pump();

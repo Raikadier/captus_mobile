@@ -32,15 +32,13 @@ void main() {
     });
 
     testWidgets('renders action button when actionLabel + onAction provided', (tester) async {
-      bool tapped = false;
-
       await tester.pumpWidget(makeTestableWidget(
         EmptyState(
           icon: Icons.add,
           title: 'Vacío',
           subtitle: 'Agrega algo',
           actionLabel: 'Agregar',
-          onAction: () => tapped = true,
+          onAction: () {},
         ),
       ));
 

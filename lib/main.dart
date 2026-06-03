@@ -10,6 +10,7 @@ import 'core/services/fcm_service.dart';
 import 'core/services/monitoring_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/env/env.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +20,9 @@ Future<void> main() async {
 
   // Firebase (Crashlytics + Analytics + FCM)
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     await MonitoringService.init();
     await FcmService.initialize();
   } catch (e) {

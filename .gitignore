@@ -47,3 +47,11 @@ app.*.map.json
 # Environment secrets
 .env
 !.env.example
+
+# Local Claude/AI tooling
+.claude/
+analyze_output*.txt
+
+# JVM crash dumps (Gradle OOM)
+hs_err_pid*.log
+replay_pid*.log
