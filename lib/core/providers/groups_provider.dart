@@ -1,35 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../database/database_service.dart';
 import 'auth_provider.dart';
-
-class GroupModel {
-  final String id;
-  final String name;
-  final String? description;
-  final int memberCount;
-  final bool isJoined;
-  final String? userId;
-
-  const GroupModel({
-    required this.id,
-    required this.name,
-    this.description,
-    this.memberCount = 0,
-    this.isJoined = false,
-    this.userId,
-  });
-
-  factory GroupModel.fromJson(Map<String, dynamic> json) {
-    return GroupModel(
-      id: json['id']?.toString() ?? '',
-      name: json['title']?.toString() ?? json['name']?.toString() ?? '',
-      description: json['description']?.toString(),
-      memberCount: (json['memberCount'] as int?) ?? 0,
-      isJoined: (json['isJoined'] == 1) || (json['isJoined'] == true),
-      userId: json['userId']?.toString(),
-    );
-  }
-}
+import '../../models/group.dart';
 
 class GroupsService {
   Future<List<GroupModel>> fetchAll(String userId) async {
