@@ -290,7 +290,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 calendarFormat: _format,
                 eventLoader: _getEventsForDay,
                 headerVisible: false,
-                availableCalendarFormats: const {},
+                availableCalendarFormats: const {
+                  CalendarFormat.month: '',
+                  CalendarFormat.week: '',
+                },
                 onDaySelected: (selectedDay, focusedDay) {
                   setState(() {
                     _selectedDay = selectedDay;

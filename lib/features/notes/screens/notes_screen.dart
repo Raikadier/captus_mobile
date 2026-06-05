@@ -104,7 +104,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
             data: (pinnedNotes) {
               if (pinnedNotes.isEmpty) return const SizedBox.shrink();
               return SizedBox(
-                height: 100,
+                height: 120,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -292,23 +292,26 @@ class _NoteCard extends StatelessWidget {
               Row(
                 children: [
                   if (note.subject != null && note.subject!.isNotEmpty) ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: note.accentColor.withAlpha(38),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        note.subject!,
-                        style: GoogleFonts.inter(
-                          
-                          color: note.accentColor,
-                          fontWeight: FontWeight.w500,
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: note.accentColor.withAlpha(38),
+                          borderRadius: BorderRadius.circular(4),
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        child: Text(
+                          note.subject!,
+                          style: GoogleFonts.inter(
+                            fontSize: 9,
+                            color: note.accentColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
+                    const SizedBox(width: 4),
                     const Spacer(),
                   ] else
                     const Spacer(),
@@ -417,28 +420,38 @@ class _PinnedNoteCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 6),
-              Text(
-                note.title,
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+              const SizedBox(height: 4),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      note.title,
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (note.content != null && note.content!.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Flexible(
+                        child: Text(
+                          note.content!,
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            color: AppColors.textSecondary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
-              const Spacer(),
-              if (note.content != null && note.content!.isNotEmpty)
-                Text(
-                  note.content!,
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
             ],
           ),
         ),
